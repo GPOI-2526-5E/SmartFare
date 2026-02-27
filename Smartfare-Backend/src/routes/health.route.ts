@@ -6,7 +6,7 @@ const router = Router();
 /**
  * GET /api/health - Health check con test di ricerca
  */
-router.get("/", async (req: Request, res: Response) => {
+router.get("/trains", async (req: Request, res: Response) => {
   try {
     const fromInput = typeof req.query.from === "string" ? req.query.from : "Udine";
     const toInput = typeof req.query.to === "string" ? req.query.to : "Chiavari";
@@ -157,6 +157,105 @@ function mapAvailability(seatsAvailable?: number): string {
   }
   return "disponibile";
 }
+
+/**
+ * GET /api/health/flights - Health check con test di ricerca voli
+ */
+router.get("/flights", async (req: Request, res: Response) => {
+  try {
+    const fromInput = typeof req.query.from === "string" ? req.query.from : "Roma Fiumicino";
+    const toInput = typeof req.query.to === "string" ? req.query.to : "Trapani Birgi";
+    const dateInput = typeof req.query.date === "string" ? req.query.date : "2026-04-04";
+
+    const { datePrefix, startDate, endDate } = normalizeDateQuery(dateInput);
+    if (!datePrefix || !startDate || !endDate) {
+      return res.status(400).json({
+        error: "Data non valida",
+        expected: "YYYY-MM-DD oppure DD/MM/YYYY",
+      });
+    }
+
+    console.log(`🔍 Ricerca voli nuova: ${fromInput} → ${toInput} (${datePrefix}) data: ${new Date().toISOString()}`);
+    
+    const { getCollection } = await import("../config/database");
+    const flightsCollection = getCollection("Flights");
+    
+    const departureRegex = new RegExp(`^${escapeRegex(fromInput)}$`, "i");
+    const arrivalRegex = new RegExp(`^${escapeRegex(toInput)}$`, "i");
+
+    const dateRegex = new RegExp(`^${escapeRegex(datePrefix)}(?:$|T)`);
+    
+    // Supporta diversi nomi di campi per aeroporti di partenza/arrivo
+    const filter = {
+      $and: [
+        {
+          $or: [
+            { departureAirport: departureRegex },
+            { departure: departureRegex },
+            { origin: departureRegex },
+            { from: departureRegex }
+          ]
+        },
+        {
+          $or: [
+            { arrivalAirport: arrivalRegex },
+            { arrival: arrivalRegex },
+            { destination: arrivalRegex },
+            { to: arrivalRegex }
+          ]
+        },
+        {
+          $or: [
+            { departureTime: { $gte: startDate, $lt: endDate } },
+            { departureTime: { $regex: dateRegex } },
+            { departureDate: { $regex: dateRegex } },
+          ]
+        }
+      ]
+    };
+    
+    const flights = await flightsCollection.find(filter).toArray();
+    console.log(`✅ Voli trovati per ${datePrefix}: ${flights.length}`);
+    
+    // Converti i risultati in FlightOffer
+    const offers = flights.map((flight: any) => {
+      const departureParts = extractDateTimeParts(flight.departureTime || flight.departureDate);
+      const arrivalParts = extractDateTimeParts(flight.arrivalTime || flight.arrivalDate);
+      
+      return {
+        airline: flight.airline || flight.company || "",
+        flightNumber: flight.flightNumber || "",
+        departureDate: departureParts.date || "",
+        departureTime: departureParts.time || "",
+        arrivalTime: arrivalParts.time || "",
+        duration: formatDuration(flight.durationMin, flight.duration),
+        price: Number(flight.priceEUR ?? flight.price ?? 0),
+        stops: Number(flight.stops ?? flight.changes ?? 0),
+        cabin: flight.cabin || "",
+        availability: mapAvailability(flight.seatsAvailable ?? flight.availableSeats),
+        link: flight.link,
+        departure: flight.departureAirport || flight.departure || flight.origin || flight.from || "",
+        arrival: flight.arrivalAirport || flight.arrival || flight.destination || flight.to || "",
+      };
+    });
+
+    // Ottieni raccomandazioni da Gemini
+    const recommendation = await geminiService.getRecommendations(offers);
+
+    res.json({
+      source: "live",
+      offers,
+      recommendation,
+      searchedAt: new Date()
+    });
+  } catch (error: any) {
+    console.error("Errore ricerca voli:", error);
+    res.status(500).json({
+      error: "Errore durante la ricerca voli",
+      message: error.message
+    });
+  }
+});
 
 /**
  * GET /api/health/db-stats - Diagnostica database

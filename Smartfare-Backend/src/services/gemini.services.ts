@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { TrainSearchParams } from "../models/train-search-params"
 import { TrainOffer } from "../models/train-offer";
+import { FlightSearchParams } from "../models/flight-search-params";
+import { FlightOffer } from "../models/flight-offer";
 import { AIRecommendation } from '../models/AI-recommendation';
 import { getCollection, getDatabase } from "../config/database";
 
@@ -34,19 +36,23 @@ export class GeminiService {
 
     throw lastError;
   }
-  async searchTrainOffers(params: TrainSearchParams): Promise<TrainOffer[]> {
+  /**
+   * Generic search for offers. Supports `train` (default) and `flight`.
+   * Returns an array of normalized offers (shape may vary depending on mode).
+   */
+  async searchOffers(params: any, mode: "train" | "flight" = "train"): Promise<any[]> {
     try {
-      console.log("🔌 Avvio query DB Trains", {
+      console.log(`🔌 Avvio query DB (${mode.toUpperCase()})`, {
         from: params.from,
         to: params.to,
         date: params.date,
         passengers: params.passengers || 1,
       });
-      const trainsCollection = getCollection("Trains");
+
+      const collectionName = mode === "flight" ? "Flights" : "Trains";
+      const collection = getCollection(collectionName);
       const { datePrefix, startDate, endDate } = this.normalizeDateInput(params.date);
-      const dateRegex = datePrefix
-        ? new RegExp(`^${this.escapeRegex(datePrefix)}(?:$|T)`)
-        : undefined;
+      const dateRegex = datePrefix ? new RegExp(`^${this.escapeRegex(datePrefix)}(?:$|T)`) : undefined;
 
       console.log("🗓️ Filtro data normalizzato", {
         datePrefix,
@@ -57,39 +63,48 @@ export class GeminiService {
       const departureRegex = new RegExp(`^${this.escapeRegex(params.from)}$`, "i");
       const arrivalRegex = new RegExp(`^${this.escapeRegex(params.to)}$`, "i");
 
-      const filter: any = {
-        departure: departureRegex,
-        arrival: arrivalRegex,
-      };
+      // Support multiple possible field names for departure/arrival across collections
+      const departureFields = ["departure", "departureAirport", "origin", "from"];
+      const arrivalFields = ["arrival", "arrivalAirport", "destination", "to"];
+
+      const orClauses: any[] = [];
+      for (const f of departureFields) orClauses.push({ [f]: departureRegex });
+      for (const f of arrivalFields) orClauses.push({ [f]: arrivalRegex });
+
+      const filter: any = { $and: [] };
+      filter.$and.push({ $or: orClauses.slice(0, departureFields.length) });
+      filter.$and.push({ $or: orClauses.slice(departureFields.length) });
 
       if (startDate && endDate && dateRegex) {
-        filter.$or = [
-          { departureTime: { $gte: startDate, $lt: endDate } },
-          { departureTime: { $regex: dateRegex } },
-          { departureDate: { $regex: dateRegex } },
-        ];
+        filter.$and.push({
+          $or: [
+            { departureTime: { $gte: startDate, $lt: endDate } },
+            { departureTime: { $regex: dateRegex } },
+            { departureDate: { $regex: dateRegex } },
+          ],
+        });
       } else if (dateRegex) {
-        filter.$or = [
-          { departureTime: { $regex: dateRegex } },
-          { departureDate: { $regex: dateRegex } },
-        ];
+        filter.$and.push({ $or: [{ departureTime: { $regex: dateRegex } }, { departureDate: { $regex: dateRegex } }] });
       }
 
-      console.log("🔍 Filtro query Trains", filter);
+      // Simplify filter if empty
+      const finalFilter = filter.$and.length > 0 ? filter : {};
 
-      const trains = await trainsCollection.find(filter).toArray();
+      console.log(`🔍 Filtro query ${collectionName}`, finalFilter);
 
-      console.log("✅ Trains trovati", { count: trains.length });
+      const docs = await collection.find(finalFilter).toArray();
 
-      if (trains.length === 0) {
+      console.log(`✅ ${collectionName} trovati`, { count: docs.length });
+
+      if (docs.length === 0) {
         try {
           const database = getDatabase();
-          const estimatedCount = await trainsCollection.estimatedDocumentCount();
-          const sampleDoc = await trainsCollection.findOne();
+          const estimatedCount = await collection.estimatedDocumentCount();
+          const sampleDoc = await collection.findOne();
 
-          console.log("🧪 Trains diagnostics", {
+          console.log(`🧪 ${collectionName} diagnostics`, {
             dbName: database.databaseName,
-            collection: "Trains",
+            collection: collectionName,
             estimatedCount,
             sampleKeys: sampleDoc ? Object.keys(sampleDoc) : [],
             sampleDepartureTime: sampleDoc?.departureTime ?? sampleDoc?.departureDate,
@@ -97,41 +112,29 @@ export class GeminiService {
             samplearrival: sampleDoc?.arrival ?? sampleDoc?.arrival,
           });
         } catch (diagError) {
-          console.error("❌ Errore diagnostica Trains:", diagError);
+          console.error(`❌ Errore diagnostica ${collectionName}:`, diagError);
         }
       }
 
-      const offers: TrainOffer[] = trains.map((train: any) => {
-        const departureParts = this.extractDateTimeParts(train.departureTime || train.departureDate);
-        const arrivalParts = this.extractDateTimeParts(train.arrivalTime || train.arrivalDate);
-        const priceInfo = this.extractPriceTrend(train);
-
-        return {
-          company: train.company || "",
-          departureDate: departureParts.date || datePrefix || "",
-          departureTime: departureParts.time || "",
-          arrivalTime: arrivalParts.time || "",
-          duration: this.formatDuration(train.durationMin, train.duration),
-          price: Number(train.priceEUR ?? train.price ?? 0),
-          trainType: train.trainType || "",
-          changes: Number(train.changes ?? 0),
-          availability: this.mapAvailability(train.seatsAvailable),
-          link: train.link,
-          departure: train.departure || train.departure || "",
-          arrival: train.arrival || train.arrival || "",
-          ...priceInfo,
-        };
-      });
-
+      const offers = docs.map((doc: any) => this.mapDocumentToOffer(doc, mode, datePrefix));
       return offers;
     } catch (error) {
-      console.error("Errore ricerca DB Trains:", error);
+      console.error(`Errore ricerca DB (${mode}):`, error);
       return [];
     }
   }
+
+  // Backwards-compatible wrappers
+  async searchTrainOffers(params: TrainSearchParams): Promise<TrainOffer[]> {
+    return (await this.searchOffers(params, "train")) as TrainOffer[];
+  }
+
+  async searchFlightOffers(params: FlightSearchParams): Promise<FlightOffer[]> {
+    return (await this.searchOffers(params, "flight")) as FlightOffer[];
+  }
   
   async getRecommendations(
-    offers: TrainOffer[],
+    offers: any[],
     userPreferences?: {
       maxPrice?: number;
       preferredTime?: string;
@@ -198,14 +201,15 @@ IMPORTANTE: Rispondi SOLO con un JSON valido, senza testo aggiuntivo.
     }
   }
 
-  private calculateOfferScore(offer: TrainOffer): number {
+  private calculateOfferScore(offer: any): number {
     let score = 100;
 
     // Penalizza prezzo alto
     score -= offer.price * 0.5;
 
-    // Penalizza cambi
-    score -= offer.changes * 10;
+    // Penalizza cambi / scali
+    const changes = offer.changes ?? offer.stops ?? 0;
+    score -= changes * 10;
 
     // Penalizza durata (estrai ore)
     const durationMatch = offer.duration.match(/(\d+)h/);
@@ -219,6 +223,47 @@ IMPORTANTE: Rispondi SOLO con un JSON valido, senza testo aggiuntivo.
     }
 
     return score;
+  }
+
+  private mapDocumentToOffer(doc: any, mode: "train" | "flight", datePrefix?: string): any {
+    const departureParts = this.extractDateTimeParts(doc.departureTime || doc.departureDate);
+    const arrivalParts = this.extractDateTimeParts(doc.arrivalTime || doc.arrivalDate);
+    const priceInfo = this.extractPriceTrend(doc);
+
+    const departure = doc.departure || doc.departureAirport || doc.origin || doc.from || "";
+    const arrival = doc.arrival || doc.arrivalAirport || doc.destination || doc.to || "";
+
+    const base = {
+      provider: doc.company || doc.airline || "",
+      departureDate: departureParts.date || datePrefix || "",
+      departureTime: departureParts.time || "",
+      arrivalTime: arrivalParts.time || "",
+      duration: this.formatDuration(doc.durationMin, doc.duration),
+      price: Number(doc.priceEUR ?? doc.price ?? 0),
+      availability: this.mapAvailability(doc.seatsAvailable ?? doc.availableSeats),
+      link: doc.link,
+      departure,
+      arrival,
+      ...priceInfo,
+    } as any;
+
+    if (mode === "train") {
+      return {
+        ...base,
+        company: base.provider,
+        trainType: doc.trainType || "",
+        changes: Number(doc.changes ?? 0),
+      };
+    }
+
+    // flight
+    return {
+      ...base,
+      airline: base.provider,
+      flightNumber: doc.flightNumber || doc.trainType || "",
+      stops: Number(doc.stops ?? doc.changes ?? 0),
+      cabin: doc.cabin || undefined,
+    };
   }
 
   private normalizeDateInput(dateInput: string): {

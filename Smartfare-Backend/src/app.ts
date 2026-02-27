@@ -1,11 +1,26 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import path from "path";
 import healthRoutes from "./routes/health.route";
 import searchRoutes from "./routes/search.route";
 
 export function createApp() {
   const app = express();
+
+  // Security headers con CSP configurato
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+        styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "fonts.googleapis.com"],
+        fontSrc: ["'self'", "fonts.gstatic.com", "cdn.jsdelivr.net"],
+        connectSrc: ["'self'", "localhost:*"],
+        imgSrc: ["'self'", "data:", "https:"],
+      },
+    },
+  }));
 
   app.use(cors());
   app.use(express.json());

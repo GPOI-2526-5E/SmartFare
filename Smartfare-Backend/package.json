@@ -21,6 +21,7 @@
         "cors": "^2.8.5",
         "dotenv": "^16.6.1",
         "express": "^5.2.1",
+        "helmet": "^8.1.0",
         "mime": "^2.5.2",
         "mongodb": "^7.0.0",
         "query-string": "^6.14.1",
