@@ -1,1 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
+  body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        @keyframes slow-zoom {
+          from { transform: scale(1); }
+          to { transform: scale(1.1); }
+        }
+        .animate-slow-zoom {
+          animation: slow-zoom 20s linear infinite alternate;
+        }

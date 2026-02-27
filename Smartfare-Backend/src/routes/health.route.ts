@@ -20,7 +20,7 @@ router.get("/", async (req: Request, res: Response) => {
       });
     }
 
-    console.log(`🔍 Ricerca nuova: ${fromInput} → ${toInput} (${datePrefix})`);
+    console.log(`🔍 Ricerca nuova: ${fromInput} → ${toInput} (${datePrefix}) data: ${new Date().toISOString()}`);
     
     const { getCollection } = await import("../config/database");
     const trainsCollection = getCollection("Trains");

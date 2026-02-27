@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "Smartfare-Frontend": {
+    "SmartFare": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -25,7 +25,12 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"
+            ],
+            "scripts":[
+              "node_modules/bootstrap/dist/js/bootstrap.min.js"
             ]
           },
           "configurations": {
@@ -56,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Smartfare-Frontend:build:production"
+              "buildTarget": "SmartFare:build:production"
             },
             "development": {
-              "buildTarget": "Smartfare-Frontend:build:development"
+              "buildTarget": "SmartFare:build:development"
             }
           },
           "defaultConfiguration": "development"

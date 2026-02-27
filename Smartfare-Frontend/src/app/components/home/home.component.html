@@ -1,0 +1,48 @@
+<div class="pb-20">
+  <!-- Hero Section -->
+  <section class="relative h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+    @for (img of images; track $index; let i = $index) {
+      <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out" [class.opacity-100]="i === currentImage()" [class.opacity-0]="i !== currentImage()">
+        <img [src]="img" class="w-full h-full object-cover scale-105 animate-slow-zoom" alt="Travel" />
+        <div class="absolute inset-0 bg-black/30"></div>
+      </div>
+    }
+
+    <div class="relative z-10 w-full max-w-5xl px-6 flex flex-col items-center text-center">
+      <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
+        Esplora il mondo, <br class="hidden md:block" />
+        <span class="text-blue-400">senza pensieri.</span>
+      </h1>
+      <p class="text-lg md:text-xl text-white/90 mb-10 max-w-2xl drop-shadow-md">
+        Pianifica il tuo prossimo viaggio con facilità. Voli, treni e hotel ai migliori prezzi garantiti.
+      </p>
+      <app-booking-form></app-booking-form>
+    </div>
+  </section>
+
+  <!-- Destinations -->
+  <section class="max-w-7xl mx-auto px-6 mt-20">
+    <div class="flex items-center justify-between mb-10">
+      <h2 class="text-3xl font-bold text-slate-800">Mete popolari</h2>
+      <button class="text-blue-600 font-semibold hover:underline">Vedi tutte</button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      @for (dest of destinations; track dest.id) {
+      <div class="group bg-white rounded-3xl overflow-hidden border border-slate-100 transition-all hover:shadow-2xl hover:-translate-y-2">
+        <div class="relative h-64 overflow-hidden">
+          <img [src]="dest.image" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" [alt]="dest.name" [title]="dest.name + ', ' + dest.country" />
+        </div>
+        <div class="p-6">
+          <h3 class="font-bold text-xl text-slate-800">{{dest.name}}</h3>
+          <p class="text-slate-500 text-sm mt-1">{{dest.country}}</p>
+          <div class="flex items-center justify-between mt-4">
+            <span class="text-blue-600 font-bold text-lg">€{{dest.price}}</span>
+            <button class="bg-slate-50 text-slate-800 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-600 hover:text-white transition-colors">Dettagli</button>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+</div>

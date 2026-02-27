@@ -1,0 +1,18 @@
+/* Booking form styles placeholder */
+:host { display: block; }
+
+button {
+  @apply transition-all duration-300;
+}
+
+button span svg {
+  @apply stroke-slate-600 transition-all duration-300;
+}
+
+button.active {
+  @apply bg-blue-600 text-white shadow-lg;
+}
+
+button.active span svg {
+  @apply stroke-white;
+}
