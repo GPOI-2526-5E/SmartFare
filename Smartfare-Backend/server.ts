@@ -9,7 +9,7 @@ async function startServer() {
         await connectDatabase();
 
         app.listen(PORT, () => {
-            console.log(`🚂 Server listening on port ${PORT}`);
+            console.log(`🗺️ Server avviato su http://localhost:${PORT}`);
         });
     } catch (error) {
         console.error('Errore avvio server:', error);

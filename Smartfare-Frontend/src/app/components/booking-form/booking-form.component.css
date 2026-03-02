@@ -1,5 +1,15 @@
 /* Booking form styles placeholder */
-:host { display: block; }
+:host {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+.glass-effect {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.95);
+}
 
 button {
   @apply transition-all duration-300;
@@ -15,4 +25,12 @@ button.active {
 
 button.active span svg {
   @apply stroke-white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .glass-effect {
+    border-radius: 1.5rem;
+    padding: 1rem;
+  }
 }

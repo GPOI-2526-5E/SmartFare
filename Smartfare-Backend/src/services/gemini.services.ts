@@ -12,7 +12,7 @@ dotenv.config();
 
 const API_KEY = process.env.GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(API_KEY);
-const GEMINI_MODELS = (process.env.GEMINI_MODEL || "gemini-2.5-flash,gemini-2.5-flash-lite,gemini-2.5-pro,gemini-2-flash")
+const GEMINI_MODELS = (process.env.GEMINI_MODEL || "")
   .split(",")
   .map((m) => m.trim())
   .filter((m) => m.startsWith("gemini-"));
@@ -132,7 +132,7 @@ export class GeminiService {
   async searchFlightOffers(params: FlightSearchParams): Promise<FlightOffer[]> {
     return (await this.searchOffers(params, "flight")) as FlightOffer[];
   }
-  
+
   async getRecommendations(
     offers: any[],
     userPreferences?: {

@@ -1,6 +1,9 @@
 <div class="pb-20">
   <!-- Hero Section -->
-  <section class="relative h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+  <section
+    class="relative h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden transition-all duration-300"
+    [class.hero-expanded-open]="sidebarService.isSidebarOpen()"
+    [class.hero-expanded-closed]="!sidebarService.isSidebarOpen()">
     @for (img of images; track $index; let i = $index) {
       <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out" [class.opacity-100]="i === currentImage()" [class.opacity-0]="i !== currentImage()">
         <img [src]="img" class="w-full h-full object-cover scale-105 animate-slow-zoom" alt="Travel" />
@@ -16,6 +19,20 @@
       <p class="text-lg md:text-xl text-white/90 mb-10 max-w-2xl drop-shadow-md">
         Pianifica il tuo prossimo viaggio con facilità. Voli, treni e hotel ai migliori prezzi garantiti.
       </p>
+
+      <!-- Services Selector -->
+      <div class="flex gap-3 mb-8 flex-wrap justify-center">
+        @for (service of services; track service.id) {
+        <button
+          (click)="selectService(service.id)"
+          [class.active]="activeTab() === service.id"
+          class="service-btn">
+          <i [class]="'bi ' + service.icon"></i>
+          <span>{{service.label}}</span>
+        </button>
+        }
+      </div>
+
       <app-booking-form></app-booking-form>
     </div>
   </section>

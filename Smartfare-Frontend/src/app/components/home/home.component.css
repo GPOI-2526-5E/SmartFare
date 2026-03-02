@@ -1,2 +1,223 @@
 /* Home page styles placeholder */
 :host { display: block; }
+
+/* Hero Section - Full width che compensa la sidebar SOLO su desktop */
+@media (min-width: 769px) {
+  .hero-expanded-open {
+    margin-left: -280px;
+    width: calc(100% + 280px);
+  }
+
+  .hero-expanded-closed {
+    margin-left: -80px;
+    width: calc(100% + 80px);
+  }
+}
+
+/* Su mobile: hero section normale senza margini negativi */
+@media (max-width: 768px) {
+  .hero-expanded-open,
+  .hero-expanded-closed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  /* Riduci altezza hero su mobile */
+  section.relative {
+    min-height: 500px;
+    height: auto;
+    padding-top: 2rem;
+  }
+
+  /* Service buttons più piccoli su mobile */
+  .service-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .service-btn i {
+    font-size: 1rem;
+  }
+
+  /* Riduci dimensione testo hero su mobile */
+  section h1 {
+    font-size: 2rem !important;
+    line-height: 1.2;
+  }
+
+  section p {
+    font-size: 1rem !important;
+  }
+
+  /* Riduci padding contenitore hero */
+  section > div {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Service Buttons in Hero */
+.service-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.service-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.service-btn.active {
+  background: linear-gradient(135deg, #00ACC1 0%, #26C6DA 100%);
+  border-color: #00838F;
+  color: white;
+  box-shadow: 0 12px 35px rgba(0, 172, 193, 0.4);
+  transform: translateY(-3px) scale(1.05);
+}
+
+.service-btn i {
+  font-size: 1.2rem;
+}
+
+/* Services Cards */
+
+.services-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(135deg, rgba(0, 172, 193, 0.1) 0%, rgba(38, 198, 218, 0.05) 100%);
+  border: 2px solid rgba(0, 172, 193, 0.2);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  gap: 1rem;
+  text-align: center;
+  min-height: 200px;
+}
+
+.services-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 172, 193, 0.2) 0%, rgba(38, 198, 218, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.services-card:hover {
+  border-color: rgba(0, 172, 193, 0.5);
+  background: linear-gradient(135deg, rgba(0, 172, 193, 0.15) 0%, rgba(38, 198, 218, 0.1) 100%);
+  box-shadow: 0 8px 25px rgba(0, 172, 193, 0.15);
+  transform: translateY(-4px);
+}
+
+.services-card:hover::before {
+  opacity: 1;
+}
+
+.services-card.active {
+  background: linear-gradient(135deg, #00ACC1 0%, #26C6DA 100%);
+  border-color: #00838F;
+  box-shadow: 0 12px 35px rgba(0, 172, 193, 0.25);
+  color: white;
+}
+
+.services-icon {
+  position: relative;
+  z-index: 2;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: rgba(0, 172, 193, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  color: #0097a7;
+}
+
+.services-card:hover .services-icon {
+  background: rgba(0, 172, 193, 0.3);
+  transform: rotate(10deg) scale(1.1);
+}
+
+.services-card.active .services-icon {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.services-label {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0097a7;
+  transition: color 0.3s ease;
+}
+
+.services-card:hover .services-label {
+  color: #00838F;
+}
+
+.services-card.active .services-label {
+  color: white;
+  font-weight: 700;
+}
+
+.services-indicator {
+  position: relative;
+  z-index: 2;
+  width: 8px;
+  height: 8px;
+  background: #00ACC1;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+.services-card.active .services-indicator {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.services-indicator.pulse {
+  animation: pulse-indicator 2s infinite;
+}
+
+@keyframes pulse-indicator {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

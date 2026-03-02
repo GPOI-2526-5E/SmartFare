@@ -1,6 +1,25 @@
-<div class="flex min-h-screen bg-slate-50">
-  <app-sidebar [activeTab]="activeTab" (tabChange)="onTabChange($event)"></app-sidebar>
-  <main class="flex-1 ml-20 md:ml-64 transition-all duration-300">
+<div class="app-container" [class.sidebar-collapsed]="!isSidebarOpen() && !isMobile()">
+  <!-- Header mobile con hamburger menu -->
+  @if (isMobile()) {
+    <header class="mobile-header">
+      <button class="hamburger-btn" (click)="toggleSidebar()" type="button" aria-label="Toggle menu">
+        <i class="bi" [class.bi-list]="!isSidebarOpen()" [class.bi-x-lg]="isSidebarOpen()"></i>
+      </button>
+      <div class="mobile-logo">
+        <i class="bi bi-airplane-engines"></i>
+        <span>SmartFare</span>
+      </div>
+    </header>
+  }
+
+  <!-- Backdrop per chiudere la sidebar SOLO su mobile -->
+  @if (isSidebarOpen() && isMobile()) {
+    <div class="sidebar-backdrop" (click)="closeSidebarOnMobile()"></div>
+  }
+
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
     <router-outlet></router-outlet>
   </main>
 </div>

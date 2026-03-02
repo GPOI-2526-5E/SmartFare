@@ -1,40 +1,75 @@
-<aside class="fixed left-0 top-0 h-screen w-20 md:w-64 bg-white border-r border-slate-200 flex flex-col z-50">
-  <div class="p-6 flex items-center gap-3">
-    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shrink-0">
-      <i class="bi bi-airplane-fill text-xl"></i>
+<aside class="sidebar-container" [class.collapsed]="!isSidebarOpen()">
+  <!-- Header con logo e brand -->
+  <div class="sidebar-header">
+    <div class="logo-wrapper">
+      <button class="logo-icon" (click)="toggleSidebar()" type="button" title="Toggle sidebar">
+        <i class="bi bi-airplane-engines"></i>
+      </button>
+      <div class="logo-text">
+        <h1 class="brand-name">SmartFare</h1>
+        <p class="brand-tagline">Travel Smart</p>
+      </div>
     </div>
-    <span class="hidden md:block font-bold text-xl text-slate-800 tracking-tight">VoloVeloce</span>
   </div>
 
-  <nav class="flex-1 px-3 mt-4 space-y-2">
-    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3 hidden md:block">Servizi</div>
+  <!-- Menu principale -->
+  <nav class="sidebar-nav">
+    <!-- Navigazione principale -->
+    <div class="nav-section">
+      <div class="section-title">
+        <i class="bi bi-compass"></i>
+        <span>Navigazione</span>
+      </div>
 
-    @for (item of services; track item.id) {
-    <button
-      (click)="tabChange.emit(item.id)"
-      [routerLink]="['/']"
-      [ngClass]="{'w-full flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200 group bg-blue-50 text-blue-600': activeTab === item.id, 'w-full flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200 group text-slate-500 hover:bg-slate-50 hover:text-slate-800': activeTab !== item.id}">
-      <i [class]="item.icon" class="text-xl"></i>
-      <span class="hidden md:block font-medium">{{item.label}}</span>
-      @if (activeTab === item.id) {
-      <div class="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600 hidden md:block"></div>
+      @for (item of navigation; track $index) {
+      <a [routerLink]="[item.path]" class="nav-item" [attr.data-label]="item.label">
+        <div class="nav-item-content">
+          <div class="nav-icon">
+            <i [class]="'bi ' + item.icon"></i>
+          </div>
+          <span class="nav-label">{{item.label}}</span>
+        </div>
+        <div class="nav-item-bg"></div>
+      </a>
       }
-    </button>
-    }
+    </div>
 
-    <div class="pt-6 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3 hidden md:block">Navigazione</div>
-    @for (item of secondary; track $index) {
-    <a [routerLink]="[item.path]" class="flex items-center gap-4 px-3 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all group">
-      <i [class]="item.icon" class="text-xl"></i>
-      <span class="hidden md:block font-medium">{{item.label}}</span>
-    </a>
-    }
+    <!-- Menu secondario -->
+    <div class="nav-section mt-4">
+      <div class="section-title">
+        <i class="bi bi-sliders"></i>
+        <span>Altro</span>
+      </div>
+
+      @for (item of secondary; track $index) {
+      <a [routerLink]="[item.path]" class="nav-item" [attr.data-label]="item.label">
+        <div class="nav-item-content">
+          <div class="nav-icon">
+            <i [class]="'bi ' + item.icon"></i>
+          </div>
+          <span class="nav-label">{{item.label}}</span>
+        </div>
+        <div class="nav-item-bg"></div>
+      </a>
+      }
+    </div>
   </nav>
 
-  <div class="p-4 border-t border-slate-100">
-    <button class="flex items-center gap-4 px-3 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all w-full">
-      <i class="bi bi-gear-fill text-xl"></i>
-      <span class="hidden md:block font-medium">Impostazioni</span>
-    </button>
+  <!-- Footer con azioni utente -->
+  <div class="sidebar-footer">
+    <div class="user-actions">
+      <button class="btn-action btn-login" data-label="Accedi">
+        <i class="bi bi-box-arrow-in-right"></i>
+        <span>Accedi</span>
+      </button>
+      <button [routerLink]="['/register']" class="btn-action btn-register" data-label="Registrati">
+        <i class="bi bi-person-plus-fill"></i>
+        <span>Registrati</span>
+      </button>
+    </div>
   </div>
+
+  <!-- Decorazioni -->
+  <div class="decoration decoration-1"></div>
+  <div class="decoration decoration-2"></div>
 </aside>

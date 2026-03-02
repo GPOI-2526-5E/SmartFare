@@ -1,2 +1,127 @@
-/* Basic placeholder styles for the root component. */
-:host { display: block; }
+/* Main app container layout */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f1f5f9;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Mobile header con hamburger button */
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(135deg, #00ACC1 0%, #26C6DA 100%);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  z-index: 998;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.hamburger-btn {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.hamburger-btn:active {
+  transform: scale(0.95);
+}
+
+.mobile-logo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.mobile-logo i {
+  font-size: 1.5rem;
+}
+
+/* Main content area con transizione smooth */
+.main-content {
+  flex: 1;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 0;
+  overflow-y: auto;
+  width: 100%;
+}
+
+/* Su desktop: sidebar sempre visibile con margin */
+@media (min-width: 769px) {
+  .mobile-header {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 280px;
+  }
+
+  /* Quando la sidebar è collassata su desktop: riduci il margine */
+  .app-container.sidebar-collapsed .main-content {
+    margin-left: 80px;
+  }
+}
+
+/* Backdrop semi-trasparente per chiudere sidebar su mobile */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  opacity: 0;
+  animation: fadeInBackdrop 0.3s ease forwards;
+}
+
+@keyframes fadeInBackdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================
+   RESPONSIVE ON TABLET/MOBILE
+   =========================== */
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
+    padding-top: 60px; /* Spazio per il mobile header */
+  }
+
+  .app-container.sidebar-collapsed .main-content {
+    margin-left: 0 !important;
+  }
+}

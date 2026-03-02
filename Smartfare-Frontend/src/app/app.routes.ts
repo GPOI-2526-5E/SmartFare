@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
-import { SearchResults } from './components/search-results/search-results';
+import { RegisterComponent } from './components/register/register';
 
 export const APP_ROUTES: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'search', component: SearchResults },
+  { path: "register", component: RegisterComponent},
+  {path: "home", component: HomeComponent},
   { path: '**', redirectTo: '' }
 ];
