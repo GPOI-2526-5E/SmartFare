@@ -2,7 +2,7 @@ import { Component, signal, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { BookingStateService } from '../../services/booking-state.service';
+import { BookingStateService } from '../../../core/home/booking-state.service';
 
 @Component({
   selector: 'app-booking-form',
@@ -62,7 +62,7 @@ export class BookingFormComponent {
     return this.serviceConfig[this.activeType()] || this.serviceConfig['ITINERARY'];
   }
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   setActiveType(id: string) {
     this.bookingState.setActiveService(id);

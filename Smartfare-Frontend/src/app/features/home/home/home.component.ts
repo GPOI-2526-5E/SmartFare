@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BookingFormComponent } from '../booking-form/booking-form.component';
-import { BookingStateService } from '../../services/booking-state.service';
-import { SidebarService } from '../../services/sidebar.service';
+import { BookingStateService } from '../../../core/home/booking-state.service';
+import { SidebarService } from '../../../core/layout/sidebar.service';
 
 @Component({
   selector: 'app-home',

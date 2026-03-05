@@ -1,14 +1,14 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { SidebarService } from './services/sidebar.service';
+import { SidebarComponent } from './features/layout/sidebar/sidebar.component';
+import { SidebarService } from './core/layout/sidebar.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterModule, SidebarComponent],
-  templateUrl: './app.html',
-  styleUrls: ['./app.css']
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   private sidebarService = inject(SidebarService);
