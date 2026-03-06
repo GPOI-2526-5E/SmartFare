@@ -1,4 +1,4 @@
-import { TrainOffer } from "./train-offer";
+import { TrainOffer } from "./database.model";
 
 export interface AIRecommendation {
     bestOffer: TrainOffer;

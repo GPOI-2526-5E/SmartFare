@@ -11,6 +11,7 @@ import { BookingStateService } from '../../../core/home/booking-state.service';
   templateUrl: './booking-form.component.html',
   styleUrls: ['./booking-form.component.css']
 })
+  
 export class BookingFormComponent {
   private bookingState = inject(BookingStateService);
 

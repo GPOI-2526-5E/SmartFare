@@ -1,15 +1,9 @@
-import { MongoClient, Db } from "mongodb";
+import mongoose from "mongoose";
+import { DatabaseConfig } from "../models/database.model";
 import dotenv from "dotenv";
 
+
 dotenv.config();
-
-let db: Db | null = null;
-
-export interface DatabaseConfig {
-    uri: string;
-    dbName: string;
-    options: any;
-}
 
 const getDatabaseConfig = (): DatabaseConfig => {
     const mongodbUri = process.env.MONGODB_URI;
@@ -27,38 +21,30 @@ const getDatabaseConfig = (): DatabaseConfig => {
             minPoolSize: 2,
             retryWrites: true,
             w: "majority",
+            dbName: mongodbDatabase,
         },
     };
 };
 
 /**
- * Connessione a MongoDB Atlas
+ * Connessione a MongoDB Atlas con Mongoose
  */
-export async function connectDatabase(): Promise<Db> {
+export async function connectDatabase(): Promise<typeof mongoose> {
     try {
-        if (db) {
+        if (mongoose.connection.readyState === 1) {
             console.log("✅ Database già connesso");
-            return db;
+            return mongoose;
         }
 
         const config = getDatabaseConfig();
         console.log(`🔄 Connessione a MongoDB Atlas: ${config.uri.split("@")[1]}`);
 
-        const client = new MongoClient(config.uri, config.options);
-        await client.connect();
+        await mongoose.connect(config.uri, config.options);
 
-        db = client.db(config.dbName);
-
-        console.log("📦 Database selezionato", { dbName: db.databaseName });
-
-        // Verifica la connessione
-        await db.admin().ping();
+        console.log("📦 Database selezionato", { dbName: config.dbName });
         console.log("✅ Connessione a MongoDB Atlas riuscita!");
 
-        const collections = await db.listCollections().toArray();
-        console.log("📚 Collections disponibili", collections.map((c) => c.name));
-
-        return db;
+        return mongoose;
     } catch (error) {
         console.error("❌ Errore connessione database:", error);
         throw error;
@@ -68,11 +54,11 @@ export async function connectDatabase(): Promise<Db> {
 /**
  * Otiene l'istanza del database
  */
-export function getDatabase(): Db {
-    if (!db) {
-        throw new Error("Database non connesso. Chiama connectDatabase() prima.");
+export function getDatabase() {
+    if (mongoose.connection.readyState !== 1) {
+        throw new Error("Database non connesso.");
     }
-    return db;
+    return mongoose.connection.db;
 }
 
 /**
@@ -80,9 +66,9 @@ export function getDatabase(): Db {
  */
 export async function disconnectDatabase(): Promise<void> {
     try {
-        if (db) {
+        if (mongoose.connection.readyState === 1) {
+            await mongoose.disconnect();
             console.log("✅ Database disconnesso");
-            db = null;
         }
     } catch (error) {
         console.error("❌ Errore disconnessione database:", error);
@@ -95,11 +81,14 @@ export async function disconnectDatabase(): Promise<void> {
  */
 export function getCollection(collectionName: string) {
     const database = getDatabase();
+    if (!database) {
+        throw new Error("Database non disponibile");
+    }
     return database.collection(collectionName);
 }
 
 export function isDatabaseConnected(): boolean {
-    return db !== null;
+    return mongoose.connection.readyState === 1;
 }
 
 export default {

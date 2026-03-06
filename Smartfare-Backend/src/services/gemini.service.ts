@@ -1,12 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { TrainSearchParams } from "../models/train-search-params"
-import { TrainOffer } from "../models/train-offer";
+import { TrainOffer, FlightOffer, Train, Flight } from "../models/database.model";
 import { FlightSearchParams } from "../models/flight-search-params";
-import { FlightOffer } from "../models/flight-offer";
 import { AIRecommendation } from '../models/AI-recommendation';
-import { getCollection, getDatabase } from "../config/database";
 
 import dotenv from "dotenv";
+import { error } from "console";
 
 dotenv.config();
 
@@ -22,6 +21,7 @@ export class GeminiService {
   private getModel(modelName: string) {
     return genAI.getGenerativeModel({ model: modelName })
   }
+
   private async generateWithFallback(prompt: string) {
     let lastError: unknown;
 
@@ -33,13 +33,9 @@ export class GeminiService {
         lastError = error;
       }
     }
-
     throw lastError;
   }
-  /**
-   * Generic search for offers. Supports `train` (default) and `flight`.
-   * Returns an array of normalized offers (shape may vary depending on mode).
-   */
+
   async searchOffers(params: any, mode: "train" | "flight" = "train"): Promise<any[]> {
     try {
       console.log(`🔌 Avvio query DB (${mode.toUpperCase()})`, {
@@ -50,7 +46,6 @@ export class GeminiService {
       });
 
       const collectionName = mode === "flight" ? "Flights" : "Trains";
-      const collection = getCollection(collectionName);
       const { datePrefix, startDate, endDate } = this.normalizeDateInput(params.date);
       const dateRegex = datePrefix ? new RegExp(`^${this.escapeRegex(datePrefix)}(?:$|T)`) : undefined;
 
@@ -92,18 +87,29 @@ export class GeminiService {
 
       console.log(`🔍 Filtro query ${collectionName}`, finalFilter);
 
-      const docs = await collection.find(finalFilter).toArray();
+      let docs: any[];
+      if (mode === "flight") {
+        docs = await Flight.find(finalFilter).lean().exec();
+      } else {
+        docs = await Train.find(finalFilter).lean().exec();
+      }
 
       console.log(`✅ ${collectionName} trovati`, { count: docs.length });
 
       if (docs.length === 0) {
         try {
-          const database = getDatabase();
-          const estimatedCount = await collection.estimatedDocumentCount();
-          const sampleDoc = await collection.findOne();
+          let estimatedCount: number;
+          let sampleDoc: any;
+
+          if (mode === "flight") {
+            estimatedCount = await Flight.estimatedDocumentCount();
+            sampleDoc = await Flight.findOne().lean().exec();
+          } else {
+            estimatedCount = await Train.estimatedDocumentCount();
+            sampleDoc = await Train.findOne().lean().exec();
+          }
 
           console.log(`🧪 ${collectionName} diagnostics`, {
-            dbName: database.databaseName,
             collection: collectionName,
             estimatedCount,
             sampleKeys: sampleDoc ? Object.keys(sampleDoc) : [],
@@ -112,7 +118,7 @@ export class GeminiService {
             samplearrival: sampleDoc?.arrival ?? sampleDoc?.arrival,
           });
         } catch (diagError) {
-          console.error(`❌ Errore diagnostica ${collectionName}:`, diagError);
+          throw error(`❌ Errore diagnostica ${collectionName}:`, diagError);
         }
       }
 
@@ -383,6 +389,5 @@ IMPORTANTE: Rispondi SOLO con un JSON valido, senza testo aggiuntivo.
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 }
-
 
 export const geminiService = new GeminiService();

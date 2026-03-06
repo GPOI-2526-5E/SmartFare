@@ -1,7 +1,7 @@
 import { createApp } from './src/app';
 import { connectDatabase, disconnectDatabase } from './src/config/database';
 
-const PORT = process.env.PORT || 3007; 
+const PORT = process.env.PORT || 3000; 
 const app = createApp();
 
 async function startServer() {

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
-import { geminiService } from "../services/gemini.services";
+import { geminiService } from "../services/gemini.service";
+import { Train, Flight } from "../models/database.model";
 
 const router = Router();
 
@@ -21,17 +22,14 @@ router.get("/trains", async (req: Request, res: Response) => {
     }
 
     console.log(`🔍 Ricerca nuova: ${fromInput} → ${toInput} (${datePrefix}) data: ${new Date().toISOString()}`);
-    
-    const { getCollection } = await import("../config/database");
-    const trainsCollection = getCollection("Trains");
-    
+
     const departureRegex = new RegExp(`^${escapeRegex(fromInput)}$`, "i");
     const arrivalRegex = new RegExp(`^${escapeRegex(toInput)}$`, "i");
 
     const dateRegex = new RegExp(`^${escapeRegex(datePrefix)}(?:$|T)`);
-    
+
     const filter = {
-      departure : departureRegex,
+      departure: departureRegex,
       arrival: arrivalRegex,
       $or: [
         { departureTime: { $gte: startDate, $lt: endDate } },
@@ -39,28 +37,28 @@ router.get("/trains", async (req: Request, res: Response) => {
         { departureDate: { $regex: dateRegex } },
       ]
     };
-    
-    const trains = await trainsCollection.find(filter).toArray();
+
+    const trains = await Train.find(filter).lean().exec();
     console.log(`✅ Treni trovati per ${datePrefix}: ${trains.length}`);
-    
+
     // Converti i risultati in TrainOffer
     const offers = trains.map((train: any) => {
       const departureParts = extractDateTimeParts(train.departureTime || train.departureDate);
       const arrivalParts = extractDateTimeParts(train.arrivalTime || train.arrivalDate);
-      
+
       return {
         company: train.company || "",
         departureDate: departureParts.date || "",
         departureTime: departureParts.time || "",
         arrivalTime: arrivalParts.time || "",
         duration: formatDuration(train.durationMin, train.duration),
-        price: Number(train.priceEUR ?? train.price ?? 0),
+        price: Number(train.price ?? train.priceEUR ?? 0),
         trainType: train.trainType || "",
         changes: Number(train.changes ?? 0),
-        availability: mapAvailability(train.seatsAvailable),
+        availability: train.availability || mapAvailability(train.seatsAvailable),
         link: train.link,
-        departure: train.departure || train.departure || "",
-        arrival: train.arrival || train.arrival || "",
+        departure: train.departure || "",
+        arrival: train.arrival || "",
       };
     });
 
@@ -176,15 +174,12 @@ router.get("/flights", async (req: Request, res: Response) => {
     }
 
     console.log(`🔍 Ricerca voli nuova: ${fromInput} → ${toInput} (${datePrefix}) data: ${new Date().toISOString()}`);
-    
-    const { getCollection } = await import("../config/database");
-    const flightsCollection = getCollection("Flights");
-    
+
     const departureRegex = new RegExp(`^${escapeRegex(fromInput)}$`, "i");
     const arrivalRegex = new RegExp(`^${escapeRegex(toInput)}$`, "i");
 
     const dateRegex = new RegExp(`^${escapeRegex(datePrefix)}(?:$|T)`);
-    
+
     // Supporta diversi nomi di campi per aeroporti di partenza/arrivo
     const filter = {
       $and: [
@@ -213,15 +208,15 @@ router.get("/flights", async (req: Request, res: Response) => {
         }
       ]
     };
-    
-    const flights = await flightsCollection.find(filter).toArray();
+
+    const flights = await Flight.find(filter).lean().exec();
     console.log(`✅ Voli trovati per ${datePrefix}: ${flights.length}`);
-    
+
     // Converti i risultati in FlightOffer
     const offers = flights.map((flight: any) => {
       const departureParts = extractDateTimeParts(flight.departureTime || flight.departureDate);
       const arrivalParts = extractDateTimeParts(flight.arrivalTime || flight.arrivalDate);
-      
+
       return {
         airline: flight.airline || flight.company || "",
         flightNumber: flight.flightNumber || "",
@@ -229,13 +224,13 @@ router.get("/flights", async (req: Request, res: Response) => {
         departureTime: departureParts.time || "",
         arrivalTime: arrivalParts.time || "",
         duration: formatDuration(flight.durationMin, flight.duration),
-        price: Number(flight.priceEUR ?? flight.price ?? 0),
+        price: Number(flight.price ?? flight.priceEUR ?? 0),
         stops: Number(flight.stops ?? flight.changes ?? 0),
         cabin: flight.cabin || "",
-        availability: mapAvailability(flight.seatsAvailable ?? flight.availableSeats),
+        availability: flight.availability || mapAvailability(flight.seatsAvailable ?? flight.availableSeats),
         link: flight.link,
-        departure: flight.departureAirport || flight.departure || flight.origin || flight.from || "",
-        arrival: flight.arrivalAirport || flight.arrival || flight.destination || flight.to || "",
+        departure: flight.departure || flight.departureAirport || flight.origin || flight.from || "",
+        arrival: flight.arrival || flight.arrivalAirport || flight.destination || flight.to || "",
       };
     });
 
@@ -262,43 +257,41 @@ router.get("/flights", async (req: Request, res: Response) => {
  */
 router.get("/db-stats", async (req: Request, res: Response) => {
   try {
-    const { getCollection } = await import("../config/database");
-    const trainsCollection = getCollection("Trains");
-    
-    const totalTrains = await trainsCollection.estimatedDocumentCount();
-    
+    const totalTrains = await Train.estimatedDocumentCount();
+
     // Conta treni per Cesena-Brescia
-    const cesenaBresciaCount = await trainsCollection.countDocuments({
+    const cesenaBresciaCount = await Train.countDocuments({
       departure: /^Cesena$/i,
       arrival: /^Brescia$/i
     });
-    
+
     // Conta treni per il 04/03/2026
-    const date040326Count = await trainsCollection.countDocuments({
+    const date040326Count = await Train.countDocuments({
       departureTime: { $regex: "2026-03-04" }
     });
-    
+
     // Trova le tratte più comuni per il 04/03/2026
-    const topRoutesForDate = await trainsCollection.aggregate([
+    const topRoutesForDate = await Train.aggregate([
       { $match: { departureTime: { $regex: "2026-03-04" } } },
       { $group: { _id: { departure: "$departure", arrival: "$arrival" }, count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 10 }
-    ]).toArray();
-    
+    ]).exec();
+
     // Campioni per il 04/03/2026
-    const sampleTrains = await trainsCollection
+    const sampleTrains = await Train
       .find({ departureTime: { $regex: "2026-03-04" } })
       .limit(5)
-      .toArray();
-    
+      .lean()
+      .exec();
+
     // Trova le tratte più comuni (tutte le date)
-    const topRoutes = await trainsCollection.aggregate([
+    const topRoutes = await Train.aggregate([
       { $group: { _id: { departure: "$departure", arrival: "$arrival" }, count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 10 }
-    ]).toArray();
-    
+    ]).exec();
+
     res.json({
       database: "Smartfare",
       collection: "Trains",
@@ -306,22 +299,22 @@ router.get("/db-stats", async (req: Request, res: Response) => {
         totalTrains,
         cesenaBresciaCount,
         date040326Count,
-        topRoutesForDate040326: topRoutesForDate.map(r => ({
+        topRoutesForDate040326: topRoutesForDate.map((r: any) => ({
           from: r._id.departure,
           to: r._id.arrival,
           count: r.count
         })),
-        topRoutes: topRoutes.map(r => ({
+        topRoutes: topRoutes.map((r: any) => ({
           from: r._id.departure,
           to: r._id.arrival,
           count: r.count
         })),
-        sampleTrains: sampleTrains.map(t => ({
+        sampleTrains: sampleTrains.map((t: any) => ({
           departure: t.departure,
           arrival: t.arrival,
           departureTime: t.departureTime,
           company: t.company,
-          price: t.priceEUR
+          price: t.price ?? t.priceEUR
         }))
       }
     });
@@ -343,15 +336,13 @@ router.get("/trains", async (req: Request, res: Response) => {
     const limit = Math.min(100, parseInt(req.query.limit as string) || 50);
     const skip = (page - 1) * limit;
 
-    const { getCollection } = await import("../config/database");
-    const trainsCollection = getCollection("Trains");
-
-    const total = await trainsCollection.countDocuments();
-    const trains = await trainsCollection
+    const total = await Train.countDocuments();
+    const trains = await Train
       .find({})
       .skip(skip)
       .limit(limit)
-      .toArray();
+      .lean()
+      .exec();
 
     const formattedTrains = trains.map((t: any) => ({
       departure: t.departure,
@@ -359,10 +350,10 @@ router.get("/trains", async (req: Request, res: Response) => {
       departureTime: t.departureTime,
       arrivalTime: t.arrivalTime,
       company: t.company,
-      price: t.priceEUR || t.price,
+      price: t.price,
       trainType: t.trainType,
       changes: t.changes,
-      seatsAvailable: t.seatsAvailable,
+      availability: t.availability,
     }));
 
     res.json({

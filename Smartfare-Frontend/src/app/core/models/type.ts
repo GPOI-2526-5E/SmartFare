@@ -15,10 +15,3 @@ export interface Destination {
   category: string;
 }
 
-export interface SearchParams {
-  type: BookingType;
-  from: string;
-  to: string;
-  date: string;
-  passengers: number;
-}
