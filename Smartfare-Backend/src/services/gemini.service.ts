@@ -1,18 +1,17 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { TrainSearchParams } from "../models/train-search-params"
-import { TrainOffer } from "../models/train-offer";
+import { TrainOffer, FlightOffer, Train, Flight } from "../models/database.model";
 import { FlightSearchParams } from "../models/flight-search-params";
-import { FlightOffer } from "../models/flight-offer";
 import { AIRecommendation } from '../models/AI-recommendation';
-import { getCollection, getDatabase } from "../config/database";
 
 import dotenv from "dotenv";
+import { error } from "console";
 
 dotenv.config();
 
 const API_KEY = process.env.GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(API_KEY);
-const GEMINI_MODELS = (process.env.GEMINI_MODEL || "gemini-2.5-flash,gemini-2.5-flash-lite,gemini-2.5-pro,gemini-2-flash")
+const GEMINI_MODELS = (process.env.GEMINI_MODEL || "")
   .split(",")
   .map((m) => m.trim())
   .filter((m) => m.startsWith("gemini-"));
@@ -22,6 +21,7 @@ export class GeminiService {
   private getModel(modelName: string) {
     return genAI.getGenerativeModel({ model: modelName })
   }
+
   private async generateWithFallback(prompt: string) {
     let lastError: unknown;
 
@@ -33,13 +33,9 @@ export class GeminiService {
         lastError = error;
       }
     }
-
     throw lastError;
   }
-  /**
-   * Generic search for offers. Supports `train` (default) and `flight`.
-   * Returns an array of normalized offers (shape may vary depending on mode).
-   */
+
   async searchOffers(params: any, mode: "train" | "flight" = "train"): Promise<any[]> {
     try {
       console.log(`🔌 Avvio query DB (${mode.toUpperCase()})`, {
@@ -50,7 +46,6 @@ export class GeminiService {
       });
 
       const collectionName = mode === "flight" ? "Flights" : "Trains";
-      const collection = getCollection(collectionName);
       const { datePrefix, startDate, endDate } = this.normalizeDateInput(params.date);
       const dateRegex = datePrefix ? new RegExp(`^${this.escapeRegex(datePrefix)}(?:$|T)`) : undefined;
 
@@ -92,18 +87,43 @@ export class GeminiService {
 
       console.log(`🔍 Filtro query ${collectionName}`, finalFilter);
 
-      const docs = await collection.find(finalFilter).toArray();
+      let docs: any[];
+      if (mode === "flight") {
+        docs = await Flight.find(finalFilter).lean().exec();
+      } else {
+        docs = await Train.find(finalFilter).lean().exec();
+      }
 
       console.log(`✅ ${collectionName} trovati`, { count: docs.length });
 
+      // 🔍 DEBUG: Log dei primi documenti RAW dal database
+      if (docs.length > 0) {
+        console.log(`🔍 PRIMO DOCUMENTO RAW DAL DB (${collectionName}):`, JSON.stringify(docs[0], null, 2));
+        console.log(`🔍 CAMPI DATA/ORA DEL PRIMO DOC:`, {
+          departureDate: docs[0].departureDate,
+          departureTime: docs[0].departureTime,
+          arrivalTime: docs[0].arrivalTime,
+          arrivalDate: docs[0].arrivalDate,
+          _id: docs[0]._id,
+          company: docs[0].company,
+          airline: docs[0].airline,
+        });
+      }
+
       if (docs.length === 0) {
         try {
-          const database = getDatabase();
-          const estimatedCount = await collection.estimatedDocumentCount();
-          const sampleDoc = await collection.findOne();
+          let estimatedCount: number;
+          let sampleDoc: any;
+
+          if (mode === "flight") {
+            estimatedCount = await Flight.estimatedDocumentCount();
+            sampleDoc = await Flight.findOne().lean().exec();
+          } else {
+            estimatedCount = await Train.estimatedDocumentCount();
+            sampleDoc = await Train.findOne().lean().exec();
+          }
 
           console.log(`🧪 ${collectionName} diagnostics`, {
-            dbName: database.databaseName,
             collection: collectionName,
             estimatedCount,
             sampleKeys: sampleDoc ? Object.keys(sampleDoc) : [],
@@ -112,11 +132,22 @@ export class GeminiService {
             samplearrival: sampleDoc?.arrival ?? sampleDoc?.arrival,
           });
         } catch (diagError) {
-          console.error(`❌ Errore diagnostica ${collectionName}:`, diagError);
+          throw error(`❌ Errore diagnostica ${collectionName}:`, diagError);
         }
       }
 
       const offers = docs.map((doc: any) => this.mapDocumentToOffer(doc, mode, datePrefix));
+
+      // 🔍 DEBUG: Log delle offerte mappate
+      if (offers.length > 0) {
+        console.log(`🔍 PRIMA OFFERTA MAPPATA:`, JSON.stringify(offers[0], null, 2));
+        console.log(`🔍 CAMPI DATA/ORA DOPO MAPPATURA:`, {
+          departureDate: offers[0].departureDate,
+          departureTime: offers[0].departureTime,
+          arrivalTime: offers[0].arrivalTime,
+        });
+      }
+
       return offers;
     } catch (error) {
       console.error(`Errore ricerca DB (${mode}):`, error);
@@ -132,7 +163,7 @@ export class GeminiService {
   async searchFlightOffers(params: FlightSearchParams): Promise<FlightOffer[]> {
     return (await this.searchOffers(params, "flight")) as FlightOffer[];
   }
-  
+
   async getRecommendations(
     offers: any[],
     userPreferences?: {
@@ -226,8 +257,23 @@ IMPORTANTE: Rispondi SOLO con un JSON valido, senza testo aggiuntivo.
   }
 
   private mapDocumentToOffer(doc: any, mode: "train" | "flight", datePrefix?: string): any {
+    // 🔍 DEBUG: Log del documento prima della mappatura
+    console.log(`🔍 mapDocumentToOffer - Input doc fields:`, {
+      departureDate: doc.departureDate,
+      departureTime: doc.departureTime,
+      arrivalTime: doc.arrivalTime,
+      arrivalDate: doc.arrivalDate,
+      datePrefix,
+    });
+
     const departureParts = this.extractDateTimeParts(doc.departureTime || doc.departureDate);
     const arrivalParts = this.extractDateTimeParts(doc.arrivalTime || doc.arrivalDate);
+
+    // 🔍 DEBUG: Log delle parti estratte
+    console.log(`🔍 mapDocumentToOffer - Extracted parts:`, {
+      departureParts,
+      arrivalParts,
+    });
     const priceInfo = this.extractPriceTrend(doc);
 
     const departure = doc.departure || doc.departureAirport || doc.origin || doc.from || "";
@@ -383,6 +429,5 @@ IMPORTANTE: Rispondi SOLO con un JSON valido, senza testo aggiuntivo.
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 }
-
 
 export const geminiService = new GeminiService();
