@@ -11,6 +11,7 @@ async function startServer() {
         app.listen(PORT, () => {
             console.log(`🗺️ Server avviato su http://localhost:${PORT}`);
         });
+        
     } catch (error) {
         console.error('Errore avvio server:', error);
         await disconnectDatabase();

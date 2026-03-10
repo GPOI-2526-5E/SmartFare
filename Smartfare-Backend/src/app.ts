@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import helmet from "helmet";
 import path from "path";
 import healthRoutes from "./routes/health.route";
 import searchRoutes from "./routes/search.route";

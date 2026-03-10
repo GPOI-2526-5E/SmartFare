@@ -1,8 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { TrainSearchParams } from "../models/train-search-params"
+import { TrainSearchParams, FlightSearchParams } from "../models/search-params";
 import { TrainOffer, FlightOffer, Train, Flight } from "../models/database.model";
-import { FlightSearchParams } from "../models/flight-search-params";
-import { AIRecommendation } from '../models/AI-recommendation';
+import { AIRecommendation } from '../models/api-response';
 
 import dotenv from "dotenv";
 import { error } from "console";

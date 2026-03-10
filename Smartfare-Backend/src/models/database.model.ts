@@ -8,6 +8,7 @@ export interface DatabaseConfig {
 
 export interface FlightOffer {
     airline: string;
+    flightNumber?: string;
     departureDate: string;
     departureTime: string;
     arrivalTime: string;
