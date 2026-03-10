@@ -18,14 +18,7 @@ export class GeminiService {
     return (await searchOffers(params, "flight")) as FlightOffer[];
   }
 
-  async getRecommendations(
-    offers: any[],
-    userPreferences?: {
-      maxPrice?: number;
-      preferredTime?: string;
-      maxChanges?: number;
-    }
-  ): Promise<AIRecommendation> {
+  async getRecommendations(offers: any[], userPreferences: any): Promise<AIRecommendation>{
     return getRecommendations(offers, userPreferences);
   }
 

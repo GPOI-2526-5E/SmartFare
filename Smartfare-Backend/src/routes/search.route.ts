@@ -6,7 +6,7 @@ const router = Router();
 
 router.post("/trains", async (req: Request, res: Response) => {
   try {
-    const { from, to, date, passengers = 1 } = req.body;
+    const { from, to, date, passengers = 1, userPreference } = req.body;
 
     if (!from || !to || !date) {
       return res.status(400).json({
@@ -19,12 +19,13 @@ router.post("/trains", async (req: Request, res: Response) => {
       from,
       to,
       date,
-      passengers: Number(passengers) || 1
+      passengers: Number(passengers) || 1,
+      userPreference
     };
 
     console.log(`🔍 Ricerca nuova: ${from} → ${to} (${date})`);
     const offers = await geminiService.searchTrainOffers(searchParams);
-    const recommendation = await geminiService.getRecommendations(offers);
+    const recommendation = await geminiService.getRecommendations(offers, userPreference);
 
     res.json({
       offers,
@@ -41,7 +42,7 @@ router.post("/trains", async (req: Request, res: Response) => {
 });
 router.post("/flights", async (req: Request, res: Response) => {
   try {
-    const { from, to, date, passengers = 1 } = req.body;
+    const { from, to, date, passengers = 1, userPreference } = req.body;
 
     if (!from || !to || !date) {
       return res.status(400).json({
@@ -55,11 +56,12 @@ router.post("/flights", async (req: Request, res: Response) => {
       to,
       date,
       passengers: Number(passengers) || 1,
+      userPreference
     };
 
     console.log(`🔍 Ricerca voli nuova: ${from} → ${to} (${date})`);
     const offers = await geminiService.searchFlightOffers(searchParams);
-    const recommendation = await geminiService.getRecommendations(offers);
+    const recommendation = await geminiService.getRecommendations(offers, userPreference);
 
     res.json({
       offers,

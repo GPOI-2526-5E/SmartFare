@@ -60,7 +60,7 @@ router.get("/trains", async (req: Request, res: Response) => {
     });
 
     // Ottieni raccomandazioni da Gemini
-    const recommendation = await geminiService.getRecommendations(offers);
+    const recommendation = await geminiService.getRecommendations(offers, {});
 
     res.json({
       source: "live",
@@ -228,8 +228,9 @@ router.get("/flights", async (req: Request, res: Response) => {
       };
     });
 
+    console.log("Generazione della raccomandazione dall'IA");
     // Ottieni raccomandazioni da Gemini
-    const recommendation = await geminiService.getRecommendations(offers);
+    const recommendation = await geminiService.getRecommendations(offers, {});
 
     res.json({
       source: "live",

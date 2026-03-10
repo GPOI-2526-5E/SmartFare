@@ -111,21 +111,9 @@ export function extractPriceTrend(train: any): { previousPrice?: number; priceTr
     return { previousPrice, priceTrend: "stabile" };
 }
 export function mapDocumentToOffer(doc: any, mode: "train" | "flight", datePrefix?: string): any {
-    console.log(`🔍 mapDocumentToOffer - Input doc fields:`, {
-        departureDate: doc.departureDate,
-        departureTime: doc.departureTime,
-        arrivalTime: doc.arrivalTime,
-        arrivalDate: doc.arrivalDate,
-        datePrefix,
-    });
 
     const departureParts = extractDateTimeParts(doc.departureTime || doc.departureDate);
     const arrivalParts = extractDateTimeParts(doc.arrivalTime || doc.arrivalDate);
-
-    console.log(`🔍 mapDocumentToOffer - Extracted parts:`, {
-        departureParts,
-        arrivalParts,
-    });
 
     const priceInfo = extractPriceTrend(doc);
 
