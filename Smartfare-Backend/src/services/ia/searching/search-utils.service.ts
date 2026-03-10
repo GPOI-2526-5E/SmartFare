@@ -40,7 +40,6 @@ export function normalizeDateInput(dateInput: string): {
 
     return { datePrefix, startDate, endDate };
 }
-
 export function extractDateTimeParts(value: unknown): { date?: string; time?: string } {
     if (typeof value === "string") {
         const match = value.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
@@ -63,7 +62,6 @@ export function extractDateTimeParts(value: unknown): { date?: string; time?: st
 
     return {};
 }
-
 export function formatDuration(durationMin?: number, durationText?: string): string {
     if (typeof durationText === "string" && durationText.trim().length > 0) {
         return durationText;
@@ -77,7 +75,6 @@ export function formatDuration(durationMin?: number, durationText?: string): str
 
     return "";
 }
-
 export function mapAvailability(seatsAvailable?: number): string {
     if (typeof seatsAvailable !== "number") {
         return "disponibile";
@@ -93,7 +90,6 @@ export function mapAvailability(seatsAvailable?: number): string {
 
     return "disponibile";
 }
-
 export function extractPriceTrend(train: any): { previousPrice?: number; priceTrend?: string } {
     const currentPrice = Number(train.priceEUR ?? train.price ?? NaN);
     const previousPrice = Number(
@@ -114,7 +110,6 @@ export function extractPriceTrend(train: any): { previousPrice?: number; priceTr
 
     return { previousPrice, priceTrend: "stabile" };
 }
-
 export function mapDocumentToOffer(doc: any, mode: "train" | "flight", datePrefix?: string): any {
     console.log(`🔍 mapDocumentToOffer - Input doc fields:`, {
         departureDate: doc.departureDate,
@@ -168,7 +163,6 @@ export function mapDocumentToOffer(doc: any, mode: "train" | "flight", datePrefi
         cabin: doc.cabin || undefined,
     };
 }
-
 export function calculateOfferScore(offer: any): number {
     let score = 100;
 

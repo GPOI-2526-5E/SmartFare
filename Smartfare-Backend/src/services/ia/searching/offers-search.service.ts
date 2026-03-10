@@ -3,12 +3,6 @@ import { escapeRegex, mapDocumentToOffer, normalizeDateInput } from "./search-ut
 
 export async function searchOffers(params: any, mode: "train" | "flight" = "train"): Promise<any[]> {
     try {
-        console.log(`🔌 Avvio query DB (${mode.toUpperCase()})`, {
-            from: params.from,
-            to: params.to,
-            date: params.date,
-            passengers: params.passengers || 1,
-        });
 
         const collectionName = mode === "flight" ? "Flights" : "Trains";
         const { datePrefix, startDate, endDate } = normalizeDateInput(params.date);
