@@ -43,12 +43,12 @@ export class SidebarComponent {
 
   navigation = [
     { label: 'Home', path: '/', icon: 'bi-house-fill' },
-    { label: 'Esplora', path: '/explore', icon: 'bi-compass-fill' }
+    { label: 'Pianifica', path: '/home', icon: 'bi-map-fill' }
   ];
 
   secondary = [
-    { label: 'settings', path: '/settings', icon: 'bi-gear-fill' },
-    { label: 'Aiuto & Support', path: '/support', icon: 'bi-question-circle-fill' },
-    { label: 'Cronologia', path: '/history', icon: 'bi-clock-history' }
+    { label: 'Accedi', path: '/login', icon: 'bi-box-arrow-in-right' },
+    { label: 'Registrati', path: '/register', icon: 'bi-person-plus-fill' },
+    { label: 'Inizio', path: '/', icon: 'bi-arrow-up-left-circle-fill' }
   ];
 }

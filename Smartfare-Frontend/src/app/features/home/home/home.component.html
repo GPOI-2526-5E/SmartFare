@@ -1,64 +1,72 @@
-<div class="pb-20">
-  <!-- Hero Section -->
-  <section
-    class="relative h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden transition-all duration-300"
-    [class.hero-expanded-open]="sidebarService.isSidebarOpen()"
-    [class.hero-expanded-closed]="!sidebarService.isSidebarOpen()">
-    @for (img of images; track $index; let i = $index) {
-      <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out" [class.opacity-100]="i === currentImage()" [class.opacity-0]="i !== currentImage()">
-        <img [src]="img" class="w-full h-full object-cover scale-105 animate-slow-zoom" alt="Travel" />
-        <div class="absolute inset-0 bg-black/30"></div>
-      </div>
-    }
+<div class="home-view">
+  <section class="hero" [class.hero-wide]="sidebarService.isSidebarOpen()"
+    [class.hero-narrow]="!sidebarService.isSidebarOpen()">
+    <div class="hero-media" aria-hidden="true">
+      @for (img of images; track $index; let i = $index) {
+      <img [src]="img" [class.active]="i === currentImage()" [alt]="'Destinazione ' + i" />
+      }
+      <span class="texture"></span>
+    </div>
 
-    <div class="relative z-10 w-full max-w-5xl px-6 flex flex-col items-center text-center">
-      <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-        Esplora il mondo, <br class="hidden md:block" />
-        <span class="text-blue-400">senza pensieri.</span>
-      </h1>
-      <p class="text-lg md:text-xl text-white/90 mb-10 max-w-2xl drop-shadow-md">
-        Pianifica il tuo prossimo viaggio con facilità. Voli, treni e hotel ai migliori prezzi garantiti.
+    <div class="hero-content">
+      <p class="hero-kicker">New route designer</p>
+      <h2>
+        Cambia ritmo al tuo viaggio.
+        <span>Progetta in pochi click.</span>
+      </h2>
+      <p class="hero-copy">
+        Un'interfaccia pensata come uno studio creativo: scegli servizio, imposta le tappe e ottieni risultati chiari
+        senza caos.
       </p>
 
-      <!-- Services Selector -->
-      <div class="flex gap-3 mb-8 flex-wrap justify-center">
+      <div class="service-switch" role="tablist" aria-label="Selezione servizio">
         @for (service of services; track service.id) {
-        <button
-          (click)="selectService(service.id)"
-          [class.active]="activeTab() === service.id"
-          class="service-btn">
+        <button type="button" (click)="selectService(service.id)" [class.active]="activeTab() === service.id"
+          class="service-pill">
           <i [class]="'bi ' + service.icon"></i>
-          <span>{{service.label}}</span>
+          <span>{{ service.label }}</span>
         </button>
         }
       </div>
 
       <app-booking-form></app-booking-form>
     </div>
+
+    <aside class="hero-metrics">
+      <article>
+        <strong>+180</strong>
+        <span>rotte tracciate oggi</span>
+      </article>
+      <article>
+        <strong>94%</strong>
+        <span>utenti soddisfatti</span>
+      </article>
+      <article>
+        <strong>24/7</strong>
+        <span>supporto smart</span>
+      </article>
+    </aside>
   </section>
 
-  <!-- Destinations -->
-  <section class="max-w-7xl mx-auto px-6 mt-20">
-    <div class="flex items-center justify-between mb-10">
-      <h2 class="text-3xl font-bold text-slate-800">Mete popolari</h2>
-      <button class="text-blue-600 font-semibold hover:underline">Vedi tutte</button>
+  <section class="destinations">
+    <div class="section-head">
+      <h3>Collezione destinazioni</h3>
+      <p>Luoghi selezionati per il tuo prossimo itinerario premium.</p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="destination-grid">
       @for (dest of destinations; track dest.id) {
-      <div class="group bg-white rounded-3xl overflow-hidden border border-slate-100 transition-all hover:shadow-2xl hover:-translate-y-2">
-        <div class="relative h-64 overflow-hidden">
-          <img [src]="dest.image" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" [alt]="dest.name" [title]="dest.name + ', ' + dest.country" />
-        </div>
-        <div class="p-6">
-          <h3 class="font-bold text-xl text-slate-800">{{dest.name}}</h3>
-          <p class="text-slate-500 text-sm mt-1">{{dest.country}}</p>
-          <div class="flex items-center justify-between mt-4">
-            <span class="text-blue-600 font-bold text-lg">€{{dest.price}}</span>
-            <button class="bg-slate-50 text-slate-800 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-600 hover:text-white transition-colors">Dettagli</button>
+      <article class="destination-card">
+        <img [src]="dest.image" [alt]="dest.name" [title]="dest.name + ', ' + dest.country" />
+        <div class="card-meta">
+          <div>
+            <h4>{{ dest.name }}</h4>
+            <span>{{ dest.country }}</span>
           </div>
+          <strong>da €{{ dest.price }}</strong>
         </div>
-      </div>
+        <button type="button">Scopri esperienza</button>
+      </article>
       }
     </div>
   </section>

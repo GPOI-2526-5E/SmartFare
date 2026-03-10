@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import { DatabaseConfig } from "../models/database.model";
 import dotenv from "dotenv";
 
-
 dotenv.config();
 
 const getDatabaseConfig = (): DatabaseConfig => {
+
     const mongodbUri = process.env.MONGODB_URI;
     const mongodbDatabase = process.env.MONGODB_DATABASE || "Smartfare";
 
@@ -26,9 +26,6 @@ const getDatabaseConfig = (): DatabaseConfig => {
     };
 };
 
-/**
- * Connessione a MongoDB Atlas con Mongoose
- */
 export async function connectDatabase(): Promise<typeof mongoose> {
     try {
         if (mongoose.connection.readyState === 1) {
@@ -51,9 +48,6 @@ export async function connectDatabase(): Promise<typeof mongoose> {
     }
 }
 
-/**
- * Otiene l'istanza del database
- */
 export function getDatabase() {
     if (mongoose.connection.readyState !== 1) {
         throw new Error("Database non connesso.");
@@ -61,9 +55,6 @@ export function getDatabase() {
     return mongoose.connection.db;
 }
 
-/**
- * Disconnessione dal database
- */
 export async function disconnectDatabase(): Promise<void> {
     try {
         if (mongoose.connection.readyState === 1) {
@@ -76,9 +67,6 @@ export async function disconnectDatabase(): Promise<void> {
     }
 }
 
-/**
- * Helper per ottenere una collection
- */
 export function getCollection(collectionName: string) {
     const database = getDatabase();
     if (!database) {

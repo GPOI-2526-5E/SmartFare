@@ -1,25 +1,23 @@
-<div class="app-container" [class.sidebar-collapsed]="!isSidebarOpen() && !isMobile()">
-  <!-- Header mobile con hamburger menu -->
+<div class="shell" [class.sidebar-collapsed]="!isSidebarOpen() && !isMobile()">
   @if (isMobile()) {
-    <header class="mobile-header">
-      <button class="hamburger-btn" (click)="toggleSidebar()" type="button" aria-label="Toggle menu">
-        <i class="bi" [class.bi-list]="!isSidebarOpen()" [class.bi-x-lg]="isSidebarOpen()"></i>
-      </button>
-      <div class="mobile-logo">
-        <i class="bi bi-airplane-engines"></i>
-        <span>SmartFare</span>
-      </div>
-    </header>
+  <header class="mobile-bar">
+    <button class="menu-btn" (click)="toggleSidebar()" type="button" aria-label="Apri menu">
+      <i class="bi" [class.bi-list]="!isSidebarOpen()" [class.bi-x-lg]="isSidebarOpen()"></i>
+    </button>
+    <div class="brand-mini">
+      <span class="brand-mini-kicker">SmartFare</span>
+      <strong>Travel Studio</strong>
+    </div>
+  </header>
   }
 
-  <!-- Backdrop per chiudere la sidebar SOLO su mobile -->
   @if (isSidebarOpen() && isMobile()) {
-    <div class="sidebar-backdrop" (click)="closeSidebarOnMobile()"></div>
+  <button class="overlay" type="button" (click)="closeSidebarOnMobile()" aria-label="Chiudi menu"></button>
   }
 
   <app-sidebar></app-sidebar>
 
-  <main class="main-content">
+  <main class="workspace">
     <router-outlet></router-outlet>
   </main>
 </div>

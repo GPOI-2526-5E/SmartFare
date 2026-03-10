@@ -1,0 +1,52 @@
+.auth-wrap {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+}
+
+.auth-card {
+  width: min(460px, 100%);
+  border-radius: 24px;
+  padding: 1.4rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: #fff;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #b45309;
+}
+
+h2 {
+  margin: 0;
+}
+
+label {
+  display: grid;
+  gap: 0.32rem;
+}
+
+label span {
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+input {
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  padding: 0.7rem;
+}
+
+button {
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: linear-gradient(120deg, #f59e0b 0%, #facc15 100%);
+  color: #1f2937;
+  font-weight: 700;
+}
