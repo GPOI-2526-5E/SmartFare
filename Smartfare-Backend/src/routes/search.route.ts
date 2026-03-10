@@ -5,15 +5,10 @@ import { FlightSearchParams } from "../models/flight-search-params";
 
 const router = Router();
 
-/**
- * POST /api/search - Cerca biglietti treno
- * Body: { from, to, date, passengers }
- */
 router.post("/trains", async (req: Request, res: Response) => {
   try {
     const { from, to, date, passengers = 1 } = req.body;
 
-    // Validazione
     if (!from || !to || !date) {
       return res.status(400).json({
         error: "Parametri mancanti",
@@ -28,15 +23,11 @@ router.post("/trains", async (req: Request, res: Response) => {
       passengers: Number(passengers) || 1
     };
 
-    // Cerca con Gemini
     console.log(`🔍 Ricerca nuova: ${from} → ${to} (${date})`);
     const offers = await geminiService.searchTrainOffers(searchParams);
-
-    // Ottieni raccomandazioni
     const recommendation = await geminiService.getRecommendations(offers);
 
     res.json({
-      source: "live",
       offers,
       recommendation,
       searchedAt: new Date()
@@ -50,16 +41,10 @@ router.post("/trains", async (req: Request, res: Response) => {
   }
 });
 
-
-/**
- * POST /api/search/flights - Cerca biglietti aerei
- * Body: { from, to, date, passengers, cabin? }
- */
 router.post("/flights", async (req: Request, res: Response) => {
   try {
-    const { from, to, date, passengers = 1, cabin } = req.body;
+    const { from, to, date, passengers = 1 } = req.body;
 
-    // Validazione minima
     if (!from || !to || !date) {
       return res.status(400).json({
         error: "Parametri mancanti",
@@ -72,7 +57,6 @@ router.post("/flights", async (req: Request, res: Response) => {
       to,
       date,
       passengers: Number(passengers) || 1,
-      cabin
     };
 
     console.log(`🔍 Ricerca voli nuova: ${from} → ${to} (${date})`);
@@ -80,7 +64,6 @@ router.post("/flights", async (req: Request, res: Response) => {
     const recommendation = await geminiService.getRecommendations(offers);
 
     res.json({
-      source: "live",
       offers,
       recommendation,
       searchedAt: new Date()

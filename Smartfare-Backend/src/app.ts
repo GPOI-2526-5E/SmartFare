@@ -28,6 +28,6 @@ export function createApp() {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
   });
-
+  
   return app;
 }

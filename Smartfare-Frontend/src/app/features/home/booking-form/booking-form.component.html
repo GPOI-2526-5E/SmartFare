@@ -1,58 +1,41 @@
 <div class="glass-effect rounded-3xl shadow-2xl p-2 md:p-4 w-full text-left">
-  <div class="flex gap-2 mb-4 p-1">
-    @for (type of bookingTypes; track type.id) {
-    <button
-      (click)="setActiveType(type.id)"
-      [class.active]="activeType() === type.id"
-      class="flex items-center gap-2 px-6 py-2.5 rounded-2xl transition-all duration-300 font-medium text-slate-600 hover:bg-white/50"
-      [class.bg-white]="activeType() === type.id"
-      [class.text-blue-600]="activeType() === type.id"
-      [class.shadow-lg]="activeType() === type.id">
-      <i [class]="type.icon" class="text-lg"></i>
-      <span class="hidden sm:inline">{{type.label}}</span>
-    </button>
-    }
+  <!-- Titolo dinamico -->
+  <div class="px-4 pt-2 pb-3">
+    <h2 class="text-2xl md:text-3xl font-bold text-slate-800">
+      {{currentConfig.title}}
+    </h2>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
     <div class="space-y-1">
       <label class="text-xs font-semibold text-slate-500 uppercase ml-1 flex items-center gap-1">
         <i class="bi bi-geo-alt"></i>
-        Da dove?
+        {{currentConfig.fromLabel}}
       </label>
-      <input
-        type="text"
-        placeholder="Città di partenza"
-        [(ngModel)]="from"
+      <input type="text" [placeholder]="currentConfig.fromLabel" [(ngModel)]="from"
         class="w-full px-4 py-4 rounded-2xl border-none bg-slate-100/50 focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all outline-none">
     </div>
     <div class="space-y-1">
       <label class="text-xs font-semibold text-slate-500 uppercase ml-1 flex items-center gap-1">
         <i class="bi bi-pin-map"></i>
-        Per dove?
+        {{currentConfig.toLabel}}
       </label>
-      <input
-        type="text"
-        placeholder="Città di arrivo"
-        [(ngModel)]="to"
+      <input type="text" [placeholder]="currentConfig.toLabel" [(ngModel)]="to"
         class="w-full px-4 py-4 rounded-2xl border-none bg-slate-100/50 focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all outline-none">
     </div>
     <div class="space-y-1">
       <label class="text-xs font-semibold text-slate-500 uppercase ml-1 flex items-center gap-1">
         <i class="bi bi-calendar-event"></i>
-        Quando?
+        {{currentConfig.dateLabel}}
       </label>
-      <input
-        type="date"
-        [(ngModel)]="date"        title="Seleziona la data di partenza"        class="w-full px-4 py-4 rounded-2xl border-none bg-slate-100/50 focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+      <input type="date" [(ngModel)]="date" [title]="currentConfig.dateLabel"
+        class="w-full px-4 py-4 rounded-2xl border-none bg-slate-100/50 focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all outline-none">
     </div>
     <div class="flex items-end">
-      <button
-        (click)="search()"
-        [disabled]="!from() || !to() || !date()"
+      <button (click)="search()" [disabled]="!from() || !to() || !date()"
         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
         <i class="bi bi-search"></i>
-        <span>Cerca Ora</span>
+        <span>{{currentConfig.buttonText}}</span>
       </button>
     </div>
   </div>

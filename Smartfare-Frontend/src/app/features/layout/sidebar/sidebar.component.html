@@ -1,0 +1,75 @@
+<aside class="sidebar-container" [class.collapsed]="!isSidebarOpen()">
+  <!-- Header con logo e brand -->
+  <div class="sidebar-header">
+    <div class="logo-wrapper">
+      <button class="logo-icon" (click)="toggleSidebar()" type="button" title="Toggle sidebar">
+        <i class="bi bi-airplane-engines"></i>
+      </button>
+      <div class="logo-text">
+        <h1 class="brand-name">SmartFare</h1>
+        <p class="brand-tagline">Travel Smart</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu principale -->
+  <nav class="sidebar-nav">
+    <!-- Navigazione principale -->
+    <div class="nav-section">
+      <div class="section-title">
+        <i class="bi bi-compass"></i>
+        <span>Navigazione</span>
+      </div>
+
+      @for (item of navigation; track $index) {
+      <a [routerLink]="[item.path]" class="nav-item" [attr.data-label]="item.label">
+        <div class="nav-item-content">
+          <div class="nav-icon">
+            <i [class]="'bi ' + item.icon"></i>
+          </div>
+          <span class="nav-label">{{item.label}}</span>
+        </div>
+        <div class="nav-item-bg"></div>
+      </a>
+      }
+    </div>
+
+    <!-- Menu secondario -->
+    <div class="nav-section mt-4">
+      <div class="section-title">
+        <i class="bi bi-sliders"></i>
+        <span>Altro</span>
+      </div>
+
+      @for (item of secondary; track $index) {
+      <a [routerLink]="[item.path]" class="nav-item" [attr.data-label]="item.label">
+        <div class="nav-item-content">
+          <div class="nav-icon">
+            <i [class]="'bi ' + item.icon"></i>
+          </div>
+          <span class="nav-label">{{item.label}}</span>
+        </div>
+        <div class="nav-item-bg"></div>
+      </a>
+      }
+    </div>
+  </nav>
+
+  <!-- Footer con azioni utente -->
+  <div class="sidebar-footer">
+    <div class="user-actions">
+      <button class="btn-action btn-login" data-label="Accedi">
+        <i class="bi bi-box-arrow-in-right"></i>
+        <span>Accedi</span>
+      </button>
+      <button [routerLink]="['/register']" class="btn-action btn-register" data-label="Registrati">
+        <i class="bi bi-person-plus-fill"></i>
+        <span>Registrati</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Decorazioni -->
+  <div class="decoration decoration-1"></div>
+  <div class="decoration decoration-2"></div>
+</aside>

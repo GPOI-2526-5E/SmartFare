@@ -1,7 +1,7 @@
 import { createApp } from './src/app';
 import { connectDatabase, disconnectDatabase } from './src/config/database';
 
-const PORT = process.env.PORT || 3007; 
+const PORT = process.env.PORT || 3000; 
 const app = createApp();
 
 async function startServer() {
@@ -9,7 +9,7 @@ async function startServer() {
         await connectDatabase();
 
         app.listen(PORT, () => {
-            console.log(`🚂 Server listening on port ${PORT}`);
+            console.log(`🗺️ Server avviato su http://localhost:${PORT}`);
         });
     } catch (error) {
         console.error('Errore avvio server:', error);

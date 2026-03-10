@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './components/home/home.component';
-import { SearchResults } from './components/search-results/search-results';
+import { HomeComponent } from './features/home/home/home.component';
 
 export const APP_ROUTES: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'search', component: SearchResults },
+  { path: "home", component: HomeComponent },
   { path: '**', redirectTo: '' }
 ];
