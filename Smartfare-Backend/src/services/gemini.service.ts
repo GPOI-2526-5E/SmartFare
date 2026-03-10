@@ -20,7 +20,6 @@ export class GeminiService {
   private getModel(modelName: string) {
     return genAI.getGenerativeModel({ model: modelName })
   }
-
   private async generateWithFallback(prompt: string) {
     let lastError: unknown;
 
