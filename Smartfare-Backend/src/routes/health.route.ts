@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { geminiService } from "../services/gemini.service";
+import { geminiService } from "../services/ia/gemini.service";
 import { Train, Flight } from "../models/database.model";
 
 const router = Router();

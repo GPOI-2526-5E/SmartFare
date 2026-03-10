@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { geminiService } from "../services/gemini.service";
+import { geminiService } from "../services/ia/gemini.service";
 import { TrainSearchParams, FlightSearchParams } from "../models/search-params";
 
 const router = Router();
@@ -39,7 +39,6 @@ router.post("/trains", async (req: Request, res: Response) => {
     });
   }
 });
-
 router.post("/flights", async (req: Request, res: Response) => {
   try {
     const { from, to, date, passengers = 1 } = req.body;
