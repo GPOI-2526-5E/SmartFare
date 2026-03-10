@@ -1,6 +1,6 @@
 import { AIRecommendation } from "../../models/api-response";
 import { generateWithFallback } from "./gemini-models.service";
-import { calculateOfferScore } from "./offers.service";
+import { calculateOfferScore } from "./searching/search-utils.service";
 
 export async function getRecommendations(
     offers: any[],

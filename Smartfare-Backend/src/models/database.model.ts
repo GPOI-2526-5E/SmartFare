@@ -8,7 +8,6 @@ export interface DatabaseConfig {
 
 export interface FlightOffer {
     airline: string;
-    flightNumber?: string;
     departureDate: string;
     departureTime: string;
     arrivalTime: string;
@@ -69,7 +68,6 @@ const TrainSchema = new Schema(
 const FlightSchema = new Schema(
     {
         airline: { type: String, required: true },
-        flightNumber: { type: String, required: true },
         departure: { type: String, required: true },
         arrival: { type: String, required: true },
         departureDate: { type: String, required: true },

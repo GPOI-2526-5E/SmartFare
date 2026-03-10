@@ -1,7 +1,7 @@
 import { TrainSearchParams, FlightSearchParams } from "../../models/search-params";
 import { TrainOffer, FlightOffer } from "../../models/database.model";
 import { AIRecommendation } from '../../models/api-response';
-import { searchOffers } from "./offers.service";
+import { searchOffers } from "./searching/offers-search.service";
 import { getRecommendations } from "./recommendations.service";
 
 export class GeminiService {
