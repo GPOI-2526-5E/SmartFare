@@ -67,12 +67,12 @@ export async function disconnectDatabase(): Promise<void> {
     }
 }
 
-export function getCollection(collectionName: string) {
+export function getCollection<TSchema extends mongoose.mongo.Document = mongoose.mongo.Document>(collectionName: string): mongoose.mongo.Collection<TSchema> {
     const database = getDatabase();
     if (!database) {
         throw new Error("Database non disponibile");
     }
-    return database.collection(collectionName);
+    return database.collection<TSchema>(collectionName);
 }
 
 export function isDatabaseConnected(): boolean {

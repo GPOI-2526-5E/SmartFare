@@ -3,6 +3,7 @@ import cors from "cors";
 import path from "path";
 import healthRoutes from "./routes/health.route";
 import searchRoutes from "./routes/search.route";
+import authRoutes from "./routes/auth.route";
 
 export function createApp() {
   const app = express();
@@ -26,6 +27,7 @@ export function createApp() {
   // API Routes
   app.use("/api/health", healthRoutes);
   app.use("/api/search", searchRoutes);
+  app.use("/auth", authRoutes);
 
   // Error handling
   app.use((err: any, req: any, res: any, next: any) => {

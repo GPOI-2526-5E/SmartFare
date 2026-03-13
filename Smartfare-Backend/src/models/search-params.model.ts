@@ -3,6 +3,7 @@ export interface BaseSearchParams {
     to: string;
     date: string;
     passengers?: number;
+    userPreference?: string;
 }
 export interface TrainSearchParams extends BaseSearchParams {
     trainType?: string; // es: "Frecciarossa", "Frecciargento", "Regionale"
