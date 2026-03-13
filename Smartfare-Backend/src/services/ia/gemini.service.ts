@@ -1,6 +1,6 @@
-import { TrainSearchParams, FlightSearchParams } from "../../models/search-params";
+import { TrainSearchParams, FlightSearchParams } from "../../models/search-params.model";
 import { TrainOffer, FlightOffer } from "../../models/database.model";
-import { AIRecommendation } from '../../models/api-response';
+import { AIRecommendation } from '../../models/api-response.model';
 import { searchOffers } from "./searching/offers-search.service";
 import { getRecommendations } from "./recommendations.service";
 
@@ -18,7 +18,7 @@ export class GeminiService {
     return (await searchOffers(params, "flight")) as FlightOffer[];
   }
 
-  async getRecommendations(offers: any[], userPreferences: any): Promise<AIRecommendation>{
+  async getRecommendations(offers: any[], userPreferences: any): Promise<AIRecommendation> {
     return getRecommendations(offers, userPreferences);
   }
 

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { geminiService } from "../services/ia/gemini.service";
-import { TrainSearchParams, FlightSearchParams } from "../models/search-params";
+import { TrainSearchParams, FlightSearchParams } from "../models/search-params.model";
 
 const router = Router();
 

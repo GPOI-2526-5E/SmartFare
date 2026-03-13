@@ -1,4 +1,4 @@
-import { AIRecommendation } from "../../models/api-response";
+import { AIRecommendation } from "../../models/api-response.model";
 import { generateWithFallback } from "./gemini-models.service";
 import { calculateOfferScore } from "./searching/search-utils.service";
 
