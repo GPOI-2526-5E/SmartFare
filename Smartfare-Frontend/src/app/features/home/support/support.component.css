@@ -1,0 +1,40 @@
+.support-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.support-header h1 {
+  font-size: 2.2rem;
+  margin: 0 0 0.75rem;
+  color: #0f172a;
+}
+
+.support-header p {
+  margin: 0 0 1.5rem;
+  color: rgba(15, 23, 42, 0.75);
+  line-height: 1.6;
+}
+
+.support-content article {
+  margin-bottom: 1.75rem;
+  padding: 1.4rem;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.support-content h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.support-content a {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.support-content a:hover {
+  text-decoration: underline;
+}

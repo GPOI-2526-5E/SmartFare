@@ -1,0 +1,41 @@
+.about-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.about-header h1 {
+  font-size: 2.2rem;
+  margin: 0 0 0.75rem;
+  color: #0f172a;
+}
+
+.about-header p {
+  margin: 0 0 1.5rem;
+  color: rgba(15, 23, 42, 0.75);
+  line-height: 1.6;
+}
+
+.about-content article {
+  margin-bottom: 1.75rem;
+  padding: 1.4rem;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.about-content h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.about-content ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.about-content ul li {
+  margin-bottom: 0.5rem;
+  color: rgba(15, 23, 42, 0.75);
+}

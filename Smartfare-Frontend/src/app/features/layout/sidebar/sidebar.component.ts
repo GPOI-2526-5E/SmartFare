@@ -49,6 +49,6 @@ export class SidebarComponent {
   secondary = [
     { label: 'Accedi', path: '/login', icon: 'bi-box-arrow-in-right' },
     { label: 'Registrati', path: '/register', icon: 'bi-person-plus-fill' },
-    { label: 'Inizio', path: '/', icon: 'bi-arrow-up-left-circle-fill' }
+    { label: 'Supporto', path: '/support', icon: 'bi-life-preserver' }
   ];
 }

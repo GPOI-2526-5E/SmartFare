@@ -11,7 +11,7 @@
   height: 100vh;
   padding: 1.2rem 1rem;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto auto;
   gap: 0.9rem;
   color: #f8fafc;
   border-right: 1px solid rgba(250, 204, 21, 0.15);
@@ -99,6 +99,34 @@
 .meta small {
   font-size: 0.74rem;
   color: rgba(226, 232, 240, 0.7);
+}
+
+.about-section {
+  display: block;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 16px;
+  padding: 0.75rem;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.about-section:hover {
+  background: rgba(51, 65, 85, 0.6);
+}
+
+.about-section h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fbbf24;
+}
+
+.about-section p {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: rgba(241, 245, 249, 0.88);
 }
 
 .rail-nav {
@@ -190,13 +218,26 @@
 .rail.collapsed .brand-stack,
 .rail.collapsed .meta,
 .rail.collapsed .nav-link span,
-.rail.collapsed .action span {
+.rail.collapsed .action span,
+.rail.collapsed .about-section {
   display: none;
 }
 
 .rail.collapsed .profile-chip {
   justify-content: center;
   padding: 0.5rem;
+}
+
+.rail.collapsed .rail-head {
+  justify-content: center;
+}
+
+.rail.collapsed .nav-link {
+  justify-content: center;
+}
+
+.rail.collapsed .rail-foot {
+  place-items: center;
 }
 
 .rail.collapsed .nav-link,

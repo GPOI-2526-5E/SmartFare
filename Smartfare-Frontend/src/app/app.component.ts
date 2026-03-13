@@ -1,12 +1,13 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SidebarComponent } from './features/layout/sidebar/sidebar.component';
+import { FooterComponent } from './shared/footer/footer.component';
 import { SidebarService } from './core/layout/sidebar.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, SidebarComponent],
+  imports: [RouterModule, SidebarComponent, FooterComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

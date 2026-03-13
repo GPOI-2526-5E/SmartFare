@@ -37,8 +37,13 @@
     }
   </nav>
 
+  <a class="about-section" [routerLink]="['/about']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <h3>Chi siamo</h3>
+    <p>SmartFare è il tuo compagno ideale per organizzare viaggi urbani efficienti e convenienti.</p>
+  </a>
+
   <footer class="rail-foot">
-    <button type="button" class="action ghost">
+    <button [routerLink]="['/login']" type="button" class="action ghost">
       <i class="bi bi-box-arrow-in-right"></i>
       <span>Accedi</span>
     </button>
