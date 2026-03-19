@@ -1,20 +1,6 @@
-<div class="shell" [class.sidebar-collapsed]="!isSidebarOpen() && !isMobile()">
-  @if (isMobile()) {
-  <header class="mobile-bar">
-    <button class="menu-btn" (click)="toggleSidebar()" type="button" aria-label="Apri menu">
-      <i class="bi" [class.bi-list]="!isSidebarOpen()" [class.bi-x-lg]="isSidebarOpen()"></i>
-    </button>
-    <div class="brand-mini">
-      <span class="brand-mini-kicker">SmartFare</span>
-      <strong>Travel Studio</strong>
-    </div>
-  </header>
-  }
-
-  @if (isSidebarOpen() && isMobile()) {
-  <button class="overlay" type="button" (click)="closeSidebarOnMobile()" aria-label="Chiudi menu"></button>
-  }
-
+<app-alert></app-alert>
+<app-loader [show]="isLoading()" [message]="loaderMessage()"></app-loader>
+<div class="shell" [class.sidebar-collapsed]="!isSidebarOpen()">
   <app-sidebar></app-sidebar>
 
   <div class="content">

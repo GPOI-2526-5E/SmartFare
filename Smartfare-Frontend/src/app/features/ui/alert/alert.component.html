@@ -1,0 +1,8 @@
+@if (visible()) {
+<div class="alert-modal fade-in" [ngClass]="type()">
+  <div class="game-alert-content">
+    <button class="cdanger-btn" aria-label="Chiudi" (click)="close()">&times;</button>
+    <div class="game-alert-message">{{ message() }}</div>
+  </div>
+</div>
+}
