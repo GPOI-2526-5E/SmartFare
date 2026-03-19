@@ -1,3 +1,19 @@
+@if (isMobile()) {
+<header class="mobile-bar">
+  <button class="menu-btn" (click)="toggleSidebar()" type="button" aria-label="Apri menu">
+    <i class="bi" [class.bi-list]="!isSidebarOpen()" [class.bi-x-lg]="isSidebarOpen()"></i>
+  </button>
+  <div class="brand-mini">
+    <span class="brand-mini-kicker">SmartFare</span>
+    <strong>Travel Studio</strong>
+  </div>
+</header>
+}
+
+@if (isSidebarOpen() && isMobile()) {
+<button class="overlay" type="button" (click)="toggleSidebar()" aria-label="Chiudi menu"></button>
+}
+
 <aside class="rail" [class.collapsed]="!isSidebarOpen()">
   <header class="rail-head">
     <button class="fold-btn" (click)="toggleSidebar()" type="button" title="Espandi o chiudi menu">
@@ -37,7 +53,8 @@
     }
   </nav>
 
-  <a class="about-section" [routerLink]="['/about']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+  <a class="about-section" [routerLink]="['/about']" routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }">
     <h3>Chi siamo</h3>
     <p>SmartFare è il tuo compagno ideale per organizzare viaggi urbani efficienti e convenienti.</p>
   </a>

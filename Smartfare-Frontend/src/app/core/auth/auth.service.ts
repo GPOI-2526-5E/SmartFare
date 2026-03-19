@@ -34,7 +34,8 @@ export class AuthService {
     } catch (error: any) {
       console.error("Login error:", error);
 
-      let errorMessage = 'Errore durante il login : ' + error.message;
+      const serverMessage = error?.error?.message || error?.error?.error;
+      const errorMessage = serverMessage || ('Errore durante il login: ' + (error?.message || 'Errore sconosciuto'));
 
       return {
         success: false,

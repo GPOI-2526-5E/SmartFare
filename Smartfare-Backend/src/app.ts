@@ -12,7 +12,7 @@ export function createApp() {
   app.use(express.json());
 
   app.use("/", (req, res, next) => {
-    console.log("RICHIESTA: " + req.method + " - " + req.url);
+    console.log("RICHIESTA: " + req.method + " - " + req.url + " - " + req.body || {});
     next();
   });
 
