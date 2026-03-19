@@ -4,9 +4,10 @@
   place-items: center;
   padding: 2rem 1rem;
   background:
+    linear-gradient(rgba(15, 23, 42, 0.66), rgba(15, 23, 42, 0.66)),
     radial-gradient(circle at top left, rgba(245, 158, 11, 0.18), transparent 55%),
     radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.15), transparent 55%),
-    linear-gradient(160deg, #0b1220 0%, #0f172a 45%, #1e293b 100%);
+    url('/img/lf-franciz-B6_-i-tzKXg-unsplash.jpg') center/cover no-repeat;
 }
 
 .auth-card {
@@ -18,6 +19,18 @@
   backdrop-filter: blur(12px);
   display: grid;
   gap: 0.9rem;
+  animation: fade-up 0.8s ease;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .auth-header {
