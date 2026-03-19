@@ -7,15 +7,15 @@
 
     <label>
       <span>Email</span>
-      <input type="email" placeholder="nome@email.it" />
+      <input type="email" placeholder="nome@email.it" [(ngModel)]="email" />
     </label>
 
     <label>
       <span>Password</span>
-      <input type="password" placeholder="Inserisci password" />
+      <input type="password" placeholder="Inserisci password" [(ngModel)]="password" />
     </label>
 
-    <button type="button">Entra ora</button>
+    <button type="button" (click)="Login()">Entra ora</button>
 
     <p class="auth-foot">
       Non hai ancora un account? <a routerLink="/register">Registrati</a>

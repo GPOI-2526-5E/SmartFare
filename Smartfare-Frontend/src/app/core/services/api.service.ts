@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { AuthResponse } from '../models/response.model';
-import { LOADER_MESSAGE } from '../interceptors/loader-context.token';
 
 @Injectable({
   providedIn: 'root',
@@ -15,8 +14,6 @@ export class ApiService {
   constructor(private http: HttpClient) { };
 
   LoginRequest(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.AUTH_URL + "/login", { email, password }, {
-      context: new HttpContext().set(LOADER_MESSAGE, 'Verifica credenziali...')
-    });
+    return this.http.post<AuthResponse>(this.AUTH_URL + "/login", { email, password });
   }
 }

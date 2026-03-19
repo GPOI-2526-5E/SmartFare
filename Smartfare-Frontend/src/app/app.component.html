@@ -2,12 +2,10 @@
 <app-loader [show]="isLoading()" [message]="loaderMessage()"></app-loader>
 <div class="shell" [class.sidebar-collapsed]="!isSidebarOpen()">
   <app-sidebar></app-sidebar>
-
   <div class="content">
     <main class="workspace">
       <router-outlet></router-outlet>
     </main>
-
     <app-footer></app-footer>
   </div>
 </div>
