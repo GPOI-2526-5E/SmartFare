@@ -1,64 +1,63 @@
-import mongoose from "mongoose";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { DatabaseConfig } from "../models/database.model";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const getDatabaseConfig = (): DatabaseConfig => {
+    const url = process.env.SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    const mongodbUri = process.env.MONGODB_URI;
-    const mongodbDatabase = process.env.MONGODB_DATABASE || "Smartfare";
-
-    if (!mongodbUri) {
-        throw new Error("MONGODB_URI non configurato in .env");
+    if (!url) {
+        throw new Error("SUPABASE_URL non configurato in .env");
     }
 
-    return {
-        uri: mongodbUri,
-        dbName: mongodbDatabase,
-        options: {
-            maxPoolSize: 10,
-            minPoolSize: 2,
-            retryWrites: true,
-            w: "majority",
-            dbName: mongodbDatabase,
-        },
-    };
+    if (!serviceRoleKey) {
+        throw new Error("SUPABASE_SERVICE_ROLE_KEY non configurato in .env");
+    }
+
+    return { url, serviceRoleKey };
 };
 
-export async function connectDatabase(): Promise<typeof mongoose> {
+let supabaseClient: SupabaseClient | null = null;
+
+export async function connectDatabase(): Promise<SupabaseClient> {
     try {
-        if (mongoose.connection.readyState === 1) {
+        if (supabaseClient) {
             console.log("✅ Database già connesso");
-            return mongoose;
+            return supabaseClient;
         }
 
         const config = getDatabaseConfig();
-        console.log(`🔄 Connessione a MongoDB Atlas: ${config.uri.split("@")[1]}`);
+        console.log("🔄 Connessione a Supabase");
 
-        await mongoose.connect(config.uri, config.options);
+        supabaseClient = createClient(config.url, config.serviceRoleKey, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false,
+            },
+        });
 
-        console.log("📦 Database selezionato", { dbName: config.dbName });
-        console.log("✅ Connessione a MongoDB Atlas riuscita!");
+        console.log("✅ Connessione a Supabase riuscita!");
 
-        return mongoose;
+        return supabaseClient;
     } catch (error) {
         console.error("❌ Errore connessione database:", error);
         throw error;
     }
 }
 
-export function getDatabase() {
-    if (mongoose.connection.readyState !== 1) {
+export function getSupabaseClient(): SupabaseClient {
+    if (!supabaseClient) {
         throw new Error("Database non connesso.");
     }
-    return mongoose.connection.db;
+    return supabaseClient;
 }
 
 export async function disconnectDatabase(): Promise<void> {
     try {
-        if (mongoose.connection.readyState === 1) {
-            await mongoose.disconnect();
+        if (supabaseClient) {
+            supabaseClient = null;
             console.log("✅ Database disconnesso");
         }
     } catch (error) {
@@ -67,22 +66,13 @@ export async function disconnectDatabase(): Promise<void> {
     }
 }
 
-export function getCollection<TSchema extends mongoose.mongo.Document = mongoose.mongo.Document>(collectionName: string): mongoose.mongo.Collection<TSchema> {
-    const database = getDatabase();
-    if (!database) {
-        throw new Error("Database non disponibile");
-    }
-    return database.collection<TSchema>(collectionName);
-}
-
 export function isDatabaseConnected(): boolean {
-    return mongoose.connection.readyState === 1;
+    return supabaseClient !== null;
 }
 
 export default {
     connectDatabase,
-    getDatabase,
+    getSupabaseClient,
     disconnectDatabase,
-    getCollection,
     isDatabaseConnected,
 };

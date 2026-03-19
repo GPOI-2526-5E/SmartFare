@@ -1,7 +1,7 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SidebarComponent } from './features/layout/sidebar/sidebar.component';
-import { FooterComponent } from './shared/footer/footer.component';
+import { FooterComponent } from './features/layout/footer/footer.component';
 import { SidebarService } from './core/layout/sidebar.service';
 
 @Component({

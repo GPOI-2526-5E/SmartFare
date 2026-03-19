@@ -19,7 +19,6 @@ export class SidebarComponent {
   isMobile = signal(false);
 
   constructor() {
-    // Chiudi la sidebar su navigazione quando su mobile
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
@@ -28,7 +27,6 @@ export class SidebarComponent {
       }
     });
 
-    // Rileva se siamo su mobile
     this.checkIfMobile();
     window.addEventListener('resize', () => this.checkIfMobile());
   }

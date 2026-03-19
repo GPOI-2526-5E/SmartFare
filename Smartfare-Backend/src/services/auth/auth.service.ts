@@ -1,24 +1,31 @@
-import { getCollection } from "../../config/database";
-import { Types } from "mongoose";
+import { getSupabaseClient } from "../../config/database";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
-import { User } from "../../models/auth.model";
+import { RegisterData, User } from "../../models/auth.model";
 import { LoginParams } from "../../models/auth.model";
 
 const JWT_SECRET: string = process.env.JWT_SECRET || "";
 const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "";
 
-const COLLECTION_NAME = "Users";
+const TABLE_NAME = "Users";
 
 export class AuthService {
 
     async Login(LoginData: LoginParams) {
         try {
             const { email, password } = LoginData;
+            const supabase = getSupabaseClient();
 
-            const userCollection = getCollection<User>(COLLECTION_NAME);
-            const user = await userCollection.findOne<User>({ "email": email });
+            const { data: user, error: findError } = await supabase
+                .from(TABLE_NAME)
+                .select("id,email,password,session_id")
+                .eq("email", email)
+                .maybeSingle<User>();
+
+            if (findError) {
+                throw findError;
+            }
 
             if (!user)
                 return {
@@ -37,14 +44,18 @@ export class AuthService {
             const sessionId = randomUUID();
             console.log("Nuovo sessionId generato per " + user.email);
 
-            await userCollection.updateOne(
-                { _id: user._id },
-                { $set: { sessionId: sessionId } }
-            );
+            const { error: updateError } = await supabase
+                .from(TABLE_NAME)
+                .update({ session_id: sessionId })
+                .eq("id", user.id);
+
+            if (updateError) {
+                throw updateError;
+            }
 
             const token = jwt.sign(
                 {
-                    userId: user._id,
+                    userId: user.id,
                     email: user.email,
                     username: user.email,
                     sessionId: sessionId
@@ -57,11 +68,7 @@ export class AuthService {
 
             return {
                 success: true,
-                token,
-                user: {
-                    _id: user._id,
-                    email: user.email
-                }
+                token
             }
 
 
@@ -74,11 +81,19 @@ export class AuthService {
         }
     }
 
-    async Register(email: string, password: string) {
+    async Register(registerData: RegisterData) {
         try {
-            const userCollection = getCollection<User>(COLLECTION_NAME);
+            const supabase = getSupabaseClient();
 
-            const existingEmail = await userCollection.findOne({ email: email });
+            const { data: existingEmail, error: findError } = await supabase
+                .from(TABLE_NAME)
+                .select("id")
+                .eq("email", registerData.email)
+                .maybeSingle();
+
+            if (findError) {
+                throw findError;
+            }
 
             if (existingEmail) {
                 console.log("Email già esistente");
@@ -88,17 +103,19 @@ export class AuthService {
                 };
             }
 
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await bcrypt.hash(registerData.password, 10);
 
-            const newUser: User = {
-                _id: new Types.ObjectId(),
-                email: email,
+            const { error: insertError } = await supabase.from(TABLE_NAME).insert({
+                email: registerData.email,
                 password: hashedPassword,
-                sessionId: null
-            };
+                session_id: null,
+            });
 
-            const result = await userCollection.insertOne(newUser);
-            console.log("Utente creato ", email);
+            if (insertError) {
+                throw insertError;
+            }
+
+            console.log("Utente creato ", registerData.email);
             return {
                 success: true
             };

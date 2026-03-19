@@ -91,9 +91,9 @@ export function mapAvailability(seatsAvailable?: number): string {
     return "disponibile";
 }
 export function extractPriceTrend(train: any): { previousPrice?: number; priceTrend?: string } {
-    const currentPrice = Number(train.priceEUR ?? train.price ?? NaN);
+    const currentPrice = Number(train.priceEUR ?? train.price_eur ?? train.price ?? NaN);
     const previousPrice = Number(
-        train.previousPriceEUR ?? train.previousPrice ?? train.lastPrice ?? NaN
+        train.previousPriceEUR ?? train.previous_price_eur ?? train.previousPrice ?? train.previous_price ?? train.lastPrice ?? train.last_price ?? NaN
     );
 
     if (Number.isNaN(currentPrice) || Number.isNaN(previousPrice)) {
@@ -112,22 +112,22 @@ export function extractPriceTrend(train: any): { previousPrice?: number; priceTr
 }
 export function mapDocumentToOffer(doc: any, mode: "train" | "flight", datePrefix?: string): any {
 
-    const departureParts = extractDateTimeParts(doc.departureTime || doc.departureDate);
-    const arrivalParts = extractDateTimeParts(doc.arrivalTime || doc.arrivalDate);
+    const departureParts = extractDateTimeParts(doc.departureTime || doc.departure_time || doc.departureDate || doc.departure_date);
+    const arrivalParts = extractDateTimeParts(doc.arrivalTime || doc.arrival_time || doc.arrivalDate || doc.arrival_date);
 
     const priceInfo = extractPriceTrend(doc);
 
-    const departure = doc.departure || doc.departureAirport || doc.origin || doc.from || "";
-    const arrival = doc.arrival || doc.arrivalAirport || doc.destination || doc.to || "";
+    const departure = doc.departure || doc.departureAirport || doc.departure_airport || doc.origin || doc.from || "";
+    const arrival = doc.arrival || doc.arrivalAirport || doc.arrival_airport || doc.destination || doc.to || "";
 
     const base = {
         provider: doc.company || doc.airline || "",
         departureDate: departureParts.date || datePrefix || "",
         departureTime: departureParts.time || "",
         arrivalTime: arrivalParts.time || "",
-        duration: formatDuration(doc.durationMin, doc.duration),
-        price: Number(doc.priceEUR ?? doc.price ?? 0),
-        availability: mapAvailability(doc.seatsAvailable ?? doc.availableSeats),
+        duration: formatDuration(doc.durationMin ?? doc.duration_min, doc.duration),
+        price: Number(doc.priceEUR ?? doc.price_eur ?? doc.price ?? 0),
+        availability: mapAvailability(doc.seatsAvailable ?? doc.seats_available ?? doc.availableSeats ?? doc.available_seats),
         link: doc.link,
         departure,
         arrival,
@@ -138,7 +138,7 @@ export function mapDocumentToOffer(doc: any, mode: "train" | "flight", datePrefi
         return {
             ...base,
             company: base.provider,
-            trainType: doc.trainType || "",
+            trainType: doc.trainType || doc.train_type || "",
             changes: Number(doc.changes ?? 0),
         };
     }
@@ -146,7 +146,7 @@ export function mapDocumentToOffer(doc: any, mode: "train" | "flight", datePrefi
     return {
         ...base,
         airline: base.provider,
-        flightNumber: doc.flightNumber || doc.trainType || "",
+        flightNumber: doc.flightNumber || doc.flight_number || doc.trainType || doc.train_type || "",
         stops: Number(doc.stops ?? doc.changes ?? 0),
         cabin: doc.cabin || undefined,
     };

@@ -1,10 +1,8 @@
-import { Types } from "mongoose";
-
 export interface User {
-    _id: Types.ObjectId;
+    id: string;
     email: string;
     password: string;
-    sessionId: string | null;
+    session_id: string | null;
 }
 
 export interface LoginParams {
