@@ -11,7 +11,7 @@ function toPrefixFilterValue(value: string): string {
 
 export async function searchOffers(params: any, mode: "train" | "flight" = "train"): Promise<any[]> {
     try {
-        const tableName = mode === "flight" ? "flights" : "trains";
+        const tableName = mode === "flight" ? "Flights" : "Trains";
         const supabase = getSupabaseClient();
 
         const { datePrefix, startDate, endDate } = normalizeDateInput(params.date);
