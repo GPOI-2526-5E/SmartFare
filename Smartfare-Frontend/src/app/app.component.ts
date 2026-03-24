@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SidebarComponent } from './features/layout/sidebar/sidebar.component';
 import { FooterComponent } from './features/layout/footer/footer.component';
-import { SidebarService } from './core/layout/sidebar.service';
+import { SidebarService } from './core/services/sidebar.service';
 import { AlertComponent } from "./features/ui/alert/alert.component";
 import { LoaderHomeComponent } from './features/ui/loader/loader.component';
 import { LoaderService } from './core/services/loader.service';

@@ -6,21 +6,16 @@
     </header>
 
     <label>
-      <span>Nome</span>
-      <input type="text" placeholder="Mario Rossi" />
-    </label>
-
-    <label>
       <span>Email</span>
-      <input type="email" placeholder="nome@email.it" />
+      <input type="email" placeholder="nome@email.it" [(ngModel)]="email" />
     </label>
 
     <label>
       <span>Password</span>
-      <input type="password" placeholder="Crea password" />
+      <input type="password" placeholder="Crea password" [(ngModel)]="password" />
     </label>
 
-    <button type="button">Registrati</button>
+    <button type="button" (click)="Register()">Registrati</button>
 
     <p class="auth-foot">
       Hai già un account? <a routerLink="/login">Accedi</a>

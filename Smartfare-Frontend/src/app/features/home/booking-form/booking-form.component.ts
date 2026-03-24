@@ -1,8 +1,7 @@
-import { Component, signal, inject, effect } from '@angular/core';
+import { Component, signal, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { BookingStateService } from '../../../core/home/booking-state.service';
 
 @Component({
   selector: 'app-booking-form',
@@ -11,11 +10,9 @@ import { BookingStateService } from '../../../core/home/booking-state.service';
   templateUrl: './booking-form.component.html',
   styleUrls: ['./booking-form.component.css']
 })
-  
-export class BookingFormComponent {
-  private bookingState = inject(BookingStateService);
 
-  activeType = this.bookingState.activeService;
+export class BookingFormComponent {
+  @Input() activeType = signal('ITINERARY');
   from = signal('');
   to = signal('');
   date = signal('');
@@ -27,7 +24,6 @@ export class BookingFormComponent {
     { id: 'HOTEL', label: 'Hotel', icon: 'bi-building-fill' }
   ];
 
-  // Testi dinamici per ogni servizio
   serviceConfig: any = {
     'ITINERARY': {
       title: 'Crea il tuo itinerario',
@@ -66,7 +62,7 @@ export class BookingFormComponent {
   constructor(private router: Router) { }
 
   setActiveType(id: string) {
-    this.bookingState.setActiveService(id);
+    this.activeType.set(id);
   }
 
   search() {

@@ -16,4 +16,8 @@ export class ApiService {
   LoginRequest(email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(this.AUTH_URL + "/login", { email, password });
   }
+
+  RegisterRequest(email: string, password: string): Observable<AuthResponse>{
+    return this.http.post<AuthResponse>(this.AUTH_URL + "/register", {email, password});
+  }
 }

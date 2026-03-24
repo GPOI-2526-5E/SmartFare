@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { SidebarService } from '../../../core/layout/sidebar.service';
+import { SidebarService } from '../../../core/services/sidebar.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
