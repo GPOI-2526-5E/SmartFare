@@ -2,8 +2,7 @@ import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BookingFormComponent } from '../booking-form/booking-form.component';
-import { BookingStateService } from '../../../core/home/booking-state.service';
-import { SidebarService } from '../../../core/layout/sidebar.service';
+import { SidebarService } from '../../../core/services/sidebar.service';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +16,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   activeTab = signal('ITINERARY');
   intervalId: any;
 
-  private bookingState = inject(BookingStateService);
   protected sidebarService = inject(SidebarService);
 
   images = [
@@ -41,12 +39,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   ];
 
   selectService(id: string) {
-    this.bookingState.setActiveService(id);
     this.activeTab.set(id);
   }
 
   ngOnInit() {
-    this.bookingState.setActiveService('ITINERARY');
     this.intervalId = setInterval(() => {
       this.currentImage.set((this.currentImage() + 1) % this.images.length);
     }, 5000);

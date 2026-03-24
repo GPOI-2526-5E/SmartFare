@@ -44,6 +44,25 @@ export class AuthService {
     }
   };
 
+  async Register(email: string, password: string) {
+    try {
+      const data = await firstValueFrom(this.apiService.RegisterRequest(email, password));
+
+      return data;
+
+    } catch (error: any) {
+      console.error("Register error:", error);
+
+      const serverMessage = error?.error?.message || error?.error?.error;
+      const errorMessage = serverMessage || ('Errore durante la registrazione: ' + (error?.message || 'Errore sconosciuto'));
+
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  }
+
   SaveAuth(token: string) {
     this.token.set(token);
     localStorage.setItem(this.TOKEN_KEY, token);
