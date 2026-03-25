@@ -1,0 +1,50 @@
+<nav class="navbar-shell">
+  <div class="top-bar">
+    <div class="left-group">
+      <span class="item"><i class="bi bi-telephone me-1"></i></span>
+      <span class="item">{{ contactInfo.phone }}</span>
+      <span class="item desktop-only">{{ contactInfo.email }}</span>
+    </div>
+
+    <div class="right-group">
+      <div class="social desktop-xl-only">
+        <span>Fb</span>
+        <span>X</span>
+        <span>Ig</span>
+        <span>In</span>
+      </div>
+      <span>{{ contactInfo.signInLabel }}</span>
+      <span>{{ contactInfo.currency }} <i class="bi bi-chevron-down"></i></span>
+    </div>
+  </div>
+
+  <div class="main-bar">
+    <div class="logo-search">
+      <div class="logo">
+        <span class="logo-mark">S</span>
+        <span class="logo-text">SMARTFARE</span>
+      </div>
+
+      <div class="search-wrap" [class.search-focused]="isSearchFocused">
+        <input type="text" placeholder="Destination, tour, hotel, etc" (focus)="onSearchFocus()"
+          (blur)="onSearchBlur()" />
+      </div>
+    </div>
+
+    <div class="nav-links desktop-lg-only">
+      @for (item of navItems; track item.label) {
+      <a class="nav-item" [attr.href]="item.route">
+        {{ item.label }}
+        @if (item.hasDropdown) {
+        <i class="bi bi-chevron-down small"></i>
+        }
+      </a>
+      }
+    </div>
+
+    <div class="actions">
+      <span class="cart">0</span>
+      <button class="cta">Become Local Expert</button>
+    </div>
+  </div>
+</nav>

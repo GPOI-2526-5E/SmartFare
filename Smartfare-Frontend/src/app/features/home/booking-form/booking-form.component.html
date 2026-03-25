@@ -1,51 +1,54 @@
-<section class="travel-page">
-	<app-navbar></app-navbar>
+<section class="booking-search" aria-label="Travel booking form">
+  <div class="booking-categories d-flex flex-wrap align-items-center gap-2 gap-md-3">
+    @for (type of bookingTypes; track type.label) {
+    <button type="button" class="category-btn" [class.active]="activeType === type.label"
+      (click)="setActiveType(type.label)">
+      <i class="bi" [class]="'bi ' + type.icon" aria-hidden="true"></i>
+      <span>{{ type.label }}</span>
+    </button>
+    }
+  </div>
 
-	<section class="santorini-page">
-		<app-navbar></app-navbar>
+  <div class="booking-card">
+    <form class="row g-3 g-lg-4 align-items-end align-items-lg-stretch" (submit)="onSubmit($event)">
+      <div class="col-12 col-lg-4 col-xl-4">
+        <label class="field-label" for="destination">Destination or Hotel Name</label>
+        <div class="field-control">
+          <i class="bi bi-geo-alt" aria-hidden="true"></i>
+          <input id="destination" name="destination" type="text" [placeholder]="destinationPlaceholder"
+            autocomplete="off" />
+        </div>
+      </div>
 
-		<div class="hero-background"></div>
-		<div class="hero-fade"></div>
+      <div class="col-12 col-lg-3 col-xl-3">
+        <label class="field-label">Check In - Out</label>
+        <div class="field-control date-range-grid">
+          <i class="bi bi-calendar4-week" aria-hidden="true"></i>
+          <input id="checkin" name="checkin" type="date" [attr.min]="today" aria-label="Check in date"
+            title="Check in date" />
+          <span class="range-separator">-</span>
+          <input id="checkout" name="checkout" type="date" [attr.min]="today" aria-label="Check out date"
+            title="Check out date" />
+        </div>
+      </div>
 
-		<main class="hero-content">
-			<aside class="side-indicator" aria-hidden="true">
-				<i class="bi bi-chevron-up"></i>
-				<span></span>
-				<i class="bi bi-chevron-down"></i>
-			</aside>
+      <div class="col-12 col-lg-3 col-xl-3">
+        <label class="field-label">Rooms and Guests</label>
+        <div class="field-control guests-grid">
+          <i class="bi bi-person" aria-hidden="true"></i>
+          <input id="rooms" name="rooms" type="number" min="1" value="2" aria-label="Rooms" />
+          <span class="small-label">Rooms</span>
+          <input id="guests" name="guests" type="number" min="1" value="3" aria-label="Guests" />
+          <span class="small-label">Guests</span>
+        </div>
+      </div>
 
-			<section class="headline-block">
-				<p class="small-title">Visit</p>
-				<h1>Santorini</h1>
-				<p class="description">
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-					magna aliqua. Quis ipsum suspendisse ultrices gravida.
-				</p>
-				<button type="button" class="explore-btn">
-					Explore the City
-					<i class="bi bi-arrow-right"></i>
-				</button>
-			</section>
-
-			<section class="places-panel">
-				<div class="panel-title-wrap">
-					<h2>More Places in Greece</h2>
-					<div class="panel-arrows" aria-hidden="true">
-						<button type="button"><i class="bi bi-arrow-left"></i></button>
-						<button type="button"><i class="bi bi-arrow-right"></i></button>
-					</div>
-				</div>
-
-				<div class="place-list">
-					@for (place of morePlaces; track place.title) {
-					<article class="place-card">
-						<img [src]="place.image" [alt]="place.title" [title]="place.title" loading="lazy" />
-						<div>
-							<h3>{{ place.title }}</h3>
-							<p class="location">{{ place.subtitle }}</p>
-							<p>{{ place.description }}</p>
-						</div>
-					</article>
-					}
-				</div>
-			</section>
+      <div class="col-12 col-lg-2 col-xl-2 d-grid">
+        <button type="submit" class="search-btn">
+          <i class="bi bi-search"></i>
+          <span>Search</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

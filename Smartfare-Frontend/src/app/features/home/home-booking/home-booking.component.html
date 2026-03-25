@@ -1,1 +1,32 @@
-<p>home-booking works!</p>
+<div class="travel-hero-page">
+  <div class="background-layer" [style.background-image]="'url(' + heroContent.backgroundImageUrl + ')'">
+    <div class="overlay"></div>
+  </div>
+
+  <div class="content-layer">
+    <app-navbar></app-navbar>
+
+    <main class="container hero-content-wrap">
+      <div class="row justify-content-center text-center">
+        <div class="col-12 col-xl-10">
+          <span class="badge rounded-pill text-bg-light px-3 py-2 mb-3">SmartFare Tickets</span>
+          <h1 class="hero-title">
+            {{ heroContent.title }}
+            <span>With MyTravel</span>
+          </h1>
+          <p class="hero-subtitle mx-auto">{{ heroContent.subtitle }}</p>
+          <div class="d-flex flex-column flex-sm-row justify-content-center gap-2 gap-sm-3 mt-4">
+            <button class="btn btn-primary btn-lg px-4">{{ heroContent.primaryActionLabel }}</button>
+            @if (heroContent.secondaryActionLabel) {
+            <button class="btn btn-outline-light btn-lg px-4">{{ heroContent.secondaryActionLabel }}</button>
+            }
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="booking-form-wrap">
+      <app-booking-form></app-booking-form>
+    </div>
+  </div>
+</div>
