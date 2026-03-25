@@ -1,9 +1,11 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SidebarService {
+  private readonly mobileBreakpoint = 992;
+
   // Inizializza chiusa su mobile, aperta su desktop
   isSidebarOpen = signal(this.isDesktop());
 
@@ -12,11 +14,11 @@ export class SidebarService {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', () => {
         // Se passiamo da mobile a desktop, apri la sidebar
-        if (window.innerWidth >= 769 && !this.isSidebarOpen()) {
+        if (window.innerWidth >= this.mobileBreakpoint && !this.isSidebarOpen()) {
           this.isSidebarOpen.set(true);
         }
         // Se passiamo da desktop a mobile, chiudi la sidebar
-        if (window.innerWidth < 769 && this.isSidebarOpen()) {
+        if (window.innerWidth < this.mobileBreakpoint && this.isSidebarOpen()) {
           this.isSidebarOpen.set(false);
         }
       });
@@ -25,7 +27,7 @@ export class SidebarService {
 
   private isDesktop(): boolean {
     if (typeof window === 'undefined') return true;
-    return window.innerWidth >= 769;
+    return window.innerWidth >= this.mobileBreakpoint;
   }
 
   toggleSidebar() {

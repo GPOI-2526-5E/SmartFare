@@ -1,20 +1,18 @@
 @if(show) {
 <div class="loader-overlay">
   <div class="loader-card" role="status" aria-live="polite" aria-busy="true">
-    <p class="loader-kicker">SmartFare Itinerary</p>
+    <p class="loader-kicker">SMARTFARE ENGINE</p>
 
-    <div class="itinerary-track" aria-hidden="true">
-      <span class="station station-start">Partenza</span>
-      <div class="route-line">
-        <div class="route-vehicle">✈</div>
-      </div>
-      <span class="station station-end">Arrivo</span>
+    <div class="loader-spinner" aria-hidden="true">
+      <span class="ring ring-a"></span>
+      <span class="ring ring-b"></span>
+      <span class="core"></span>
     </div>
 
     <div class="loader-steps" aria-hidden="true">
-      <span class="step">Ricerca tratte</span>
-      <span class="step">Confronto offerte</span>
-      <span class="step">Itinerario ottimale</span>
+      <span>Sync dati</span>
+      <span>Analisi opzioni</span>
+      <span>Rendering risultati</span>
     </div>
 
     <p class="loader-message">{{ message }}</p>

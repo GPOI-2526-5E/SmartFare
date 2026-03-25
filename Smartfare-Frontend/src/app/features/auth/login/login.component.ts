@@ -3,20 +3,21 @@ import { FormsModule } from "@angular/forms";
 import { AuthService } from '../../../core/auth/auth.service';
 import { Router } from '@angular/router';
 import { AlertService } from '../../../core/services/alert.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login.component',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
 
-  email:string = '';
+  email: string = '';
   password: string = '';
 
-  constructor(private authService: AuthService, private router: Router, private alertService: AlertService){}
+  constructor(private authService: AuthService, private router: Router, private alertService: AlertService) { }
 
   async Login() {
     if (this.email === "" || this.password === "") {

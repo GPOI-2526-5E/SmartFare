@@ -1,8 +1,14 @@
 @if (visible()) {
-<div class="alert-modal fade-in" [ngClass]="type()">
-  <div class="game-alert-content">
-    <button class="cdanger-btn" aria-label="Chiudi" (click)="close()">&times;</button>
-    <div class="game-alert-message">{{ message() }}</div>
+<div class="smart-alert" [ngClass]="type()">
+  <div class="smart-alert-inner">
+    <i class="bi smart-alert-icon" [class]="iconClass()"></i>
+    <div class="smart-alert-copy">
+      <strong>{{ title() }}</strong>
+      <p class="mb-0">{{ message() }}</p>
+    </div>
+    <button class="smart-alert-close" aria-label="Chiudi" (click)="close()">
+      <i class="bi bi-x-lg"></i>
+    </button>
   </div>
 </div>
 }

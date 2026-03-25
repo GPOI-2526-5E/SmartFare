@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { FormsModule } from "@angular/forms";
 import { AlertService } from '../../../core/services/alert.service';
 import { AuthService } from '../../../core/auth/auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register.component',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
@@ -14,7 +15,7 @@ export class RegisterComponent {
   email: string = "";
   password: string = "";
 
-  constructor(private alertService: AlertService, private authService: AuthService){}
+  constructor(private alertService: AlertService, private authService: AuthService) { }
 
   async Register() {
     if (this.email === "" || this.password === "") {

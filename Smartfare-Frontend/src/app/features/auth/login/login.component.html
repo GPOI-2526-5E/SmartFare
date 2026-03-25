@@ -1,24 +1,50 @@
-<section class="auth-wrap">
-  <article class="auth-card">
-    <header class="auth-header">
-      <p class="kicker">Bentornato</p>
-      <h2>Accedi al tuo spazio SmartFare</h2>
-    </header>
+<section class="auth-wrap sf-reveal">
+  <div class="row g-0 auth-shell overflow-hidden">
+    <div class="col-lg-5 order-2 order-lg-1">
+      <article class="auth-card p-3 p-md-4 p-xl-5 h-100">
+        <p class="kicker mb-2">Member Access</p>
+        <h1 class="font-display h3 mb-1">Bentornato su SmartFare</h1>
+        <p class="auth-sub mb-3">Entra per ritrovare i tuoi itinerari, prezzi salvati e piani in corso.</p>
 
-    <label>
-      <span>Email</span>
-      <input type="email" placeholder="nome@email.it" [(ngModel)]="email" />
-    </label>
+        <div class="mb-2">
+          <label class="form-label small mb-1">Email</label>
+          <input class="form-control" type="email" placeholder="nome@email.it" [(ngModel)]="email" />
+        </div>
 
-    <label>
-      <span>Password</span>
-      <input type="password" placeholder="Inserisci password" [(ngModel)]="password" />
-    </label>
+        <div class="mb-3">
+          <label class="form-label small mb-1">Password</label>
+          <input class="form-control" type="password" placeholder="Inserisci password" [(ngModel)]="password" />
+        </div>
 
-    <button type="button" (click)="Login()">Entra ora</button>
+        <button type="button" class="btn btn-brand w-100 rounded-3 py-2" (click)="Login()">Entra ora</button>
 
-    <p class="auth-foot">
-      Non hai ancora un account? <a routerLink="/register">Registrati</a>
-    </p>
-  </article>
+        <div class="quick-info mt-3">
+          <span><i class="bi bi-shield-lock-fill me-2"></i>Accesso sicuro</span>
+          <span><i class="bi bi-clock-history me-2"></i>Storico immediato</span>
+        </div>
+
+        <p class="auth-foot mt-3 mb-0">
+          Non hai ancora un account? <a routerLink="/register">Registrati</a>
+        </p>
+      </article>
+    </div>
+
+    <div class="col-lg-7 order-1 order-lg-2 auth-side p-3 p-md-4 p-xl-5 d-flex flex-column justify-content-between">
+      <div>
+        <p class="small text-uppercase fw-semibold text-white-50 mb-2">Control Room</p>
+        <h2 class="font-display text-white mb-3">Un'unica dashboard per prezzo, tempo e comfort.</h2>
+      </div>
+
+      <div class="d-grid gap-2">
+        <div class="glass-note">
+          <h3 class="h6 font-display mb-2">Trend live</h3>
+          <p class="mb-0">Le tratte business stanno calando del 12% nelle prossime 48 ore.</p>
+        </div>
+        <div class="glass-note alt">
+          <h3 class="h6 font-display mb-2">Personal AI assist</h3>
+          <p class="mb-0">Suggerimenti dinamici in base alle tue preferenze di viaggio.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>

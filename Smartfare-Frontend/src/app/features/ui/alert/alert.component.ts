@@ -48,4 +48,12 @@ export class AlertComponent implements OnDestroy {
       clearTimeout(this.timeoutId);
     }
   }
+
+  iconClass(): string {
+    return this.type() === 'danger' ? 'bi-exclamation-octagon-fill' : 'bi-check-circle-fill';
+  }
+
+  title(): string {
+    return this.type() === 'danger' ? 'Attenzione' : 'Operazione completata';
+  }
 }

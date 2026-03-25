@@ -1,135 +1,119 @@
 .auth-wrap {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 2rem 1rem;
-  background:
-    linear-gradient(rgba(15, 23, 42, 0.66), rgba(15, 23, 42, 0.66)),
-    radial-gradient(circle at top left, rgba(245, 158, 11, 0.18), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.15), transparent 55%),
-    url('/img/lf-franciz-B6_-i-tzKXg-unsplash.jpg') center/cover no-repeat;
+  padding: 0.6rem;
+}
+
+.auth-shell {
+  border-radius: 24px;
+  border: 1px solid rgba(134, 166, 234, 0.26);
+  background: rgba(10, 16, 30, 0.9);
+  box-shadow: 0 24px 54px rgba(3, 6, 14, 0.62);
 }
 
 .auth-card {
-  width: min(460px, 100%);
-  border-radius: 24px;
-  padding: 1.75rem;
-  background: rgba(15, 23, 42, 0.75);
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-  display: grid;
-  gap: 0.9rem;
-  animation: fade-up 0.8s ease;
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.auth-header {
-  display: grid;
-  gap: 0.25rem;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, #f59e0b 0%, #facc15 100%);
-  color: #1f2937;
-  font-weight: 700;
-  font-size: 1.05rem;
-}
-
-.brand h1 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.brand p {
-  margin: 0;
-  font-size: 0.75rem;
-  color: rgba(241, 245, 249, 0.7);
+  background: linear-gradient(165deg, rgba(16, 25, 45, 0.96), rgba(12, 20, 36, 0.95));
 }
 
 .kicker {
-  margin: 0;
-  font-size: 0.75rem;
-  text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: #fbbf24;
-}
-
-h2 {
-  margin: 0;
-  font-size: 1.55rem;
-}
-
-label {
-  display: grid;
-  gap: 0.32rem;
-}
-
-label span {
-  font-size: 0.8rem;
-  color: rgba(226, 232, 240, 0.8);
-}
-
-input {
-  border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  padding: 0.75rem;
-  background: rgba(15, 23, 42, 0.5);
-  color: #f8fafc;
-}
-
-input::placeholder {
-  color: rgba(226, 232, 240, 0.55);
-}
-
-button {
-  border: 1px solid #f59e0b;
-  border-radius: 12px;
-  padding: 0.75rem;
-  background: linear-gradient(120deg, #f59e0b 0%, #facc15 100%);
-  color: #111827;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  color: #24d2d1;
   font-weight: 700;
-  cursor: pointer;
 }
 
-button:hover {
-  opacity: 0.95;
+.auth-sub {
+  color: #98a8cc;
+}
+
+.auth-card h1 {
+  color: #f4f8ff;
+}
+
+.auth-card,
+.auth-card p,
+.auth-card label,
+.auth-card .form-label,
+.auth-card small,
+.auth-card strong {
+  color: #e7efff;
+}
+
+.auth-card .form-label {
+  color: #b7c3df;
+}
+
+.auth-card .form-control {
+  border-radius: 12px;
+  min-height: 46px;
+  border-color: rgba(119, 145, 198, 0.35);
+  color: #f4f7ff;
+  background: rgba(12, 18, 34, 0.8);
+}
+
+.auth-card .form-control:focus {
+  box-shadow: 0 0 0 0.22rem var(--sf-ring);
+  border-color: rgba(36, 210, 209, 0.6);
+}
+
+.auth-card .form-control::placeholder {
+  color: rgba(177, 192, 225, 0.68);
 }
 
 .auth-foot {
-  margin: 0;
-  padding-top: 0.5rem;
-  font-size: 0.85rem;
-  text-align: center;
-  color: rgba(226, 232, 240, 0.8);
+  color: var(--sf-muted);
+  font-size: 0.9rem;
 }
 
 .auth-foot a {
-  color: #fbbf24;
-  text-decoration: none;
   font-weight: 600;
+  text-decoration: none;
+  color: #24d2d1;
 }
 
-.auth-foot a:hover {
-  text-decoration: underline;
+.auth-side {
+  background:
+    linear-gradient(135deg, rgba(8, 12, 24, 0.86), rgba(20, 6, 32, 0.8)),
+    url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1400&q=80')
+      center/cover no-repeat;
+  min-height: 300px;
+}
+
+.glass-note {
+  border-radius: 16px;
+  padding: 1rem;
+  color: #e8f0ff;
+  border: 1px solid rgba(117, 142, 195, 0.34);
+  background: rgba(8, 16, 34, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.glass-note p,
+.glass-note h3,
+.quick-info,
+.quick-info i {
+  color: #d8e5ff;
+}
+
+.glass-note.alt {
+  border-color: rgba(255, 61, 168, 0.34);
+  background: rgba(26, 10, 34, 0.55);
+}
+
+.quick-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  color: #9fb0d6;
+  font-size: 0.82rem;
+}
+
+.quick-info span {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 991px) {
+  .auth-shell {
+    border-radius: 18px;
+  }
 }

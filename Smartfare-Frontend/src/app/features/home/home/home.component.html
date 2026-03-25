@@ -1,72 +1,119 @@
-<div class="home-view">
-  <section class="hero" [class.hero-wide]="sidebarService.isSidebarOpen()"
-    [class.hero-narrow]="!sidebarService.isSidebarOpen()">
-    <div class="hero-media" aria-hidden="true">
-      @for (img of images; track $index; let i = $index) {
-      <img [src]="img" [class.active]="i === currentImage()" [alt]="'Destinazione ' + i" />
-      }
-      <span class="texture"></span>
-    </div>
+<div class="home-page sf-reveal">
+  <section class="hero-stage overflow-hidden position-relative rounded-4 p-3 p-md-4 p-xl-5">
+    <span class="shape shape-one"></span>
+    <span class="shape shape-two"></span>
 
-    <div class="hero-content">
-      <p class="hero-kicker">New route designer</p>
-      <h2>
-        Cambia ritmo al tuo viaggio.
-        <span>Progetta in pochi click.</span>
-      </h2>
-      <p class="hero-copy">
-        Un'interfaccia pensata come uno studio creativo: scegli servizio, imposta le tappe e ottieni risultati chiari
-        senza caos.
-      </p>
+    <div class="row align-items-center g-4 position-relative z-1">
+      <div class="col-xl-7">
+        <p class="hero-kicker mb-2">Travel Design Platform</p>
+        <h1 class="font-display display-5 fw-bold mb-3">
+          Viaggi costruiti con ritmo,
+          <span class="sf-gradient-text d-block">stile e controllo totale.</span>
+        </h1>
+        <p class="lead mb-4 hero-lead">
+          Da un weekend improvvisato a un itinerario complesso: SmartFare combina prezzo, tempo e atmosfera per offrirti
+          un piano che sembra fatto da un travel concierge.
+        </p>
 
-      <div class="service-switch" role="tablist" aria-label="Selezione servizio">
-        @for (service of services; track service.id) {
-        <button type="button" (click)="selectService(service.id)" [class.active]="activeTab() === service.id"
-          class="service-pill">
-          <i [class]="'bi ' + service.icon"></i>
-          <span>{{ service.label }}</span>
-        </button>
-        }
+        <div class="d-flex flex-wrap gap-2 mb-4">
+          <a routerLink="/register" class="btn btn-lg btn-brand rounded-pill px-4">Crea il tuo viaggio</a>
+          <a routerLink="/about" class="btn btn-lg btn-ghost-light rounded-pill px-4">Scopri il metodo</a>
+        </div>
+
+        <div class="row g-3 stats-row">
+          <div class="col-6 col-lg-4">
+            <article class="stat-card">
+              <strong>+12k</strong>
+              <span>itinerari creati</span>
+            </article>
+          </div>
+          <div class="col-6 col-lg-4">
+            <article class="stat-card">
+              <strong>4.9/5</strong>
+              <span>valutazione media</span>
+            </article>
+          </div>
+          <div class="col-12 col-lg-4">
+            <article class="stat-card">
+              <strong>18 min</strong>
+              <span>tempo medio pianificazione</span>
+            </article>
+          </div>
+        </div>
       </div>
 
-      <app-booking-form [activeType]="activeTab"></app-booking-form>
-    </div>
+      <div class="col-xl-5">
+        <article class="planner-card sf-surface">
+          <p class="small text-uppercase fw-semibold planner-kicker mb-2">Experience Mixer</p>
+          <h2 class="font-display h3 mb-3">Scegli il mood del tuo prossimo viaggio</h2>
 
-    <aside class="hero-metrics">
-      <article>
-        <strong>+180</strong>
-        <span>rotte tracciate oggi</span>
-      </article>
-      <article>
-        <strong>94%</strong>
-        <span>utenti soddisfatti</span>
-      </article>
-      <article>
-        <strong>24/7</strong>
-        <span>supporto smart</span>
-      </article>
-    </aside>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            @for (experience of experiences; track experience.name) {
+            <button type="button" class="btn mood-pill" [class.active]="selectedExperience() === experience.name"
+              (click)="selectExperience(experience.name)">
+              <i class="bi me-2" [class]="experience.icon"></i>{{ experience.name }}
+            </button>
+            }
+          </div>
+
+          @for (experience of experiences; track experience.name) {
+          @if (selectedExperience() === experience.name) {
+          <p class="selected-copy mb-3">{{ experience.text }}</p>
+          }
+          }
+
+          <form class="row g-2">
+            <div class="col-12 col-md-6">
+              <label class="form-label small planner-label mb-1">Partenza</label>
+              <input class="form-control" type="text" placeholder="Milano" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small planner-label mb-1">Destinazione</label>
+              <input class="form-control" type="text" placeholder="Ovunque" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small planner-label mb-1">Budget max</label>
+              <input class="form-control" type="number" placeholder="450" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small planner-label mb-1">Durata</label>
+              <select class="form-select">
+                <option>2-3 giorni</option>
+                <option>4-6 giorni</option>
+                <option>7+ giorni</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <button type="button" class="btn btn-brand w-100 rounded-3">Genera proposta smart</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    </div>
   </section>
 
-  <section class="destinations">
-    <div class="section-head">
-      <h3>Collezione destinazioni</h3>
-      <p>Luoghi selezionati per il tuo prossimo itinerario premium.</p>
+  <section class="mt-4 mt-md-5">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+      <div>
+        <p class="small text-uppercase planner-kicker fw-semibold mb-1">Featured Capsules</p>
+        <h3 class="font-display mb-0">Pacchetti con personalita</h3>
+      </div>
+      <a routerLink="/support" class="small fw-semibold text-decoration-none">Vuoi un piano custom? Contattaci</a>
     </div>
 
-    <div class="destination-grid">
-      @for (dest of destinations; track dest.id) {
-      <article class="destination-card">
-        <img [src]="dest.image" [alt]="dest.name" [title]="dest.name + ', ' + dest.country" />
-        <div class="card-meta">
-          <div>
-            <h4>{{ dest.name }}</h4>
-            <span>{{ dest.country }}</span>
+    <div class="row g-3 g-lg-4">
+      @for (trip of featuredTrips; track trip.city) {
+      <div class="col-md-6 col-xl-4">
+        <article class="trip-card h-100">
+          <img [src]="trip.image" [alt]="trip.city" class="img-fluid w-100" />
+          <div class="trip-overlay">
+            <span class="badge rounded-pill text-bg-light">Score {{ trip.score }}</span>
+            <h4 class="font-display mt-2 mb-1">{{ trip.city }}</h4>
+            <p class="mb-2 small">{{ trip.tag }}</p>
+            <strong>{{ trip.price }}</strong>
           </div>
-          <strong>da €{{ dest.price }}</strong>
-        </div>
-        <button type="button">Scopri esperienza</button>
-      </article>
+        </article>
+      </div>
       }
     </div>
   </section>
