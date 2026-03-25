@@ -68,7 +68,7 @@ export class AuthService {
     localStorage.setItem(this.TOKEN_KEY, token);
   };
 
-  getToken(): string | null {
+  get Token(): string | null {
     const token = this.token();
 
     if (token && this.isTokenExpired(token)) {
@@ -94,6 +94,10 @@ export class AuthService {
       return true;
     }
   };
+
+  getUser() {
+    return null;
+  }
 
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);

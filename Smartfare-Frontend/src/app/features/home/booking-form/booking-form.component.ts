@@ -1,81 +1,64 @@
-import { Component, signal, inject, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Component } from '@angular/core';
+import { NavbarComponent } from '../../ui/navbar/navbar.component';
 
 @Component({
   selector: 'app-booking-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [NavbarComponent],
   templateUrl: './booking-form.component.html',
-  styleUrls: ['./booking-form.component.css']
+  styleUrl: './booking-form.component.css',
 })
-
 export class BookingFormComponent {
-  @Input() activeType = signal('ITINERARY');
-  from = signal('');
-  to = signal('');
-  date = signal('');
-
-  bookingTypes = [
-    { id: 'ITINERARY', label: 'Itinerario', icon: 'bi-map-fill' },
-    { id: 'FLIGHT', label: 'Voli', icon: 'bi-airplane-fill' },
-    { id: 'TRAIN', label: 'Treni', icon: 'bi-train-front-fill' },
-    { id: 'HOTEL', label: 'Hotel', icon: 'bi-building-fill' }
+  readonly categories = [
+    { label: 'Hotel', icon: 'bi-building' },
+    { label: 'Tours', icon: 'bi-compass' },
+    { label: 'Activity', icon: 'bi-person-walking' },
+    { label: 'Rental', icon: 'bi-house' },
+    { label: 'Car', icon: 'bi-car-front' },
+    { label: 'Yacht', icon: 'bi-water' },
+    { label: 'Flights', icon: 'bi-airplane' },
   ];
 
-  serviceConfig: any = {
-    'ITINERARY': {
-      title: 'Crea il tuo itinerario',
-      fromLabel: 'Partenza',
-      toLabel: 'Destinazione',
-      dateLabel: 'Data di inizio',
-      buttonText: 'Pianifica Itinerario'
+  readonly topDestinations = [
+    {
+      title: 'United Kingdom',
+      image:
+        'https://images.unsplash.com/photo-1488747279002-c8523379faaa?auto=format&fit=crop&w=900&q=80',
     },
-    'FLIGHT': {
-      title: 'Cerca voli',
-      fromLabel: 'Da dove?',
-      toLabel: 'Per dove?',
-      dateLabel: 'Quando?',
-      buttonText: 'Cerca Voli'
+    {
+      title: 'Turkey',
+      image:
+        'https://images.unsplash.com/photo-1669880181886-75299f1fcf9e?auto=format&fit=crop&w=900&q=80',
     },
-    'TRAIN': {
-      title: 'Trova treni',
-      fromLabel: 'Stazione di partenza',
-      toLabel: 'Stazione di arrivo',
-      dateLabel: 'Data del viaggio',
-      buttonText: 'Cerca Treni'
+    {
+      title: 'Spain',
+      image:
+        'https://images.unsplash.com/photo-1543783207-ec64e4d95325?auto=format&fit=crop&w=900&q=80',
     },
-    'HOTEL': {
-      title: 'Prenota hotel',
-      fromLabel: 'Città',
-      toLabel: 'Zona',
-      dateLabel: 'Check-in',
-      buttonText: 'Cerca Hotel'
-    }
-  };
+  ];
 
-  get currentConfig() {
-    return this.serviceConfig[this.activeType()] || this.serviceConfig['ITINERARY'];
-  }
+  readonly morePlaces = [
+    {
+      title: 'Mykonos',
+      subtitle: 'Cyclades Islands, Greece',
+      description: 'Spiagge iconiche, vicoli bianchi e vita notturna vivace.',
+      image:
+        'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=900&q=80',
+    },
+    {
+      title: 'Crete',
+      subtitle: 'Heraklion, Greece',
+      description: 'Storia minoica, mare cristallino e cucina tradizionale.',
+      image:
+        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80',
+    },
+    {
+      title: 'Rhodes',
+      subtitle: 'Dodecanese, Greece',
+      description: 'Cittadella medievale, tramonti dorati e resort sul mare.',
+      image:
+        'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=900&q=80',
+    },
+  ];
 
-  constructor(private router: Router) { }
-
-  setActiveType(id: string) {
-    this.activeType.set(id);
-  }
-
-  search() {
-    if (this.from() && this.to() && this.date()) {
-      // Naviga ai risultati di ricerca
-      this.router.navigate(['/search'], {
-        queryParams: {
-          from: this.from(),
-          to: this.to(),
-          date: this.date(),
-          type: this.activeType()
-        }
-      });
-    }
-  }
 }

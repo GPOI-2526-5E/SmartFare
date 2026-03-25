@@ -1,28 +1,51 @@
-<section class="booking-panel">
-  <header>
-    <p>Planner</p>
-    <h3>{{ currentConfig.title }}</h3>
-  </header>
+<section class="travel-page">
+	<app-navbar></app-navbar>
 
-  <div class="field-grid">
-    <label>
-      <span><i class="bi bi-geo-alt"></i> {{ currentConfig.fromLabel }}</span>
-      <input type="text" [placeholder]="currentConfig.fromLabel" [(ngModel)]="from" />
-    </label>
+	<section class="santorini-page">
+		<app-navbar></app-navbar>
 
-    <label>
-      <span><i class="bi bi-pin-map"></i> {{ currentConfig.toLabel }}</span>
-      <input type="text" [placeholder]="currentConfig.toLabel" [(ngModel)]="to" />
-    </label>
+		<div class="hero-background"></div>
+		<div class="hero-fade"></div>
 
-    <label>
-      <span><i class="bi bi-calendar-event"></i> {{ currentConfig.dateLabel }}</span>
-      <input type="date" [title]="currentConfig.dateLabel" [(ngModel)]="date" />
-    </label>
+		<main class="hero-content">
+			<aside class="side-indicator" aria-hidden="true">
+				<i class="bi bi-chevron-up"></i>
+				<span></span>
+				<i class="bi bi-chevron-down"></i>
+			</aside>
 
-    <button type="button" (click)="search()" [disabled]="!from() || !to() || !date()">
-      <i class="bi bi-arrow-up-right-circle"></i>
-      <span>{{ currentConfig.buttonText }}</span>
-    </button>
-  </div>
-</section>
+			<section class="headline-block">
+				<p class="small-title">Visit</p>
+				<h1>Santorini</h1>
+				<p class="description">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+					magna aliqua. Quis ipsum suspendisse ultrices gravida.
+				</p>
+				<button type="button" class="explore-btn">
+					Explore the City
+					<i class="bi bi-arrow-right"></i>
+				</button>
+			</section>
+
+			<section class="places-panel">
+				<div class="panel-title-wrap">
+					<h2>More Places in Greece</h2>
+					<div class="panel-arrows" aria-hidden="true">
+						<button type="button"><i class="bi bi-arrow-left"></i></button>
+						<button type="button"><i class="bi bi-arrow-right"></i></button>
+					</div>
+				</div>
+
+				<div class="place-list">
+					@for (place of morePlaces; track place.title) {
+					<article class="place-card">
+						<img [src]="place.image" [alt]="place.title" [title]="place.title" loading="lazy" />
+						<div>
+							<h3>{{ place.title }}</h3>
+							<p class="location">{{ place.subtitle }}</p>
+							<p>{{ place.description }}</p>
+						</div>
+					</article>
+					}
+				</div>
+			</section>

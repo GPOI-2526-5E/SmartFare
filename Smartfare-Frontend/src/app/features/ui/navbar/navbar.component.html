@@ -1,0 +1,114 @@
+<header class="travel-navbar">
+	<div class="top-strip border-bottom border-light-subtle">
+		<div class="container-fluid container-xxl px-3 px-lg-4">
+			<div class="d-flex justify-content-between align-items-center top-strip-inner">
+				<div class="d-flex align-items-center gap-3 contact-info small">
+					<span class="d-inline-flex align-items-center gap-2">
+						<i class="bi bi-telephone"></i>
+						<span>(000) 999-898-999</span>
+					</span>
+					<span class="d-none d-sm-inline text-light-emphasis">|</span>
+					<span class="d-inline-flex align-items-center gap-2">
+						<i class="bi bi-envelope"></i>
+						<span>info@mytravel.com</span>
+					</span>
+				</div>
+
+				<div class="d-flex align-items-center gap-3 social-auth small">
+					<div class="d-none d-md-flex align-items-center gap-3 social-links">
+						<a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+						<a href="#" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+						<a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+						<a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+					</div>
+
+					<a href="#" class="signin-link d-inline-flex align-items-center gap-2">
+						<i class="bi bi-person"></i>
+						<span>Sign in or Register</span>
+					</a>
+
+					<button
+						class="btn btn-link p-0 currency-link d-inline-flex align-items-center gap-1"
+						type="button"
+					>
+						<span>EUR</span>
+						<i class="bi bi-chevron-down"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<nav class="navbar navbar-expand-xl main-nav py-2">
+		<div class="container-fluid container-xxl px-3 px-lg-4">
+			<a class="navbar-brand brand d-flex align-items-center gap-2 me-4" href="#">
+				<span class="brand-icon"><i class="bi bi-compass"></i></span>
+				<span class="brand-name">MyTravel</span>
+			</a>
+
+			<form class="search-box d-none d-lg-flex align-items-center me-xl-4" role="search">
+				<input type="text" class="form-control border-0" placeholder="Destination, tour, hotel, etc" />
+				<button class="btn search-btn" type="submit" aria-label="Search">
+					<i class="bi bi-search"></i>
+				</button>
+			</form>
+
+			<button
+				class="navbar-toggler"
+				type="button"
+				data-bs-toggle="collapse"
+				data-bs-target="#travelNavbar"
+				aria-controls="travelNavbar"
+				aria-expanded="false"
+				aria-label="Toggle navigation"
+			>
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="travelNavbar">
+				<ul class="navbar-nav mx-auto mb-2 mb-xl-0 nav-links">
+					<li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">Hotel</a>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="#">Luxury Hotels</a></li>
+							<li><a class="dropdown-item" href="#">City Hotels</a></li>
+						</ul>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">Tour</a>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="#">Adventure Tours</a></li>
+							<li><a class="dropdown-item" href="#">Cultural Tours</a></li>
+						</ul>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="#">Activity</a></li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">Rental</a>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="#">Apartments</a></li>
+							<li><a class="dropdown-item" href="#">Villas</a></li>
+						</ul>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="#">Car</a></li>
+					<li class="nav-item"><a class="nav-link" href="#">Yacht</a></li>
+					<li class="nav-item"><a class="nav-link" href="#">Flights</a></li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">Pages</a>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="#">About</a></li>
+							<li><a class="dropdown-item" href="#">Contact</a></li>
+						</ul>
+					</li>
+				</ul>
+
+				<div class="d-flex align-items-center gap-3 right-actions mt-3 mt-xl-0">
+					<button class="btn p-0 basket-btn" type="button" aria-label="Basket">
+						<i class="bi bi-basket"></i>
+					</button>
+					<button class="btn btn-light expert-btn" type="button">Become Local Expert</button>
+				</div>
+			</div>
+		</div>
+	</nav>
+</header>
