@@ -1,88 +1,76 @@
 <nav class="navbar-shell">
 
-  <!-- TOP BAR (quasi identica) -->
+  <!-- TOP BAR -->
   <div class="top-bar d-flex justify-content-between align-items-center">
-
     <div class="left-group d-flex align-items-center gap-2">
-      <span class="item"><i class="bi bi-telephone me-1"></i></span>
-      <span class="item">{{ contactInfo.phone }}</span>
-      <span class="item desktop-only d-none d-md-inline">
-        {{ contactInfo.email }}
-      </span>
+      <i class="bi bi-telephone"></i>
+      <span>{{ contactInfo.phone }}</span>
+      <span class="desktop-only">{{ contactInfo.email }}</span>
     </div>
 
     <div class="right-group d-flex align-items-center gap-3">
-      <div class="social desktop-xl-only d-none d-xl-flex">
+      <div class="social desktop-xl-only d-none d-xl-flex gap-2">
         <span>Fb</span>
         <span>X</span>
         <span>Ig</span>
         <span>In</span>
       </div>
 
-      <span class="d-none d-md-inline">
-        {{ contactInfo.signInLabel }}
-      </span>
-
-      <span>
-        {{ contactInfo.currency }}
-        <i class="bi bi-chevron-down"></i>
-      </span>
+      <span class="d-none d-md-inline">{{ contactInfo.signInLabel }}</span>
+      <!-- Selezione lingua -->
+      <select class="language-select" [(ngModel)]="selectedLanguage">
+        @for (lang of languages; track lang.code) {
+        <option [value]="lang.code">{{ lang.label }}</option>
+        }
+      </select>
     </div>
+  </div>
+  <!-- MAIN NAVBAR -->
+  <div class="main-bar d-flex align-items-center justify-content-between">
+
+    <!-- LOGO -->
+    <div class="logo d-flex align-items-center gap-2">
+      <span class="logo-mark">S</span>
+      <span class="logo-text">SMARTFARE</span>
+    </div>
+
+    <!-- NAV LINKS DESKTOP -->
+    <div class="nav-links d-none d-lg-flex gap-4">
+      @for (item of navItems; track item.label) {
+      <a class="nav-item" [attr.href]="item.route">
+        {{ item.label }}
+      </a>
+      }
+    </div>
+
+    <!-- ACTION BUTTONS DESKTOP -->
+    <div class="actions d-none d-lg-flex gap-2">
+      <button class="btn login-btn">Login</button>
+      <button class="btn register-btn">Register</button>
+    </div>
+
+    <!-- MOBILE TOGGLER -->
+    <button class="mobile-toggler d-lg-none" (click)="toggleMobileMenu()">
+      <i class="bi bi-list"></i>
+    </button>
 
   </div>
 
-
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg main-bar">
-
-    <div class="container-fluid p-0">
-
-      <!-- SINISTRA: LOGO + SEARCH -->
-      <div class="logo-search d-flex align-items-center">
-
-        <div class="logo">
-          <span class="logo-mark">S</span>
-          <span class="logo-text">SMARTFARE</span>
-        </div>
-
-        <div class="search-wrap d-none d-lg-block">
-          <input type="text" placeholder="Destination, tour, hotel, etc" (focus)="onSearchFocus()"
-            (blur)="onSearchBlur()" />
-        </div>
-
-      </div>
-
-      <!-- TOGGLER -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <!-- DESTRA -->
-      <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
-
-        <!-- NAV LINKS -->
-        <div class="nav-links d-flex flex-column flex-lg-row gap-3">
-
-          @for (item of navItems; track item.label) {
-          <a class="nav-item" [attr.href]="item.route">
-            {{ item.label }}
-
-            @if (item.hasDropdown) {
-            <i class="bi bi-chevron-down small"></i>
-            }
-          </a>
-          }
-
-        </div>
-
-        <!-- BOTTONI -->
-        <div class="actions d-flex align-items-center ms-lg-4 mt-3 mt-lg-0 gap-2">
-          <button class="btn login-btn">Login</button>
-          <button class="btn register-btn">Register</button>
-        </div>
-
-      </div>
-
+  <!-- MOBILE MENU OVERLAY -->
+  <div class="mobile-menu" [class.open]="mobileMenuOpen">
+    <div class="mobile-menu-header d-flex justify-content-between align-items-center">
+      <div class="logo">SMARTFARE</div>
+      <button class="close-btn" (click)="toggleMobileMenu()">&times;</button>
     </div>
-  </nav>
+    <div class="mobile-nav-links d-flex flex-column gap-3">
+      @for (item of navItems; track item.label) {
+      <a class="nav-item" [attr.href]="item.route">
+        {{ item.label }}
+      </a>
+      }
+      <button class="btn login-btn w-100">Login</button>
+      <button class="btn register-btn w-100">Register</button>
+    </div>
+  </div>
+
 </nav>
