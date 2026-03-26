@@ -1,11 +1,10 @@
-<nav class="navbar-shell" [class.scrolled]="isScrolled">
+<nav class="navbar-shell">
 
   <!-- TOP BAR -->
   <div class="top-bar d-flex justify-content-between align-items-center">
     <div class="left-group d-flex align-items-center gap-2">
-      <i class="bi bi-telephone"></i>
-      <span>{{ contactInfo.phone }}</span>
-      <span class="desktop-only">{{ contactInfo.email }}</span>
+      <i class="bi bi-envelope"></i>
+      <span class="desktop-only">info@smartfare.it</span>
     </div>
 
     <div class="right-group d-flex align-items-center gap-3">
@@ -15,13 +14,30 @@
         <i class="bi bi-instagram"></i>
         <i class="bi bi-linkedin"></i>
       </div>
-
       <!-- Selezione lingua -->
-      <select class="language-select" [(ngModel)]="selectedLanguage">
-        @for (lang of languages; track lang.code) {
-        <option [value]="lang.code">{{ lang.label }}</option>
-        }
-      </select>
+      <div class="dropdown language-dropdown">
+        <button
+          class="btn btn-sm btn-light bg-opacity-10 text-white d-flex align-items-center gap-2 rounded-pill px-3 py-1 dropdown-toggle"
+          type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-translate"></i>
+          <span class="d-none d-md-inline">{{ languages.find(l => l.code === selectedLanguage)?.label || 'Language'
+            }}</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end mt-1 p-0 rounded-3 overflow-hidden">
+          @for (lang of languages; track lang.code) {
+          <li>
+            <button class="dropdown-item d-flex align-items-center gap-2 px-3 py-2" type="button"
+              (click)="selectedLanguage = lang.code">
+              <span class="fi fi-{{lang.code}}"></span>
+              {{ lang.label }}
+              @if(selectedLanguage === lang.code){
+                <i class="bi bi-check ms-auto text-primary"></i> 
+              }
+            </button>
+          </li>
+          }
+        </ul>
+      </div>
     </div>
   </div>
   <!-- MAIN NAVBAR -->
@@ -29,7 +45,7 @@
 
     <!-- LOGO -->
     <div class="logo d-flex align-items-center gap-2">
-      <img src="SmartfareLogo.png" alt="Smartfare Logo" class="logo-image">
+      <span class="logo-mark">S</span>
       <span class="logo-text">SMARTFARE</span>
     </div>
 
