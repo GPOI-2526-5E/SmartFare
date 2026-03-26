@@ -1,4 +1,4 @@
-<nav class="navbar-shell">
+<nav class="navbar-shell" [class.scrolled]="isScrolled">
 
   <!-- TOP BAR -->
   <div class="top-bar d-flex justify-content-between align-items-center">
@@ -10,13 +10,12 @@
 
     <div class="right-group d-flex align-items-center gap-3">
       <div class="social desktop-xl-only d-none d-xl-flex gap-2">
-        <span>Fb</span>
-        <span>X</span>
-        <span>Ig</span>
-        <span>In</span>
+        <i class="bi bi-facebook"></i>
+        <i class="bi bi-twitter-x"></i>
+        <i class="bi bi-instagram"></i>
+        <i class="bi bi-linkedin"></i>
       </div>
 
-      <span class="d-none d-md-inline">{{ contactInfo.signInLabel }}</span>
       <!-- Selezione lingua -->
       <select class="language-select" [(ngModel)]="selectedLanguage">
         @for (lang of languages; track lang.code) {
@@ -30,7 +29,7 @@
 
     <!-- LOGO -->
     <div class="logo d-flex align-items-center gap-2">
-      <span class="logo-mark">S</span>
+      <img src="SmartfareLogo.png" alt="Smartfare Logo" class="logo-image">
       <span class="logo-text">SMARTFARE</span>
     </div>
 

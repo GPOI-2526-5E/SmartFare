@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 interface ContactInfo {
@@ -50,12 +50,26 @@ export class NavbarComponent {
     { code: 'es', label: 'Español' }
   ];
 
-  selectedLanguage: string = 'en'; // default
+  selectedLanguage = 'en';
 
+  isScrolled = false;
   isSearchFocused = false;
   mobileMenuOpen = false;
 
-  onSearchFocus(): void { this.isSearchFocused = true; }
-  onSearchBlur(): void { this.isSearchFocused = false; }
-  toggleMobileMenu(): void { this.mobileMenuOpen = !this.mobileMenuOpen; }
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    this.isScrolled = window.scrollY > 0;
+  }
+
+  onSearchFocus(): void {
+    this.isSearchFocused = true;
+  }
+
+  onSearchBlur(): void {
+    this.isSearchFocused = false;
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
 }

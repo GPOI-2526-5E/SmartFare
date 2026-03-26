@@ -1,6 +1,18 @@
 .navbar-shell {
   font-family: 'Inter', sans-serif;
   color: #fff;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease;
+  background: rgba(10, 15, 26, 0); /* completamente trasparente all'inizio */
+  backdrop-filter: blur(6px);
+}
+
+.navbar-shell.scrolled {
+  background: rgba(10, 15, 26, 0.95); /* colore uniforme durante lo scroll */
+  backdrop-filter: blur(8px);
 }
 
 /* --- TOP BAR --- */
@@ -36,7 +48,7 @@
 .logo-mark {
   width: 2rem;
   height: 2rem;
-  border-radius: 50%;
+  border-radius: 0;
   border: 2px solid #60a5fa;
   display: grid;
   place-items: center;
@@ -45,6 +57,27 @@
 }
 .logo-text {
   font-size: 1.3rem;
+}
+.logo-image {
+  height: 2rem;
+  width: auto;
+}
+
+/* --- LANGUAGE SELECT --- */
+.language-select {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+.language-select:focus {
+  outline: none;
+  border-color: #60a5fa;
+}
+.navbar-shell.scrolled {
+  background: rgba(10, 15, 26, 1);
 }
 
 /* --- SEARCH --- */
@@ -75,6 +108,56 @@
 }
 .nav-links .nav-item:hover {
   color: #60a5fa;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 991px) {
+  .main-bar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .logo {
+    width: 100%;
+    justify-content: center;
+  }
+  .actions,
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+  }
+  .language-select {
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 767px) {
+  .top-bar .right-group {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  .top-bar .social {
+    display: none !important;
+  }
+  .logo-text {
+    font-size: 1rem;
+  }
+  .logo-image {
+    height: 1.6rem;
+  }
+  .mobile-toggler {
+    display: block;
+  }
+  .nav-links,
+  .actions {
+    display: none !important;
+  }
+  .mobile-menu {
+    display: none;
+  }
+  .mobile-menu.open {
+    display: block;
+  }
 }
 
 /* --- ACTION BUTTONS --- */
