@@ -20,9 +20,10 @@
           class="btn btn-sm btn-light bg-opacity-10 text-white d-flex align-items-center gap-2 rounded-pill px-3 py-1 dropdown-toggle"
           type="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-translate"></i>
-          <span class="d-none d-md-inline">{{ languages.find(l => l.code === selectedLanguage)?.label || 'Language'
-            }}</span>
+          <span class="d-none d-md-inline">{{ languages.find(l => l.code === selectedLanguage)?.label ||
+            'Language'}}</span>
         </button>
+
         <ul class="dropdown-menu dropdown-menu-end mt-1 p-0 rounded-3 overflow-hidden">
           @for (lang of languages; track lang.code) {
           <li>
@@ -31,7 +32,7 @@
               <span class="fi fi-{{lang.code}}"></span>
               {{ lang.label }}
               @if(selectedLanguage === lang.code){
-                <i class="bi bi-check ms-auto text-primary"></i> 
+              <i class="bi bi-check ms-auto text-primary"></i>
               }
             </button>
           </li>
@@ -52,16 +53,17 @@
     <!-- NAV LINKS DESKTOP -->
     <div class="nav-links d-none d-lg-flex gap-4">
       @for (item of navItems; track item.label) {
-      <a class="nav-item" [attr.href]="item.route">
-        {{ item.label }}
+      <a class="nav-item d-flex align-items-center gap-2" [attr.href]="item.route">
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
       </a>
       }
     </div>
 
     <!-- ACTION BUTTONS DESKTOP -->
     <div class="actions d-none d-lg-flex gap-2">
-      <button class="btn login-btn">Login</button>
-      <button class="btn register-btn">Register</button>
+      <button class="btn login-btn" routerLink="['/login']" >Login</button>
+      <button class="btn register-btn" routerLink="['/register']">Register</button>
     </div>
 
     <!-- MOBILE TOGGLER -->
@@ -79,8 +81,9 @@
     </div>
     <div class="mobile-nav-links d-flex flex-column gap-3">
       @for (item of navItems; track item.label) {
-      <a class="nav-item" [attr.href]="item.route">
-        {{ item.label }}
+      <a class="nav-item d-flex align-items-center gap-2" [attr.href]="item.route">
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
       </a>
       }
       <button class="btn login-btn w-100">Login</button>
