@@ -1,50 +1,88 @@
 <nav class="navbar-shell">
-  <div class="top-bar">
-    <div class="left-group">
+
+  <!-- TOP BAR (quasi identica) -->
+  <div class="top-bar d-flex justify-content-between align-items-center">
+
+    <div class="left-group d-flex align-items-center gap-2">
       <span class="item"><i class="bi bi-telephone me-1"></i></span>
       <span class="item">{{ contactInfo.phone }}</span>
-      <span class="item desktop-only">{{ contactInfo.email }}</span>
+      <span class="item desktop-only d-none d-md-inline">
+        {{ contactInfo.email }}
+      </span>
     </div>
 
-    <div class="right-group">
-      <div class="social desktop-xl-only">
+    <div class="right-group d-flex align-items-center gap-3">
+      <div class="social desktop-xl-only d-none d-xl-flex">
         <span>Fb</span>
         <span>X</span>
         <span>Ig</span>
         <span>In</span>
       </div>
-      <span>{{ contactInfo.signInLabel }}</span>
-      <span>{{ contactInfo.currency }} <i class="bi bi-chevron-down"></i></span>
+
+      <span class="d-none d-md-inline">
+        {{ contactInfo.signInLabel }}
+      </span>
+
+      <span>
+        {{ contactInfo.currency }}
+        <i class="bi bi-chevron-down"></i>
+      </span>
     </div>
+
   </div>
 
-  <div class="main-bar">
-    <div class="logo-search">
-      <div class="logo">
-        <span class="logo-mark">S</span>
-        <span class="logo-text">SMARTFARE</span>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg main-bar">
+
+    <div class="container-fluid p-0">
+
+      <!-- SINISTRA: LOGO + SEARCH -->
+      <div class="logo-search d-flex align-items-center">
+
+        <div class="logo">
+          <span class="logo-mark">S</span>
+          <span class="logo-text">SMARTFARE</span>
+        </div>
+
+        <div class="search-wrap d-none d-lg-block">
+          <input type="text" placeholder="Destination, tour, hotel, etc" (focus)="onSearchFocus()"
+            (blur)="onSearchBlur()" />
+        </div>
+
       </div>
 
-      <div class="search-wrap" [class.search-focused]="isSearchFocused">
-        <input type="text" placeholder="Destination, tour, hotel, etc" (focus)="onSearchFocus()"
-          (blur)="onSearchBlur()" />
+      <!-- TOGGLER -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- DESTRA -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+
+        <!-- NAV LINKS -->
+        <div class="nav-links d-flex flex-column flex-lg-row gap-3">
+
+          @for (item of navItems; track item.label) {
+          <a class="nav-item" [attr.href]="item.route">
+            {{ item.label }}
+
+            @if (item.hasDropdown) {
+            <i class="bi bi-chevron-down small"></i>
+            }
+          </a>
+          }
+
+        </div>
+
+        <!-- BOTTONI -->
+        <div class="actions d-flex align-items-center ms-lg-4 mt-3 mt-lg-0 gap-2">
+          <button class="btn login-btn">Login</button>
+          <button class="btn register-btn">Register</button>
+        </div>
+
       </div>
-    </div>
 
-    <div class="nav-links desktop-lg-only">
-      @for (item of navItems; track item.label) {
-      <a class="nav-item" [attr.href]="item.route">
-        {{ item.label }}
-        @if (item.hasDropdown) {
-        <i class="bi bi-chevron-down small"></i>
-        }
-      </a>
-      }
     </div>
-
-    <div class="actions">
-      <span class="cart">0</span>
-      <button class="cta">Become Local Expert</button>
-    </div>
-  </div>
+  </nav>
 </nav>
