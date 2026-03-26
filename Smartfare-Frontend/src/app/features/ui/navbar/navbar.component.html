@@ -53,7 +53,7 @@
     <!-- NAV LINKS DESKTOP -->
     <div class="nav-links d-none d-lg-flex gap-4">
       @for (item of navItems; track item.label) {
-      <a class="nav-item d-flex align-items-center gap-2" [attr.href]="item.route">
+      <a class="nav-item d-flex align-items-center gap-2" [routerLink]="item.route">
         <i [class]="item.icon"></i>
         <span>{{ item.label }}</span>
       </a>
@@ -62,8 +62,14 @@
 
     <!-- ACTION BUTTONS DESKTOP -->
     <div class="actions d-none d-lg-flex gap-2">
-      <button class="btn login-btn" routerLink="['/login']" >Login</button>
-      <button class="btn register-btn" routerLink="['/register']">Register</button>
+      @if (isAuthenticated) {
+      <!-- Utente loggato: mostra icona utente e logout -->
+      <i class="bi bi-person-circle fs-3 align-self-center"></i>
+      <button class="btn btn-outline-danger" (click)="logout()">Logout</button>
+      }@else {
+      <a class="btn login-btn" [routerLink]="['/login']">Login</a>
+      <a class="btn register-btn" [routerLink]="['/register']">Register</a>
+      }
     </div>
 
     <!-- MOBILE TOGGLER -->
@@ -86,8 +92,15 @@
         <span>{{ item.label }}</span>
       </a>
       }
-      <button class="btn login-btn w-100">Login</button>
-      <button class="btn register-btn w-100">Register</button>
+      @if (isAuthenticated) {
+      <div class="d-flex flex-column gap-2 align-items-center">
+        <i class="bi bi-person-circle fs-1"></i>
+        <button class="btn btn-outline-danger w-100" (click)="logout()">Logout</button>
+      </div>
+      }@else {
+      <a class="btn login-btn w-100" [routerLink]="['/login']">Login</a>
+      <a class="btn register-btn w-100" [routerLink]="['/register']">Register</a>
+      }
     </div>
   </div>
 

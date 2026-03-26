@@ -14,121 +14,143 @@
 
       @switch (activeType) {
       @case ('Hotel') {
-      <div class="search-field destination">
-        <label for="destination"><i class="bi bi-geo-alt"></i> Destinazione</label>
-        <input id="destination" type="text" placeholder="Dove vuoi andare?">
-      </div>
-
-      <div class="search-field date-picker">
-        <label for="checkin"><i class="bi bi-calendar-check"></i> Check-in</label>
-        <input id="checkin" name="checkin" type="date" [attr.min]="today">
-      </div>
-
-      <div class="search-field date-picker">
-        <label for="checkout"><i class="bi bi-calendar-x"></i> Check-out</label>
-        <input id="checkout" name="checkout" type="date" [attr.min]="today">
-      </div>
-
-      <div class="search-field guests">
-        <label><i class="bi bi-people"></i> Ospiti</label>
-        <div class="guest-inputs">
-          <!-- input duplicato rimosso, già presente quello con placeholder -->
-          <input type="number" value="2" placeholder="Numero persone">
-          <span>Persone</span>
+      <div class="search-row">
+        <div class="search-field destination">
+          <label for="destination"><i class="bi bi-geo-alt"></i> Destinazione</label>
+          <input id="destination" type="text" placeholder="Dove vuoi andare?">
+        </div>
+        <div class="search-field date-picker">
+          <label for="checkin"><i class="bi bi-calendar-check"></i> Check-in</label>
+          <input id="checkin" name="checkin" type="date" [attr.min]="today">
+        </div>
+        <div class="search-field date-picker">
+          <label for="checkout"><i class="bi bi-calendar-x"></i> Check-out</label>
+          <input id="checkout" name="checkout" type="date" [attr.min]="today">
+        </div>
+        <div class="search-field guests">
+          <label><i class="bi bi-people"></i> Ospiti</label>
+          <div class="guest-inputs">
+            <input type="number" value="2" placeholder="Numero persone">
+            <span>Persone</span>
+          </div>
+        </div>
+        <div class="search-action no-grow">
+          <button type="submit" class="btn-submit">
+            <i class="bi bi-search"></i> <span>Cerca</span>
+          </button>
         </div>
       </div>
       }
 
       @case ('Flights') {
-      <div class="search-field">
-        <label><i class="bi bi-airplane-engines"></i> Da dove?</label>
-        <input type="text" placeholder="Aeroporto partenza">
+      <div class="search-row">
+        <div class="search-field">
+          <label><i class="bi bi-airplane-engines"></i> Da dove?</label>
+          <input type="text" placeholder="Aeroporto partenza">
+        </div>
+        <div class="search-field">
+          <label><i class="bi bi-airplane"></i> A dove?</label>
+          <input type="text" placeholder="Aeroporto arrivo">
+        </div>
+        <div class="search-field">
+          <label><i class="bi bi-calendar-check"></i> Data</label>
+          <input type="date" placeholder="Seleziona data">
+        </div>
+        @if (showReturnFlight()) {
+        <div class="search-field date-picker animate-fade-in">
+          <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
+          <input type="date" placeholder="Seleziona data">
+        </div>
+        }
+        <div class="search-field">
+          <label class="switch-label">
+            <span>Aggiungi ritorno</span>
+            <span class="switch">
+              <input type="checkbox" name="showReturnFlight" [(ngModel)]="showReturnFlight">
+              <span class="slider"></span>
+            </span>
+          </label>
+        </div>
+        <div class="search-action no-grow">
+          <button type="submit" class="btn-submit">
+            <i class="bi bi-search"></i> <span>Cerca</span>
+          </button>
+        </div>
       </div>
-      <div class="search-field">
-        <label><i class="bi bi-airplane"></i> A dove?</label>
-        <input type="text" placeholder="Aeroporto arrivo">
-      </div>
-      <div class="search-field">
-        <label><i class="bi bi-calendar-check"></i> Data</label>
-        <!-- input duplicato rimosso, già presente quello con placeholder -->
-        <input type="date" placeholder="Seleziona data">
-      </div>
-      <div class="search-field">
-        <label class="switch-label">
-          <span>Aggiungi ritorno</span>
-          <span class="switch">
-            <input type="checkbox" name="showReturnFlight" [(ngModel)]="showReturnFlight">
-            <span class="slider"></span>
-          </span>
-        </label>
-      </div>
-      @if (showReturnFlight()) {
-      <div class="search-field date-picker animate-fade-in">
-        <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
-        <input type="date" placeholder="Seleziona data">
-      </div>
-      }
       }
       @case ('Trains') {
-      <div class="search-field">
-        <label><i class="bi bi-geo-alt"></i> Da dove?</label>
-        <input type="text" placeholder="Stazione di partenza">
-      </div>
-      <div class="search-field">
-        <label><i class="bi bi-geo"></i> A dove?</label>
-        <input type="text" placeholder="Stazione di arrivo">
-      </div>
-      <div class="search-field date-picker">
-        <label><i class="bi bi-calendar-check"></i> Data andata</label>
-        <!-- input duplicato rimosso, già presente quello con placeholder -->
-        <input type="date" placeholder="Seleziona data">
-      </div>
-      <div class="search-field">
-        <label class="switch-label">
-          <span>Aggiungi ritorno</span>
-          <span class="switch">
-            <input type="checkbox" name="showReturnTrain" [(ngModel)]="showReturnTrain">
-            <span class="slider"></span>
-          </span>
-        </label>
-      </div>
-      @if (showReturnTrain()) {
-      <div class="search-field date-picker animate-fade-in">
-        <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
-        <input type="date" placeholder="Seleziona data">
-      </div>
-      }
-      <div class="search-field guests">
-        <label><i class="bi bi-people"></i> Passeggeri</label>
-        <div class="guest-inputs">
-          <input type="number" min="1" value="1" placeholder="Numero persone">
-          <span>Persone</span>
+      <div class="search-row">
+        <div class="search-field">
+          <label><i class="bi bi-geo-alt"></i> Da dove?</label>
+          <input type="text" placeholder="Stazione di partenza">
+        </div>
+        <div class="search-field">
+          <label><i class="bi bi-geo"></i> A dove?</label>
+          <input type="text" placeholder="Stazione di arrivo">
+        </div>
+        <div class="search-field date-picker">
+          <label><i class="bi bi-calendar-check"></i> Data andata</label>
+          <input type="date" placeholder="Seleziona data">
+        </div>
+        @if (showReturnTrain()) {
+          <div class="search-field date-picker animate-fade-in">
+            <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
+            <input type="date" placeholder="Seleziona data">
+          </div>
+          }
+        <div class="search-field">
+          <label class="switch-label">
+            <span>Aggiungi ritorno</span>
+            <span class="switch">
+              <input type="checkbox" name="showReturnTrain" [(ngModel)]="showReturnTrain">
+              <span class="slider"></span>
+            </span>
+          </label>
+        </div>
+        <div class="search-field guests">
+          <label><i class="bi bi-people"></i> Passeggeri</label>
+          <div class="guest-inputs">
+            <input type="number" min="1" value="1" placeholder="Numero persone">
+            <span>Persone</span>
+          </div>
+        </div>
+        <div class="search-action no-grow">
+          <button type="submit" class="btn-submit">
+            <i class="bi bi-search"></i> <span>Cerca</span>
+          </button>
         </div>
       </div>
       }
 
       @case ('Bus') {
-      <div class="search-field">
-        <label><i class="bi bi-geo-alt"></i> Da dove?</label>
-        <input type="text" placeholder="Fermata di partenza">
-      </div>
-      <div class="search-field">
-        <label><i class="bi bi-geo"></i> A dove?</label>
-        <input type="text" placeholder="Fermata di arrivo">
-      </div>
-      <div class="search-field date-picker">
-        <label><i class="bi bi-calendar-check"></i> Data andata</label>
-        <input type="date" placeholder="Seleziona data">
-      </div>
-      <div class="search-field date-picker">
-        <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
-        <input type="date" placeholder="Seleziona data">
-      </div>
-      <div class="search-field guests">
-        <label><i class="bi bi-people"></i> Passeggeri</label>
-        <div class="guest-inputs">
-          <input type="number" min="1" value="1" placeholder="Numero persone">
-          <span>Persone</span>
+      <div class="search-row">
+        <div class="search-field">
+          <label><i class="bi bi-geo-alt"></i> Da dove?</label>
+          <input type="text" placeholder="Fermata di partenza">
+        </div>
+        <div class="search-field">
+          <label><i class="bi bi-geo"></i> A dove?</label>
+          <input type="text" placeholder="Fermata di arrivo">
+        </div>
+        <div class="search-field date-picker">
+          <label><i class="bi bi-calendar-check"></i> Data andata</label>
+          <input type="date" placeholder="Seleziona data">
+        </div>
+        <div class="search-field date-picker">
+          <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
+          <input type="date" placeholder="Seleziona data">
+        </div>
+        <div class="search-field guests">
+          <label><i class="bi bi-people"></i> Passeggeri</label>
+          <div class="guest-inputs">
+            <input type="number" min="1" value="1" placeholder="Numero persone">
+            <span>Persone</span>
+          </div>
+        </div>
+        <div class="search-action no-grow">
+          <button type="submit" class="btn-submit">
+            <i class="bi bi-search"></i> <span>Cerca</span>
+          </button>
         </div>
       </div>
       }
@@ -138,12 +160,6 @@
       <div class="search-action">
         <button type="submit" class="btn-submit">
           <i class="bi bi-globe"></i> <span>Crea</span>
-        </button>
-      </div>
-      }@else {
-      <div class="search-action">
-        <button type="submit" class="btn-submit">
-          <i class="bi bi-search"></i> <span>Cerca</span>
         </button>
       </div>
       }

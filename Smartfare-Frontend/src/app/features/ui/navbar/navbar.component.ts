@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
+import { AuthService } from '../../../core/auth/auth.service';
+import { AlertService } from '../../../core/services/alert.service';
 
 interface NavItem {
   icon: string;
@@ -16,6 +18,8 @@ interface NavItem {
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
+
+  constructor(private authService: AuthService, private router: Router, private alertService: AlertService) { };
 
   readonly navItems: NavItem[] = [
     { icon: 'bi bi-house-door', label: 'Home', route: '/home' },
@@ -42,4 +46,14 @@ export class NavbarComponent {
   onSearchFocus(): void { this.isSearchFocused = true; }
   onSearchBlur(): void { this.isSearchFocused = false; }
   toggleMobileMenu(): void { this.mobileMenuOpen = !this.mobileMenuOpen; }
+
+  get isAuthenticated() {
+    return this.authService.IsAuthenticated();
+  }
+
+  logout() {
+    this.authService.Logout();
+    this.alertService.show('Logout effettuato con successo!');
+    this.router.navigate(['/']);
+  }
 }

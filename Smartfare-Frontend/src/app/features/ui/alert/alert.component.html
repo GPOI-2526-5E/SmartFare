@@ -1,0 +1,16 @@
+@if (visible()) {
+<div class="alert-modal fade-in" [ngClass]="type()">
+  <div class="travel-alert-content">
+    <button class="close-btn" aria-label="Chiudi" (click)="close()">&times;</button>
+    <span class="alert-icon">
+      @switch (type()) {
+      @case ('success') { 🧳 }
+      @case ('info') { 🗺️ }
+      @case ('warning') { ✈️ }
+      @case ('danger') { 🚫 }
+      }
+    </span>
+    <div class="travel-alert-message">{{ message() }}</div>
+  </div>
+</div>
+}

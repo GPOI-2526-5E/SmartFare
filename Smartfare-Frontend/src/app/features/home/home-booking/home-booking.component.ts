@@ -17,5 +17,4 @@ export class HomeBookingComponent {
     secondaryActionLabel: 'Learn More',
     backgroundImageUrl: 'https://images.unsplash.com/photo-1486299267070-83823f5448dd?auto=format&fit=crop&q=80&w=2071'
   };
-
 }

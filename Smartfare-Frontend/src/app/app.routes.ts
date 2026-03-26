@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { HomeBookingComponent } from './features/home/home-booking/home-booking.component';
 
 export const APP_ROUTES: Routes = [
-  { path: '', loadComponent: () => import('./features/home/home-booking/home-booking.component').then((h) => h.HomeBookingComponent ) },
+  { path: '', loadComponent: () => import('./features/home/home-booking/home-booking.component').then((h) => h.HomeBookingComponent) },
+  { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then((l) => l.LoginComponent)},
   { path: '**', redirectTo: '' }
 ];

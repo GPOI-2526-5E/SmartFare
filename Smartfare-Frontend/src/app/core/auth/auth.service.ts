@@ -1,6 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
-import { ApiService } from '../services/api.service';
+import { firstValueFrom, Observable } from 'rxjs';
+import { AuthResponse } from '../models/response.model';
+import { HttpClient } from '@angular/common/http';
+import { Token } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root',
@@ -9,75 +11,34 @@ import { ApiService } from '../services/api.service';
 export class AuthService {
   private readonly TOKEN_KEY = 'authToken';
 
-  private readonly token = signal<string | null>(null);
+  private readonly tokenSignal = signal<string | null>(null);
 
-  constructor(private apiService: ApiService) {
+  private AUTH_URL = 'http://localhost:3500/auth';
+
+  constructor(private http: HttpClient) {
     const token = localStorage.getItem(this.TOKEN_KEY);
 
     if (token && !this.isTokenExpired(token)) {
-      this.token.set(token);
+      this.tokenSignal.set(token);
     } else if (token) {
       localStorage.removeItem(this.TOKEN_KEY);
     }
-
-  };
-
-  async Login(email: string, password: string) {
-    try {
-      const data = await firstValueFrom(this.apiService.LoginRequest(email, password));
-
-      if (data.token) {
-        this.SaveAuth(data.token);
-      }
-
-      return data;
-    } catch (error: any) {
-      console.error("Login error:", error);
-
-      const serverMessage = error?.error?.message || error?.error?.error;
-      const errorMessage = serverMessage || ('Errore durante il login: ' + (error?.message || 'Errore sconosciuto'));
-
-      return {
-        success: false,
-        message: errorMessage
-      };
-    }
-  };
-
-  async Register(email: string, password: string) {
-    try {
-      const data = await firstValueFrom(this.apiService.RegisterRequest(email, password));
-
-      return data;
-
-    } catch (error: any) {
-      console.error("Register error:", error);
-
-      const serverMessage = error?.error?.message || error?.error?.error;
-      const errorMessage = serverMessage || ('Errore durante la registrazione: ' + (error?.message || 'Errore sconosciuto'));
-
-      return {
-        success: false,
-        message: errorMessage
-      };
-    }
   }
 
-  SaveAuth(token: string) {
-    this.token.set(token);
+  saveAuth(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
-  };
+    this.tokenSignal.set(token);
+  }
 
-  get Token(): string | null {
-    const token = this.token();
+  Logout() {
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.tokenSignal.set(null);
+  }
 
-    if (token && this.isTokenExpired(token)) {
-      this.logout();
-      return null;
-    }
-
-    return token;
-  };
+  IsAuthenticated(): boolean {
+    const token = this.tokenSignal();
+    return !!token && !this.isTokenExpired(token);
+  }
 
   isTokenExpired(token: string): boolean {
     try {
@@ -86,22 +47,17 @@ export class AuthService {
 
       const decoded = JSON.parse(atob(parts[1]));
 
-      if (!decoded.exp)
-        return false;
+      if (!decoded.exp) return false;
+
       const expirationTime = decoded.exp * 1000;
       return Date.now() >= expirationTime;
     } catch (error) {
       return true;
     }
-  };
-
-  getUser() {
-    return null;
   }
 
-  logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    this.token.set(null);
-  };
+  Login(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<any>(this.AUTH_URL + "/login", { email, password });
+  }
 }
 

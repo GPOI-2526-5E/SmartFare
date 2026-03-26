@@ -1,3 +1,33 @@
+/* --- SEARCH ROW PER HOTEL --- */
+.search-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.search-row .search-field {
+  flex: 1 1 0;
+  margin-bottom: 0;
+}
+
+.search-row .search-action.no-grow {
+  flex: 0 0 auto;
+  align-self: stretch;
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 0;
+}
+
+@media (max-width: 992px) {
+  .search-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .search-row .search-action.no-grow {
+    width: 100%;
+  }
+}
 /* --- SWITCH CUSTOM --- */
 .switch-label {
   display: flex;
