@@ -11,7 +11,6 @@ import { LoaderService } from './core/services/loader.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
 export class AppComponent {
   loaderService = inject(LoaderService);
   readonly isLoading = this.loaderService.isLoading;

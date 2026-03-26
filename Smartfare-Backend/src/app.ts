@@ -4,6 +4,7 @@ import path from "path";
 import healthRoutes from "./routes/health.route";
 import searchRoutes from "./routes/search.route";
 import authRoutes from "./routes/auth.route";
+import flightsRoutes from './routes/flights.route';
 
 export function createApp() {
   const app = express();
@@ -27,6 +28,7 @@ export function createApp() {
   // API Routes
   app.use("/api/health", healthRoutes);
   app.use("/api/search", searchRoutes);
+  app.use("/api/flights", flightsRoutes);
   app.use("/auth", authRoutes);
 
   // Error handling

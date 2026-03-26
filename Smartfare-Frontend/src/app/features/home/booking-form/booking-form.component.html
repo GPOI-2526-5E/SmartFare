@@ -1,4 +1,4 @@
-<section class="booking-search-container">
+<section class="booking-search-container" >
   <div class="category-tabs d-flex flex-nowrap">
     @for (type of bookingTypes; track type.label) {
     <button type="button" class="tab-item" [class.active]="activeType === type.label"
@@ -46,11 +46,25 @@
       <div class="search-row">
         <div class="search-field">
           <label><i class="bi bi-airplane-engines"></i> Da dove?</label>
-          <input type="text" placeholder="Aeroporto partenza">
+          <select id="departureSelect" name="departureAirport" [(ngModel)]="departureAirport" class="form-select">
+            <option value="">Seleziona aeroporto di partenza</option>
+            @for (airport of airports() ?? []; track airport.idAeroporto) {
+            <option [value]="airport.idAeroporto">
+              {{ airport.nome }}
+            </option>
+            }
+          </select>
         </div>
         <div class="search-field">
           <label><i class="bi bi-airplane"></i> A dove?</label>
-          <input type="text" placeholder="Aeroporto arrivo">
+          <select name="arrivalAirport" [(ngModel)]="arrivalAirport" class="form-select airport-select">
+            <option value="" disabled selected hidden>Seleziona aeroporto di arrivo</option>
+            @for (airport of airports() ?? []; track airport.idAeroporto) {
+            <option [value]="airport.idAeroporto" class="airport-option">
+              {{ airport.nome }}
+            </option>
+            }
+          </select>
         </div>
         <div class="search-field">
           <label><i class="bi bi-calendar-check"></i> Data</label>
@@ -93,11 +107,11 @@
           <input type="date" placeholder="Seleziona data">
         </div>
         @if (showReturnTrain()) {
-          <div class="search-field date-picker animate-fade-in">
-            <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
-            <input type="date" placeholder="Seleziona data">
-          </div>
-          }
+        <div class="search-field date-picker animate-fade-in">
+          <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
+          <input type="date" placeholder="Seleziona data">
+        </div>
+        }
         <div class="search-field">
           <label class="switch-label">
             <span>Aggiungi ritorno</span>

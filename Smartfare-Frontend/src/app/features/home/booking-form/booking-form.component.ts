@@ -1,6 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Airports } from '../../../core/models/flights.model'
+import { AuthService } from '../../../core/auth/auth.service';
+import { SmartfareService } from '../../../core/services/smartfare-api.service';
 
 @Component({
   selector: 'app-booking-form',
@@ -9,7 +12,15 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './booking-form.component.css',
   standalone: true,
 })
-export class BookingFormComponent {
+export class BookingFormComponent implements OnInit {
+
+  departureAirport: string = '';
+  arrivalAirport: string = '';
+
+  constructor(private authService: AuthService, private smartfareService: SmartfareService) { };
+
+  airports = signal<Airports | null>(null);
+
   readonly bookingTypes = [
     { label: 'Hotel', icon: 'bi-building' },
     { label: 'Flights', icon: 'bi-airplane-engines' },
@@ -34,5 +45,17 @@ export class BookingFormComponent {
 
   onSubmit(event: Event): void {
     event.preventDefault();
+  }
+
+  ngOnInit() {
+    this.smartfareService.GetAirports().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.airports.set(res.data);
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 }

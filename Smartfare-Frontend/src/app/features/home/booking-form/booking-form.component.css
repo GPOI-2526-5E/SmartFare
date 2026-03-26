@@ -1,3 +1,92 @@
+/* --- WRAPPER E ICONE SELECT --- */
+.airport-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.airport-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 1.2rem;
+  color: #60a5fa;
+  z-index: 2;
+  pointer-events: none;
+}
+.airport-select {
+  padding-left: 2.2rem !important;
+  background: linear-gradient(90deg, #232b3a 80%, #283040 100%);
+  color: #e5e7eb;
+  border: 2px solid var(--primary, #2563eb);
+  border-radius: 12px;
+  font-size: 1.08rem;
+  font-weight: 500;
+  box-shadow: 0 4px 18px #0003;
+  min-height: 48px;
+  transition:
+    border 0.2s,
+    box-shadow 0.2s;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+.airport-select:focus {
+  border: 2.5px solid #60a5fa;
+  box-shadow: 0 0 0 3px #60a5fa33;
+}
+.airport-select:hover {
+  border: 2.5px solid #8fb4ff;
+}
+.airport-select option[disabled] {
+  color: #b6c2d6;
+  font-style: italic;
+  background: #232b3a;
+}
+.airport-option {
+  background: #232b3a;
+  color: #8fb4ff;
+  font-weight: 500;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+}
+.airport-city {
+  color: #b6c2d6;
+  font-size: 0.98em;
+  margin-left: 0.2em;
+}
+/* --- SELECT AEROPORTI --- */
+.form-select {
+  background-color: #1e2a38;
+  color: #ffffff;
+  border: 1px solid #3a4a5c;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+}
+
+.form-select:focus {
+  border-color: #0d6efd; /* blu bootstrap */
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  background-color: #243447;
+  color: #fff;
+}
+
+/* freccia bianca */
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Etichette icone (se presenti) */
+.search-field label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+/* Sfondo generale dei contenitori */
+.search-field {
+  margin-bottom: 1rem;
+}
 /* --- SEARCH ROW PER HOTEL --- */
 .search-row {
   display: flex;
