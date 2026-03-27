@@ -26,13 +26,11 @@
             ],
             "styles": [
               "src/styles.css",
-              "node_modules/tom-select/dist/css/tom-select.css",
               "bootstrap/dist/css/bootstrap.min.css",
-              "bootstrap-icons/font/bootstrap-icons.css",
+              "bootstrap-icons/font/bootstrap-icons.css"
             ],
             "scripts": [
-              "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
-              "node_modules/tom-select/dist/js/tom-select.complete.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
             ]
           },
           "configurations": {
