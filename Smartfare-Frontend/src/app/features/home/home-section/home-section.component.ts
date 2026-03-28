@@ -3,13 +3,13 @@ import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { BookingFormComponent } from "../booking-form/booking-form.component";
 
 @Component({
-  selector: 'app-home-booking',
+  selector: 'app-home-section',
   standalone: true,
   imports: [NavbarComponent, BookingFormComponent],
-  templateUrl: './home-booking.component.html',
-  styleUrl: './home-booking.component.css',
+  templateUrl: './home-section.component.html',
+  styleUrl: './home-section.component.css',
 })
-export class HomeBookingComponent {
+export class HomeSectionComponent {
   readonly heroContent = {
     title: 'Explore the World',
     subtitle: 'Find the best hotels, tours, and activities for your next adventure. Book with confidence and get the best prices.',

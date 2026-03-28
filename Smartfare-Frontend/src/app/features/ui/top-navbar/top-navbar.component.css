@@ -1,0 +1,96 @@
+.top-bar {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(10, 15, 26, 0.62);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+}
+
+.top-bar {
+  position: relative;
+  z-index: 2000;
+}
+
+.main-bar {
+  position: relative;
+  z-index: 1000;
+}
+
+.language-select {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  outline: none;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+  z-index: 1050;
+}
+
+.language-select:hover,
+.language-select:focus {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: #60a5fa;
+}
+
+.language-dropdown .dropdown-toggle {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.language-dropdown .dropdown-toggle:focus,
+.language-dropdown .dropdown-toggle:hover {
+  background: rgba(96, 165, 250, 0.18) !important;
+  border-color: #60a5fa;
+  color: #fff;
+}
+.language-dropdown .dropdown-menu {
+  min-width: 120px;
+  background: #181e2a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  margin: 0;
+  z-index: 3000;
+}
+
+.language-dropdown {
+  position: relative;
+}
+
+.language-dropdown .dropdown-item {
+  color: #fff;
+  font-size: 0.95rem;
+  background: transparent;
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+.language-dropdown .dropdown-item:hover,
+.language-dropdown .dropdown-item:focus {
+  background: #2563eb;
+  color: #fff;
+}
+.language-dropdown .dropdown-item .bi-check {
+  font-size: 1rem;
+}
+.language-dropdown .fi {
+  width: 1.2em;
+  height: 1.2em;
+  display: inline-block;
+  background-size: cover;
+  border-radius: 50%;
+  margin-right: 0.5em;
+}

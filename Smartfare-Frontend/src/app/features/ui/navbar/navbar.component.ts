@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from "@angular/router";
 import { AuthService } from '../../../core/auth/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
+import { TopNavbarComponent } from "../top-navbar/top-navbar.component";
 
 interface NavItem {
   icon: string;
@@ -13,7 +14,7 @@ interface NavItem {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, TopNavbarComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
