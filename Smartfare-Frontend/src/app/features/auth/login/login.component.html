@@ -2,16 +2,16 @@
   <div class="background-layer"></div>
   <div class="overlay"></div>
   <div class="content-layer">
-    <app-navbar class="navbar-overlay"></app-navbar>
+    <app-navbar class="navbar-overlay" data-aos="fade-down"></app-navbar>
     <div class="login-container">
-      <div class="login-left">
+      <div class="login-left" data-aos="fade-left">
         <div class="welcome-content">
           <div class="logo">SMARTFARE</div>
           <h1><span class="bold">Welcome</span>, accedi al tuo account</h1>
         </div>
       </div>
       <div class="login-right">
-        <form class="login-form-wrapper" (submit)="Login()">
+        <form class="login-form-wrapper" (submit)="Login()" data-aos="fade-right">
           <h2>Login</h2>
           <div class="form-group">
             <label for="email">Email</label>
