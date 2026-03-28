@@ -8,12 +8,16 @@ html,
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   font-family: 'Nunito Sans', sans-serif;
   background: #f0f1f4;
   color: #1f2836;
+  overflow-x: hidden;
 }
 
 .hero-container {

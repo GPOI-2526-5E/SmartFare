@@ -1,8 +1,6 @@
 export interface Airports{
-  idAeroporto: string,
-  nome: string,
-  citta: string,
-  icao: string,
-  regione: string,
-  tipo: string
+  id: number,
+  name: string,
+  code: string,
+  location_id: number
 }
