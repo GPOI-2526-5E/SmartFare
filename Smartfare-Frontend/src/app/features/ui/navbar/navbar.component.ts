@@ -30,22 +30,8 @@ export class NavbarComponent {
     { icon: 'bi bi-activity', label: 'Activity', route: '/activity' },
   ];
 
-  // Lingue supportate
-  languages = [
-    { code: 'en', label: 'English' },
-    { code: 'it', label: 'Italiano' },
-    { code: 'fr', label: 'Français' },
-    { code: 'de', label: 'Deutsch' },
-    { code: 'es', label: 'Español' }
-  ];
-
-  selectedLanguage: string = 'en'; // default
-
-  isSearchFocused = false;
   mobileMenuOpen = false;
 
-  onSearchFocus(): void { this.isSearchFocused = true; }
-  onSearchBlur(): void { this.isSearchFocused = false; }
   toggleMobileMenu(): void { this.mobileMenuOpen = !this.mobileMenuOpen; }
 
   get isAuthenticated() {

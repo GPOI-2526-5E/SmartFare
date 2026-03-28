@@ -1,6 +1,5 @@
 <div class="travel-hero-page position-relative min-vh-100 d-flex flex-column" >
-  <div class="background-layer w-100 h-100 position-absolute top-0 start-0"
-    [style.background-image]="'url(' + heroContent.backgroundImageUrl + ')'">
+  <div class="background-layer w-100 h-100 position-absolute top-0 start-0">
     <div class="overlay w-100 h-100 position-absolute top-0 start-0"></div>
   </div>
 
@@ -12,16 +11,10 @@
         <div class="col-12 col-lg-10 mx-auto">
           <span class="badge rounded-pill text-bg-light px-3 py-2 mb-3">SmartFare Tickets</span>
           <h1 class="hero-title mb-3">
-            {{ heroContent.title }}
+            Explore the World
             <span>With MyTravel</span>
           </h1>
-          <p class="hero-subtitle mx-auto mb-4">{{ heroContent.subtitle }}</p>
-          <div class="d-flex flex-column flex-sm-row justify-content-center gap-2 gap-sm-3 mt-4">
-            <button class="btn btn-primary btn-lg px-4 mb-2 mb-sm-0">{{ heroContent.primaryActionLabel }}</button>
-            @if (heroContent.secondaryActionLabel) {
-            <button class="btn btn-outline-light btn-lg px-4">{{ heroContent.secondaryActionLabel }}</button>
-            }
-          </div>
+          <p class="hero-subtitle mx-auto mb-4">Find the best hotels, tours, and activities for your next adventure. Book with confidence and get the best prices.</p>
         </div>
       </div>
     </main>

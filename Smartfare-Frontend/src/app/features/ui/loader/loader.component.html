@@ -1,21 +1,18 @@
-@if(show) {
-<div class="loader-overlay">
-  <div class="loader-card" role="status" aria-live="polite" aria-busy="true">
-    <p class="loader-kicker">SMARTFARE ENGINE</p>
-
-    <div class="loader-spinner" aria-hidden="true">
-      <span class="ring ring-a"></span>
-      <span class="ring ring-b"></span>
-      <span class="core"></span>
-    </div>
-
-    <div class="loader-steps" aria-hidden="true">
-      <span>Sync dati</span>
-      <span>Analisi opzioni</span>
-      <span>Rendering risultati</span>
-    </div>
-
-    <p class="loader-message">{{ message }}</p>
+@if (show()) {
+  <div class="loader-shell" aria-hidden="true">
+    <div class="loader-backdrop"></div>
   </div>
-</div>
+
+  <section class="loader-panel" role="status" aria-live="polite" [attr.aria-busy]="show()">
+    <div class="loader-radar" aria-hidden="true">
+      <span class="radar-wave wave-one"></span>
+      <span class="radar-wave wave-two"></span>
+      <span class="radar-wave wave-three"></span>
+      <span class="radar-sweep"></span>
+      <span class="radar-core"></span>
+      <span class="radar-dot dot-alpha"></span>
+      <span class="radar-dot dot-beta"></span>
+      <span class="radar-dot dot-gamma"></span>
+    </div>
+  </section>
 }
