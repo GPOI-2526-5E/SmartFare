@@ -6,6 +6,7 @@ import searchRoutes from "./routes/search.route";
 import authRoutes from "./routes/auth.route";
 import flightsRoutes from './routes/flights.route';
 import locationsRoutes from './routes/location.route';
+import { json } from "stream/consumers";
 
 export function createApp() {
   const app = express();

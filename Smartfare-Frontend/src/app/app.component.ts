@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { AlertComponent } from './features/ui/alert/alert.component';
 import { AppLoaderComponent } from './features/ui/loader/loader.component';
@@ -15,19 +15,5 @@ import { filter } from 'rxjs';
 export class AppComponent {
   loaderService = inject(LoaderService);
   readonly isLoading = this.loaderService.isLoading;
-  private readonly router = inject(Router);
 
-  constructor() {
-    this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
-      .subscribe(() => {
-        if (typeof window === 'undefined') {
-          return;
-        }
-
-        requestAnimationFrame(() => {
-          window.dispatchEvent(new Event('resize'));
-        });
-      });
-  }
 }
