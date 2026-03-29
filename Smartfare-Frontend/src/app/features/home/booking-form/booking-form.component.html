@@ -14,32 +14,7 @@
 
       @switch (activeType) {
       @case ('Hotel') {
-      <div class="search-row">
-        <div class="search-field destination">
-          <label for="destination"><i class="bi bi-geo-alt"></i> Destinazione</label>
-          <input id="destination" type="text" placeholder="Dove vuoi andare?">
-        </div>
-        <div class="search-field date-picker">
-          <label for="checkin"><i class="bi bi-calendar-check"></i> Check-in</label>
-          <input id="checkin" name="checkin" type="date" [attr.min]="today">
-        </div>
-        <div class="search-field date-picker">
-          <label for="checkout"><i class="bi bi-calendar-x"></i> Check-out</label>
-          <input id="checkout" name="checkout" type="date" [attr.min]="today">
-        </div>
-        <div class="search-field guests">
-          <label><i class="bi bi-people"></i> Ospiti</label>
-          <div class="guest-inputs">
-            <input type="number" value="2" placeholder="Numero persone">
-            <span>Persone</span>
-          </div>
-        </div>
-        <div class="search-action no-grow">
-          <button type="submit" class="btn-submit">
-            <i class="bi bi-search"></i> <span>Cerca</span>
-          </button>
-        </div>
-      </div>
+        <app-hotel-search-bar></app-hotel-search-bar>
       }
 
       @case ('Flights') {

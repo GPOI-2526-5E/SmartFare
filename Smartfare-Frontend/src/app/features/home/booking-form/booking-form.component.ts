@@ -2,12 +2,13 @@ import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Airports } from '../../../core/models/flights.model'
-import { AuthService } from '../../../core/auth/auth.service';
+import Location from '../../../core/models/location.model';
+import { HotelSearchBarComponent } from '../../booking/hotel-search-bar/hotel-search-bar.component';
 import { SmartfareService } from '../../../core/services/smartfare-api.service';
 
 @Component({
   selector: 'app-booking-form',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HotelSearchBarComponent],
   templateUrl: './booking-form.component.html',
   styleUrl: './booking-form.component.css',
   standalone: true,
@@ -20,7 +21,6 @@ export class BookingFormComponent implements OnInit {
   constructor(private smartfareService: SmartfareService) { };
 
   airports = signal<Airports | null>(null);
-  locations = signal<Location[] | null>(null);
 
   readonly bookingTypes = [
     { label: 'Hotel', icon: 'bi-building' },
@@ -58,15 +58,5 @@ export class BookingFormComponent implements OnInit {
         console.error(error);
       }
     });
-
-    this.smartfareService.GetLocations().subscribe({
-      next: (res) => {
-        console.log(res);
-        this.locations.set(res.data);
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    })
   }
 }

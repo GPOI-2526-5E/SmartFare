@@ -1,13 +1,33 @@
 <section class="hotel-search">
-  <div class="search-topline">
-    <span class="search-kicker">Hotel Search</span>
-    <h1>Find your perfect stay</h1>
-  </div>
-
   <form class="search-form" (submit)="onSubmit($event)">
     <div class="search-field destination">
       <label for="hotel-destination"><i class="bi bi-geo-alt"></i> Destinazione</label>
-      <input id="hotel-destination" type="text" [(ngModel)]="destination" name="destination" placeholder="Dove vuoi andare?">
+      <input
+        id="hotel-destination"
+        type="text"
+        [(ngModel)]="destination"
+        name="destination"
+        placeholder="Dove vuoi andare?"
+        autocomplete="off"
+        (focus)="openSuggestions()"
+        (input)="openSuggestions()"
+        (blur)="closeSuggestions()"
+      >
+
+      @if (showSuggestions && filteredLocations.length > 0) {
+        <div class="location-suggestions">
+          @for (location of filteredLocations; track location.id) {
+            <button
+              type="button"
+              class="location-option"
+              (mousedown)="selectLocation(location)"
+            >
+              <span class="location-main">{{ location.name }}</span>
+              <span class="location-meta">{{ location.province }} · {{ location.cap }}</span>
+            </button>
+          }
+        </div>
+      }
     </div>
 
     <div class="search-field">

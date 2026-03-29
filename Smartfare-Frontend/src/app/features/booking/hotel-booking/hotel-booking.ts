@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
 import { HotelFiltersBarComponent } from '../hotel-filters-bar/hotel-filters-bar.component';
 import { HotelMapPanelComponent } from '../hotel-map-panel/hotel-map-panel.component';
 import { HotelResultsListComponent } from '../hotel-results-list/hotel-results-list.component';
 import { HotelSearchBarComponent } from '../hotel-search-bar/hotel-search-bar.component';
 import { HotelCard } from '../../../core/models/hotel-booking.models';
+import Location from '../../../core/models/location.model';
+import { SmartfareService } from '../../../core/services/smartfare-api.service';
 
 @Component({
   selector: 'app-hotel-booking',
@@ -19,8 +21,11 @@ import { HotelCard } from '../../../core/models/hotel-booking.models';
   templateUrl: './hotel-booking.html',
   styleUrl: './hotel-booking.css',
 })
-export class HotelBooking {
+export class HotelBooking implements OnInit {
+  constructor(private smartfareService: SmartfareService) {}
+
   showMap = true;
+  locations = signal<Location[]>([]);
 
   readonly filters = [
     'Recommended',
@@ -87,5 +92,16 @@ export class HotelBooking {
 
   toggleMap(): void {
     this.showMap = !this.showMap;
+  }
+
+  ngOnInit(): void {
+    this.smartfareService.GetLocations().subscribe({
+      next: (res) => {
+        this.locations.set(res.data ?? []);
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
   }
 }

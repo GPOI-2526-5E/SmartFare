@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from "@angular/router";
 import { AuthService } from '../../../core/auth/auth.service';
@@ -31,8 +31,15 @@ export class NavbarComponent {
   ];
 
   mobileMenuOpen = false;
+  isPinned = false;
+  readonly pinOffset = 44;
 
   toggleMobileMenu(): void { this.mobileMenuOpen = !this.mobileMenuOpen; }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.isPinned = window.scrollY > this.pinOffset;
+  }
 
   get isAuthenticated() {
     return this.authService.IsAuthenticated();

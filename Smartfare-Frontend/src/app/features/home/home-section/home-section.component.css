@@ -7,8 +7,9 @@
   min-height: 100dvh;
   color: #f8fafc;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
+  z-index: 20;
 }
 
 .background-layer {
@@ -36,13 +37,19 @@
   z-index: 1;
   min-height: 100vh;
   min-height: 100dvh;
-  padding-bottom: 10.5rem;
   width: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  row-gap: clamp(1.75rem, 4vh, 3.5rem);
 }
 
 .hero-content-wrap {
-  padding-top: clamp(5rem, 12vw, 8rem);
-  padding-bottom: clamp(4rem, 10vw, 7rem);
+  width: 100%;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-height: 0;
+  transform: translateY(clamp(1.5rem, 4vh, 3rem));
 }
 
 .hero-title {
@@ -65,13 +72,17 @@
 }
 
 .booking-form-wrap {
-  position: static;
   width: 100%;
-  z-index: 2;
+  z-index: 30;
   max-width: 100%;
-  padding: 0 0.75rem 1.2rem;
-  margin-top: 1.5rem;
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  overflow: visible;
+}
+
+.booking-form-wrap > .w-100 {
+  width: min(100%, 1140px) !important;
 }
 
 .floating {
@@ -115,37 +126,25 @@
 
 @media (max-width: 1200px) {
   .hero-content-wrap {
-    padding-top: 5.5rem;
-  }
-  .booking-form-wrap {
-    padding-bottom: 0.5rem;
+    width: min(100%, 1140px);
   }
 }
 
 @media (min-width: 992px) {
-  .booking-form-wrap {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-top: 0;
+  .content-layer {
+    grid-template-rows: auto minmax(0, 1fr) auto;
   }
 }
 
 @media (max-width: 768px) {
   .hero-content-wrap {
-    padding-top: 3.5rem;
-    padding-bottom: 2.5rem;
-  }
-  .booking-form-wrap {
-    padding-bottom: 0.2rem;
+    width: 100%;
+    transform: translateY(1rem);
   }
 }
 
 @media (max-width: 991px) {
   .content-layer {
-    padding-bottom: 0;
+    row-gap: 1.5rem;
   }
 }
