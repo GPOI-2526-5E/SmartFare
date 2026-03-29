@@ -18,10 +18,10 @@ import { SmartfareService } from '../../../core/services/smartfare-api.service';
     HotelResultsListComponent,
     HotelMapPanelComponent,
   ],
-  templateUrl: './hotel-booking.html',
-  styleUrl: './hotel-booking.css',
+  templateUrl: './hotel-booking.component.html',
+  styleUrl: './hotel-booking.component.css',
 })
-export class HotelBooking implements OnInit {
+export class HotelBookingComponent implements OnInit {
   constructor(private smartfareService: SmartfareService) {}
 
   showMap = true;
