@@ -1,0 +1,23 @@
+<div class="hotel-page">
+  <div class="page-content">
+    <app-navbar></app-navbar>
+
+    <section class="booking-shell">
+      <app-hotel-search-bar></app-hotel-search-bar>
+
+      <app-hotel-filters-bar
+        [filters]="filters"
+        [showMap]="showMap"
+        (toggleMap)="toggleMap()"
+      ></app-hotel-filters-bar>
+
+      <div class="content-grid" [class.map-hidden]="!showMap">
+        <app-hotel-results-list [hotels]="hotels"></app-hotel-results-list>
+
+        @if (showMap) {
+          <app-hotel-map-panel></app-hotel-map-panel>
+        }
+      </div>
+    </section>
+  </div>
+</div>

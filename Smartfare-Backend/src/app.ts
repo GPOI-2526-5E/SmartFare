@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import healthRoutes from "./routes/health.route";
-import searchRoutes from "./routes/search.route";
+import trainsRoute from "./routes/trains.route";
 import authRoutes from "./routes/auth.route";
 import flightsRoutes from './routes/flights.route';
 import locationsRoutes from './routes/location.route';
@@ -15,7 +15,17 @@ export function createApp() {
   app.use(express.json());
 
   app.use("/", (req, res, next) => {
-    console.log("RICHIESTA: " + req.method + " - " + req.url + " - " + JSON.stringify(req.body) || {});
+    const parts = [`RICHIESTA: ${req.method} - ${req.url}`];
+
+    if (req.query && Object.keys(req.query).length > 0) {
+      parts.push(`query: ${JSON.stringify(req.query)}`);
+    }
+
+    if (req.body && Object.keys(req.body).length > 0) {
+      parts.push(`body: ${JSON.stringify(req.body)}`);
+    }
+
+    console.log(parts.join(" - "));
     next();
   });
 
@@ -29,10 +39,10 @@ export function createApp() {
 
   // API Routes
   app.use("/api/health", healthRoutes);
-  app.use("/api/search", searchRoutes);
+  app.use("/api/trains", trainsRoute);
   app.use("/api/flights", flightsRoutes);
-  app.use("/auth", authRoutes);
   app.use("/api/locations", locationsRoutes);
+  app.use("/auth", authRoutes);
 
   // Error handling
   app.use((err: any, req: any, res: any, next: any) => {

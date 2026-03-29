@@ -1,0 +1,36 @@
+<section class="hotel-search">
+  <div class="search-topline">
+    <span class="search-kicker">Hotel Search</span>
+    <h1>Find your perfect stay</h1>
+  </div>
+
+  <form class="search-form" (submit)="onSubmit($event)">
+    <div class="search-field destination">
+      <label for="hotel-destination"><i class="bi bi-geo-alt"></i> Destinazione</label>
+      <input id="hotel-destination" type="text" [(ngModel)]="destination" name="destination" placeholder="Dove vuoi andare?">
+    </div>
+
+    <div class="search-field">
+      <label for="hotel-checkin"><i class="bi bi-calendar-check"></i> Check-in</label>
+      <input id="hotel-checkin" type="date" name="checkin" [attr.min]="today">
+    </div>
+
+    <div class="search-field">
+      <label for="hotel-checkout"><i class="bi bi-calendar-x"></i> Check-out</label>
+      <input id="hotel-checkout" type="date" name="checkout" [attr.min]="today">
+    </div>
+
+    <div class="search-field guests">
+      <label for="hotel-guests"><i class="bi bi-people"></i> Ospiti</label>
+      <div class="guest-inputs">
+        <input id="hotel-guests" type="number" min="1" [(ngModel)]="guests" name="guests">
+        <span>Persone</span>
+      </div>
+    </div>
+
+    <button class="submit-btn" type="submit">
+      <i class="bi bi-search"></i>
+      <span>Cerca</span>
+    </button>
+  </form>
+</section>

@@ -17,9 +17,10 @@ export class BookingFormComponent implements OnInit {
   departureAirport: string = '';
   arrivalAirport: string = '';
 
-  constructor(private authService: AuthService, private smartfareService: SmartfareService) { };
+  constructor(private smartfareService: SmartfareService) { };
 
   airports = signal<Airports | null>(null);
+  locations = signal<Location[] | null>(null);
 
   readonly bookingTypes = [
     { label: 'Hotel', icon: 'bi-building' },
@@ -57,5 +58,15 @@ export class BookingFormComponent implements OnInit {
         console.error(error);
       }
     });
+
+    this.smartfareService.GetLocations().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.locations.set(res.data);
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    })
   }
 }

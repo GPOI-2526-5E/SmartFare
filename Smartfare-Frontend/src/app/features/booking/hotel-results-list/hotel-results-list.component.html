@@ -1,0 +1,61 @@
+<div class="hotel-list">
+  @for (hotel of hotels(); track hotel.name) {
+    <article class="hotel-card">
+      <div class="hotel-media" [style.background-image]="hotel.image">
+        <div class="gallery-controls">
+          <button class="gallery-arrow" type="button" aria-label="Previous image">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="gallery-arrow" type="button" aria-label="Next image">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+
+        <div class="gallery-dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+
+        <span class="hotel-badge" [style.--badge-color]="hotel.accent">{{ hotel.badge }}</span>
+      </div>
+
+      <div class="hotel-info">
+        <div class="hotel-heading">
+          <div>
+            <h2>{{ hotel.name }}</h2>
+            <div class="location">
+              <i class="bi bi-geo-alt"></i>
+              <span>{{ hotel.area }}, {{ hotel.country }}</span>
+            </div>
+          </div>
+
+          <button class="favorite" type="button" aria-label="Save hotel">
+            <i class="bi bi-heart"></i>
+          </button>
+        </div>
+
+        <div class="rating-row">
+          <span class="rating">{{ hotel.rating }}</span>
+          <span class="reviews">{{ hotel.reviews }}</span>
+        </div>
+
+        <div class="features-grid">
+          @for (feature of hotel.features; track feature.label) {
+            <div class="feature-item">
+              <i [class]="feature.icon"></i>
+              <span>{{ feature.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="hotel-price">
+        <p class="price">{{ hotel.price }} <span>/ night</span></p>
+        <button class="detail-btn" type="button">View Detail</button>
+      </div>
+    </article>
+  }
+</div>

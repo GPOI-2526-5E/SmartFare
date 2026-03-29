@@ -22,7 +22,7 @@ function toPrefixFilterValue(value: string): string {
 /**
  * GET /api/health/trains - Health check con test di ricerca treni
  */
-router.get("/trains", async (req: Request, res: Response) => {
+router.get("/api/trains/search", async (req: Request, res: Response) => {
     try {
         const fromInput = typeof req.query.from === "string" ? req.query.from : "Udine";
         const toInput = typeof req.query.to === "string" ? req.query.to : "Chiavari";
@@ -120,7 +120,7 @@ router.get("/trains", async (req: Request, res: Response) => {
 /**
  * GET /api/health/flights - Health check con test di ricerca voli
  */
-router.get("/flights", async (req: Request, res: Response) => {
+router.get("/api/flights/search", async (req: Request, res: Response) => {
     try {
         const fromInput = typeof req.query.from === "string" ? req.query.from : "Roma Fiumicino";
         const toInput = typeof req.query.to === "string" ? req.query.to : "Trapani Birgi";
@@ -211,159 +211,6 @@ router.get("/flights", async (req: Request, res: Response) => {
         console.error("Errore ricerca voli:", error);
         res.status(500).json({
             error: "Errore durante la ricerca voli",
-            message: error.message,
-        });
-    }
-});
-
-/**
- * GET /api/health/db-stats - Diagnostica database
- */
-router.get("/db-stats", async (_req: Request, res: Response) => {
-    try {
-        const supabase = getSupabaseClient();
-
-        const { count: totalTrains, error: totalError } = await supabase
-            .from("trains")
-            .select("id", { count: "exact", head: true });
-
-        if (totalError) {
-            throw totalError;
-        }
-
-        const { count: cesenaBresciaCount, error: routeError } = await supabase
-            .from("trains")
-            .select("id", { count: "exact", head: true })
-            .ilike("departure", "Cesena")
-            .ilike("arrival", "Brescia");
-
-        if (routeError) {
-            throw routeError;
-        }
-
-        const datePrefix = "2026-03-04";
-        const dateValue = toPrefixFilterValue(datePrefix);
-
-        const { data: trainsForDate, error: dateError } = await supabase
-            .from("trains")
-            .select("departure,arrival,departure_time,company,price,price_eur")
-            .or(`departure_time.ilike.${dateValue},departure_date.ilike.${dateValue}`)
-            .limit(5000);
-
-        if (dateError) {
-            throw dateError;
-        }
-
-        const { data: allRoutes, error: allRoutesError } = await supabase
-            .from("trains")
-            .select("departure,arrival")
-            .limit(5000);
-
-        if (allRoutesError) {
-            throw allRoutesError;
-        }
-
-        const routeCounterForDate = new Map<string, number>();
-        for (const row of trainsForDate || []) {
-            const key = `${row.departure || ""}::${row.arrival || ""}`;
-            routeCounterForDate.set(key, (routeCounterForDate.get(key) || 0) + 1);
-        }
-
-        const routeCounter = new Map<string, number>();
-        for (const row of allRoutes || []) {
-            const key = `${row.departure || ""}::${row.arrival || ""}`;
-            routeCounter.set(key, (routeCounter.get(key) || 0) + 1);
-        }
-
-        const topRoutesForDate = Array.from(routeCounterForDate.entries())
-            .map(([key, count]) => {
-                const [from, to] = key.split("::");
-                return { from, to, count };
-            })
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 10);
-
-        const topRoutes = Array.from(routeCounter.entries())
-            .map(([key, count]) => {
-                const [from, to] = key.split("::");
-                return { from, to, count };
-            })
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 10);
-
-        const sampleTrains = (trainsForDate || []).slice(0, 5).map((t: any) => ({
-            departure: t.departure,
-            arrival: t.arrival,
-            departureTime: t.departure_time,
-            company: t.company,
-            price: t.price ?? t.price_eur,
-        }));
-
-        res.json({
-            database: "supabase",
-            table: "trains",
-            stats: {
-                totalTrains: totalTrains || 0,
-                cesenaBresciaCount: cesenaBresciaCount || 0,
-                date040326Count: (trainsForDate || []).length,
-                topRoutesForDate040326: topRoutesForDate,
-                topRoutes,
-                sampleTrains,
-            },
-        });
-    } catch (error: any) {
-        console.error("Errore stats DB:", error);
-        res.status(500).json({
-            error: "Errore durante le statistiche",
-            message: error.message,
-        });
-    }
-});
-
-/**
- * GET /api/health/trains/list - Get all trains with pagination
- */
-router.get("/trains/list", async (req: Request, res: Response) => {
-    try {
-        const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
-        const limit = Math.min(100, parseInt(req.query.limit as string, 10) || 50);
-        const from = (page - 1) * limit;
-        const to = from + limit - 1;
-
-        const supabase = getSupabaseClient();
-
-        const { data: trains, count, error } = await supabase
-            .from("trains")
-            .select("departure,arrival,departure_time,arrival_time,company,price,train_type,changes,availability", {
-                count: "exact",
-            })
-            .range(from, to);
-
-        if (error) {
-            throw error;
-        }
-
-        res.json({
-            page,
-            limit,
-            total: count || 0,
-            totalPages: Math.ceil((count || 0) / limit),
-            trains: (trains || []).map((train: any) => ({
-                departure: train.departure,
-                arrival: train.arrival,
-                departureTime: train.departure_time,
-                arrivalTime: train.arrival_time,
-                company: train.company,
-                price: train.price,
-                trainType: train.train_type,
-                changes: train.changes,
-                availability: train.availability,
-            })),
-        });
-    } catch (error: any) {
-        console.error("Errore recupero treni:", error);
-        res.status(500).json({
-            error: "Errore durante il recupero dei treni",
             message: error.message,
         });
     }

@@ -1,0 +1,31 @@
+<header class="toolbar">
+  <button class="filter-trigger" type="button">
+    <i class="bi bi-funnel"></i>
+    <span>Show Filters</span>
+  </button>
+
+  <div class="toolbar-meta">
+    <div class="results-copy">
+      <strong>300+</strong>
+      <span>places to stay</span>
+    </div>
+
+    <div class="filter-pills">
+      @for (filter of filters(); track filter) {
+        <button class="pill" type="button">
+          <span>{{ filter }}</span>
+          @if (filter === 'Price' || filter === 'Stars') {
+            <i class="bi bi-chevron-down"></i>
+          }
+        </button>
+      }
+    </div>
+  </div>
+
+  <button class="map-toggle" type="button" (click)="toggleMap.emit()" [class.active]="showMap()">
+    <span>Hide Map</span>
+    <span class="toggle-track">
+      <span class="toggle-thumb"></span>
+    </span>
+  </button>
+</header>
