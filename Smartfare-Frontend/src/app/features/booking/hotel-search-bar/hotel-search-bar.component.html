@@ -32,12 +32,12 @@
 
     <div class="search-field">
       <label for="hotel-checkin"><i class="bi bi-calendar-check"></i> Check-in</label>
-      <input id="hotel-checkin" type="date" name="checkin" [attr.min]="today">
+      <input id="hotel-checkin" type="date" name="checkin" [attr.min]="today" [(ngModel)]="checkin">
     </div>
 
     <div class="search-field">
       <label for="hotel-checkout"><i class="bi bi-calendar-x"></i> Check-out</label>
-      <input id="hotel-checkout" type="date" name="checkout" [attr.min]="today">
+      <input id="hotel-checkout" type="date" name="checkout" [attr.min]="today" [(ngModel)]="checkout">
     </div>
 
     <div class="search-field guests">

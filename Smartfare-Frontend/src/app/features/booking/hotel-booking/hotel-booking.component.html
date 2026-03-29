@@ -3,7 +3,13 @@
     <app-navbar></app-navbar>
 
     <section class="booking-shell">
-      <app-hotel-search-bar></app-hotel-search-bar>
+      <app-hotel-search-bar
+        [destination]="hotelSearch.destination"
+        [checkin]="hotelSearch.checkin"
+        [checkout]="hotelSearch.checkout"
+        [guests]="hotelSearch.guests"
+        (search)="onSearch($event)"
+      ></app-hotel-search-bar>
 
       <app-hotel-filters-bar
         [filters]="filters"

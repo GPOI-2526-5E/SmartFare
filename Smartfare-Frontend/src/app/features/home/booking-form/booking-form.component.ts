@@ -1,8 +1,9 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Airports } from '../../../core/models/flights.model'
-import Location from '../../../core/models/location.model';
+import { HotelSearchCriteria } from '../../../core/models/hotel-search.model';
 import { HotelSearchBarComponent } from '../../booking/hotel-search-bar/hotel-search-bar.component';
 import { SmartfareService } from '../../../core/services/smartfare-api.service';
 
@@ -18,7 +19,10 @@ export class BookingFormComponent implements OnInit {
   departureAirport: string = '';
   arrivalAirport: string = '';
 
-  constructor(private smartfareService: SmartfareService) { };
+  constructor(
+    private smartfareService: SmartfareService,
+    private router: Router,
+  ) { };
 
   airports = signal<Airports | null>(null);
 
@@ -46,6 +50,28 @@ export class BookingFormComponent implements OnInit {
 
   onSubmit(event: Event): void {
     event.preventDefault();
+  }
+
+  onHotelSearch(criteria: HotelSearchCriteria): void {
+    const queryParams: Record<string, string | number> = {};
+
+    if (criteria.destination) {
+      queryParams['destination'] = criteria.destination;
+    }
+
+    if (criteria.checkin) {
+      queryParams['checkin'] = criteria.checkin;
+    }
+
+    if (criteria.checkout) {
+      queryParams['checkout'] = criteria.checkout;
+    }
+
+    if (criteria.guests > 0) {
+      queryParams['guests'] = criteria.guests;
+    }
+
+    this.router.navigate(['/hotel'], { queryParams });
   }
 
   ngOnInit() {

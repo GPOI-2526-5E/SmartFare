@@ -14,7 +14,7 @@
 
       @switch (activeType) {
       @case ('Hotel') {
-        <app-hotel-search-bar></app-hotel-search-bar>
+        <app-hotel-search-bar (search)="onHotelSearch($event)"></app-hotel-search-bar>
       }
 
       @case ('Flights') {

@@ -1,10 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
 import { HotelFiltersBarComponent } from '../hotel-filters-bar/hotel-filters-bar.component';
 import { HotelMapPanelComponent } from '../hotel-map-panel/hotel-map-panel.component';
 import { HotelResultsListComponent } from '../hotel-results-list/hotel-results-list.component';
 import { HotelSearchBarComponent } from '../hotel-search-bar/hotel-search-bar.component';
 import { HotelCard } from '../../../core/models/hotel-booking.models';
+import { HotelSearchCriteria } from '../../../core/models/hotel-search.model';
 import Location from '../../../core/models/location.model';
 import { SmartfareService } from '../../../core/services/smartfare-api.service';
 
@@ -22,10 +24,20 @@ import { SmartfareService } from '../../../core/services/smartfare-api.service';
   styleUrl: './hotel-booking.component.css',
 })
 export class HotelBookingComponent implements OnInit {
-  constructor(private smartfareService: SmartfareService) {}
+  constructor(
+    private smartfareService: SmartfareService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   showMap = true;
   locations = signal<Location[]>([]);
+  hotelSearch: HotelSearchCriteria = {
+    destination: '',
+    checkin: '',
+    checkout: '',
+    guests: 2,
+  };
 
   readonly filters = [
     'Recommended',
@@ -94,7 +106,45 @@ export class HotelBookingComponent implements OnInit {
     this.showMap = !this.showMap;
   }
 
+  onSearch(criteria: HotelSearchCriteria): void {
+    this.hotelSearch = { ...criteria };
+
+    const queryParams: Record<string, string | number> = {};
+
+    if (criteria.destination) {
+      queryParams['destination'] = criteria.destination;
+    }
+
+    if (criteria.checkin) {
+      queryParams['checkin'] = criteria.checkin;
+    }
+
+    if (criteria.checkout) {
+      queryParams['checkout'] = criteria.checkout;
+    }
+
+    if (criteria.guests > 0) {
+      queryParams['guests'] = criteria.guests;
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+    });
+  }
+
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      const guestsParam = Number(params.get('guests') ?? 2);
+
+      this.hotelSearch = {
+        destination: params.get('destination') ?? '',
+        checkin: params.get('checkin') ?? '',
+        checkout: params.get('checkout') ?? '',
+        guests: Number.isFinite(guestsParam) && guestsParam > 0 ? guestsParam : 2,
+      };
+    });
+
     this.smartfareService.GetLocations().subscribe({
       next: (res) => {
         this.locations.set(res.data ?? []);

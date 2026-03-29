@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HotelSearchCriteria } from '../../../core/models/hotel-search.model';
 import Location from '../../../core/models/location.model';
 import { SmartfareService } from '../../../core/services/smartfare-api.service';
 
@@ -12,6 +13,11 @@ import { SmartfareService } from '../../../core/services/smartfare-api.service';
   styleUrl: './hotel-search-bar.component.css',
 })
 export class HotelSearchBarComponent implements OnInit {
+  @Input() destination = '';
+  @Input() checkin = '';
+  @Input() checkout = '';
+  @Input() guests = 2;
+  @Output() search = new EventEmitter<HotelSearchCriteria>();
 
   locations = signal<Location[]>([]);
 
@@ -27,10 +33,6 @@ export class HotelSearchBarComponent implements OnInit {
       }
     });
   }
-
-
-  destination = '';
-  guests = 2;
   showSuggestions = false;
   readonly today = new Date().toISOString().split('T')[0];
 
@@ -52,6 +54,12 @@ export class HotelSearchBarComponent implements OnInit {
 
   onSubmit(event: Event): void {
     event.preventDefault();
+    this.search.emit({
+      destination: this.destination.trim(),
+      checkin: this.checkin,
+      checkout: this.checkout,
+      guests: this.guests,
+    });
   }
 
   openSuggestions(): void {
