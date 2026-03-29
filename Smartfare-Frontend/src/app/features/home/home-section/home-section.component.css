@@ -57,11 +57,13 @@
   font-size: clamp(2.2rem, 7vw, 5rem);
   line-height: 1.05;
   letter-spacing: -0.02em;
+  z-index: 50;
 }
 
 .hero-title span {
   display: block;
   color: #8fb4ff;
+  z-index: 60;
 }
 
 .hero-subtitle {

@@ -6,7 +6,7 @@
 
     <!-- LOGO -->
     <div class="logo d-flex align-items-center gap-2">
-      <span class="logo-mark">S</span>
+      <img class='logo-img' src="SmartfareLogo.png" alt='smartfareLogo'>
       <span class="logo-text">SMARTFARE</span>
     </div>
 
@@ -33,7 +33,7 @@
     </div>
 
     <!-- MOBILE TOGGLER -->
-    <button class="mobile-toggler d-lg-none" (click)="toggleMobileMenu()">
+    <button class="mobile-toggler d-lg-none" type="button" (click)="toggleMobileMenu()">
       <i class="bi bi-list"></i>
     </button>
 
@@ -47,7 +47,7 @@
     </div>
     <div class="mobile-nav-links d-flex flex-column gap-3">
       @for (item of navItems; track item.label) {
-      <a class="nav-item d-flex align-items-center gap-2" [attr.href]="item.route">
+      <a class="nav-item d-flex align-items-center gap-2" [routerLink]="item.route" (click)="closeMobileMenu()">
         <i [class]="item.icon"></i>
         <span>{{ item.label }}</span>
       </a>
@@ -55,11 +55,11 @@
       @if (isAuthenticated) {
       <div class="d-flex flex-column gap-2 align-items-center">
         <i class="bi bi-person-circle fs-1"></i>
-        <button class="btn btn-outline-danger w-100" (click)="logout()">Logout</button>
+      <button class="btn btn-outline-danger w-100" type="button" (click)="logout()">Logout</button>
       </div>
       }@else {
-      <a class="btn login-btn w-100" [routerLink]="['/login']">Login</a>
-      <a class="btn register-btn w-100" [routerLink]="['/register']">Register</a>
+      <a class="btn login-btn w-100" [routerLink]="['/login']" (click)="closeMobileMenu()">Login</a>
+      <a class="btn register-btn w-100" [routerLink]="['/register']" (click)="closeMobileMenu()">Register</a>
       }
     </div>
   </div>

@@ -11,12 +11,12 @@
 
 .top-bar {
   position: relative;
-  z-index: 2000;
+  z-index: 500;
 }
 
 .main-bar {
   position: relative;
-  z-index: 1000;
+  z-index: 600;
 }
 
 .language-select {
@@ -31,7 +31,7 @@
   transition:
     background 0.2s,
     border-color 0.2s;
-  z-index: 1050;
+  z-index: 700;
 }
 
 .language-select:hover,
@@ -63,7 +63,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
   margin: 0;
-  z-index: 3000;
+  z-index: 800;
 }
 
 .language-dropdown {

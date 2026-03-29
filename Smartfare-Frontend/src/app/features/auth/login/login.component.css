@@ -41,7 +41,7 @@
 
 .navbar-overlay {
   position: relative;
-  z-index: 10;
+  z-index: 4;
   background: rgba(24, 26, 27, 0.7);
   backdrop-filter: blur(8px);
   box-shadow: 0 2px 16px #0003;

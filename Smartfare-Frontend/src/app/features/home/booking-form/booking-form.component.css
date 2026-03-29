@@ -248,11 +248,10 @@
   background: var(--bg-card);
   color: var(--primary);
   position: relative;
-  z-index: 2; /* Sovrappone il bordo della card */
+  z-index: 2;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* --- SEARCH CARD --- */
 /* --- SEARCH CARD --- */
 .search-card {
   background: rgba(10, 15, 26, 0.62); /* come navbar */
@@ -262,7 +261,7 @@
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 8px 10px -6px rgba(0, 0, 0, 0.1);
   position: relative;
-  z-index: 40;
+  z-index: 3;
   color: #fff;
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.14);

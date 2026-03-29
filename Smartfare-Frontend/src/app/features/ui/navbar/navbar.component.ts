@@ -34,7 +34,15 @@ export class NavbarComponent {
   isPinned = false;
   readonly pinOffset = 44;
 
-  toggleMobileMenu(): void { this.mobileMenuOpen = !this.mobileMenuOpen; }
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+    this.syncBodyScroll();
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen = false;
+    this.syncBodyScroll();
+  }
 
   @HostListener('window:scroll')
   onWindowScroll(): void {
@@ -46,8 +54,13 @@ export class NavbarComponent {
   }
 
   logout() {
+    this.closeMobileMenu();
     this.authService.Logout();
     this.alertService.show('Logout effettuato con successo!');
     this.router.navigate(['/']);
+  }
+
+  private syncBodyScroll(): void {
+    document.body.style.overflow = this.mobileMenuOpen ? 'hidden' : '';
   }
 }
