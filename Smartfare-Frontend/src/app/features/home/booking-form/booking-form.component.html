@@ -23,9 +23,9 @@
           <label><i class="bi bi-airplane-engines"></i> Da dove?</label>
           <select id="departureSelect" name="departureAirport" [(ngModel)]="departureAirport" class="form-select">
             <option value="">Seleziona aeroporto di partenza</option>
-            @for (airport of airports() ?? []; track airport.idAeroporto) {
-            <option [value]="airport.idAeroporto">
-              {{ airport.nome }}
+            @for (airport of airports(); track airport.id) {
+            <option [value]="airport.id">
+              {{ airport.name }}
             </option>
             }
           </select>
@@ -34,9 +34,9 @@
           <label><i class="bi bi-airplane"></i> A dove?</label>
           <select name="arrivalAirport" [(ngModel)]="arrivalAirport" class="form-select airport-select">
             <option value="" disabled selected hidden>Seleziona aeroporto di arrivo</option>
-            @for (airport of airports() ?? []; track airport.idAeroporto) {
-            <option [value]="airport.idAeroporto" class="airport-option">
-              {{ airport.nome }}
+            @for (airport of airports(); track airport.id) {
+            <option [value]="airport.id" class="airport-option">
+              {{ airport.name }}
             </option>
             }
           </select>

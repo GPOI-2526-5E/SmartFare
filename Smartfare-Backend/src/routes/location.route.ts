@@ -15,7 +15,7 @@ router.get('/', async (req: Request, res: Response) => {
         const locations: Location[] = [];
 
         while (hasMore) {
-            const { data, error } = await supabase
+            const { data, error } = await supabase    
                 .from('locations')
                 .select('*')
                 .range(from, from + pageSize - 1);

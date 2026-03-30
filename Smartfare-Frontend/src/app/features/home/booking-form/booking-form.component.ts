@@ -6,7 +6,7 @@ import { Airports } from '../../../core/models/flights.model'
 import { HotelSearchCriteria } from '../../../core/models/hotel-search.model';
 import { HotelSearchBarComponent } from '../../booking/hotel-search-bar/hotel-search-bar.component';
 import { SmartfareService } from '../../../core/services/smartfare-api.service';
-
+import { AlertService } from '../../../core/services/alert.service';
 @Component({
   selector: 'app-booking-form',
   imports: [CommonModule, FormsModule, HotelSearchBarComponent],
@@ -22,9 +22,10 @@ export class BookingFormComponent implements OnInit {
   constructor(
     private smartfareService: SmartfareService,
     private router: Router,
+    private alertService: AlertService
   ) { };
 
-  airports = signal<Airports | null>(null);
+  airports = signal<Airports[]>([]);
 
   readonly bookingTypes = [
     { label: 'Hotel', icon: 'bi-building' },
@@ -55,21 +56,21 @@ export class BookingFormComponent implements OnInit {
   onHotelSearch(criteria: HotelSearchCriteria): void {
     const queryParams: Record<string, string | number> = {};
 
-    if (criteria.destination) {
-      queryParams['destination'] = criteria.destination;
+    if (!criteria.destination) {
+      return this.alertService.error("Selezionare la destinazione");
     }
+    queryParams['destination'] = criteria.destination;
 
-    if (criteria.checkin) {
-      queryParams['checkin'] = criteria.checkin;
+    if (!criteria.checkin) {
+      return this.alertService.error("Selezionare la data di checkin");
     }
+    queryParams['checkin'] = criteria.checkin;
 
-    if (criteria.checkout) {
-      queryParams['checkout'] = criteria.checkout;
+    if (!criteria.checkout) {
+      return this.alertService.error("Selezionare la data di checkout");
     }
-
-    if (criteria.guests > 0) {
-      queryParams['guests'] = criteria.guests;
-    }
+    queryParams['checkout'] = criteria.checkout;
+    queryParams['guests'] = criteria.guests;
 
     this.router.navigate(['/hotel'], { queryParams });
   }

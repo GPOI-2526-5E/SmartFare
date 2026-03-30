@@ -1,1 +1,1 @@
--_-
+SCHEMA E-R : https://lucid.app/lucidchart/df79e3dd-bb8b-41d4-8a37-12219b014141/edit?view_items=WqHJQ-NGyE-L&page=0_0&invitationId=inv_cec24f75-da3b-4

@@ -1,1 +1,49 @@
-:host{display:block}.hotel-page{position:relative;min-height:100vh;min-height:100dvh;background:radial-gradient(circle at top left,rgba(54,101,187,.16),transparent 32%),linear-gradient(180deg,#eef3fb 0,#f7f9fc 46%,#eef2f7 100%);overflow:hidden}.page-content{position:relative;z-index:1}.booking-shell{width:min(1840px,calc(100% - 32px));margin:0 auto;padding:18px 0 28px}.content-grid{display:grid;grid-template-columns:minmax(0,1fr) .95fr;gap:26px;align-items:start;margin-top:20px}.content-grid.map-hidden{grid-template-columns:minmax(0,1fr)}@media (max-width:1180px){.content-grid{grid-template-columns:1fr}}@media (max-width:900px){.booking-shell{width:calc(100% - 20px)}}
+:host {
+  display: block;
+}
+
+.hotel-page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 14% 16%, rgba(78, 152, 255, 0.22), transparent 24%),
+    radial-gradient(circle at 82% 20%, rgba(47, 120, 223, 0.18), transparent 22%),
+    radial-gradient(circle at 72% 78%, rgba(121, 174, 252, 0.14), transparent 24%),
+    linear-gradient(135deg, #0d1728 0%, #12203a 28%, #173055 58%, #1f3e6d 100%);
+}
+
+.page-content {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.booking-shell {
+  width: min(1840px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 18px 0 28px;
+}
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 0.95fr;
+  gap: 26px;
+  align-items: start;
+  margin-top: 20px;
+}
+.content-grid.map-hidden {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (max-width: 1180px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .booking-shell {
+    width: calc(100% - 20px);
+  }
+}

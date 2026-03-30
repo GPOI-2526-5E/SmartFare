@@ -6,17 +6,17 @@
         id="hotel-destination"
         type="text"
         [(ngModel)]="destination"
+        (ngModelChange)="onDestinationChange($event)"
         name="destination"
-        placeholder="Dove vuoi andare?"
+        placeholder="Cerca per nome o CAP"
         autocomplete="off"
         (focus)="openSuggestions()"
-        (input)="openSuggestions()"
         (blur)="closeSuggestions()"
       >
 
-      @if (showSuggestions && filteredLocations.length > 0) {
+      @if (showSuggestions && filteredLocations().length > 0) {
         <div class="location-suggestions">
-          @for (location of filteredLocations; track location.id) {
+          @for (location of filteredLocations(); track location.id) {
             <button
               type="button"
               class="location-option"
@@ -43,7 +43,7 @@
     <div class="search-field guests">
       <label for="hotel-guests"><i class="bi bi-people"></i> Ospiti</label>
       <div class="guest-inputs">
-        <input id="hotel-guests" type="number" min="1" [(ngModel)]="guests" name="guests">
+        <input id="hotel-guests" type="number" [min]="1" [max]="10" [(ngModel)]="guests" name="guests">
         <span>Persone</span>
       </div>
     </div>
