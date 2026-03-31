@@ -41,6 +41,7 @@ export function createApp() {
   app.use("/api/locations", locationsRoutes);
   app.use("/api/hotels", hotelsRoutes);
   app.use("/api/trains", trainsRoute);
+  app.use("/api/flights", flightsRoutes);
   app.use("/auth", authRoutes);
 
   // Error handling

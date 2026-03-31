@@ -52,6 +52,15 @@ function calculateChangePercent(currentPrice: number, previousPrice: number | nu
     return Number((((currentPrice - previousPrice) / previousPrice) * 100).toFixed(2));
 }
 
+function chunkArray<T>(values: T[], size: number): T[][] {
+    const chunks: T[][] = [];
+    for (let index = 0; index < values.length; index += size) {
+        chunks.push(values.slice(index, index + size));
+    }
+
+    return chunks;
+}
+
 export async function saveHotelPriceHistory(offers: HotelSearchOffer[]): Promise<RoomPriceHistoryRecord[]> {
     const supabase = getSupabaseClient();
     const searchKeys = Array.from(new Set(offers.map((offer) => offer.searchKey)));
@@ -63,19 +72,24 @@ export async function saveHotelPriceHistory(offers: HotelSearchOffer[]): Promise
 
     // Leggiamo lo storico in blocco invece di fare una query per hotel:
     // con molte strutture questa è la parte che rallentava di più.
-    const { data: previousHistoryData, error: previousHistoryError } = await supabase
-        .from("room_price_history")
-        .select("*")
-        .in("search_key", searchKeys)
-        .order("captured_at", { ascending: false });
+    const previousHistoryRows: RoomPriceHistoryRecord[] = [];
+    for (const searchKeyChunk of chunkArray(searchKeys, 80)) {
+        const { data: previousHistoryData, error: previousHistoryError } = await supabase
+            .from("room_price_history")
+            .select("*")
+            .in("search_key", searchKeyChunk)
+            .order("captured_at", { ascending: false });
 
-    if (previousHistoryError) {
-        throw previousHistoryError;
+        if (previousHistoryError) {
+            throw previousHistoryError;
+        }
+
+        previousHistoryRows.push(...((previousHistoryData ?? []) as RoomPriceHistoryRecord[]));
     }
-    console.log("[HOTELS][HISTORY] Righe storico precedenti lette:", (previousHistoryData ?? []).length);
+    console.log("[HOTELS][HISTORY] Righe storico precedenti lette:", previousHistoryRows.length);
 
     const latestHistoryBySearchKey = new Map<string, RoomPriceHistoryRecord>();
-    for (const row of (previousHistoryData ?? []) as RoomPriceHistoryRecord[]) {
+    for (const row of previousHistoryRows) {
         if (!latestHistoryBySearchKey.has(row.search_key)) {
             latestHistoryBySearchKey.set(row.search_key, row);
         }
@@ -104,15 +118,20 @@ export async function saveHotelPriceHistory(offers: HotelSearchOffer[]): Promise
     });
     console.log("[HOTELS][HISTORY] Righe da inserire nello storico:", rowsToInsert.length);
 
-    const { data: insertedHistoryData, error: insertHistoryError } = await supabase
-        .from("room_price_history")
-        .insert(rowsToInsert)
-        .select("*");
+    const insertedRows: RoomPriceHistoryRecord[] = [];
+    for (const insertChunk of chunkArray(rowsToInsert, 80)) {
+        const { data: insertedHistoryData, error: insertHistoryError } = await supabase
+            .from("room_price_history")
+            .insert(insertChunk)
+            .select("*");
 
-    if (insertHistoryError) {
-        throw insertHistoryError;
+        if (insertHistoryError) {
+            throw insertHistoryError;
+        }
+
+        insertedRows.push(...((insertedHistoryData ?? []) as RoomPriceHistoryRecord[]));
     }
-    console.log("[HOTELS][HISTORY] Righe storico inserite:", (insertedHistoryData ?? []).length);
+    console.log("[HOTELS][HISTORY] Righe storico inserite:", insertedRows.length);
 
-    return (insertedHistoryData ?? []) as RoomPriceHistoryRecord[];
+    return insertedRows;
 }

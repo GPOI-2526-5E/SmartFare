@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, shareReplay } from 'rxjs';
 import { Airports } from '../models/flights.model';
 import { HttpClient } from '@angular/common/http';
@@ -15,15 +15,22 @@ export class SmartfareService {
 
   constructor(private http: HttpClient) { };
 
-  GetAirports(): Observable<Airports[]> {
-    if (!this.airportsRequest$)
-      this.airportsRequest$ = this.http.get<Airports[]>(this.APIENDPOINT + '/flights/airports');
+  getAirports(): Observable<Airports[]> {
+    if (!this.airportsRequest$) {
+      this.airportsRequest$ = this.http
+        .get<Airports[]>(this.APIENDPOINT + '/flights/airports')
+        .pipe(shareReplay(1));
+    }
+
     return this.airportsRequest$;
   }
 
-  GetLocations(): Observable<Location[]> {
-    if (!this.locationsRequest$)
-      this.locationsRequest$ = this.http.get<Location[]>(this.APIENDPOINT + '/locations')
+  getLocations(): Observable<Location[]> {
+    if (!this.locationsRequest$) {
+      this.locationsRequest$ = this.http
+        .get<Location[]>(this.APIENDPOINT + '/locations')
+        .pipe(shareReplay(1));
+    }
 
     return this.locationsRequest$;
   }

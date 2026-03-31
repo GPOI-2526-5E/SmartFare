@@ -33,7 +33,7 @@ export class HotelSearchBarComponent implements OnInit {
   constructor(private smartfareService: SmartfareService, private alertService: AlertService) { };
 
   ngOnInit() {
-    this.smartfareService.GetLocations().subscribe({
+    this.smartfareService.getLocations().subscribe({
       next: (res) => {
         const locations = res;
         this.locations.set(locations);

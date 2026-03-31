@@ -27,22 +27,29 @@ function buildFallbackRecommendation(analysis: HotelAnalysisResult): HotelRecomm
         : bestOffer.advice === "wait"
             ? "wait"
             : "monitor";
+    const discountText = bestOffer.changePercent !== null && bestOffer.changePercent < 0
+        ? `Il prezzo è sceso del ${Math.abs(bestOffer.changePercent)}% rispetto alla rilevazione precedente.`
+        : "";
 
     return {
         recommendedAction,
         confidence: bestOffer.trend === "new" ? "medium" : "high",
-        reasoning: `L'hotel migliore è ${bestOffer.name} perché combina bene prezzo di ingresso, qualità della struttura, servizi disponibili e andamento del prezzo.`,
+        reasoning: `L'hotel migliore è ${bestOffer.name} perché combina bene prezzo di ingresso, qualità della struttura, servizi disponibili e andamento del prezzo. ${discountText}`.trim(),
         suggestion: bestOffer.advice === "book_now"
-            ? "Conviene prenotare adesso, perché il prezzo appare favorevole."
+            ? bestOffer.changePercent !== null && bestOffer.changePercent < 0
+                ? `Prenota ora: è ancora in offerta e il prezzo è in calo del ${Math.abs(bestOffer.changePercent)}%.`
+                : "Prenota ora: il prezzo è favorevole e la disponibilità può finire presto."
             : bestOffer.advice === "wait"
                 ? "Può avere senso aspettare e monitorare ancora il prezzo."
                 : "Il prezzo sembra stabile, quindi la scelta dipende soprattutto dalle tue preferenze.",
-        bestChoiceSummary: `${bestOffer.name}, da ${bestOffer.minTotalPrice} euro totali per ${bestOffer.nights} notti con camera ${bestOffer.bestRoom.roomType}.`,
+        bestChoiceSummary: `${bestOffer.name}, da ${bestOffer.minTotalPrice} euro totali per ${bestOffer.nights} notti con camera ${bestOffer.bestRoom.roomType}. ${discountText}`.trim(),
         alternativesSummary: analysis.alternatives.map((offer) =>
             `${offer.name} da ${offer.minTotalPrice} euro, ${offer.stars} stelle, ${offer.comment}`
         ),
         travelStrategy: bestOffer.advice === "book_now"
-            ? "Blocca questo hotel se ti convince, perché la camera migliore a quel prezzo può sparire in fretta."
+            ? bestOffer.changePercent !== null && bestOffer.changePercent < 0
+                ? "Blocca subito questo hotel: la camera migliore è scesa di prezzo ed è una vera occasione."
+                : "Blocca questo hotel se ti convince, perché la camera migliore a quel prezzo può sparire in fretta."
             : bestOffer.advice === "wait"
                 ? "Controlla di nuovo il prezzo e confrontalo con l'opzione più economica."
                 : "Tieni monitorato l'hotel, ma puoi prenotare anche ora se la tua vacanza è poco flessibile.",
@@ -83,7 +90,9 @@ Regole:
 - non inventare dati che non esistono
 - usa l'analisi backend come base principale
 - valuta prezzo totale, prezzo per notte, stelle, servizi e andamento del prezzo
-- spiega se il prezzo è in calo, aumento o stabile
+- se il prezzo è in calo devi dirlo in modo esplicito con la percentuale
+- se il prezzo è in calo e l'offerta è buona usa formule tipo "prenota ora" o "è ancora in offerta"
+- se il prezzo è stabile o in aumento spiega chiaramente perché
 - se lo storico è limitato, abbassa la confidenza e dichiaralo
 - sii concreto, deciso e utile
 

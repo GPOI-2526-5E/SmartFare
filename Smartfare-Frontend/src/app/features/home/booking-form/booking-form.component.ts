@@ -76,7 +76,7 @@ export class BookingFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.smartfareService.GetAirports().subscribe({
+    this.smartfareService.getAirports().subscribe({
       next: (res) => {
         console.log(res);
         this.airports.set(res);

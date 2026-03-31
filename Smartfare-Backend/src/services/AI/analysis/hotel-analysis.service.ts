@@ -85,7 +85,7 @@ function buildSummary(bestOffer: HotelAnalyzedOffer | null): string {
     }
 
     if (bestOffer.advice === "book_now") {
-        return `Conviene prenotare ora: ${bestOffer.comment}`;
+        return `Prenota ora: ${bestOffer.name} è in offerta. ${bestOffer.comment}`;
     }
 
     if (bestOffer.advice === "wait") {
@@ -143,6 +143,12 @@ export function analyzeHotelOffers(
             ? [
                 `Prezzo totale a partire da: ${bestOffer.minTotalPrice} euro per ${bestOffer.nights} notti`,
                 `Prezzo per notte a partire da: ${bestOffer.minPricePerNight} euro`,
+                bestOffer.previousPrice !== null
+                    ? `Prezzo precedente: ${bestOffer.previousPrice} euro`
+                    : "Prezzo precedente non disponibile",
+                bestOffer.changePercent !== null
+                    ? `Variazione prezzo: ${bestOffer.changePercent}%`
+                    : "Variazione prezzo non disponibile",
                 `Stelle hotel: ${bestOffer.stars}`,
                 `Camere disponibili: ${bestOffer.availableRooms}`,
                 `Servizi inclusi: ${bestOffer.services.join(", ") || "nessuno specificato"}`,

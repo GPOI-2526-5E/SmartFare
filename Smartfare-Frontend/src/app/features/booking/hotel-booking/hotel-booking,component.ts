@@ -151,7 +151,7 @@ export class HotelBookingComponent implements OnInit {
       };
     });
 
-    this.smartfareService.GetLocations().subscribe({
+    this.smartfareService.getLocations().subscribe({
       next: (res) => {
         this.locations.set(res);
       },
