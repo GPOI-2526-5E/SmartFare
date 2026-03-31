@@ -3,4 +3,5 @@ export interface HotelSearchCriteria {
   checkin: string;
   checkout: string;
   guests: number;
+  userPreference?: string;
 }

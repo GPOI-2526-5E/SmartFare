@@ -8,6 +8,7 @@
         [checkin]="hotelSearch.checkin"
         [checkout]="hotelSearch.checkout"
         [guests]="hotelSearch.guests"
+        [userPreference]="hotelSearch.userPreference ?? ''"
         (search)="onSearch($event)"
       ></app-hotel-search-bar>
 

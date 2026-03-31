@@ -1,6 +1,4 @@
 import { Router, Request, Response } from "express";
-import { geminiService } from "../services/ia/gemini.service";
-import { FlightSearchParams } from "../models/search-params.model";
 import { getSupabaseClient } from "../config/database";
 
 const router = Router();
@@ -39,10 +37,7 @@ router.get('/', async (req: Request, res: Response) => {
             from += pageSize;
         }
 
-        res.json({
-            data: locations,
-            count: locations.length,
-        });
+        res.status(200).send(locations);
     } catch (error: any) {
         console.error("Errore ricerca luoghi:", error);
         res.status(500).json({

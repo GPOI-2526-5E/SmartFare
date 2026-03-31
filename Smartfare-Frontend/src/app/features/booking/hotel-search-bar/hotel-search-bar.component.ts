@@ -23,6 +23,7 @@ export class HotelSearchBarComponent implements OnInit {
   @Input() checkin = '';
   @Input() checkout = '';
   @Input() guests = 2;
+  @Input() userPreference = '';
   @Output() search = new EventEmitter<HotelSearchCriteria>();
 
   locations = signal<Location[]>([]);
@@ -34,7 +35,7 @@ export class HotelSearchBarComponent implements OnInit {
   ngOnInit() {
     this.smartfareService.GetLocations().subscribe({
       next: (res) => {
-        const locations = res.data ?? [];
+        const locations = res;
         this.locations.set(locations);
         this.indexedLocations = locations.map((location) => ({
           location,
@@ -65,6 +66,7 @@ export class HotelSearchBarComponent implements OnInit {
       checkin: this.checkin,
       checkout: this.checkout,
       guests: this.guests,
+      userPreference: this.userPreference.trim(),
     });
   }
 
@@ -92,6 +94,10 @@ export class HotelSearchBarComponent implements OnInit {
     this.destination = value;
     this.showSuggestions = true;
     this.updateFilteredLocations();
+  }
+
+  fillPreference(prompt: string): void {
+    this.userPreference = prompt;
   }
 
   private updateFilteredLocations(): void {

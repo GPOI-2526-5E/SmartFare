@@ -37,6 +37,7 @@ export class HotelBookingComponent implements OnInit {
     checkin: '',
     checkout: '',
     guests: 2,
+    userPreference: '',
   };
 
   readonly filters = [
@@ -127,6 +128,10 @@ export class HotelBookingComponent implements OnInit {
       queryParams['guests'] = criteria.guests;
     }
 
+    if (criteria.userPreference) {
+      queryParams['userPreference'] = criteria.userPreference;
+    }
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
@@ -142,12 +147,13 @@ export class HotelBookingComponent implements OnInit {
         checkin: params.get('checkin') ?? '',
         checkout: params.get('checkout') ?? '',
         guests: Number.isFinite(guestsParam) && guestsParam > 0 ? guestsParam : 2,
+        userPreference: params.get('userPreference') ?? '',
       };
     });
 
     this.smartfareService.GetLocations().subscribe({
       next: (res) => {
-        this.locations.set(res.data ?? []);
+        this.locations.set(res);
       },
       error: (error) => {
         console.error(error);

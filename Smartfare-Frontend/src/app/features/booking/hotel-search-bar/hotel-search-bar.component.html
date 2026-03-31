@@ -1,56 +1,89 @@
 <section class="hotel-search">
   <form class="search-form" (submit)="onSubmit($event)">
-    <div class="search-field destination">
-      <label for="hotel-destination"><i class="bi bi-geo-alt"></i> Destinazione</label>
-      <input
-        id="hotel-destination"
-        type="text"
-        [(ngModel)]="destination"
-        (ngModelChange)="onDestinationChange($event)"
-        name="destination"
-        placeholder="Cerca per nome o CAP"
-        autocomplete="off"
-        (focus)="openSuggestions()"
-        (blur)="closeSuggestions()"
-      >
+    <div class="search-grid">
+      <div class="search-field destination">
+        <label for="hotel-destination"><i class="bi bi-geo-alt"></i> Destinazione</label>
+        <input
+          id="hotel-destination"
+          type="text"
+          [(ngModel)]="destination"
+          (ngModelChange)="onDestinationChange($event)"
+          name="destination"
+          placeholder="Cerca città, zona o CAP"
+          autocomplete="off"
+          (focus)="openSuggestions()"
+          (blur)="closeSuggestions()"
+        >
 
-      @if (showSuggestions && filteredLocations().length > 0) {
-        <div class="location-suggestions">
-          @for (location of filteredLocations(); track location.id) {
-            <button
-              type="button"
-              class="location-option"
-              (mousedown)="selectLocation(location)"
-            >
-              <span class="location-main">{{ location.name }}</span>
-              <span class="location-meta">{{ location.province }} · {{ location.cap }}</span>
-            </button>
-          }
+        @if (showSuggestions && filteredLocations().length > 0) {
+          <div class="location-suggestions">
+            @for (location of filteredLocations(); track location.id) {
+              <button
+                type="button"
+                class="location-option"
+                (mousedown)="selectLocation(location)"
+              >
+                <span class="location-main">{{ location.name }}</span>
+                <span class="location-meta">{{ location.province }} · {{ location.cap }}</span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="search-field">
+        <label for="hotel-checkin"><i class="bi bi-calendar-check"></i> Check-in</label>
+        <input id="hotel-checkin" type="date" name="checkin" [attr.min]="today" [(ngModel)]="checkin">
+      </div>
+
+      <div class="search-field">
+        <label for="hotel-checkout"><i class="bi bi-calendar-x"></i> Check-out</label>
+        <input id="hotel-checkout" type="date" name="checkout" [attr.min]="today" [(ngModel)]="checkout">
+      </div>
+
+      <div class="search-field guests">
+        <label for="hotel-guests"><i class="bi bi-people"></i> Ospiti</label>
+        <div class="guest-inputs">
+          <input id="hotel-guests" type="number" [min]="1" [max]="10" [(ngModel)]="guests" name="guests">
+          <span>Persone</span>
         </div>
-      }
+      </div>
     </div>
 
-    <div class="search-field">
-      <label for="hotel-checkin"><i class="bi bi-calendar-check"></i> Check-in</label>
-      <input id="hotel-checkin" type="date" name="checkin" [attr.min]="today" [(ngModel)]="checkin">
-    </div>
+    <div class="assistant-panel">
+      <div class="assistant-copy">
+        <span class="assistant-kicker">Smart Suggestion</span>
+        <h3>Scrivi alla ricerca AI come vuoi vivere il soggiorno</h3>
+        <p>Puoi descrivere budget, stile di vacanza, servizi desiderati o posizione ideale. Useremo il testo come preferenza per il consiglio finale.</p>
+      </div>
 
-    <div class="search-field">
-      <label for="hotel-checkout"><i class="bi bi-calendar-x"></i> Check-out</label>
-      <input id="hotel-checkout" type="date" name="checkout" [attr.min]="today" [(ngModel)]="checkout">
-    </div>
+      <div class="assistant-input-card">
+        <label for="hotel-user-preference"><i class="bi bi-stars"></i> Preferenza AI</label>
+        <textarea
+          id="hotel-user-preference"
+          name="userPreference"
+          [(ngModel)]="userPreference"
+          rows="4"
+          placeholder="Esempio: voglio spendere poco, stare vicino al mare e avere una camera tranquilla con colazione inclusa."
+        ></textarea>
 
-    <div class="search-field guests">
-      <label for="hotel-guests"><i class="bi bi-people"></i> Ospiti</label>
-      <div class="guest-inputs">
-        <input id="hotel-guests" type="number" [min]="1" [max]="10" [(ngModel)]="guests" name="guests">
-        <span>Persone</span>
+        <div class="prompt-chips">
+          <button type="button" class="prompt-chip" (click)="fillPreference('Voglio spendere poco ma stare vicino al mare.')">
+            Budget + mare
+          </button>
+          <button type="button" class="prompt-chip" (click)="fillPreference('Cerco un hotel elegante con molti servizi e camere comode.')">
+            Più comfort
+          </button>
+          <button type="button" class="prompt-chip" (click)="fillPreference('Preferisco una soluzione pratica, centrale e con ottimo rapporto qualità prezzo.')">
+            Centrale e pratica
+          </button>
+        </div>
       </div>
     </div>
 
     <button class="submit-btn" type="submit">
       <i class="bi bi-search"></i>
-      <span>Cerca</span>
+      <span>Cerca con AI</span>
     </button>
   </form>
 </section>

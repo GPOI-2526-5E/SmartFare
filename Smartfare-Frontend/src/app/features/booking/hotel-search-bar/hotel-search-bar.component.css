@@ -4,35 +4,42 @@
 
 .hotel-search {
   margin-bottom: 18px;
-  padding: 24px;
-  border: 1px solid rgba(150, 165, 190, 0.18);
-  border-radius: 30px;
-  background: linear-gradient(135deg, rgba(18, 31, 54, 0.92), rgba(31, 62, 109, 0.86));
-  box-shadow: 0 24px 60px rgba(22, 39, 68, 0.14);
+  padding: 26px;
+  border: 1px solid rgba(119, 139, 176, 0.18);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top right, rgba(88, 144, 255, 0.18), transparent 32%),
+    linear-gradient(140deg, rgba(10, 24, 49, 0.96), rgba(21, 50, 89, 0.92));
+  box-shadow: 0 24px 60px rgba(14, 28, 52, 0.2);
   color: #fff;
   overflow: visible;
 }
 
 .search-form {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)) auto;
+  gap: 18px;
+}
+
+.search-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
   gap: 14px;
-  align-items: stretch;
 }
 
 .search-field {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 8px;
-  padding: 14px 16px;
+  padding: 16px 18px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
 }
 
-.search-field label {
+.search-field label,
+.assistant-input-card label {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -43,11 +50,13 @@
   text-transform: uppercase;
 }
 
-.search-field label i {
-  color: #79aefc;
+.search-field label i,
+.assistant-input-card label i {
+  color: #78d7ff;
 }
 
-.search-field input {
+.search-field input,
+.assistant-input-card textarea {
   width: 100%;
   padding: 0;
   border: 0;
@@ -58,8 +67,9 @@
   font-weight: 700;
 }
 
-.search-field input::placeholder {
-  color: #b7c7dc;
+.search-field input::placeholder,
+.assistant-input-card textarea::placeholder {
+  color: #b9c9de;
   font-weight: 500;
 }
 
@@ -77,7 +87,7 @@
   padding: 8px;
   border-radius: 18px;
   border: 1px solid rgba(123, 160, 215, 0.24);
-  background: rgba(17, 27, 46, 0.98);
+  background: rgba(11, 20, 37, 0.98);
   box-shadow: 0 18px 30px rgba(3, 7, 18, 0.34);
   backdrop-filter: blur(10px);
   z-index: 999;
@@ -122,29 +132,117 @@
   font-weight: 700;
 }
 
+.assistant-panel {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.9fr) minmax(0, 1.4fr);
+  gap: 16px;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(110, 199, 255, 0.08)),
+    rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.assistant-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.assistant-kicker {
+  width: fit-content;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(121, 215, 252, 0.16);
+  color: #9fe7ff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.assistant-copy h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.assistant-copy p {
+  margin: 0;
+  color: #bfd0e9;
+  line-height: 1.55;
+}
+
+.assistant-input-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: rgba(8, 16, 32, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.assistant-input-card textarea {
+  min-height: 108px;
+  resize: vertical;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.prompt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.prompt-chip {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(133, 200, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ecf6ff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+
+.prompt-chip:hover {
+  transform: translateY(-1px);
+  background: rgba(120, 198, 255, 0.14);
+  border-color: rgba(133, 200, 255, 0.38);
+}
+
 .submit-btn {
-  padding: 0 22px;
+  justify-self: end;
+  min-width: 220px;
+  min-height: 62px;
+  padding: 0 26px;
   border: 0;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #4e98ff, #2f78df);
+  border-radius: 20px;
+  background: linear-gradient(135deg, #6ed3c5, #2f78df);
   color: #fff;
   font-weight: 800;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 74px;
-  box-shadow: 0 16px 30px rgba(47, 120, 223, 0.28);
+  box-shadow: 0 16px 32px rgba(38, 124, 181, 0.28);
 }
 
 @media (max-width: 1200px) {
-  .search-form {
+  .search-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .assistant-panel {
+    grid-template-columns: 1fr;
+  }
+
   .submit-btn {
-    min-height: 60px;
+    justify-self: stretch;
   }
 }
 
@@ -154,7 +252,11 @@
     border-radius: 24px;
   }
 
-  .search-form {
+  .search-grid {
     grid-template-columns: 1fr;
+  }
+
+  .assistant-copy h3 {
+    font-size: 1.15rem;
   }
 }

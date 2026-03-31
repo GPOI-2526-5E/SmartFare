@@ -79,7 +79,7 @@ export class BookingFormComponent implements OnInit {
     this.smartfareService.GetAirports().subscribe({
       next: (res) => {
         console.log(res);
-        this.airports.set(res.data);
+        this.airports.set(res);
       },
       error: (error) => {
         console.error(error);

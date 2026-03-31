@@ -10,27 +10,20 @@ import Location from '../models/location.model';
 
 export class SmartfareService {
   private readonly APIENDPOINT = 'http://localhost:3500/api';
-  private airportsRequest$?: Observable<{ data: Airports[] }>;
-  private locationsRequest$?: Observable<{ data: Location[] }>;
+  private airportsRequest$?: Observable<Airports[]>;
+  private locationsRequest$?: Observable<Location[]>;
 
   constructor(private http: HttpClient) { };
 
-  GetAirports(): Observable<{ data: Airports[] }> {
-    if (!this.airportsRequest$) {
-      this.airportsRequest$ = this.http
-        .get<{ data: Airports[] }>(this.APIENDPOINT + '/flights/airports')
-        .pipe(shareReplay(1));
-    }
-
+  GetAirports(): Observable<Airports[]> {
+    if (!this.airportsRequest$)
+      this.airportsRequest$ = this.http.get<Airports[]>(this.APIENDPOINT + '/flights/airports');
     return this.airportsRequest$;
   }
 
-  GetLocations(): Observable<{ data: Location[] }> {
-    if (!this.locationsRequest$) {
-      this.locationsRequest$ = this.http
-        .get<{ data: Location[] }>(this.APIENDPOINT + '/locations')
-        .pipe(shareReplay(1));
-    }
+  GetLocations(): Observable<Location[]> {
+    if (!this.locationsRequest$)
+      this.locationsRequest$ = this.http.get<Location[]>(this.APIENDPOINT + '/locations')
 
     return this.locationsRequest$;
   }

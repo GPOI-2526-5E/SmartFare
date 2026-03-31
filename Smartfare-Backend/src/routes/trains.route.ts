@@ -1,44 +1,64 @@
 import { Router, Request, Response } from "express";
-import { geminiService } from "../services/ia/gemini.service";
 import { TrainSearchParams } from "../models/search-params.model";
+import { searchTrainOffers } from "../services/AI/search/train-search.service";
+import { saveTrainPriceHistory } from "../services/AI/history/train-price-history.service";
+import { analyzeTrainOffers } from "../services/AI/analysis/train-analysis.service";
+import { generateTrainRecommendation } from "../services/AI/recommendation/train-recommendation.service";
 
 const router = Router();
 
 router.post("/search", async (req: Request, res: Response) => {
     try {
-        const { from, to, date, passengers = 1, userPreference } = req.body;
+        const { originStationId, destinationStationId, date, passengers = 1, userPreference } = req.body;
+        console.log("[TRAINS][ROUTE] Payload ricevuto:", {
+            originStationId,
+            destinationStationId,
+            date,
+            passengers,
+            userPreference,
+        });
 
-        if (!from || !to || !date) {
+        if (!originStationId || !destinationStationId || !date) {
             return res.status(400).json({
                 error: "Parametri mancanti",
-                required: ["from", "to", "date"]
+                required: ["originStationId", "destinationStationId", "date"],
             });
         }
 
         const searchParams: TrainSearchParams = {
-            from,
-            to,
+            originStationId,
+            destinationStationId,
             date,
             passengers: Number(passengers) || 1,
-            userPreference
+            userPreference,
         };
 
-        console.log(`🔍 Ricerca nuova: ${from} → ${to} (${date})`);
-        const offers = await geminiService.searchTrainOffers(searchParams);
-        const recommendation = await geminiService.getRecommendations(offers, userPreference);
+        const result = await searchTrainOffers(searchParams);
+        console.log("[TRAINS][ROUTE] Offerte restituite dal service:", result.total);
+        const history = await saveTrainPriceHistory(result.offers);
+        console.log("[TRAINS][ROUTE] Righe storico salvate:", history.length);
+        const analysis = analyzeTrainOffers(result.offers, history, userPreference);
+        const recommendation = await generateTrainRecommendation(
+            result.offers,
+            history,
+            analysis,
+            userPreference
+        );
 
-        res.json({
-            offers,
+        return res.status(200).json({
+            ...result,
+            history,
+            analysis,
             recommendation,
-            searchedAt: new Date()
         });
     } catch (error: any) {
-        console.error("Errore ricerca:", error);
-        res.status(500).json({
-            error: "Errore durante la ricerca",
-            message: error.message
+        console.error("Errore ricerca treni:", error);
+        return res.status(500).json({
+            error: "Errore durante la ricerca treni",
+            message: error.message,
         });
     }
 });
+
 
 export default router;
