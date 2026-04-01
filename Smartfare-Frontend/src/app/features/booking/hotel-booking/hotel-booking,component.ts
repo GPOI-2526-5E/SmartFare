@@ -1,13 +1,16 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
 import { HotelFiltersBarComponent } from '../hotel-filters-bar/hotel-filters-bar.component';
 import { HotelMapPanelComponent } from '../hotel-map-panel/hotel-map-panel.component';
 import { HotelResultsListComponent } from '../hotel-results-list/hotel-results-list.component';
 import { HotelSearchBarComponent } from '../hotel-search-bar/hotel-search-bar.component';
-import { HotelCard } from '../../../core/models/hotel-booking.models';
+import {
+  HotelCard,
+  HotelSearchApiOffer,
+  HotelSearchApiResponse,
+} from '../../../core/models/hotel-booking.models';
 import { HotelSearchCriteria } from '../../../core/models/hotel-search.model';
-import Location from '../../../core/models/location.model';
 import { SmartfareService } from '../../../core/services/smartfare-api.service';
 
 @Component({
@@ -31,7 +34,11 @@ export class HotelBookingComponent implements OnInit {
   ) {}
 
   showMap = true;
-  locations = signal<Location[]>([]);
+  isLoading = false;
+  errorMessage = '';
+  totalResults = 0;
+  selectedFilter = 'Recommended';
+
   hotelSearch: HotelSearchCriteria = {
     destination: '',
     checkin: '',
@@ -40,71 +47,26 @@ export class HotelBookingComponent implements OnInit {
     userPreference: '',
   };
 
-  readonly filters = [
-    'Recommended',
-    'Price',
-    'Stars',
-    'Guest Rating',
-    'Distance',
-    'Top Reviewed',
-  ];
+  readonly filters = ['Recommended', 'Price', 'Stars', 'Availability'];
 
-  readonly hotels: HotelCard[] = [
-    {
-      name: 'Comfortable Office Space',
-      area: 'Canary Wharf',
-      country: 'Greater London, United Kingdom',
-      rating: '4.8 Excellent',
-      reviews: '48 reviews',
-      price: '£899.00',
-      accent: '#3f83f8',
-      image: 'url("/assets/home-section.avif")',
-      badge: 'Popular choice',
-      features: [
-        { icon: 'bi bi-aspect-ratio', label: '4800 sq ft' },
-        { icon: 'bi bi-building', label: '4 Rooms' },
-        { icon: 'bi bi-droplet', label: '2 bathrooms' },
-        { icon: 'bi bi-bed', label: '6 Beds' },
-      ],
-    },
-    {
-      name: 'Sunny, Modern Room in Village!',
-      area: 'Richmond Riverside',
-      country: 'Greater London, United Kingdom',
-      rating: '4.6 Excellent',
-      reviews: '71 reviews',
-      price: '£799.00',
-      accent: '#22a06b',
-      image: 'url("/assets/hero-bg.jpg")',
-      badge: 'Breakfast included',
-      features: [
-        { icon: 'bi bi-aspect-ratio', label: '4100 sq ft' },
-        { icon: 'bi bi-building', label: '4 Rooms' },
-        { icon: 'bi bi-droplet', label: '2 bathrooms' },
-        { icon: 'bi bi-bed', label: '5 Beds' },
-      ],
-    },
-    {
-      name: 'Large And Modern Bedroom',
-      area: 'Kensington Gardens',
-      country: 'Greater London, United Kingdom',
-      rating: '4.9 Exceptional',
-      reviews: '103 reviews',
-      price: '£999.00',
-      accent: '#f59e0b',
-      image: 'linear-gradient(135deg, rgba(6, 32, 71, 0.55), rgba(12, 96, 152, 0.25)), url("/assets/home-section.avif")',
-      badge: 'Top reviewed',
-      features: [
-        { icon: 'bi bi-aspect-ratio', label: '5200 sq ft' },
-        { icon: 'bi bi-building', label: '5 Rooms' },
-        { icon: 'bi bi-droplet', label: '3 bathrooms' },
-        { icon: 'bi bi-bed', label: '7 Beds' },
-      ],
-    },
-  ];
+  private allHotels: HotelCard[] = [];
+  hotels: HotelCard[] = [];
+  selectedHotel: HotelCard | null = null;
 
   toggleMap(): void {
     this.showMap = !this.showMap;
+  }
+
+  selectFilter(filter: string): void {
+    this.selectedFilter = filter;
+    this.applySelectedFilter();
+  }
+
+  selectHotel(hotel: HotelCard): void {
+    this.selectedHotel = hotel;
+    if (!this.showMap) {
+      this.showMap = true;
+    }
   }
 
   onSearch(criteria: HotelSearchCriteria): void {
@@ -149,15 +111,143 @@ export class HotelBookingComponent implements OnInit {
         guests: Number.isFinite(guestsParam) && guestsParam > 0 ? guestsParam : 2,
         userPreference: params.get('userPreference') ?? '',
       };
-    });
 
-    this.smartfareService.getLocations().subscribe({
-      next: (res) => {
-        this.locations.set(res);
+      if (this.hotelSearch.destination && this.hotelSearch.checkin && this.hotelSearch.checkout) {
+        this.fetchHotels();
+      }
+    });
+  }
+
+  private fetchHotels(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.smartfareService.searchHotels(this.hotelSearch, 1, 30).subscribe({
+      next: (response) => {
+        this.totalResults = response.total;
+        this.allHotels = response.offers.map((offer) => this.mapOfferToCard(offer, response));
+        this.applySelectedFilter();
+        this.selectedHotel = this.hotels[0] ?? null;
+        this.isLoading = false;
       },
       error: (error) => {
         console.error(error);
+        this.errorMessage = 'Non sono riuscito a caricare gli hotel. Riprova tra poco.';
+        this.allHotels = [];
+        this.hotels = [];
+        this.selectedHotel = null;
+        this.totalResults = 0;
+        this.isLoading = false;
       },
     });
+  }
+
+  private applySelectedFilter(): void {
+    const sortedHotels = [...this.allHotels];
+
+    switch (this.selectedFilter) {
+      case 'Price':
+        sortedHotels.sort((first, second) => first.priceValue - second.priceValue);
+        break;
+      case 'Stars':
+        sortedHotels.sort((first, second) => this.extractStars(second.rating) - this.extractStars(first.rating));
+        break;
+      case 'Availability':
+        sortedHotels.sort((first, second) => second.availableRooms - first.availableRooms);
+        break;
+      default:
+        sortedHotels.sort((first, second) => {
+          const recommendationWeight = Number(Boolean(second.recommendation)) - Number(Boolean(first.recommendation));
+          if (recommendationWeight !== 0) {
+            return recommendationWeight;
+          }
+
+          return first.priceValue - second.priceValue;
+        });
+        break;
+    }
+
+    this.hotels = sortedHotels;
+    if (this.selectedHotel) {
+      this.selectedHotel = this.hotels.find((hotel) => hotel.hotelId === this.selectedHotel?.hotelId) ?? this.hotels[0] ?? null;
+    }
+  }
+
+  private mapOfferToCard(offer: HotelSearchApiOffer, response: HotelSearchApiResponse): HotelCard {
+    const starsLabel = offer.stars > 0 ? `${offer.stars} stelle` : 'Essenziale';
+    const featureBase = [
+      { icon: 'bi bi-door-open', label: `${offer.availableRooms} camere disponibili` },
+      { icon: 'bi bi-people', label: `Fino a ${offer.bestRoom.roomCapacity} ospiti` },
+      { icon: 'bi bi-moon-stars', label: `${offer.nights} notti` },
+      { icon: 'bi bi-house-heart', label: offer.bestRoom.roomType },
+    ];
+
+    if (offer.services[0]) {
+      featureBase[3] = { icon: 'bi bi-stars', label: offer.services[0] };
+    }
+
+    return {
+      hotelId: offer.hotelId,
+      name: offer.name,
+      area: offer.city || offer.location || 'Destinazione selezionata',
+      country: offer.address,
+      rating: starsLabel,
+      reviews: offer.availableRooms > 1 ? `${offer.availableRooms} opzioni disponibili` : '1 opzione disponibile',
+      price: `€${offer.minPricePerNight}`,
+      priceValue: offer.minPricePerNight,
+      accent: this.pickAccent(offer),
+      image: this.buildHotelImage(offer),
+      badge: this.buildHotelBadge(offer, response),
+      latitude: offer.latitude,
+      longitude: offer.longitude,
+      recommendation: response.recommendation?.suggestion || response.analysis?.summary || '',
+      roomType: offer.bestRoom.roomType,
+      availableRooms: offer.availableRooms,
+      services: offer.services,
+      features: featureBase,
+    };
+  }
+
+  private buildHotelBadge(offer: HotelSearchApiOffer, response: HotelSearchApiResponse): string {
+    if (response.analysis?.bestOffer?.hotelId === offer.hotelId) {
+      return 'Scelta IA';
+    }
+
+    if (response.analysis?.cheapestOffer?.hotelId === offer.hotelId) {
+      return 'Miglior prezzo';
+    }
+
+    if (offer.stars >= 4) {
+      return 'Top comfort';
+    }
+
+    return 'Da vedere';
+  }
+
+  private buildHotelImage(offer: HotelSearchApiOffer): string {
+    const gradients = [
+      'linear-gradient(135deg, rgba(11, 41, 79, 0.48), rgba(30, 119, 191, 0.24)), url("/assets/home-section.avif")',
+      'linear-gradient(135deg, rgba(33, 71, 108, 0.45), rgba(72, 164, 124, 0.20)), url("/assets/hero-bg.jpg")',
+      'linear-gradient(135deg, rgba(28, 33, 73, 0.46), rgba(235, 166, 70, 0.16)), url("/assets/home-section.avif")',
+    ];
+
+    return gradients[offer.hotelId % gradients.length];
+  }
+
+  private pickAccent(offer: HotelSearchApiOffer): string {
+    if (offer.stars >= 4) {
+      return '#f59e0b';
+    }
+
+    if (offer.minPricePerNight <= 100) {
+      return '#22a06b';
+    }
+
+    return '#3f83f8';
+  }
+
+  private extractStars(label: string): number {
+    const match = label.match(/\d+/);
+    return match ? Number(match[0]) : 0;
   }
 }

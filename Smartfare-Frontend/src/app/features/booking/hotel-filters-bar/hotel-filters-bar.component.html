@@ -6,15 +6,20 @@
 
   <div class="toolbar-meta">
     <div class="results-copy">
-      <strong>300+</strong>
-      <span>places to stay</span>
+      <strong>{{ totalResults() }}</strong>
+      <span>hotel trovati</span>
     </div>
 
     <div class="filter-pills">
       @for (filter of filters(); track filter) {
-        <button class="pill" type="button">
+        <button
+          class="pill"
+          type="button"
+          [class.active]="filter === selectedFilter()"
+          (click)="selectFilter.emit(filter)"
+        >
           <span>{{ filter }}</span>
-          @if (filter === 'Price' || filter === 'Stars') {
+          @if (filter === 'Price' || filter === 'Stars' || filter === 'Recommended') {
             <i class="bi bi-chevron-down"></i>
           }
         </button>

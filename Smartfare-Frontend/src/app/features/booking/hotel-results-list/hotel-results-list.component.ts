@@ -1,4 +1,4 @@
-import { Component, input, OnInit } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { HotelCard } from '../../../core/models/hotel-booking.models';
 
 @Component({
@@ -7,10 +7,8 @@ import { HotelCard } from '../../../core/models/hotel-booking.models';
   templateUrl: './hotel-results-list.component.html',
   styleUrl: './hotel-results-list.component.css',
 })
-export class HotelResultsListComponent implements OnInit {
+export class HotelResultsListComponent {
   readonly hotels = input.required<HotelCard[]>();
-
-  ngOnInit(){
-    console.log(this.hotels);
-  }
+  readonly selectedHotelId = input<number | null>(null);
+  readonly selectHotel = output<HotelCard>();
 }

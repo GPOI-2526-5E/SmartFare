@@ -1,31 +1,53 @@
 <aside class="map-panel">
-  <div class="map-toolbar">
-    <div>
-      <h3>London</h3>
-      <p>Curated stays near central attractions</p>
+  @if (selectedHotel(); as hotel) {
+    <div class="map-toolbar">
+      <div>
+        <h3>{{ hotel.name }}</h3>
+        <p>{{ hotel.area }}, {{ hotel.country }}</p>
+      </div>
+
+      <div class="map-actions">
+        <a
+          [href]="externalMapUrl()"
+          target="_blank"
+          rel="noopener noreferrer"
+          [class.disabled]="!hotel.latitude || !hotel.longitude"
+          [attr.aria-disabled]="!hotel.latitude || !hotel.longitude"
+          aria-label="Open map"
+        >
+          <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+      </div>
     </div>
 
-    <div class="map-actions">
-      <button type="button" aria-label="Open map">
-        <i class="bi bi-box-arrow-up-right"></i>
-      </button>
-      <button type="button" aria-label="Center map">
-        <i class="bi bi-crosshair"></i>
-      </button>
+    <div class="map-surface real-map">
+      @if (mapUrl(); as safeMapUrl) {
+        <iframe
+          class="map-frame"
+          [src]="safeMapUrl"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Mappa hotel selezionato"
+        ></iframe>
+      } @else {
+        <div class="map-empty">
+          <i class="bi bi-geo-alt"></i>
+          <p>Coordinate non disponibili per questo hotel.</p>
+        </div>
+      }
+
+      <div class="map-selection-card">
+        <span class="map-badge">{{ hotel.badge }}</span>
+        <strong>{{ hotel.price }}</strong>
+        <p>{{ hotel.recommendation || 'Selezionato dalla lista risultati' }}</p>
+      </div>
     </div>
-  </div>
-
-  <div class="map-surface">
-    <div class="map-water"></div>
-    <div class="map-road road-a"></div>
-    <div class="map-road road-b"></div>
-    <div class="map-road road-c"></div>
-
-    <div class="map-marker marker-a"><span>£899</span></div>
-    <div class="map-marker marker-b"><span>£799</span></div>
-    <div class="map-marker marker-c"><span>£999</span></div>
-
-    <div class="map-label primary">London</div>
-    <div class="map-label secondary">Canary Wharf</div>
-  </div>
+  } @else {
+    <div class="map-surface empty-state">
+      <div class="map-empty">
+        <i class="bi bi-map"></i>
+        <p>Seleziona un hotel per vedere la sua posizione sulla mappa.</p>
+      </div>
+    </div>
+  }
 </aside>

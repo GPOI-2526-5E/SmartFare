@@ -36,7 +36,15 @@ router.post("/search", async (req: Request, res: Response) => {
         const result = await searchTrainOffers(searchParams);
         console.log("[TRAINS][ROUTE] Offerte restituite dal service:", result.total);
         const history = await saveTrainPriceHistory(result.offers);
-        console.log("[TRAINS][ROUTE] Righe storico salvate:", history.length);
+        const skippedHistoryRows = history.filter(
+            (item) => item.previous_price !== null && Number(item.previous_price) === Number(item.total_price)
+        ).length;
+        const insertedHistoryRows = history.length - skippedHistoryRows;
+        console.log("[TRAINS][ROUTE] Storico prezzi:", {
+            inserted: insertedHistoryRows,
+            skippedUnchanged: skippedHistoryRows,
+            totalProcessed: history.length,
+        });
         const analysis = analyzeTrainOffers(result.offers, history, userPreference);
         const recommendation = await generateTrainRecommendation(
             result.offers,

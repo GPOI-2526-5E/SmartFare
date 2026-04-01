@@ -95,11 +95,7 @@ function buildSummary(bestOffer: HotelAnalyzedOffer | null): string {
     return `Hotel consigliato per rapporto qualità/prezzo: ${bestOffer.comment}`;
 }
 
-export function analyzeHotelOffers(
-    offers: HotelSearchOffer[],
-    history: RoomPriceHistoryRecord[],
-    userPreference?: string
-): HotelAnalysisResult {
+export function analyzeHotelOffers(offers: HotelSearchOffer[],history: RoomPriceHistoryRecord[],userPreference?: string): HotelAnalysisResult {
     const priorities = inferPriorities(userPreference);
 
     const analyzedOffers: HotelAnalyzedOffer[] = offers.map((offer) => {

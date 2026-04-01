@@ -50,7 +50,15 @@ async function handleHotelSearch(req: Request, res: Response) {
         const result = await searchHotelOffers(searchParams);
         console.log("[HOTELS][ROUTE] Hotel trovati dal service:", result.total);
         const history = await saveHotelPriceHistory(result.offers);
-        console.log("[HOTELS][ROUTE] Righe storico salvate:", history.length);
+        const skippedHistoryRows = history.filter(
+            (item) => item.previous_price !== null && Number(item.previous_price) === Number(item.total_price)
+        ).length;
+        const insertedHistoryRows = history.length - skippedHistoryRows;
+        console.log("[HOTELS][ROUTE] Storico prezzi:", {
+            inserted: insertedHistoryRows,
+            skippedUnchanged: skippedHistoryRows,
+            totalProcessed: history.length,
+        });
         const analysis = analyzeHotelOffers(result.offers, history, searchParams.userPreference);
         const recommendation = await generateHotelRecommendation(
             result.offers,
@@ -62,8 +70,6 @@ async function handleHotelSearch(req: Request, res: Response) {
         const totalPages = Math.max(1, Math.ceil(total / limit));
         const startIndex = (page - 1) * limit;
 
-        // La UI mostra solo una finestra di risultati per volta,
-        // mentre analisi e IA continuano a lavorare sulla lista completa.
         const paginatedOffers = result.offers.slice(startIndex, startIndex + limit);
         const paginatedSearchKeys = new Set(
             paginatedOffers.map((offer) => `${offer.bestRoom.roomId}|${offer.searchKey}`)

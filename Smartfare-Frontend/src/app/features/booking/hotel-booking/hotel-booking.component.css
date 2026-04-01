@@ -37,6 +37,34 @@
 .content-grid.map-hidden {
   grid-template-columns: minmax(0, 1fr);
 }
+
+.results-shell {
+  min-height: 320px;
+}
+
+.results-state {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  min-height: 320px;
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid rgba(165, 180, 201, 0.24);
+  background: rgba(255, 255, 255, 0.92);
+  color: #35506f;
+  text-align: center;
+  box-shadow: 0 24px 55px rgba(25, 40, 70, 0.08);
+}
+
+.results-state i {
+  font-size: 2rem;
+  color: #2f78df;
+}
+
+.results-state.error i {
+  color: #d46b3b;
+}
+
 @media (max-width: 1180px) {
   .content-grid {
     grid-template-columns: 1fr;

@@ -1,6 +1,10 @@
 <div class="hotel-list">
-  @for (hotel of hotels(); track hotel.name) {
-    <article class="hotel-card">
+  @for (hotel of hotels(); track hotel.hotelId) {
+    <article
+      class="hotel-card"
+      [class.selected]="selectedHotelId() === hotel.hotelId"
+      (click)="selectHotel.emit(hotel)"
+    >
       <div class="hotel-media" [style.background-image]="hotel.image">
         <div class="gallery-controls">
           <button class="gallery-arrow" type="button" aria-label="Previous image">
@@ -42,6 +46,13 @@
           <span class="reviews">{{ hotel.reviews }}</span>
         </div>
 
+        @if (hotel.recommendation) {
+          <p class="recommendation">
+            <i class="bi bi-stars"></i>
+            <span>{{ hotel.recommendation }}</span>
+          </p>
+        }
+
         <div class="features-grid">
           @for (feature of hotel.features; track feature.label) {
             <div class="feature-item">
@@ -54,7 +65,9 @@
 
       <div class="hotel-price">
         <p class="price">{{ hotel.price }} <span>/ night</span></p>
-        <button class="detail-btn" type="button">View Detail</button>
+        <button class="detail-btn" type="button" (click)="selectHotel.emit(hotel); $event.stopPropagation()">
+          View Detail
+        </button>
       </div>
     </article>
   }

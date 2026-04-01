@@ -3,6 +3,8 @@ import { Observable, shareReplay } from 'rxjs';
 import { Airports } from '../models/flights.model';
 import { HttpClient } from '@angular/common/http';
 import Location from '../models/location.model';
+import { HotelSearchCriteria } from '../models/hotel-search.model';
+import { HotelSearchApiResponse } from '../models/hotel-booking.models';
 
 @Injectable({
   providedIn: 'root',
@@ -33,5 +35,13 @@ export class SmartfareService {
     }
 
     return this.locationsRequest$;
+  }
+
+  searchHotels(criteria: HotelSearchCriteria, page = 1, limit = 30): Observable<HotelSearchApiResponse> {
+    return this.http.post<HotelSearchApiResponse>(this.APIENDPOINT + '/hotels/search', {
+      ...criteria,
+      page,
+      limit,
+    });
   }
 }

@@ -15,14 +15,40 @@
       <app-hotel-filters-bar
         [filters]="filters"
         [showMap]="showMap"
+        [selectedFilter]="selectedFilter"
+        [totalResults]="totalResults"
         (toggleMap)="toggleMap()"
+        (selectFilter)="selectFilter($event)"
       ></app-hotel-filters-bar>
 
       <div class="content-grid" [class.map-hidden]="!showMap">
-        <app-hotel-results-list [hotels]="hotels"></app-hotel-results-list>
+        <div class="results-shell">
+          @if (isLoading) {
+            <div class="results-state">
+              <i class="bi bi-hourglass-split"></i>
+              <p>Sto caricando gli hotel dal backend...</p>
+            </div>
+          } @else if (errorMessage) {
+            <div class="results-state error">
+              <i class="bi bi-exclamation-triangle"></i>
+              <p>{{ errorMessage }}</p>
+            </div>
+          } @else if (hotels.length === 0) {
+            <div class="results-state">
+              <i class="bi bi-search"></i>
+              <p>Inserisci una ricerca completa per vedere gli hotel disponibili.</p>
+            </div>
+          } @else {
+            <app-hotel-results-list
+              [hotels]="hotels"
+              [selectedHotelId]="selectedHotel?.hotelId ?? null"
+              (selectHotel)="selectHotel($event)"
+            ></app-hotel-results-list>
+          }
+        </div>
 
         @if (showMap) {
-          <app-hotel-map-panel></app-hotel-map-panel>
+          <app-hotel-map-panel [selectedHotel]="selectedHotel"></app-hotel-map-panel>
         }
       </div>
     </section>

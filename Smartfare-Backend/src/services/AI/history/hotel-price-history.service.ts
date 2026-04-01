@@ -88,20 +88,44 @@ export async function saveHotelPriceHistory(offers: HotelSearchOffer[]): Promise
     }
     console.log("[HOTELS][HISTORY] Righe storico precedenti lette:", previousHistoryRows.length);
 
-    const latestHistoryBySearchKey = new Map<string, RoomPriceHistoryRecord>();
+    const latestHistoryByRoomAndSearchKey = new Map<string, RoomPriceHistoryRecord>();
     for (const row of previousHistoryRows) {
-        if (!latestHistoryBySearchKey.has(row.search_key)) {
-            latestHistoryBySearchKey.set(row.search_key, row);
+        const historyKey = `${row.room_id}|${row.search_key}`;
+        if (!latestHistoryByRoomAndSearchKey.has(historyKey)) {
+            latestHistoryByRoomAndSearchKey.set(historyKey, row);
         }
     }
 
-    const rowsToInsert = offers.map((offer) => {
-        const previousHistory = latestHistoryBySearchKey.get(offer.searchKey);
+    const rowsToReturn: RoomPriceHistoryRecord[] = [];
+    const rowsToInsert = offers.flatMap((offer) => {
+        const historyKey = `${offer.bestRoom.roomId}|${offer.searchKey}`;
+        const previousHistory = latestHistoryByRoomAndSearchKey.get(historyKey);
         const previousPrice = previousHistory ? Number(previousHistory.total_price) : null;
         const changePercent = calculateChangePercent(offer.minTotalPrice, previousPrice);
         const { trend, comment } = buildTrendComment(changePercent);
 
-        return {
+        if (previousPrice !== null && previousPrice === offer.minTotalPrice) {
+            rowsToReturn.push({
+                id: previousHistory?.id ?? 0,
+                room_id: offer.bestRoom.roomId,
+                hotel_id: offer.hotelId,
+                search_key: offer.searchKey,
+                price_per_night: offer.bestRoom.pricePerNight,
+                total_price: offer.minTotalPrice,
+                checkin: offer.searchKey.split("|")[1],
+                checkout: offer.searchKey.split("|")[2],
+                guests: offer.guests,
+                captured_at: previousHistory?.captured_at ?? new Date().toISOString(),
+                previous_price: previousPrice,
+                change_percent: 0,
+                trend: "stable",
+                comment: "Prezzo invariato rispetto all'ultima rilevazione",
+            });
+
+            return [];
+        }
+
+        return [{
             room_id: offer.bestRoom.roomId,
             hotel_id: offer.hotelId,
             search_key: offer.searchKey,
@@ -114,11 +138,12 @@ export async function saveHotelPriceHistory(offers: HotelSearchOffer[]): Promise
             change_percent: changePercent,
             trend,
             comment,
-        };
+        }];
     });
     console.log("[HOTELS][HISTORY] Righe da inserire nello storico:", rowsToInsert.length);
+    console.log("[HOTELS][HISTORY] Righe saltate per prezzo invariato:", rowsToReturn.length);
 
-    const insertedRows: RoomPriceHistoryRecord[] = [];
+    const insertedRows = [...rowsToReturn];
     for (const insertChunk of chunkArray(rowsToInsert, 80)) {
         const { data: insertedHistoryData, error: insertHistoryError } = await supabase
             .from("room_price_history")

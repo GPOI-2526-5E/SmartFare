@@ -73,6 +73,22 @@ export async function saveTrainPriceHistory(offers: TrainSearchOffer[]): Promise
         const changePercent = calculateChangePercent(offer.price, previousPrice);
         const { trend, comment } = buildTrendComment(changePercent);
 
+        if (previousPrice !== null && previousPrice === offer.price) {
+            savedHistory.push({
+                id: previousHistory?.id ?? 0,
+                train_offer_id: offer.trainOfferId,
+                route_key: offer.routeKey,
+                total_price: offer.price,
+                captured_at: previousHistory?.captured_at ?? new Date().toISOString(),
+                previous_price: previousPrice,
+                change_percent: 0,
+                trend: "stable",
+                comment: "Prezzo invariato rispetto all'ultima rilevazione",
+            });
+
+            continue;
+        }
+
         const { data: insertedHistoryData, error: insertHistoryError } = await supabase
             .from("train_price_history")
             .insert({
