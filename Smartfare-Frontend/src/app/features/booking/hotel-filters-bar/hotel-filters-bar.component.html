@@ -1,36 +1,70 @@
-<header class="toolbar">
-  <button class="filter-trigger" type="button">
-    <i class="bi bi-funnel"></i>
-    <span>Show Filters</span>
-  </button>
+<aside class="filters-sidebar">
+  <header class="sidebar-header">
+    <p class="caption">Filtri</p>
+    <h3>{{ totalResults() }} hotel trovati</h3>
+  </header>
 
-  <div class="toolbar-meta">
-    <div class="results-copy">
-      <strong>{{ totalResults() }}</strong>
-      <span>hotel trovati</span>
+  <section class="filter-block">
+    <div class="block-title-row">
+      <h4>Ordina per</h4>
+      <button class="reset-btn" type="button" (click)="resetFilters.emit()">Reset</button>
     </div>
-
-    <div class="filter-pills">
+    <div class="choice-grid">
       @for (filter of filters(); track filter) {
-        <button
-          class="pill"
-          type="button"
-          [class.active]="filter === selectedFilter()"
-          (click)="selectFilter.emit(filter)"
-        >
-          <span>{{ filter }}</span>
-          @if (filter === 'Price' || filter === 'Stars' || filter === 'Recommended') {
-            <i class="bi bi-chevron-down"></i>
-          }
-        </button>
+      <button class="choice-pill" type="button" [class.active]="filter === selectedFilter()"
+        (click)="selectFilter.emit(filter)">
+        {{ filter }}
+      </button>
       }
     </div>
-  </div>
+  </section>
 
-  <button class="map-toggle" type="button" (click)="toggleMap.emit()" [class.active]="showMap()">
-    <span>Hide Map</span>
-    <span class="toggle-track">
-      <span class="toggle-thumb"></span>
-    </span>
-  </button>
-</header>
+  <section class="filter-block">
+    <div class="block-title-row">
+      <h4>Prezzo massimo / notte</h4>
+      <strong>{{ selectedMaxPrice() }}€</strong>
+    </div>
+    <input class="price-range" type="range" [min]="minPriceBound()" [max]="maxPriceBound()" [value]="selectedMaxPrice()"
+      (input)="maxPriceChange.emit(+$any($event.target).value)">
+    <div class="range-meta">
+      <span>{{ minPriceBound() }}€</span>
+      <span>{{ maxPriceBound() }}€</span>
+    </div>
+  </section>
+
+  <section class="filter-block">
+    <h4>Qualità</h4>
+    <div class="stars-list">
+      @for (value of [0, 1, 2, 3, 4, 5]; track value) {
+      <button class="star-btn" type="button" [class.active]="minimumStars() === value"
+        (click)="minStarsChange.emit(value)">
+        @if (value === 0) {
+        Tutte
+        } @else {
+        {{ value }}+ stelle
+        }
+      </button>
+      }
+    </div>
+  </section>
+
+  <section class="filter-block compact">
+    <label class="checkbox-row">
+      <input type="checkbox" [checked]="onlyAiChoice()" (change)="onlyAiChoiceChange.emit($any($event.target).checked)">
+      <span>Mostra solo la Scelta IA</span>
+    </label>
+    <label class="checkbox-row">
+      <input type="checkbox" [checked]="showMap()" (change)="toggleMap.emit()">
+      <span>Mostra mappa</span>
+    </label>
+  </section>
+
+  <section class="ai-panel">
+    <p class="ai-badge">Travel AI</p>
+    <h4>{{ aiSummary() || 'Analisi pronta' }}</h4>
+    <p>{{ aiSuggestion() || 'Sto combinando prezzo, posizione e qualità per evidenziare le opzioni migliori.' }}</p>
+    @if (aiReasoning()) {
+    <small>{{ aiReasoning() }}</small>
+    }
+  </section>
+</aside>

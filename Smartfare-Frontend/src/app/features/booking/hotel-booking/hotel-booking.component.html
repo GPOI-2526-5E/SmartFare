@@ -1,54 +1,77 @@
 <div class="hotel-page">
   <div class="page-content">
-    <app-navbar></app-navbar>
+    <div class="hotel-nav-shell">
+      <app-navbar></app-navbar>
+    </div>
 
     <section class="booking-shell">
-      <app-hotel-search-bar
-        [destination]="hotelSearch.destination"
-        [checkin]="hotelSearch.checkin"
-        [checkout]="hotelSearch.checkout"
-        [guests]="hotelSearch.guests"
-        [userPreference]="hotelSearch.userPreference ?? ''"
-        (search)="onSearch($event)"
-      ></app-hotel-search-bar>
-
-      <app-hotel-filters-bar
-        [filters]="filters"
-        [showMap]="showMap"
-        [selectedFilter]="selectedFilter"
-        [totalResults]="totalResults"
-        (toggleMap)="toggleMap()"
-        (selectFilter)="selectFilter($event)"
-      ></app-hotel-filters-bar>
+      <app-hotel-search-bar [destination]="hotelSearch.destination" [checkin]="hotelSearch.checkin"
+        [checkout]="hotelSearch.checkout" [guests]="hotelSearch.guests"
+        [userPreference]="hotelSearch.userPreference ?? ''" (search)="onSearch($event)"></app-hotel-search-bar>
 
       <div class="content-grid" [class.map-hidden]="!showMap">
+        <app-hotel-filters-bar class="sidebar-shell" [filters]="filters" [showMap]="showMap"
+          [selectedFilter]="selectedFilter" [totalResults]="totalResults" [minPriceBound]="priceBounds.min"
+          [maxPriceBound]="priceBounds.max" [selectedMaxPrice]="selectedMaxPrice" [minimumStars]="minimumStars"
+          [onlyAiChoice]="onlyAiChoice" [aiSummary]="analysis?.summary || ''"
+          [aiSuggestion]="recommendation?.suggestion || ''" [aiReasoning]="recommendation?.reasoning || ''"
+          (toggleMap)="toggleMap()" (selectFilter)="selectFilter($event)" (maxPriceChange)="onMaxPriceChange($event)"
+          (minStarsChange)="onMinimumStarsChange($event)" (onlyAiChoiceChange)="onOnlyAiChoiceChange($event)"
+          (resetFilters)="resetFilters()"></app-hotel-filters-bar>
+
         <div class="results-shell">
-          @if (isLoading) {
+          <header class="results-toolbar">
+            <div>
+              <h2>Risultati hotel</h2>
+              <p>Pagina {{ currentPage }} di {{ totalPages }}</p>
+            </div>
+            <span class="result-chip">{{ hotels.length }} visibili</span>
+          </header>
+
+          <div class="results-container">
+            @if (isLoading) {
             <div class="results-state">
               <i class="bi bi-hourglass-split"></i>
               <p>Sto caricando gli hotel dal backend...</p>
             </div>
-          } @else if (errorMessage) {
+            } @else if (errorMessage) {
             <div class="results-state error">
               <i class="bi bi-exclamation-triangle"></i>
               <p>{{ errorMessage }}</p>
             </div>
-          } @else if (hotels.length === 0) {
+            } @else if (hotels.length === 0) {
             <div class="results-state">
               <i class="bi bi-search"></i>
-              <p>Inserisci una ricerca completa per vedere gli hotel disponibili.</p>
+              <p>Nessun hotel combacia con i filtri attivi in questa pagina.</p>
             </div>
-          } @else {
-            <app-hotel-results-list
-              [hotels]="hotels"
-              [selectedHotelId]="selectedHotel?.hotelId ?? null"
-              (selectHotel)="selectHotel($event)"
-            ></app-hotel-results-list>
+            } @else {
+            <app-hotel-results-list [hotels]="hotels" [selectedHotelId]="selectedHotel?.hotelId ?? null"
+              (selectHotel)="selectHotel($event)"></app-hotel-results-list>
+            }
+          </div>
+
+          @if (!isLoading && totalPages > 1) {
+          <nav class="pagination-shell" aria-label="Paginazione hotel">
+            <button type="button" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+              <i class="bi bi-chevron-left"></i> Prev
+            </button>
+
+            @for (page of paginationPages; track page) {
+            <button type="button" [class.active]="page === currentPage" (click)="goToPage(page)">
+              {{ page }}
+            </button>
+            }
+
+            <button type="button" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+              Next <i class="bi bi-chevron-right"></i>
+            </button>
+          </nav>
           }
         </div>
 
         @if (showMap) {
-          <app-hotel-map-panel [selectedHotel]="selectedHotel"></app-hotel-map-panel>
+        <app-hotel-map-panel [hotels]="hotels" [selectedHotel]="selectedHotel"
+          (selectHotel)="selectHotel($event)"></app-hotel-map-panel>
         }
       </div>
     </section>

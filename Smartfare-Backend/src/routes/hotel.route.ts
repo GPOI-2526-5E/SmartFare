@@ -25,7 +25,7 @@ function parseHotelParams(req: Request): HotelSearchParams {
     };
 }
 
-async function handleHotelSearch(req: Request, res: Response) {
+router.post("/search", async (req: Request, res: Response) => {
     try {
         const source = req.method === "GET" ? req.query : req.body ?? {};
         const searchParams = parseHotelParams(req);
@@ -96,63 +96,58 @@ async function handleHotelSearch(req: Request, res: Response) {
             message: error.message,
         });
     }
-}
+});
+router.get("/:hotelId/rooms", async (req: Request, res: Response) => {
+        try {
+            const hotelId = Number(req.params.hotelId);
+            const searchParams = parseHotelParams(req);
+            const source = req.method === "GET" ? req.query : req.body ?? {};
+            const { page, limit } = parsePagination(source);
+            console.log("[HOTELS][ROOMS][ROUTE] Payload ricevuto:", {
+                hotelId,
+                checkin: searchParams.checkin,
+                checkout: searchParams.checkout,
+                guests: searchParams.guests,
+                page,
+                limit,
+            });
 
-async function handleHotelRooms(req: Request, res: Response) {
-    try {
-        const hotelId = Number(req.params.hotelId);
-        const searchParams = parseHotelParams(req);
-        const source = req.method === "GET" ? req.query : req.body ?? {};
-        const { page, limit } = parsePagination(source);
-        console.log("[HOTELS][ROOMS][ROUTE] Payload ricevuto:", {
-            hotelId,
-            checkin: searchParams.checkin,
-            checkout: searchParams.checkout,
-            guests: searchParams.guests,
-            page,
-            limit,
-        });
+            if (!hotelId) {
+                return res.status(400).json({
+                    error: "hotelId non valido",
+                });
+            }
 
-        if (!hotelId) {
-            return res.status(400).json({
-                error: "hotelId non valido",
+            if (!searchParams.checkin || !searchParams.checkout) {
+                return res.status(400).json({
+                    error: "Parametri mancanti",
+                    required: ["checkin", "checkout", "guests"],
+                });
+            }
+
+            const result = await searchHotelRooms(hotelId, searchParams);
+            console.log("[HOTELS][ROOMS][ROUTE] Camere trovate dal service:", result.total);
+            const total = result.total;
+            const totalPages = Math.max(1, Math.ceil(total / limit));
+            const startIndex = (page - 1) * limit;
+            const paginatedOffers = result.offers.slice(startIndex, startIndex + limit);
+
+            return res.status(200).json({
+                ...result,
+                offers: paginatedOffers,
+                page,
+                limit,
+                total,
+                totalPages,
+            });
+        } catch (error: any) {
+            console.error("Errore dettaglio camere hotel:", error);
+            return res.status(500).json({
+                error: "Errore durante il caricamento delle camere hotel",
+                message: error.message,
             });
         }
-
-        if (!searchParams.checkin || !searchParams.checkout) {
-            return res.status(400).json({
-                error: "Parametri mancanti",
-                required: ["checkin", "checkout", "guests"],
-            });
-        }
-
-        const result = await searchHotelRooms(hotelId, searchParams);
-        console.log("[HOTELS][ROOMS][ROUTE] Camere trovate dal service:", result.total);
-        const total = result.total;
-        const totalPages = Math.max(1, Math.ceil(total / limit));
-        const startIndex = (page - 1) * limit;
-        const paginatedOffers = result.offers.slice(startIndex, startIndex + limit);
-
-        return res.status(200).json({
-            ...result,
-            offers: paginatedOffers,
-            page,
-            limit,
-            total,
-            totalPages,
-        });
-    } catch (error: any) {
-        console.error("Errore dettaglio camere hotel:", error);
-        return res.status(500).json({
-            error: "Errore durante il caricamento delle camere hotel",
-            message: error.message,
-        });
     }
-}
-
-router.get("/search", handleHotelSearch);
-router.post("/search", handleHotelSearch);
-router.get("/:hotelId/rooms", handleHotelRooms);
-router.post("/:hotelId/rooms", handleHotelRooms);
+);
 
 export default router;

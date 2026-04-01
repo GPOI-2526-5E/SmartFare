@@ -8,19 +8,24 @@ export interface HotelCard {
   name: string;
   area: string;
   country: string;
+  stars: number;
   rating: string;
   reviews: string;
   price: string;
   priceValue: number;
+  totalPrice: number;
+  nights: number;
   accent: string;
   image: string;
+  previewImage: string;
   badge: string;
   latitude: number | null;
   longitude: number | null;
-  recommendation?: string;
   roomType: string;
+  roomTypes: string[];
   availableRooms: number;
   services: string[];
+  isAiChoice: boolean;
   features: HotelFeature[];
 }
 
@@ -57,14 +62,40 @@ export interface HotelSearchApiResponse {
   page: number;
   limit: number;
   totalPages: number;
-  analysis?: {
-    summary?: string;
-    bestOffer?: HotelSearchApiOffer | null;
-    cheapestOffer?: HotelSearchApiOffer | null;
+  analysis?: HotelSearchAnalysis;
+  recommendation?: HotelSearchRecommendation;
+}
+
+export interface HotelSearchAnalysisOffer extends HotelSearchApiOffer {
+  score?: number;
+  previousPrice?: number | null;
+  changePercent?: number | null;
+  trend?: string;
+  comment?: string;
+  advice?: 'book_now' | 'wait' | 'stable';
+}
+
+export interface HotelSearchAnalysis {
+  summary?: string;
+  bestOffer?: HotelSearchAnalysisOffer | null;
+  cheapestOffer?: HotelSearchAnalysisOffer | null;
+  premiumOffer?: HotelSearchAnalysisOffer | null;
+  alternatives?: HotelSearchAnalysisOffer[];
+  userPreferenceProfile?: {
+    rawPreference?: string;
+    priorities: string[];
   };
-  recommendation?: {
-    suggestion?: string;
-    reasoning?: string;
-    bestChoiceSummary?: string;
-  };
+  keyFactors?: string[];
+  scenarioComparison?: string[];
+}
+
+export interface HotelSearchRecommendation {
+  recommendedAction?: 'book_now' | 'wait' | 'monitor';
+  confidence?: 'high' | 'medium' | 'low';
+  reasoning?: string;
+  suggestion?: string;
+  bestChoiceSummary?: string;
+  alternativesSummary?: string[];
+  travelStrategy?: string;
+  warning?: string;
 }

@@ -335,8 +335,7 @@ export class HotelBookingComponent implements OnInit {
   private buildHotelImage(offer: HotelSearchApiOffer): string {
     const images = [
       '/assets/home-section.avif',
-      '/assets/home-section.avif',
-      '/assets/home-section.avif',
+      '/assets/hotel-template.avif'
     ];
 
     return images[offer.hotelId % images.length];
