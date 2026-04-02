@@ -9,15 +9,35 @@
         [checkout]="hotelSearch.checkout" [guests]="hotelSearch.guests"
         [userPreference]="hotelSearch.userPreference ?? ''" (search)="onSearch($event)"></app-hotel-search-bar>
 
-      <div class="content-grid" [class.map-hidden]="!showMap">
-        <app-hotel-filters-bar class="sidebar-shell" [filters]="filters" [showMap]="showMap"
-          [selectedFilter]="selectedFilter" [totalResults]="totalResults" [minPriceBound]="priceBounds.min"
-          [maxPriceBound]="priceBounds.max" [selectedMaxPrice]="selectedMaxPrice" [minimumStars]="minimumStars"
-          [onlyAiChoice]="onlyAiChoice" [aiSummary]="analysis?.summary || ''"
-          [aiSuggestion]="recommendation?.suggestion || ''" [aiReasoning]="recommendation?.reasoning || ''"
-          (toggleMap)="toggleMap()" (selectFilter)="selectFilter($event)" (maxPriceChange)="onMaxPriceChange($event)"
-          (minStarsChange)="onMinimumStarsChange($event)" (onlyAiChoiceChange)="onOnlyAiChoiceChange($event)"
-          (resetFilters)="resetFilters()"></app-hotel-filters-bar>
+      <div class="content-grid">
+        <div class="sidebar-shell">
+          <section class="mini-map-shell">
+            <header>
+              <h3>Mappa rapida</h3>
+              <button type="button" (click)="openMapDrawer()">
+                Apri grande <i class="bi bi-arrows-fullscreen"></i>
+              </button>
+            </header>
+
+            <div class="mini-map-wrap" (click)="openMapDrawer()" role="button" tabindex="0"
+              (keydown.enter)="openMapDrawer()" (keydown.space)="openMapDrawer()">
+              <app-hotel-map-panel [hotels]="hotels" [selectedHotel]="selectedHotel"
+                [compact]="true"></app-hotel-map-panel>
+            </div>
+          </section>
+
+          <app-hotel-filters-bar [filters]="filters" [showMap]="showMap" [selectedFilter]="selectedFilter"
+            [totalResults]="totalResults" [minPriceBound]="priceBounds.min" [maxPriceBound]="priceBounds.max"
+            [selectedMaxPrice]="selectedMaxPrice" [minimumStars]="minimumStars" [onlyAiChoice]="onlyAiChoice"
+            [onlyWithCoordinates]="onlyWithCoordinates" [minimumAvailableRooms]="minimumAvailableRooms"
+            [availableServices]="availableServices" [selectedServices]="selectedServices" (toggleMap)="toggleMap()"
+            (selectFilter)="selectFilter($event)" (maxPriceChange)="onMaxPriceChange($event)"
+            (minStarsChange)="onMinimumStarsChange($event)" (onlyAiChoiceChange)="onOnlyAiChoiceChange($event)"
+            (onlyWithCoordinatesChange)="onOnlyWithCoordinatesChange($event)"
+            (minimumAvailableRoomsChange)="onMinimumAvailableRoomsChange($event)"
+            (toggleService)="toggleService($event)" (clearServices)="clearSelectedServices()"
+            (resetFilters)="resetFilters()"></app-hotel-filters-bar>
+        </div>
 
         <div class="results-shell">
           <header class="results-toolbar">
@@ -46,7 +66,8 @@
             </div>
             } @else {
             <app-hotel-results-list [hotels]="hotels" [selectedHotelId]="selectedHotel?.hotelId ?? null"
-              (selectHotel)="selectHotel($event)"></app-hotel-results-list>
+              (selectHotel)="selectHotel($event)"
+              (openMapWithHotel)="openMapWithHotel($event)"></app-hotel-results-list>
             }
           </div>
 
@@ -67,13 +88,67 @@
             </button>
           </nav>
           }
+
         </div>
 
-        @if (showMap) {
-        <app-hotel-map-panel [hotels]="hotels" [selectedHotel]="selectedHotel"
-          (selectHotel)="selectHotel($event)"></app-hotel-map-panel>
-        }
+        <aside class="ai-sidebar">
+          <div class="ai-sidebar-head">
+            <h3>Motore IA</h3>
+            <span class="confidence-chip" [class.medium]="recommendation?.confidence === 'medium'"
+              [class.low]="recommendation?.confidence === 'low'">
+              {{ recommendation?.confidence || 'in analisi' }}
+            </span>
+          </div>
+
+          <section class="ai-feature-card">
+            <h4>Sintesi decisionale</h4>
+            <p>{{ recommendation?.reasoning || analysis?.summary || 'Analisi in corso.' }}</p>
+          </section>
+
+          <section class="ai-feature-card">
+            <h4>Azione consigliata</h4>
+            <p>{{ recommendation?.suggestion || 'Attendo dati completi per suggerire la mossa migliore.' }}</p>
+          </section>
+
+          <section class="ai-feature-card">
+            <h4>Miglior opzione</h4>
+            <p>{{ recommendation?.bestChoiceSummary || 'Nessuna opzione evidenziata al momento.' }}</p>
+          </section>
+
+          <section class="ai-feature-card">
+            <h4>Strategia</h4>
+            <p>{{ recommendation?.travelStrategy || 'Confronta servizi, posizione e disponibilità prima di prenotare.'
+              }}</p>
+          </section>
+
+          @if (recommendation?.alternativesSummary?.length) {
+          <section class="ai-feature-card">
+            <h4>Alternative</h4>
+            <ul>
+              @for (alt of recommendation?.alternativesSummary; track alt) {
+              <li>{{ alt }}</li>
+              }
+            </ul>
+          </section>
+          }
+
+          @if (recommendation?.warning) {
+          <p class="ai-warning"><i class="bi bi-exclamation-circle"></i> {{ recommendation?.warning }}</p>
+          }
+        </aside>
       </div>
+
+      @if (mapDrawerOpen) {
+      <div class="map-drawer-backdrop" (click)="closeMapDrawer()">
+        <aside class="map-drawer" (click)="$event.stopPropagation()">
+          <button class="map-drawer-close" type="button" (click)="closeMapDrawer()" aria-label="Chiudi mappa">
+            Chiudi
+          </button>
+          <app-hotel-map-panel [hotels]="hotels" [selectedHotel]="selectedHotel"
+            (selectHotel)="selectHotel($event)"></app-hotel-map-panel>
+        </aside>
+      </div>
+      }
     </section>
   </div>
 </div>

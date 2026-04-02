@@ -16,13 +16,18 @@ export class HotelFiltersBarComponent {
   readonly selectedMaxPrice = input<number>(0);
   readonly minimumStars = input<number>(0);
   readonly onlyAiChoice = input<boolean>(false);
-  readonly aiSummary = input<string>('');
-  readonly aiSuggestion = input<string>('');
-  readonly aiReasoning = input<string>('');
+  readonly onlyWithCoordinates = input<boolean>(false);
+  readonly minimumAvailableRooms = input<number>(0);
+  readonly availableServices = input<string[]>([]);
+  readonly selectedServices = input<string[]>([]);
   readonly toggleMap = output<void>();
   readonly selectFilter = output<string>();
   readonly maxPriceChange = output<number>();
   readonly minStarsChange = output<number>();
   readonly onlyAiChoiceChange = output<boolean>();
+  readonly onlyWithCoordinatesChange = output<boolean>();
+  readonly minimumAvailableRoomsChange = output<number>();
+  readonly toggleService = output<string>();
+  readonly clearServices = output<void>();
   readonly resetFilters = output<void>();
 }

@@ -2,6 +2,11 @@
   <header class="sidebar-header">
     <p class="caption">Filtri</p>
     <h3>{{ totalResults() }} hotel trovati</h3>
+    <div class="quick-stats">
+      <span>{{ selectedFilter() }}</span>
+      <span>{{ minimumStars() }}+ stelle</span>
+      <span>Max {{ selectedMaxPrice() }}€</span>
+    </div>
   </header>
 
   <section class="filter-block">
@@ -34,6 +39,7 @@
 
   <section class="filter-block">
     <h4>Qualità</h4>
+    <p class="helper-text">Scegli il livello minimo di stelle</p>
     <div class="stars-list">
       @for (value of [0, 1, 2, 3, 4, 5]; track value) {
       <button class="star-btn" type="button" [class.active]="minimumStars() === value"
@@ -48,23 +54,47 @@
     </div>
   </section>
 
+  <section class="filter-block">
+    <div class="block-title-row">
+      <h4>Camere disponibili minime</h4>
+      <strong>{{ minimumAvailableRooms() }}</strong>
+    </div>
+    <input class="price-range" type="range" min="0" max="12" step="1" [value]="minimumAvailableRooms()"
+      (input)="minimumAvailableRoomsChange.emit(+$any($event.target).value)">
+  </section>
+
+  <section class="filter-block">
+    <div class="block-title-row">
+      <h4>Servizi richiesti</h4>
+      <button class="reset-btn" type="button" (click)="clearServices.emit()">Pulisci</button>
+    </div>
+
+    @if (availableServices().length === 0) {
+    <p class="helper-text">Nessun servizio disponibile in questa pagina di risultati.</p>
+    } @else {
+    <div class="choice-grid">
+      @for (service of availableServices(); track service) {
+      <button class="choice-pill" type="button" [class.active]="selectedServices().includes(service)"
+        (click)="toggleService.emit(service)">
+        {{ service }}
+      </button>
+      }
+    </div>
+    }
+  </section>
+
   <section class="filter-block compact">
     <label class="checkbox-row">
       <input type="checkbox" [checked]="onlyAiChoice()" (change)="onlyAiChoiceChange.emit($any($event.target).checked)">
-      <span>Mostra solo la Scelta IA</span>
+      <span><i class="bi bi-robot"></i> Mostra solo Scelta IA</span>
     </label>
     <label class="checkbox-row">
-      <input type="checkbox" [checked]="showMap()" (change)="toggleMap.emit()">
-      <span>Mostra mappa</span>
+      <input type="checkbox" [checked]="onlyWithCoordinates()"
+        (change)="onlyWithCoordinatesChange.emit($any($event.target).checked)">
+      <span><i class="bi bi-geo-alt"></i> Solo hotel con coordinate</span>
     </label>
-  </section>
-
-  <section class="ai-panel">
-    <p class="ai-badge">Travel AI</p>
-    <h4>{{ aiSummary() || 'Analisi pronta' }}</h4>
-    <p>{{ aiSuggestion() || 'Sto combinando prezzo, posizione e qualità per evidenziare le opzioni migliori.' }}</p>
-    @if (aiReasoning()) {
-    <small>{{ aiReasoning() }}</small>
-    }
+    <button class="map-open-btn" type="button" (click)="toggleMap.emit()">
+      <i class="bi bi-map"></i> Apri mappa laterale
+    </button>
   </section>
 </aside>

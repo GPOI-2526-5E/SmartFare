@@ -3,13 +3,23 @@
 }
 
 .map-panel {
-  position: sticky;
-  top: 104px;
-  min-height: 760px;
+  position: relative;
+  min-height: 520px;
   border-radius: 24px;
   overflow: hidden;
   border: 1px solid rgba(154, 170, 194, 0.22);
   background: rgba(255, 255, 255, 0.94);
+}
+
+.map-panel.compact {
+  min-height: 190px;
+  border-radius: 0;
+  border: 0;
+}
+
+.map-panel.compact .map-toolbar,
+.map-panel.compact .map-selection-card {
+  display: none;
 }
 
 .map-toolbar {
@@ -66,8 +76,36 @@
 
 .map-surface {
   position: relative;
-  min-height: 760px;
+  min-height: 520px;
   background: linear-gradient(180deg, #cfe2f8 0, #deebfb 100%);
+}
+
+.map-panel.compact .map-surface {
+  min-height: 190px;
+}
+
+:host-context(.map-drawer) {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+:host-context(.map-drawer) .map-panel {
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  border-radius: 0;
+  border: 0;
+}
+
+:host-context(.map-drawer) .map-surface {
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .leaflet-map {
@@ -184,12 +222,10 @@
 
 @media (max-width: 1180px) {
   .map-panel {
-    position: relative;
-    top: 0;
-    min-height: 520px;
+    min-height: 440px;
   }
 
   .map-surface {
-    min-height: 520px;
+    min-height: 440px;
   }
 }

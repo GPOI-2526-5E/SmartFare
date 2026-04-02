@@ -34,7 +34,7 @@ function buildFallbackRecommendation(analysis: HotelAnalysisResult): HotelRecomm
     return {
         recommendedAction,
         confidence: bestOffer.trend === "new" ? "medium" : "high",
-        reasoning: `L'hotel migliore è ${bestOffer.name} perché combina bene prezzo di ingresso, qualità della struttura, servizi disponibili e andamento del prezzo. ${discountText}`.trim(),
+        reasoning: `Consiglio ${bestOffer.name} perché unisce prezzo competitivo (${bestOffer.minTotalPrice} euro totali), qualità della struttura (${bestOffer.stars} stelle) e disponibilità utile per il tuo viaggio. ${discountText}`.trim(),
         suggestion: bestOffer.advice === "book_now"
             ? bestOffer.changePercent !== null && bestOffer.changePercent < 0
                 ? `Prenota ora: è ancora in offerta e il prezzo è in calo del ${Math.abs(bestOffer.changePercent)}%.`
@@ -42,7 +42,7 @@ function buildFallbackRecommendation(analysis: HotelAnalysisResult): HotelRecomm
             : bestOffer.advice === "wait"
                 ? "Può avere senso aspettare e monitorare ancora il prezzo."
                 : "Il prezzo sembra stabile, quindi la scelta dipende soprattutto dalle tue preferenze.",
-        bestChoiceSummary: `${bestOffer.name}, da ${bestOffer.minTotalPrice} euro totali per ${bestOffer.nights} notti con camera ${bestOffer.bestRoom.roomType}. ${discountText}`.trim(),
+        bestChoiceSummary: `${bestOffer.name}: ${bestOffer.minTotalPrice} euro totali per ${bestOffer.nights} notti, camera ${bestOffer.bestRoom.roomType}, ${bestOffer.availableRooms} opzioni disponibili. ${discountText}`.trim(),
         alternativesSummary: analysis.alternatives.map((offer) =>
             `${offer.name} da ${offer.minTotalPrice} euro, ${offer.stars} stelle, ${offer.comment}`
         ),
@@ -95,6 +95,10 @@ Regole:
 - se il prezzo è stabile o in aumento spiega chiaramente perché
 - se lo storico è limitato, abbassa la confidenza e dichiaralo
 - sii concreto, deciso e utile
+- evita frasi vaghe e riassumi il motivo principale in massimo 2 frasi chiare
+- in "suggestion" dai un'azione immediata e pratica
+- in "bestChoiceSummary" inserisci nome hotel, costo totale e motivo sintetico della scelta
+- in "travelStrategy" proponi un mini piano operativo in 1-2 frasi
 
 Rispondi SOLO in JSON valido nel formato:
 {

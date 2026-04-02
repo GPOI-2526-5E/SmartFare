@@ -24,6 +24,7 @@ export class HotelMapPanelComponent implements AfterViewInit, OnChanges, OnDestr
 
   readonly hotels = input.required<HotelCard[]>();
   readonly selectedHotel = input<HotelCard | null>(null);
+  readonly compact = input<boolean>(false);
   readonly selectHotel = output<HotelCard>();
 
   private map?: L.Map;

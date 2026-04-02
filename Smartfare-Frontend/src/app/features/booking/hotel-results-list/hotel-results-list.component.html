@@ -1,6 +1,6 @@
 <div class="hotel-list">
   @for (hotel of hotels(); track hotel.hotelId) {
   <app-hotel-result-card [hotel]="hotel" [selected]="selectedHotelId() === hotel.hotelId"
-    (selectHotel)="selectHotel.emit($event)"></app-hotel-result-card>
+    (selectHotel)="selectHotel.emit($event)" (openMapWithHotel)="openMapWithHotel.emit($event)"></app-hotel-result-card>
   }
 </div>

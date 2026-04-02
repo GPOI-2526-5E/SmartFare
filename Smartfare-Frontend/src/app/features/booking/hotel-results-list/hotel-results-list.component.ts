@@ -13,4 +13,5 @@ export class HotelResultsListComponent {
   readonly hotels = input.required<HotelCard[]>();
   readonly selectedHotelId = input<number | null>(null);
   readonly selectHotel = output<HotelCard>();
+  readonly openMapWithHotel = output<HotelCard>();
 }

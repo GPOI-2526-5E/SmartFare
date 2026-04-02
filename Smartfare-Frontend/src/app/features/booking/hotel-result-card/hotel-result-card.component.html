@@ -1,13 +1,18 @@
-<article class="hotel-card" [class.selected]="selected()" (click)="selectHotel.emit(hotel())">
+<article class="hotel-card" [class.selected]="selected()" [class.ai-choice]="hotel().isAiChoice"
+  (click)="selectHotel.emit(hotel())">
   <div class="hotel-media" [style.background-image]="'url(' + hotel().image + ')'">
     <span class="hotel-badge" [style.--badge-color]="hotel().accent">{{ hotel().badge }}</span>
+    @if (hotel().isAiChoice) {
+    <span class="ai-choice-tag">⚡ Scelta IA 🤖</span>
+    }
   </div>
 
   <div class="hotel-info">
     <div class="hotel-heading">
       <div>
         <h2>{{ hotel().name }}</h2>
-        <div class="location">
+        <div class="location" (click)="openMapWithHotel.emit(hotel()); $event.stopPropagation()" role="button"
+          tabindex="0" (keydown.enter)="openMapWithHotel.emit(hotel())">
           <i class="bi bi-geo-alt"></i>
           <span>{{ hotel().area }}, {{ hotel().country }}</span>
         </div>

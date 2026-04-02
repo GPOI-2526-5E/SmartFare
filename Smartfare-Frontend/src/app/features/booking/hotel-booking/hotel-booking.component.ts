@@ -35,6 +35,7 @@ export class HotelBookingComponent implements OnInit {
   ) { }
 
   showMap = true;
+  mapDrawerOpen = false;
   isLoading = false;
   errorMessage = '';
   totalResults = 0;
@@ -44,6 +45,10 @@ export class HotelBookingComponent implements OnInit {
   selectedFilter = 'Recommended';
   minimumStars = 0;
   onlyAiChoice = false;
+  onlyWithCoordinates = false;
+  minimumAvailableRooms = 0;
+  selectedServices: string[] = [];
+  availableServices: string[] = [];
   selectedMaxPrice = 0;
   priceBounds = { min: 0, max: 0 };
   analysis?: HotelSearchAnalysis;
@@ -64,7 +69,17 @@ export class HotelBookingComponent implements OnInit {
   selectedHotel: HotelCard | null = null;
 
   toggleMap(): void {
-    this.showMap = !this.showMap;
+    this.showMap = true;
+    this.mapDrawerOpen = !this.mapDrawerOpen;
+  }
+
+  openMapDrawer(): void {
+    this.showMap = true;
+    this.mapDrawerOpen = true;
+  }
+
+  closeMapDrawer(): void {
+    this.mapDrawerOpen = false;
   }
 
   selectFilter(filter: string): void {
@@ -74,9 +89,11 @@ export class HotelBookingComponent implements OnInit {
 
   selectHotel(hotel: HotelCard): void {
     this.selectedHotel = hotel;
-    if (!this.showMap) {
-      this.showMap = true;
-    }
+  }
+
+  openMapWithHotel(hotel: HotelCard): void {
+    this.selectedHotel = hotel;
+    this.openMapDrawer();
   }
 
   onSearch(criteria: HotelSearchCriteria): void {
@@ -127,10 +144,42 @@ export class HotelBookingComponent implements OnInit {
     this.applySelectedFilterAndSideFilters();
   }
 
+  onOnlyWithCoordinatesChange(value: boolean): void {
+    this.onlyWithCoordinates = value;
+    this.applySelectedFilterAndSideFilters();
+  }
+
+  onMinimumAvailableRoomsChange(value: number): void {
+    this.minimumAvailableRooms = value;
+    this.applySelectedFilterAndSideFilters();
+  }
+
+  toggleService(service: string): void {
+    if (!service) {
+      return;
+    }
+
+    if (this.selectedServices.includes(service)) {
+      this.selectedServices = this.selectedServices.filter((item) => item !== service);
+    } else {
+      this.selectedServices = [...this.selectedServices, service];
+    }
+
+    this.applySelectedFilterAndSideFilters();
+  }
+
+  clearSelectedServices(): void {
+    this.selectedServices = [];
+    this.applySelectedFilterAndSideFilters();
+  }
+
   resetFilters(): void {
     this.selectedFilter = 'Recommended';
     this.minimumStars = 0;
     this.onlyAiChoice = false;
+    this.onlyWithCoordinates = false;
+    this.minimumAvailableRooms = 0;
+    this.selectedServices = [];
     this.selectedMaxPrice = this.priceBounds.max;
     this.applySelectedFilterAndSideFilters();
   }
@@ -192,6 +241,7 @@ export class HotelBookingComponent implements OnInit {
         this.recommendation = response.recommendation;
 
         this.pageHotels = response.offers.map((offer) => this.mapOfferToCard(offer, response.analysis?.bestOffer?.hotelId));
+        this.updateServiceOptions();
         this.updatePriceBounds();
         this.applySelectedFilterAndSideFilters();
         this.selectedHotel = this.hotels[0] ?? null;
@@ -202,6 +252,8 @@ export class HotelBookingComponent implements OnInit {
         this.errorMessage = 'Non sono riuscito a caricare gli hotel. Riprova tra poco.';
         this.pageHotels = [];
         this.hotels = [];
+        this.availableServices = [];
+        this.selectedServices = [];
         this.analysis = undefined;
         this.recommendation = undefined;
         this.selectedHotel = null;
@@ -243,6 +295,25 @@ export class HotelBookingComponent implements OnInit {
         return false;
       }
 
+      if (this.onlyWithCoordinates && (!hotel.latitude || !hotel.longitude)) {
+        return false;
+      }
+
+      if (hotel.availableRooms < this.minimumAvailableRooms) {
+        return false;
+      }
+
+      if (this.selectedServices.length > 0) {
+        const normalizedServices = hotel.services.map((service) => service.toLowerCase());
+        const hasAllRequiredServices = this.selectedServices.every((selectedService) =>
+          normalizedServices.includes(selectedService.toLowerCase())
+        );
+
+        if (!hasAllRequiredServices) {
+          return false;
+        }
+      }
+
       return true;
     });
 
@@ -274,6 +345,24 @@ export class HotelBookingComponent implements OnInit {
     if (this.selectedHotel) {
       this.selectedHotel = this.hotels.find((hotel) => hotel.hotelId === this.selectedHotel?.hotelId) ?? this.hotels[0] ?? null;
     }
+  }
+
+  private updateServiceOptions(): void {
+    const uniqueServices = new Set<string>();
+
+    for (const hotel of this.pageHotels) {
+      for (const service of hotel.services) {
+        const normalizedService = String(service ?? '').trim();
+        if (normalizedService) {
+          uniqueServices.add(normalizedService);
+        }
+      }
+    }
+
+    this.availableServices = Array.from(uniqueServices)
+      .sort((first, second) => first.localeCompare(second, 'it', { sensitivity: 'base' }))
+      .slice(0, 14);
+    this.selectedServices = this.selectedServices.filter((service) => this.availableServices.includes(service));
   }
 
   private mapOfferToCard(offer: HotelSearchApiOffer, bestOfferHotelId?: number): HotelCard {
