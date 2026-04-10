@@ -6,6 +6,10 @@ import {
     HotelSearchOffer,
 } from "../types/hotel-ai.types";
 
+function isGeminiQuotaError(error: unknown): boolean {
+    return typeof error === "object" && error !== null && "status" in error && (error as { status?: number }).status === 429;
+}
+
 function buildFallbackRecommendation(analysis: HotelAnalysisResult): HotelRecommendationResult {
     const bestOffer = analysis.bestOffer;
 
@@ -66,6 +70,10 @@ export async function generateHotelRecommendation(
     userPreference?: string
 ): Promise<HotelRecommendationResult> {
     const shortlistedOffers = offers.slice(0, 8);
+    if (shortlistedOffers.length === 0 || !analysis.bestOffer) {
+        return buildFallbackRecommendation(analysis);
+    }
+
     const shortlistedHistory = history
         .filter((item) => shortlistedOffers.some((offer) => offer.bestRoom.roomId === item.room_id))
         .slice(0, 8);
@@ -124,7 +132,11 @@ Rispondi SOLO in JSON valido nel formato:
 
         return JSON.parse(jsonMatch[0]) as HotelRecommendationResult;
     } catch (error) {
-        console.error("Errore raccomandazione hotel con Gemini:", error);
+        if (isGeminiQuotaError(error)) {
+            console.warn("[HOTELS][AI] Quota Gemini esaurita: uso fallback locale della raccomandazione.");
+        } else {
+            console.error("Errore raccomandazione hotel con Gemini:", error);
+        }
         return buildFallbackRecommendation(analysis);
     }
 }

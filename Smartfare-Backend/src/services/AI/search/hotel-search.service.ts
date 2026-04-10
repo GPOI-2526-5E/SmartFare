@@ -30,6 +30,26 @@ interface HotelSearchContext {
 
 const IN_BATCH_SIZE = 200;
 
+function parsePositiveNumber(value: unknown): number | null {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+        return null;
+    }
+
+    return parsed;
+}
+
+function readRoomCapacity(room: Partial<RoomRecord> & Record<string, unknown>): number | null {
+    const fallbackCapacity =
+        room.capacity ??
+        room.max_capacity ??
+        room.max_guests ??
+        room.guests ??
+        room.people_capacity;
+
+    return parsePositiveNumber(fallbackCapacity);
+}
+
 function parseGuests(guests?: number): number {
     return Number.isFinite(Number(guests)) && Number(guests) > 0 ? Number(guests) : 1;
 }
@@ -86,8 +106,7 @@ async function fetchRoomsByHotelsInBatches(
         const { data, error } = await supabase
             .from("rooms")
             .select("*")
-            .in("hotel_id", chunk)
-            .gte("capacity", guests);
+            .in("hotel_id", chunk);
 
         if (error) {
             throw error;
@@ -96,7 +115,20 @@ async function fetchRoomsByHotelsInBatches(
         rows.push(...((data ?? []) as RoomRecord[]));
     }
 
-    return rows;
+    const normalizedRows = rows.map((room) => {
+        const normalizedCapacity = readRoomCapacity(room as Partial<RoomRecord> & Record<string, unknown>);
+        return {
+            ...room,
+            capacity: normalizedCapacity,
+        } as RoomRecord;
+    });
+
+    const rowsWithKnownCapacity = normalizedRows.filter((room) => room.capacity !== null);
+    if (rowsWithKnownCapacity.length === 0) {
+        return normalizedRows;
+    }
+
+    return rowsWithKnownCapacity.filter((room) => Number(room.capacity) >= guests);
 }
 
 async function loadHotelSearchContext(
