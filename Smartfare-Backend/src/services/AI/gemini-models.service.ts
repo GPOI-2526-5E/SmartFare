@@ -7,10 +7,21 @@ const API_KEY = process.env.GEMINI_API_KEY || "";
 export const genAI = new GoogleGenerativeAI(API_KEY);
 const GEMINI_TIMEOUT_MS = Number(process.env.GEMINI_TIMEOUT_MS || 12000);
 
+const MODEL_ALIASES: Record<string, string> = {
+    // Vecchio alias non supportato da generateContent su v1beta.
+    "gemini-2-flash": "gemini-2.0-flash",
+};
+
+function normalizeModelName(modelName: string): string {
+    const normalized = modelName.trim();
+    return MODEL_ALIASES[normalized] ?? normalized;
+}
+
 export const GEMINI_MODELS = (process.env.GEMINI_MODEL || "")
     .split(",")
-    .map((m) => m.trim())
-    .filter((m) => m.startsWith("gemini-"));
+    .map(normalizeModelName)
+    .filter((m) => m.startsWith("gemini-"))
+    .filter((m, index, arr) => arr.indexOf(m) === index);
 
 export function getModel(modelName: string) {
     return genAI.getGenerativeModel({ model: modelName });
