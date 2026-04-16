@@ -11,7 +11,7 @@ import { HotelSearchApiResponse } from '../models/hotel-booking.models';
 })
 
 export class SmartfareService {
-  private readonly APIENDPOINT = 'http://localhost:3900/api';
+  private readonly APIENDPOINT = 'http://localhost:3200/api';
   private airportsRequest$?: Observable<Airports[]>;
   private locationsRequest$?: Observable<Location[]>;
 

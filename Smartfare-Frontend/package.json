@@ -23,6 +23,7 @@
   "private": true,
   "packageManager": "npm@11.6.1",
   "dependencies": {
+    "@abacritt/angularx-social-login": "^2.6.0",
     "@angular/common": "^21.1.4",
     "@angular/compiler": "^21.1.4",
     "@angular/core": "^21.1.4",
@@ -30,6 +31,7 @@
     "@angular/platform-browser": "^21.1.4",
     "@angular/platform-browser-dynamic": "^21.1.4",
     "@angular/router": "^21.1.4",
+    "@types/aos": "^3.0.7",
     "@types/leaflet": "^1.9.21",
     "aos": "^2.3.4",
     "bootstrap": "^5.3.8",

@@ -4,15 +4,19 @@
   </div>
 
   <section class="loader-panel" role="status" aria-live="polite" [attr.aria-busy]="show()">
-    <div class="loader-radar" aria-hidden="true">
-      <span class="radar-wave wave-one"></span>
-      <span class="radar-wave wave-two"></span>
-      <span class="radar-wave wave-three"></span>
-      <span class="radar-sweep"></span>
-      <span class="radar-core"></span>
-      <span class="radar-dot dot-alpha"></span>
-      <span class="radar-dot dot-beta"></span>
-      <span class="radar-dot dot-gamma"></span>
+    <div class="loader-mark">
+      <div class="loader-logo" aria-hidden="true">
+        <div class="logo-orbit orbit-one"></div>
+        <div class="logo-orbit orbit-two"></div>
+        <div class="logo-core">
+          <span class="brand-pill">SF</span>
+          <i class="bi logo-icon" [class]="phases[activePhaseIndex()].icon"></i>
+        </div>
+      </div>
+
+      <p class="loader-brand">SmartFare Tickets</p>
+      <p class="loader-label">{{ phases[activePhaseIndex()].label }}</p>
+      <p class="loader-message">{{ message() }}</p>
     </div>
   </section>
 }

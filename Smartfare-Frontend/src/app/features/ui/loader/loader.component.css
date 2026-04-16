@@ -4,271 +4,188 @@
   inset: 0;
   z-index: 9999;
 }
-.loader-shell {
-  overflow: hidden;
-}
+
 .loader-backdrop {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at top left, rgba(19, 188, 182, 0.28), transparent 30%),
-    radial-gradient(circle at 85% 18%, rgba(255, 182, 72, 0.18), transparent 24%),
-    linear-gradient(135deg, rgba(6, 19, 33, 0.97), rgba(9, 33, 52, 0.94) 55%, rgba(4, 13, 24, 0.98));
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  animation: loader-fade-in 0.22s ease-out;
+    radial-gradient(circle at 20% 18%, rgba(112, 162, 255, 0.16), transparent 24%),
+    radial-gradient(circle at 82% 22%, rgba(88, 134, 239, 0.12), transparent 22%),
+    linear-gradient(145deg, rgba(3, 10, 22, 0.94), rgba(4, 16, 33, 0.96));
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  animation: loader-fade-in 0.2s ease-out;
 }
+
 .loader-panel {
   display: grid;
   place-items: center;
   padding: 24px;
 }
-.loader-grid {
-  width: min(760px, 100%);
+
+.loader-mark {
   display: grid;
-  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-  gap: 28px;
-  align-items: center;
-  padding: 28px;
-  border: 1px solid rgba(157, 214, 209, 0.18);
-  border-radius: 32px;
-  background: linear-gradient(180deg, rgba(8, 24, 39, 0.92), rgba(7, 18, 31, 0.82));
-  box-shadow: 0 30px 90px rgba(2, 10, 18, 0.46);
-  animation: loader-rise 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+  justify-items: center;
+  text-align: center;
+  gap: 0.65rem;
+  color: #eef4ff;
+  animation: loader-rise 0.28s ease-out;
 }
-.loader-radar {
+
+.loader-logo {
   position: relative;
-  aspect-ratio: 1;
-  width: min(100%, 180px);
-  margin: 0 auto;
-  border-radius: 50%;
-  border: 1px solid rgba(158, 229, 222, 0.22);
-  background:
-    radial-gradient(circle at center, rgba(114, 255, 240, 0.16), transparent 26%),
-    radial-gradient(
-      circle at center,
-      transparent 48%,
-      rgba(160, 230, 225, 0.12) 48.5%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at center,
-      transparent 66%,
-      rgba(160, 230, 225, 0.08) 66.5%,
-      transparent 68%
-    ),
-    linear-gradient(180deg, rgba(8, 34, 48, 0.94), rgba(4, 16, 28, 0.96));
-  box-shadow:
-    inset 0 0 50px rgba(57, 187, 177, 0.14),
-    0 0 40px rgba(36, 156, 149, 0.14);
+  width: 8.5rem;
+  height: 8.5rem;
+  display: grid;
+  place-items: center;
 }
-.loader-radar::before,
-.loader-radar::after {
+
+.logo-orbit {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(138, 178, 255, 0.16);
+}
+
+.orbit-one {
+  animation: spin 4.2s linear infinite;
+}
+
+.orbit-two {
+  inset: 0.8rem;
+  border-color: rgba(138, 178, 255, 0.22);
+  animation: spin-reverse 3.2s linear infinite;
+}
+
+.logo-orbit::before {
   content: '';
   position: absolute;
-  inset: 50%;
-  background: rgba(176, 232, 229, 0.11);
-  transform: translate(-50%, -50%);
+  top: -0.28rem;
+  left: 50%;
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 50%;
+  background: #8db2ff;
+  box-shadow: 0 0 14px rgba(141, 178, 255, 0.75);
+  transform: translateX(-50%);
 }
-.loader-radar::before {
-  width: 1px;
-  height: calc(100% - 34px);
+
+.logo-core {
+  position: relative;
+  width: 5.3rem;
+  height: 5.3rem;
+  border-radius: 1.8rem;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, rgba(122, 169, 255, 0.2), rgba(46, 82, 160, 0.08)),
+    rgba(8, 20, 40, 0.95);
+  border: 1px solid rgba(151, 187, 255, 0.22);
+  box-shadow:
+    0 16px 40px rgba(2, 8, 18, 0.42),
+    0 0 30px rgba(110, 160, 255, 0.18);
+  overflow: hidden;
 }
-.loader-radar::after {
-  width: calc(100% - 34px);
-  height: 1px;
-}
-.radar-wave,
-.radar-sweep,
-.radar-core,
-.radar-dot {
+
+.brand-pill {
   position: absolute;
-  border-radius: 50%;
-}
-.radar-wave {
-  inset: 16%;
-  border: 1px solid rgba(157, 232, 228, 0.24);
-  animation: wave-pulse 2.4s ease-out infinite;
-}
-.wave-two {
-  inset: 28%;
-  animation-delay: 0.4s;
-}
-.wave-three {
-  inset: 40%;
-  animation-delay: 0.8s;
-}
-.radar-sweep {
-  inset: 8%;
-  background: conic-gradient(
-    from 260deg,
-    transparent 0 290deg,
-    rgba(98, 255, 228, 0.55) 336deg,
-    transparent 360deg
-  );
-  filter: blur(2px);
-  animation: radar-spin 2.8s linear infinite;
-}
-.radar-core {
-  inset: calc(50% - 10px);
-  width: 20px;
-  height: 20px;
-  background: #9cf9e6;
-  box-shadow: 0 0 24px rgba(156, 249, 230, 0.8);
-}
-.radar-dot {
-  width: 10px;
-  height: 10px;
-  background: #ffd476;
-  box-shadow: 0 0 18px rgba(255, 212, 118, 0.7);
-  animation: marker-blink 1.8s ease-in-out infinite;
-}
-.dot-alpha {
-  top: 24%;
-  right: 25%;
-}
-.dot-beta {
-  bottom: 26%;
-  left: 21%;
-  animation-delay: 0.5s;
-}
-.dot-gamma {
-  top: 56%;
-  right: 14%;
-  animation-delay: 1s;
-}
-.loader-copy {
-  color: #effbf8;
-}
-.loader-eyebrow {
-  margin: 0 0 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: 0.74rem;
-  font-weight: 800;
-  color: #8ee3d8;
-}
-.loader-title {
-  margin: 0;
-  max-width: 14ch;
-  font-size: clamp(1.9rem, 4vw, 3.2rem);
-  line-height: 0.96;
-  letter-spacing: -0.04em;
-}
-.loader-message {
-  margin: 16px 0 0;
-  max-width: 42ch;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: rgba(227, 246, 243, 0.84);
-}
-.loader-phases {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 22px;
-}
-.phase-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
+  top: 0.55rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.1rem 0.38rem;
   border-radius: 999px;
-  border: 1px solid rgba(144, 223, 216, 0.18);
-  background: rgba(12, 41, 53, 0.72);
-  color: #dff8f4;
-  font-size: 0.9rem;
+  background: rgba(141, 178, 255, 0.12);
+  color: #dbe8ff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
 }
-.phase-pulse {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #81f0d1;
-  box-shadow: 0 0 0 0 rgba(129, 240, 209, 0.6);
-  animation: phase-ping 1.6s ease-out infinite;
+
+.logo-icon {
+  font-size: 1.6rem;
+  color: #eef4ff;
+  animation: icon-pulse 1.4s ease-in-out infinite;
 }
+
+.loader-brand {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.loader-label {
+  margin: 0;
+  color: #8db2ff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.loader-message {
+  margin: 0.15rem 0 0;
+  max-width: 26rem;
+  color: rgba(223, 234, 255, 0.76);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
 @keyframes loader-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
+
 @keyframes loader-rise {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.98);
+    transform: translateY(10px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
-@keyframes radar-spin {
+
+@keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
-@keyframes wave-pulse {
-  0%,
-  100% {
-    opacity: 0.18;
-    transform: scale(0.96);
-  }
-  50% {
-    opacity: 0.46;
-    transform: scale(1.02);
+
+@keyframes spin-reverse {
+  to {
+    transform: rotate(-360deg);
   }
 }
-@keyframes marker-blink {
+
+@keyframes icon-pulse {
   0%,
   100% {
-    opacity: 0.35;
-    transform: scale(0.9);
+    transform: scale(1);
+    opacity: 0.92;
   }
+
   50% {
+    transform: scale(1.08);
     opacity: 1;
-    transform: scale(1.25);
   }
 }
-@keyframes phase-ping {
-  0% {
-    box-shadow: 0 0 0 0 rgba(129, 240, 209, 0.55);
-  }
-  100% {
-    box-shadow: 0 0 0 14px rgba(129, 240, 209, 0);
-  }
-}
-@media (max-width: 720px) {
-  .loader-grid {
-    grid-template-columns: 1fr;
-    gap: 22px;
-    padding: 22px;
-    text-align: center;
-  }
-  .loader-title,
-  .loader-message {
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .loader-title {
-    max-width: 11ch;
-  }
-  .loader-phases {
-    justify-content: center;
-  }
-}
+
 @media (max-width: 480px) {
-  .loader-panel {
-    padding: 16px;
+  .loader-logo {
+    width: 7.4rem;
+    height: 7.4rem;
   }
-  .loader-grid {
-    padding: 18px;
-    border-radius: 24px;
+
+  .logo-core {
+    width: 4.7rem;
+    height: 4.7rem;
   }
-  .phase-chip {
-    width: 100%;
-    justify-content: center;
+
+  .loader-message {
+    max-width: 18rem;
+    font-size: 0.88rem;
   }
 }
