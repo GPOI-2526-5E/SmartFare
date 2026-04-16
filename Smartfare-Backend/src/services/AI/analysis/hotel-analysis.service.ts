@@ -98,24 +98,24 @@ function buildSummary(bestOffer: HotelAnalyzedOffer | null): string {
 export function analyzeHotelOffers(offers: HotelSearchOffer[],history: RoomPriceHistoryRecord[],userPreference?: string): HotelAnalysisResult {
     const priorities = inferPriorities(userPreference);
 
-    const analyzedOffers: HotelAnalyzedOffer[] = offers.map((offer) => {
-        const relatedHistory = history.find(
-            (item) => item.room_id === offer.bestRoom.roomId && item.search_key === offer.searchKey
-        );
-        const trend = relatedHistory?.trend ?? "new";
-        const comment = relatedHistory?.comment ?? "Prima rilevazione disponibile per la camera migliore di questo hotel";
-        const changePercent = relatedHistory?.change_percent ?? null;
-
-        return {
-            ...offer,
-            score: buildScore(offer, trend, changePercent, priorities),
-            previousPrice: relatedHistory?.previous_price ?? null,
-            changePercent,
-            trend,
-            comment,
-            advice: resolveAdvice(trend, changePercent),
-        };
-    });
+        const analyzedOffers: HotelAnalyzedOffer[] = offers.map((offer) => {
+            const relatedHistory = history.find(
+                (item) => item.roomId === offer.bestRoom.roomId && item.searchKey === offer.searchKey
+            );
+            const trend = relatedHistory?.trend ?? "new";
+            const comment = relatedHistory?.comment ?? "Prima rilevazione disponibile per la camera migliore di questo hotel";
+            const changePercent = relatedHistory?.changePercent ?? null;
+    
+            return {
+                ...offer,
+                score: buildScore(offer, trend, changePercent, priorities),
+                previousPrice: relatedHistory?.previousPrice ?? null,
+                changePercent,
+                trend,
+                comment,
+                advice: resolveAdvice(trend, changePercent),
+            };
+        });
 
     const sortedByScore = [...analyzedOffers].sort((a, b) => b.score - a.score);
     const cheapestOffer = [...analyzedOffers].sort((a, b) => a.minTotalPrice - b.minTotalPrice)[0] ?? null;

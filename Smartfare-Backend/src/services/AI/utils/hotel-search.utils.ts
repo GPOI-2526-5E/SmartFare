@@ -1,4 +1,4 @@
-import { HotelRecord, Location, RoomRecord } from "../../../models/database.model";
+import { HotelRecord, LocationRecord, RoomRecord } from "../../../models/database.model";
 
 export default class HotelUtilities {
     static normalizeText(value: unknown): string {
@@ -32,7 +32,7 @@ export default class HotelUtilities {
         return reservationStart < checkout && reservationEnd > checkin;
     }
 
-    static buildHotelLabel(hotel: HotelRecord, location?: Location): string {
+    static buildHotelLabel(hotel: HotelRecord, location?: LocationRecord): string {
         return [
             hotel.name,
             hotel.city,
@@ -41,11 +41,11 @@ export default class HotelUtilities {
         ].filter(Boolean).join(", ");
     }
 
-    static buildAddress(hotel: HotelRecord, location?: Location): string {
+    static buildAddress(hotel: HotelRecord, location?: LocationRecord): string {
         return [hotel.street, hotel.city ?? location?.name].filter(Boolean).join(", ");
     }
 
     static buildSearchKey(room: RoomRecord, checkin: string, checkout: string, guests: number): string {
-        return [room.id, checkin, checkout, guests].join("|");
+        return [room.roomId, checkin, checkout, guests].join("|");
     }
 }

@@ -1,6 +1,6 @@
-import { TrainOffer, FlightOffer } from "./database.model";
+import { TrainOfferRecord, FlightOfferRecord } from "./database.model";
 
-export interface AIRecommendation<T = TrainOffer | FlightOffer> {
+export interface AIRecommendation<T = TrainOfferRecord | FlightOfferRecord> {
     bestOffer: T;
     reasoning: string;
     alternatives: T[];
@@ -8,27 +8,27 @@ export interface AIRecommendation<T = TrainOffer | FlightOffer> {
     suggestion: string;
 }
 
-export interface TrainRecommendation extends AIRecommendation<TrainOffer> { }
+export interface TrainRecommendation extends AIRecommendation<TrainOfferRecord> { }
 
-export interface FlightRecommendation extends AIRecommendation<FlightOffer> { }
+export interface FlightRecommendation extends AIRecommendation<FlightOfferRecord> { }
 export interface TrainSearchResponse {
     source: 'live' | 'cached';
-    offers: TrainOffer[];
+    offers: TrainOfferRecord[];
     recommendation?: TrainRecommendation;
     searchedAt: Date;
     totalResults?: number;
 }
 export interface FlightSearchResponse {
     source: 'live' | 'cached';
-    offers: FlightOffer[];
+    offers: FlightOfferRecord[];
     recommendation?: FlightRecommendation;
     searchedAt: Date;
     totalResults?: number;
 }
 export interface SearchResponse {
     source: 'live' | 'cached';
-    trains?: TrainOffer[];
-    flights?: FlightOffer[];
+    trains?: TrainOfferRecord[];
+    flights?: FlightOfferRecord[];
     trainRecommendation?: TrainRecommendation;
     flightRecommendation?: FlightRecommendation;
     searchedAt: Date;

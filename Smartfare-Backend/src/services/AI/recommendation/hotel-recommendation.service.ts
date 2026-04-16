@@ -75,7 +75,7 @@ export async function generateHotelRecommendation(
     }
 
     const shortlistedHistory = history
-        .filter((item) => shortlistedOffers.some((offer) => offer.bestRoom.roomId === item.room_id))
+        .filter((item) => shortlistedOffers.some((offer) => offer.bestRoom.roomId === item.roomId))
         .slice(0, 8);
 
     const prompt = `

@@ -1,5 +1,4 @@
-import { getSupabaseClient } from "../../../config/database";
-import { TrainPriceHistoryRecord } from "../../../models/database.model";
+import prisma from "../../../lib/prisma";
 import { TrainSearchOffer } from "../types/train-ai.types";
 
 function buildTrendComment(changePercent: number | null): { trend: string; comment: string } {
@@ -52,63 +51,64 @@ function calculateChangePercent(currentPrice: number, previousPrice: number | nu
     return Number((((currentPrice - previousPrice) / previousPrice) * 100).toFixed(2));
 }
 
-export async function saveTrainPriceHistory(offers: TrainSearchOffer[]): Promise<TrainPriceHistoryRecord[]> {
-    const supabase = getSupabaseClient();
-    const savedHistory: TrainPriceHistoryRecord[] = [];
+export async function saveTrainPriceHistory(offers: TrainSearchOffer[]): Promise<any[]> {
+    const routeKeys = Array.from(new Set(offers.map((offer) => offer.routeKey)));
+
+    if (routeKeys.length === 0) {
+        return [];
+    }
+
+    // 1. Fetch latest history records for these route keys
+    const previousHistoryRows = await prisma.trainPriceHistory.findMany({
+        where: {
+            routeKey: { in: routeKeys }
+        },
+        orderBy: {
+            capturedAt: 'desc'
+        }
+    });
+
+    const latestHistoryByRouteKey = new Map<string, any>();
+    for (const row of previousHistoryRows) {
+        if (!latestHistoryByRouteKey.has(row.routeKey)) {
+            latestHistoryByRouteKey.set(row.routeKey, row);
+        }
+    }
+
+    const rowsToInsert: any[] = [];
+    const unchangedRows: any[] = [];
 
     for (const offer of offers) {
-        const { data: previousHistoryData, error: previousHistoryError } = await supabase
-            .from("train_price_history")
-            .select("*")
-            .eq("route_key", offer.routeKey)
-            .order("captured_at", { ascending: false })
-            .limit(1);
-
-        if (previousHistoryError) {
-            throw previousHistoryError;
-        }
-
-        const previousHistory = ((previousHistoryData ?? []) as TrainPriceHistoryRecord[])[0];
-        const previousPrice = previousHistory ? Number(previousHistory.total_price) : null;
+        const previousHistory = latestHistoryByRouteKey.get(offer.routeKey);
+        const previousPrice = previousHistory ? Number(previousHistory.totalPrice) : null;
         const changePercent = calculateChangePercent(offer.price, previousPrice);
         const { trend, comment } = buildTrendComment(changePercent);
 
         if (previousPrice !== null && previousPrice === offer.price) {
-            savedHistory.push({
-                id: previousHistory?.id ?? 0,
-                train_offer_id: offer.trainOfferId,
-                route_key: offer.routeKey,
-                total_price: offer.price,
-                captured_at: previousHistory?.captured_at ?? new Date().toISOString(),
-                previous_price: previousPrice,
-                change_percent: 0,
-                trend: "stable",
-                comment: "Prezzo invariato rispetto all'ultima rilevazione",
+            unchangedRows.push({
+                ...previousHistory,
+                comment: "Prezzo invariato rispetto all'ultima rilevazione"
             });
-
             continue;
         }
 
-        const { data: insertedHistoryData, error: insertHistoryError } = await supabase
-            .from("train_price_history")
-            .insert({
-                train_offer_id: offer.trainOfferId,
-                route_key: offer.routeKey,
-                total_price: offer.price,
-                previous_price: previousPrice,
-                change_percent: changePercent,
-                trend,
-                comment,
-            })
-            .select("*")
-            .single();
-
-        if (insertHistoryError) {
-            throw insertHistoryError;
-        }
-
-        savedHistory.push(insertedHistoryData as TrainPriceHistoryRecord);
+        rowsToInsert.push({
+            trainOfferId: offer.trainOfferId,
+            routeKey: offer.routeKey,
+            totalPrice: offer.price,
+            previousPrice: previousPrice,
+            changePercent: changePercent,
+            trend,
+            comment,
+        });
     }
 
-    return savedHistory;
+    if (rowsToInsert.length > 0) {
+        await prisma.trainPriceHistory.createMany({
+            data: rowsToInsert
+        });
+        return [...rowsToInsert, ...unchangedRows];
+    }
+
+    return unchangedRows;
 }

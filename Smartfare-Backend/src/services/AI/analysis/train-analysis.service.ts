@@ -171,15 +171,15 @@ export function analyzeTrainOffers(
     const priorities = inferPriorities(userPreference);
 
     const analyzedOffers: TrainAnalyzedOffer[] = offers.map((offer) => {
-        const relatedHistory = history.find((item) => item.train_offer_id === offer.trainOfferId);
+        const relatedHistory = history.find((item) => item.trainOfferId === offer.trainOfferId);
         const trend = relatedHistory?.trend ?? "new";
         const comment = relatedHistory?.comment ?? "Prima rilevazione disponibile per questo treno";
-        const changePercent = relatedHistory?.change_percent ?? null;
+        const changePercent = relatedHistory?.changePercent ?? null;
 
         return {
             ...offer,
             score: buildScore(offer, trend, changePercent, priorities),
-            previousPrice: relatedHistory?.previous_price ?? null,
+            previousPrice: relatedHistory?.previousPrice ?? null,
             changePercent,
             trend,
             comment,

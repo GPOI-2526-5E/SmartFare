@@ -1,13 +1,9 @@
-import { SupabaseClient } from "@supabase/supabase-js";
-import { getSupabaseClient } from "../../../config/database";
+import prisma from "../../../lib/prisma";
 import {
     HotelRecord,
-    Location,
-    ReservationHotelRecord,
-    ReservationRecord,
+    LocationRecord,
+    RoomReservationRecord,
     RoomRecord,
-    ServiceHotelRecord,
-    ServiceRecord,
 } from "../../../models/database.model";
 import { HotelSearchParams } from "../../../models/search-params.model";
 import {
@@ -19,13 +15,12 @@ import {
 import HotelUtilities from "../utils/hotel-search.utils";
 
 interface HotelSearchContext {
-    hotels: HotelRecord[];
-    hotelsById: Map<number, HotelRecord>;
-    rooms: RoomRecord[];
-    locationsById: Map<number, Location>;
-    reservationsById: Map<number, ReservationRecord>;
-    reservationHotels: ReservationHotelRecord[];
-    servicesByHotel: Map<number, string[]>;
+    hotels: any[]; // Using any for simplicity in this transitional step, or specific Prisma types
+    hotelsById: Map<number, any>;
+    rooms: any[];
+    locationsById: Map<number, any>;
+    reservations: any[];
+    servicesById: Map<number, string>;
 }
 
 const IN_BATCH_SIZE = 200;
@@ -67,75 +62,10 @@ function uniqueNumbers(values: Array<number | null | undefined>): number[] {
     );
 }
 
-async function fetchInBatches<T>(
-    supabase: SupabaseClient,
-    table: string,
-    column: string,
-    ids: number[]
-): Promise<T[]> {
-    if (ids.length === 0) {
-        return [];
-    }
-
-    const rows: T[] = [];
-    for (let index = 0; index < ids.length; index += IN_BATCH_SIZE) {
-        const chunk = ids.slice(index, index + IN_BATCH_SIZE);
-        const { data, error } = await supabase.from(table).select("*").in(column, chunk);
-        if (error) {
-            throw error;
-        }
-
-        rows.push(...((data ?? []) as T[]));
-    }
-
-    return rows;
-}
-
-async function fetchRoomsByHotelsInBatches(
-    supabase: SupabaseClient,
-    hotelIds: number[],
-    guests: number
-): Promise<RoomRecord[]> {
-    if (hotelIds.length === 0) {
-        return [];
-    }
-
-    const rows: RoomRecord[] = [];
-    for (let index = 0; index < hotelIds.length; index += IN_BATCH_SIZE) {
-        const chunk = hotelIds.slice(index, index + IN_BATCH_SIZE);
-        const { data, error } = await supabase
-            .from("rooms")
-            .select("*")
-            .in("hotel_id", chunk);
-
-        if (error) {
-            throw error;
-        }
-
-        rows.push(...((data ?? []) as RoomRecord[]));
-    }
-
-    const normalizedRows = rows.map((room) => {
-        const normalizedCapacity = readRoomCapacity(room as Partial<RoomRecord> & Record<string, unknown>);
-        return {
-            ...room,
-            capacity: normalizedCapacity,
-        } as RoomRecord;
-    });
-
-    const rowsWithKnownCapacity = normalizedRows.filter((room) => room.capacity !== null);
-    if (rowsWithKnownCapacity.length === 0) {
-        return normalizedRows;
-    }
-
-    return rowsWithKnownCapacity.filter((room) => Number(room.capacity) >= guests);
-}
-
 async function loadHotelSearchContext(
     params: HotelSearchParams,
     hotelId?: number
 ): Promise<HotelSearchContext> {
-    const supabase = getSupabaseClient();
     const guests = parseGuests(params.guests);
     const destinationQuery = normalizeLikeValue(params.destination);
 
@@ -147,139 +77,103 @@ async function loadHotelSearchContext(
         hotelId: hotelId ?? null,
     });
 
-    let matchingLocations: Location[] = [];
+    // 1. Find matching locations
+    let matchingLocationIds: number[] = [];
     if (destinationQuery) {
-        const { data, error } = await supabase
-            .from("locations")
-            .select("*")
-            .or(`name.ilike.%${destinationQuery}%,province.ilike.%${destinationQuery}%`);
+        const locations = await prisma.location.findMany({
+            where: {
+                OR: [
+                    { name: { contains: destinationQuery, mode: 'insensitive' } },
+                    { province: { contains: destinationQuery, mode: 'insensitive' } }
+                ]
+            },
+            select: { locationId: true }
+        });
+        matchingLocationIds = locations.map((l: any) => l.locationId);
+    }
 
-        if (error) {
-            throw error;
+    // 2. Query Hotels with relational data
+    const hotels = await prisma.hotel.findMany({
+        where: {
+            AND: [
+                hotelId ? { hotelId } : {},
+                destinationQuery ? {
+                    OR: [
+                        { name: { contains: destinationQuery, mode: 'insensitive' } },
+                        { city: { contains: destinationQuery, mode: 'insensitive' } },
+                        { street: { contains: destinationQuery, mode: 'insensitive' } },
+                        matchingLocationIds.length > 0 ? { locationId: { in: matchingLocationIds } } : {}
+                    ]
+                } : {}
+            ]
+        },
+        include: {
+            location: true,
+            rooms: {
+                where: {
+                    capacity: { gte: guests }
+                }
+            },
+            service: true
         }
+    });
 
-        matchingLocations = (data ?? []) as Location[];
-    }
-
-    const locationIds = uniqueNumbers(matchingLocations.map((location) => location.id));
-    console.log("[HOTELS][SEARCH] Location che matchano la destinazione:", locationIds.length);
-
-    let hotelsQuery = supabase.from("hotels").select("*");
-    if (hotelId) {
-        hotelsQuery = hotelsQuery.eq("id", hotelId);
-    } else if (destinationQuery) {
-        const orParts = [
-            `name.ilike.%${destinationQuery}%`,
-            `city.ilike.%${destinationQuery}%`,
-            `street.ilike.%${destinationQuery}%`,
-        ];
-
-        if (locationIds.length > 0) {
-            orParts.push(`location_id.in.(${locationIds.join(",")})`);
-        }
-
-        hotelsQuery = hotelsQuery.or(orParts.join(","));
-    }
-
-    const { data: hotelsData, error: hotelsError } = await hotelsQuery;
-    if (hotelsError) {
-        throw hotelsError;
-    }
-
-    const hotels = (hotelsData ?? []) as HotelRecord[];
-    const hotelIds = uniqueNumbers(hotels.map((hotel) => hotel.id));
     console.log("[HOTELS][SEARCH] Hotel caricati dal DB:", hotels.length);
 
-    if (hotelIds.length === 0) {
+    if (hotels.length === 0) {
         return {
             hotels: [],
             hotelsById: new Map(),
             rooms: [],
             locationsById: new Map(),
-            reservationsById: new Map(),
-            reservationHotels: [],
-            servicesByHotel: new Map(),
+            reservations: [],
+            servicesById: new Map()
         };
     }
 
-    const rooms = await fetchRoomsByHotelsInBatches(supabase, hotelIds, guests);
-    console.log("[HOTELS][SEARCH] Camere caricate dal DB dopo filtro hotel/capacity:", rooms.length);
+    const hotelIds = hotels.map((h: any) => h.hotelId);
+    const roomIds = hotels.flatMap((h: any) => h.rooms.map((r: any) => r.roomId));
 
-    const reservationsPromise =
-        params.checkin && params.checkout
-            ? supabase
-                .from("reservation")
-                .select("*")
-                .lt("start_date", params.checkout)
-                .gt("end_date", params.checkin)
-            : Promise.resolve({ data: [], error: null });
-
-    const [locations, serviceHotels, reservations] = await Promise.all([
-        fetchInBatches<Location>(supabase, "locations", "id", uniqueNumbers(hotels.map((hotel) => hotel.location_id))),
-        fetchInBatches<ServiceHotelRecord>(supabase, "services_hotels", "hotel_id", hotelIds),
-        reservationsPromise.then((result) => {
-            if (result.error) {
-                throw result.error;
+    // 3. Handle Reservations for availability filtering
+    let reservations: any[] = [];
+    if (params.checkin && params.checkout && roomIds.length > 0) {
+        reservations = await prisma.roomReservation.findMany({
+            where: {
+                roomId: { in: roomIds },
+                checkIn: { lt: params.checkout },
+                checkOut: { gt: params.checkin }
             }
+        });
+    }
 
-            return (result.data ?? []) as ReservationRecord[];
-        }),
-    ]);
+    const hotelsById = new Map<number, any>(hotels.map((h: any) => [h.hotelId, h]));
+    const locationsById = new Map<number, any>();
+    const servicesById = new Map<number, string>();
+    const allRooms: any[] = [];
 
-    const reservationIds = uniqueNumbers(reservations.map((reservation) => reservation.id));
-    const reservationHotels = await fetchInBatches<ReservationHotelRecord>(
-        supabase,
-        "reservation_hotel",
-        "reservation_id",
-        reservationIds
-    );
-
-    const serviceIds = uniqueNumbers(serviceHotels.map((relation) => relation.service_id));
-    const services = await fetchInBatches<ServiceRecord>(supabase, "services", "id", serviceIds);
-
-    console.log("[HOTELS][SEARCH] Record caricati dal DB:", {
-        hotels: hotels.length,
-        rooms: rooms.length,
-        locations: locations.length,
-        reservations: reservations.length,
-        reservationHotels: reservationHotels.length,
-        services: services.length,
-        serviceHotels: serviceHotels.length,
-    });
-
-    const hotelsById = new Map<number, HotelRecord>(hotels.map((hotel) => [hotel.id, hotel]));
-    const locationsById = new Map<number, Location>(locations.map((location) => [location.id, location]));
-    const reservationsById = new Map<number, ReservationRecord>(
-        reservations.map((reservation) => [reservation.id, reservation])
-    );
-    const servicesById = new Map<number, string>(services.map((service) => [service.id, service.description]));
-
-    const servicesByHotel = new Map<number, string[]>();
-    for (const relation of serviceHotels) {
-        const description = servicesById.get(relation.service_id);
-        if (!description) {
-            continue;
+    for (const hotel of hotels) {
+        if (hotel.location) {
+            locationsById.set(hotel.location.locationId, hotel.location);
         }
-
-        const currentServices = servicesByHotel.get(relation.hotel_id) ?? [];
-        currentServices.push(description);
-        servicesByHotel.set(relation.hotel_id, currentServices);
+        if (hotel.service) {
+            servicesById.set(hotel.service.serviceId, hotel.service.description || "");
+        }
+        allRooms.push(...hotel.rooms);
     }
 
     return {
         hotels,
         hotelsById,
-        rooms,
+        rooms: allRooms,
         locationsById,
-        reservationsById,
-        reservationHotels,
-        servicesByHotel,
+        reservations,
+        servicesById
     };
 }
 
+
 function buildBookedRoomIds(
-    reservationHotels: ReservationHotelRecord[],
-    reservationsById: Map<number, ReservationRecord>,
+    reservations: any[],
     checkin?: string,
     checkout?: string
 ): Set<number> {
@@ -289,14 +183,13 @@ function buildBookedRoomIds(
         return bookedRoomIds;
     }
 
-    for (const relation of reservationHotels) {
-        const reservation = reservationsById.get(relation.reservation_id);
-        if (!reservation?.start_date || !reservation?.end_date) {
+    for (const res of reservations) {
+        if (!res.checkIn || !res.checkOut) {
             continue;
         }
 
-        if (HotelUtilities.overlaps(reservation.start_date, reservation.end_date, checkin, checkout)) {
-            bookedRoomIds.add(relation.room_id);
+        if (HotelUtilities.overlaps(res.checkIn, res.checkOut, checkin, checkout)) {
+            bookedRoomIds.add(res.roomId);
         }
     }
 
@@ -311,15 +204,14 @@ function buildRoomOffers(
     const guests = parseGuests(params.guests);
     const nights = HotelUtilities.calculateNights(params.checkin, params.checkout);
     const bookedRoomIds = buildBookedRoomIds(
-        context.reservationHotels,
-        context.reservationsById,
+        context.reservations,
         params.checkin,
         params.checkout
     );
     console.log("[HOTELS][SEARCH] Camere prenotate nel range:", bookedRoomIds.size);
 
-    const roomsAvailable = context.rooms.filter((room) => !bookedRoomIds.has(room.id));
-    const roomsForRequestedHotels = roomsAvailable.filter((room) => (hotelId ? room.hotel_id === hotelId : true));
+    const roomsAvailable = context.rooms.filter((room) => !bookedRoomIds.has(room.roomId));
+    const roomsForRequestedHotels = roomsAvailable.filter((room) => (hotelId ? room.hotelId === hotelId : true));
 
     console.log("[HOTELS][SEARCH] Conteggi filtri camere:", {
         roomsLoaded: context.rooms.length,
@@ -329,18 +221,18 @@ function buildRoomOffers(
 
     return roomsForRequestedHotels
         .map((room) => {
-            const hotel = context.hotelsById.get(Number(room.hotel_id));
+            const hotel = context.hotelsById.get(Number(room.hotelId));
             if (!hotel) {
                 return null;
             }
 
-            const location = hotel.location_id ? context.locationsById.get(hotel.location_id) : undefined;
+            const location = hotel.locationId ? context.locationsById.get(hotel.locationId) : undefined;
             const pricePerNight = Number(room.price ?? 0);
             const totalPrice = pricePerNight * nights;
 
             return {
-                hotelId: hotel.id,
-                roomId: room.id,
+                hotelId: hotel.hotelId,
+                roomId: room.roomId,
                 searchKey: HotelUtilities.buildSearchKey(room, params.checkin ?? "", params.checkout ?? "", guests),
                 name: hotel.name,
                 city: hotel.city ?? location?.name ?? "",
@@ -353,10 +245,10 @@ function buildRoomOffers(
                 totalPrice,
                 nights,
                 guests,
-                roomType: room.type,
+                roomType: room.description || "Camera",
                 roomCapacity: Number(room.capacity ?? 0),
                 availability: "disponibile",
-                services: context.servicesByHotel.get(hotel.id) ?? [],
+                services: hotel.service ? [hotel.service.description].filter(Boolean) : [],
             };
         })
         .filter((offer): offer is HotelRoomOffer => offer !== null)
@@ -444,3 +336,4 @@ export async function searchHotelRooms(
         total: roomOffers.length,
     };
 }
+

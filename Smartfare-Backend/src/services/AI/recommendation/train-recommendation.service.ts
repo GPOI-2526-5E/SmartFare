@@ -62,7 +62,7 @@ export async function generateTrainRecommendation(
 ): Promise<TrainRecommendationResult> {
     const shortlistedOffers = offers.slice(0, 8);
     const shortlistedHistory = history
-        .filter((item) => shortlistedOffers.some((offer) => offer.trainOfferId === item.train_offer_id))
+        .filter((item) => shortlistedOffers.some((offer) => offer.trainOfferId === item.trainOfferId))
         .slice(0, 8);
 
     const prompt = `

@@ -1,4 +1,4 @@
-import { Location as DbLocation, StationRecord } from "../../../models/database.model";
+import { LocationRecord, StationRecord } from "../../../models/database.model";
 
 export default class Utilites {
 
@@ -49,7 +49,7 @@ export default class Utilites {
         return `${hours}h ${minutes}min`;
     }
 
-    static buildStationLabel(station: StationRecord | undefined, location: DbLocation | undefined): string {
+    static buildStationLabel(station: StationRecord | undefined, location: LocationRecord | undefined): string {
         const stationName = station?.name?.trim() ?? "";
         const locationName = location?.name?.trim() ?? "";
         const province = location?.province?.trim() ?? "";

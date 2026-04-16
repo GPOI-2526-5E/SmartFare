@@ -1,4 +1,4 @@
-id,name,location_id,latitude,longitude
+station_id,name,location_id,latitude,longitude
 900009,Ardenno Masino,321,46.16198,9.651374
 900010,Arena Po,325,45.082065,9.360394
 900011,Asola,390,45.220454,10.402313

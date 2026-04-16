@@ -1,0 +1,28 @@
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
+import 'dotenv/config';
+
+const connectionString = process.env.DATABASE_URL;
+
+const prismaClientSingleton = () => {
+  console.log(`[PRISMA] Inizializzazione pooler su: ${connectionString?.split('@')[1] || 'URL MANCANTE'}`);
+  const pool = new Pool({ 
+    connectionString,
+    ssl: { rejectUnauthorized: false }
+  });
+  const adapter = new PrismaPg(pool);
+  return new PrismaClient({ adapter });
+};
+
+type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClientSingleton | undefined;
+};
+
+const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
+
+export default prisma;
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

@@ -1,5 +1,4 @@
-import { getSupabaseClient } from "../../../config/database";
-import { RoomPriceHistoryRecord } from "../../../models/database.model";
+import prisma from "../../../lib/prisma";
 import { HotelSearchOffer } from "../types/hotel-ai.types";
 
 function buildTrendComment(changePercent: number | null): { trend: string; comment: string } {
@@ -52,17 +51,7 @@ function calculateChangePercent(currentPrice: number, previousPrice: number | nu
     return Number((((currentPrice - previousPrice) / previousPrice) * 100).toFixed(2));
 }
 
-function chunkArray<T>(values: T[], size: number): T[][] {
-    const chunks: T[][] = [];
-    for (let index = 0; index < values.length; index += size) {
-        chunks.push(values.slice(index, index + size));
-    }
-
-    return chunks;
-}
-
-export async function saveHotelPriceHistory(offers: HotelSearchOffer[]): Promise<RoomPriceHistoryRecord[]> {
-    const supabase = getSupabaseClient();
+export async function saveHotelPriceHistory(offers: HotelSearchOffer[]): Promise<any[]> {
     const searchKeys = Array.from(new Set(offers.map((offer) => offer.searchKey)));
     console.log("[HOTELS][HISTORY] Search keys da storicizzare:", searchKeys.length);
 
@@ -70,93 +59,75 @@ export async function saveHotelPriceHistory(offers: HotelSearchOffer[]): Promise
         return [];
     }
 
-    // Leggiamo lo storico in blocco invece di fare una query per hotel:
-    // con molte strutture questa è la parte che rallentava di più.
-    const previousHistoryRows: RoomPriceHistoryRecord[] = [];
-    for (const searchKeyChunk of chunkArray(searchKeys, 80)) {
-        const { data: previousHistoryData, error: previousHistoryError } = await supabase
-            .from("room_price_history")
-            .select("*")
-            .in("search_key", searchKeyChunk)
-            .order("captured_at", { ascending: false });
-
-        if (previousHistoryError) {
-            throw previousHistoryError;
+    // 1. Fetch latest history records for these search keys
+    const previousHistoryRows = await prisma.roomPriceHistory.findMany({
+        where: {
+            searchKey: { in: searchKeys }
+        },
+        orderBy: {
+            capturedAt: 'desc'
         }
+    });
 
-        previousHistoryRows.push(...((previousHistoryData ?? []) as RoomPriceHistoryRecord[]));
-    }
     console.log("[HOTELS][HISTORY] Righe storico precedenti lette:", previousHistoryRows.length);
 
-    const latestHistoryByRoomAndSearchKey = new Map<string, RoomPriceHistoryRecord>();
+    const latestHistoryByRoomAndSearchKey = new Map<string, any>();
     for (const row of previousHistoryRows) {
-        const historyKey = `${row.room_id}|${row.search_key}`;
+        const historyKey = `${row.roomId}|${row.searchKey}`;
         if (!latestHistoryByRoomAndSearchKey.has(historyKey)) {
             latestHistoryByRoomAndSearchKey.set(historyKey, row);
         }
     }
 
-    const rowsToReturn: RoomPriceHistoryRecord[] = [];
-    const rowsToInsert = offers.flatMap((offer) => {
+    const rowsToInsert: any[] = [];
+    const unchangedRows: any[] = [];
+
+    for (const offer of offers) {
         const historyKey = `${offer.bestRoom.roomId}|${offer.searchKey}`;
         const previousHistory = latestHistoryByRoomAndSearchKey.get(historyKey);
-        const previousPrice = previousHistory ? Number(previousHistory.total_price) : null;
+        const previousPrice = previousHistory ? Number(previousHistory.totalPrice) : null;
         const changePercent = calculateChangePercent(offer.minTotalPrice, previousPrice);
         const { trend, comment } = buildTrendComment(changePercent);
 
         if (previousPrice !== null && previousPrice === offer.minTotalPrice) {
-            rowsToReturn.push({
-                id: previousHistory?.id ?? 0,
-                room_id: offer.bestRoom.roomId,
-                hotel_id: offer.hotelId,
-                search_key: offer.searchKey,
-                price_per_night: offer.bestRoom.pricePerNight,
-                total_price: offer.minTotalPrice,
-                checkin: offer.searchKey.split("|")[1],
-                checkout: offer.searchKey.split("|")[2],
-                guests: offer.guests,
-                captured_at: previousHistory?.captured_at ?? new Date().toISOString(),
-                previous_price: previousPrice,
-                change_percent: 0,
-                trend: "stable",
-                comment: "Prezzo invariato rispetto all'ultima rilevazione",
+            unchangedRows.push({
+                ...previousHistory,
+                comment: "Prezzo invariato rispetto all'ultima rilevazione"
             });
-
-            return [];
+            continue;
         }
 
-        return [{
-            room_id: offer.bestRoom.roomId,
-            hotel_id: offer.hotelId,
-            search_key: offer.searchKey,
-            price_per_night: offer.bestRoom.pricePerNight,
-            total_price: offer.minTotalPrice,
-            checkin: offer.searchKey.split("|")[1],
-            checkout: offer.searchKey.split("|")[2],
+        const [ , checkin, checkout ] = offer.searchKey.split("|");
+
+        rowsToInsert.push({
+            roomId: offer.bestRoom.roomId,
+            hotelId: offer.hotelId,
+            searchKey: offer.searchKey,
+            pricePerNight: offer.bestRoom.pricePerNight,
+            totalPrice: offer.minTotalPrice,
+            checkIn: checkin,
+            checkOut: checkout,
             guests: offer.guests,
-            previous_price: previousPrice,
-            change_percent: changePercent,
+            previousPrice: previousPrice,
+            changePercent: changePercent,
             trend,
             comment,
-        }];
-    });
-    console.log("[HOTELS][HISTORY] Righe da inserire nello storico:", rowsToInsert.length);
-    console.log("[HOTELS][HISTORY] Righe saltate per prezzo invariato:", rowsToReturn.length);
-
-    const insertedRows = [...rowsToReturn];
-    for (const insertChunk of chunkArray(rowsToInsert, 80)) {
-        const { data: insertedHistoryData, error: insertHistoryError } = await supabase
-            .from("room_price_history")
-            .insert(insertChunk)
-            .select("*");
-
-        if (insertHistoryError) {
-            throw insertHistoryError;
-        }
-
-        insertedRows.push(...((insertedHistoryData ?? []) as RoomPriceHistoryRecord[]));
+        });
     }
-    console.log("[HOTELS][HISTORY] Righe storico inserite:", insertedRows.length);
 
-    return insertedRows;
+    console.log("[HOTELS][HISTORY] Righe da inserire nello storico:", rowsToInsert.length);
+    console.log("[HOTELS][HISTORY] Righe saltate per prezzo invariato:", unchangedRows.length);
+
+    if (rowsToInsert.length > 0) {
+        // Prisma createMany is efficient for batch inserts
+        await prisma.roomPriceHistory.createMany({
+            data: rowsToInsert
+        });
+
+        // We fetch them back or just return the constructed array (with some mapping if needed)
+        // For simplicity, we return the concatenated list
+        return [...rowsToInsert, ...unchangedRows];
+    }
+
+    return unchangedRows;
 }

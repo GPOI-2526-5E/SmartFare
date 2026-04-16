@@ -1,117 +1,77 @@
-import { getSupabaseClient } from "../../../config/database";
-import { Location as DbLocation, StationRecord, TrainOfferRecord } from "../../../models/database.model";
+import prisma from "../../../lib/prisma";
 import { TrainSearchParams } from "../../../models/search-params.model";
 import { TrainSearchOffer, TrainSearchResult } from "../types/train-ai.types";
 import Utilites from "../utils/trains-search.utils";
 
-
 export async function searchTrainOffers(params: TrainSearchParams): Promise<TrainSearchResult> {
-    const supabase = getSupabaseClient();
     console.log("[TRAINS][SEARCH] Parametri ricevuti:", params);
-    const dayStart = `${params.date}T00:00:00`;
-    const dayEndDate = new Date(`${params.date}T00:00:00`);
-    dayEndDate.setDate(dayEndDate.getDate() + 1);
-    const dayEnd = dayEndDate.toISOString().slice(0, 19);
+    
+    const dayStart = new Date(`${params.date}T00:00:00`);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setDate(dayEnd.getDate() + 1);
 
-    const [{ data: offersData, error: offersError }, { data: stationsData, error: stationsError }] = await Promise.all([
-        supabase
-            .from("train_offers")
-            .select("*")
-            .eq("origin_station_id", params.originStationId)
-            .eq("destination_station_id", params.destinationStationId)
-            .gte("departure_time", dayStart)
-            .lt("departure_time", dayEnd)
-            .order("departure_time", { ascending: true }),
-        // Carichiamo solo le due stazioni coinvolte nella ricerca:
-        // cosi' evitiamo il limite implicito dei 1000 record.
-        supabase
-            .from("stations")
-            .select("*")
-            .in("id", [params.originStationId, params.destinationStationId]),
-    ]);
-
-    if (offersError) {
-        throw offersError;
-    }
-
-    if (stationsError) {
-        throw stationsError;
-    }
-
-    const offers = (offersData ?? []) as TrainOfferRecord[];
-    const stations = (stationsData ?? []) as StationRecord[];
-    console.log("[TRAINS][SEARCH] Record caricati dal DB:", {
-        offers: offers.length,
-        stations: stations.length,
+    // 1. Query for Train Offers using Prisma with relations
+    // In the new schema, we query trainRouteSegments to find the right path
+    const routeSegments = await prisma.trainRouteSegment.findMany({
+        where: {
+            originId: params.originStationId,
+            arrivalStationId: params.destinationStationId,
+            departureTime: {
+                gte: dayStart,
+                lt: dayEnd
+            }
+        },
+        include: {
+            offer: true,
+            originStation: {
+                include: { location: true }
+            },
+            arrivalStation: {
+                include: { location: true }
+            }
+        },
+        orderBy: {
+            departureTime: 'asc'
+        }
     });
 
-    const stationsById = new Map<number, StationRecord>(stations.map((station) => [station.id, station]));
-    const locationIds = Array.from(
-        new Set(
-            stations
-                .map((station) => station.location_id)
-                .filter((locationId): locationId is number => typeof locationId === "number")
-        )
-    );
-    const { data: locationsData, error: locationsError } = await supabase
-        .from("locations")
-        .select("*")
-        .in("id", locationIds);
+    console.log("[TRAINS][SEARCH] Record caricati dal DB:", routeSegments.length);
 
-    if (locationsError) {
-        throw locationsError;
-    }
+    const filteredOffers = routeSegments
+        .map((segment: any): TrainSearchOffer | null => {
+            const offer = segment.offer;
+            const originStation = segment.originStation;
+            const destinationStation = segment.arrivalStation;
+            const originLocation = originStation.location;
+            const destinationLocation = destinationStation.location;
 
-    const locations = (locationsData ?? []) as DbLocation[];
-    const locationsById = new Map<number, DbLocation>(locations.map((location) => [location.id, location]));
-
-    console.log("[TRAINS][SEARCH] Conteggi filtri:", {
-        byOrigin: offers.length,
-        byDestination: offers.length,
-        byBothStations: offers.length,
-        byDate: offers.length,
-    });
-
-    if (offers.length > 0) {
-        console.log(
-            "[TRAINS][SEARCH] Esempi offerte stessa tratta:",
-            offers.slice(0, 5).map((offer) => ({
-                id: offer.id,
-                departure_time: offer.departure_time,
-                arrival_time: offer.arrival_time,
-                price: offer.price,
-                available_seats: offer.available_seats,
-            }))
-        );
-    }
-
-    const filteredOffers = offers
-        .map((offer): TrainSearchOffer | null => {
-            const originStation = stationsById.get(offer.origin_station_id);
-            const destinationStation = stationsById.get(offer.destination_station_id);
-            const originLocation = originStation?.location_id ? locationsById.get(originStation.location_id) : undefined;
-            const destinationLocation = destinationStation?.location_id ? locationsById.get(destinationStation.location_id) : undefined;
-            const departure = Utilites.buildStationLabel(originStation, originLocation);
-            const arrival = Utilites.buildStationLabel(destinationStation, destinationLocation);
-            const departureParts = Utilites.toDateParts(offer.departure_time);
-            const arrivalParts = Utilites.toDateParts(offer.arrival_time);
-            const changes = typeof offer.changes === "number" ? offer.changes : 0;
+            const departure = Utilites.buildStationLabel(originStation as any, originLocation as any);
+            const arrival = Utilites.buildStationLabel(destinationStation as any, destinationLocation as any);
+            
+            const depTime = segment.departureTime.toISOString();
+            const arrTime = segment.arrivalTime.toISOString();
+            
+            const departureParts = Utilites.toDateParts(depTime);
+            const arrivalParts = Utilites.toDateParts(arrTime);
+            
+            // For now, since changes weren't explicitly in the schema for segments, we use 0 or calculate if needed
+            const changes = 0; 
 
             return {
-                trainOfferId: offer.id,
-                routeKey: Utilites.buildRouteKey(departure, arrival, departureParts.date, departureParts.time, offer.train_id),
-                trainId: offer.train_id,
-                company: offer.train_id ? `Treno ${offer.train_id}` : "Treno disponibile",
-                trainType: changes > 0 ? "Con cambio" : "Diretto",
+                trainOfferId: offer.offerId,
+                routeKey: Utilites.buildRouteKey(departure, arrival, departureParts.date, departureParts.time, segment.trainId),
+                trainId: segment.trainId,
+                company: `Treno ${segment.trainId}`,
+                trainType: "Diretto",
                 departure,
                 arrival,
                 departureDate: departureParts.date,
                 departureTime: departureParts.time,
                 arrivalTime: arrivalParts.time,
-                duration: Utilites.formatDuration(offer.departure_time, offer.arrival_time),
+                duration: Utilites.formatDuration(depTime, arrTime),
                 changes,
                 price: Number(offer.price ?? 0),
-                availability: typeof offer.available_seats === "number" && offer.available_seats <= 0
+                availability: (offer.availableSeat ?? 0) <= 0
                     ? "esaurito"
                     : "disponibile",
             };
@@ -128,3 +88,4 @@ export async function searchTrainOffers(params: TrainSearchParams): Promise<Trai
         total: filteredOffers.length,
     };
 }
+

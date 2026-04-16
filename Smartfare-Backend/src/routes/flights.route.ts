@@ -1,21 +1,11 @@
 import { Router, Request, Response } from "express";
-import { FlightSearchParams } from "../models/search-params.model";
-import { getSupabaseClient } from "../config/database";
-import { Airports } from '../models/database.model';
+import prisma from "../lib/prisma";
 
 const router = Router();
 
 router.get('/airports', async (req: Request, res: Response) => {
     try {
-        const airports: Airports[] = [];
-        const supabase = getSupabaseClient();
-        const { data, error } = await supabase
-            .from('airports')
-            .select("*")
-        if (error) {
-            throw error;
-        }
-        airports.push(...data);
+        const airports = await prisma.airport.findMany();
         res.status(200).send(airports);
     } catch (error: any) {
         console.error("Errore ricerca:", error);

@@ -125,7 +125,7 @@ router.post("/search", async (req: Request, res: Response) => {
             console.log("[HOTELS][ROUTE] Hotel trovati dal service:", result.total);
             const history = await saveHotelPriceHistory(result.offers);
             const skippedHistoryRows = history.filter(
-                (item) => item.previous_price !== null && Number(item.previous_price) === Number(item.total_price)
+                (item) => item.previousPrice !== null && Number(item.previousPrice) === Number(item.totalPrice)
             ).length;
             const insertedHistoryRows = history.length - skippedHistoryRows;
             console.log("[HOTELS][ROUTE] Storico prezzi:", {
@@ -165,7 +165,7 @@ router.post("/search", async (req: Request, res: Response) => {
             paginatedOffers.map((offer) => `${offer.bestRoom.roomId}|${offer.searchKey}`)
         );
         const paginatedHistory = cachedPayload.history.filter((item) =>
-            paginatedSearchKeys.has(`${item.room_id}|${item.search_key}`)
+            paginatedSearchKeys.has(`${item.roomId}|${item.searchKey}`)
         );
 
         return res.status(200).json({

@@ -1,41 +1,13 @@
 import { Router, Request, Response } from "express";
-import { getSupabaseClient } from "../config/database";
+import prisma from "../lib/prisma";
 
 const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
     try {
-        const supabase = getSupabaseClient();
-
-        const pageSize = 1000;
-        let from = 0;
-        let hasMore = true;
-        const locations: Location[] = [];
-
-        while (hasMore) {
-            const { data, error } = await supabase    
-                .from('locations')
-                .select('*')
-                .range(from, from + pageSize - 1);
-
-            if (error) {
-                throw error;
-            }
-
-            if (!data || data.length === 0) {
-                hasMore = false;
-                continue;
-            }
-
-            locations.push(...data);
-
-            if (data.length < pageSize) {
-                hasMore = false;
-                continue;
-            }
-
-            from += pageSize;
-        }
+        // With Prisma, we can fetch all locations simply. 
+        // If the table grows very large, we can reconsider pagination.
+        const locations = await prisma.location.findMany();
 
         res.status(200).send(locations);
     } catch (error: any) {
