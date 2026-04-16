@@ -196,6 +196,64 @@
   transform: translateY(-50%) translateX(-4px);
 }
 
+.input-mismatch input {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+}
+
+.input-mismatch label {
+  color: #ef4444 !important;
+}
+
+.form-options {
+  margin: -5px 0 5px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  user-select: none;
+}
+
+.checkbox-container input {
+  display: none;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.checkbox-container:hover .checkmark {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.checkbox-container input:checked + .checkmark {
+  background: #60a5fa;
+  border-color: #60a5fa;
+}
+
+.checkbox-container input:checked + .checkmark::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
 .register-btn {
   height: 52px;
   background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
@@ -228,6 +286,37 @@
   margin-top: 10px;
   color: #94a3b8;
   font-size: 0.9rem;
+}
+
+.google-registration-container {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.register-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.register-divider::before,
+.register-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.register-divider span {
+  padding: 0 1rem;
+}
+
+.google-btn-wrapper {
+  display: flex;
+  justify-content: center;
 }
 
 .login-link {

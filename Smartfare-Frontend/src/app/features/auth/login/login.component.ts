@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
               this.alertService.success('Completa la registrazione per continuare');
               this.router.navigate(['/register'], { state: { googleData: res.userData } });
             } else if (res.token) {
-              this.alertService.success(res.message || 'Accesso Google completato!');
+              this.alertService.success(res.message || 'Accesso effettuato con successo!');
               this.authService.saveAuth(res.token);
               this.router.navigate(['/']);
             }

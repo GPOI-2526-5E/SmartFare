@@ -11,7 +11,7 @@ import { GoogleSigninButtonModule, SocialAuthService } from '@abacritt/angularx-
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent, RouterModule],
+  imports: [CommonModule, FormsModule, NavbarComponent, RouterModule, GoogleSigninButtonModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -22,10 +22,14 @@ export class RegisterComponent implements OnInit {
     confirmPassword: '',
     name: '',
     surname: '',
-    avatarUrl: ''
+    avatarUrl: '',
+    street: '',
+    city: ''
   };
 
   isGoogleRegistration = false;
+  showPassword = false;
+  private googleLoginInProgress = false;
 
   constructor(
     private authService: AuthService,
@@ -37,15 +41,42 @@ export class RegisterComponent implements OnInit {
     const state = navigation?.extras.state as { googleData: any };
     
     if (state && state.googleData) {
-      this.isGoogleRegistration = true;
-      this.registerData.email = state.googleData.email;
-      this.registerData.name = state.googleData.name || '';
-      this.registerData.surname = state.googleData.surname || '';
-      this.registerData.avatarUrl = state.googleData.avatarUrl || '';
+      this.handleGoogleData(state.googleData);
     }
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.socialAuthService.authState.subscribe((user) => {
+      if (user && user.idToken && !this.googleLoginInProgress && !this.authService.IsAuthenticated()) {
+        this.googleLoginInProgress = true;
+        this.authService.LoginWithGoogle(user.idToken).subscribe({
+          next: (res) => {
+            if (res.needsRegistration && res.userData) {
+              this.alertService.success('Profilo caricato da Google!');
+              this.handleGoogleData(res.userData);
+            } else if (res.token) {
+              this.alertService.success('Accesso effettuato con successo!');
+              this.authService.saveAuth(res.token);
+              this.router.navigate(['/']);
+            }
+            this.googleLoginInProgress = false;
+          },
+          error: (err) => {
+            this.alertService.error('Errore durante il caricamento da Google');
+            this.googleLoginInProgress = false;
+          }
+        });
+      }
+    });
+  }
+
+  private handleGoogleData(data: any) {
+    this.isGoogleRegistration = true;
+    this.registerData.email = data.email;
+    this.registerData.name = data.name || '';
+    this.registerData.surname = data.surname || '';
+    this.registerData.avatarUrl = data.avatarUrl || '';
+  }
 
   async goToLogin() {
     try {
@@ -69,6 +100,9 @@ export class RegisterComponent implements OnInit {
     }
 
     const { confirmPassword, ...data } = this.registerData;
+
+    // Aggiungo log per debug in console (F12)
+    console.log("INVIO DATI REGISTRAZIONE:", data);
 
     this.authService.Register(data).subscribe({
       next: (res) => {

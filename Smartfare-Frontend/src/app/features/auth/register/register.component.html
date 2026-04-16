@@ -36,14 +36,33 @@
             <label for="email">Indirizzo Email</label>
           </div>
 
-          <div class="form-group floating-input">
-            <input id="password" type="password" [(ngModel)]="registerData.password" name="password" required placeholder=" " />
+          <div class="form-row">
+            <div class="form-group floating-input">
+              <input id="street" type="text" [(ngModel)]="registerData.street" name="street" placeholder=" " />
+              <label for="street">Indirizzo (Via/Piazza)</label>
+            </div>
+            <div class="form-group floating-input">
+              <input id="city" type="text" [(ngModel)]="registerData.city" name="city" placeholder=" " />
+              <label for="city">Città</label>
+            </div>
+          </div>
+
+          <div class="form-group floating-input" [class.input-mismatch]="registerData.confirmPassword && registerData.password !== registerData.confirmPassword">
+            <input id="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="registerData.password" name="password" required placeholder=" " />
             <label for="password">Nuova Password</label>
           </div>
 
-          <div class="form-group floating-input">
-            <input id="confirmPassword" type="password" [(ngModel)]="registerData.confirmPassword" name="confirmPassword" required placeholder=" " />
+          <div class="form-group floating-input" [class.input-mismatch]="registerData.confirmPassword && registerData.password !== registerData.confirmPassword">
+            <input id="confirmPassword" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="registerData.confirmPassword" name="confirmPassword" required placeholder=" " />
             <label for="confirmPassword">Conferma Password</label>
+          </div>
+
+          <div class="form-options">
+            <label class="checkbox-container">
+              <input type="checkbox" [(ngModel)]="showPassword" name="showPassword">
+              <span class="checkmark"></span>
+              Mostra password
+            </label>
           </div>
 
           <button type="submit" class="register-btn">
@@ -55,8 +74,18 @@
             </svg>
           </button>
 
+          <div class="google-registration-container">
+            <div class="register-divider">
+              <span>oppure continua con</span>
+            </div>
+            
+            <div class="google-btn-wrapper">
+              <asl-google-signin-button type="standard" size="large" text="signup_with" shape="rectangular" theme="outline"></asl-google-signin-button>
+            </div>
+          </div>
+
           <div class="login-prompt">
-            <p>Hai già un account? <a [routerLink]="['/login']" (click)="goToLogin()" class="login-link">Accedi</a></p>
+            <p>Hai già un account? <a (click)="goToLogin()" class="login-link">Accedi</a></p>
           </div>
         </form>
       </div>

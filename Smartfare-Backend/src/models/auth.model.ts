@@ -16,4 +16,6 @@ export interface RegisterData {
     name?: string;
     surname?: string;
     avatarUrl?: string;
+    street?: string;
+    city?: string;
 }

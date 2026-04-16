@@ -98,18 +98,25 @@ export class AuthService {
                 };
             }
 
+            console.log("DATI REGISTRAZIONE RICEVUTI:", JSON.stringify(registerData, null, 2));
+
             const hashedPassword = await bcrypt.hash(registerData.password, 10);
+            
+            // If registering after Google pre-fill, keep google as provider
+            const provider = registerData.avatarUrl ? "google" : "local";
 
             await prisma.user.create({
                 data: {
                     email: registerData.email,
                     passwordHash: hashedPassword,
-                    authProvider: "local",
+                    authProvider: provider,
                     userData: {
                         create: {
-                            name: registerData.name,
-                            surname: registerData.surname,
-                            avatarUrl: registerData.avatarUrl
+                            name: registerData.name || null,
+                            surname: registerData.surname || null,
+                            avatarUrl: registerData.avatarUrl || null,
+                            street: registerData.street || null,
+                            city: registerData.city || null
                         }
                     }
                 }

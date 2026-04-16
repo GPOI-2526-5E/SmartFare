@@ -26,10 +26,10 @@ model User {
 
 model UserData {
   userDataId Int     @id @default(autoincrement()) @map("user_data_id")
-  name       String? @db.VarChar(20)
-  surname    String? @db.VarChar(20)
+  name       String? @db.VarChar(100)
+  surname    String? @db.VarChar(100)
   street     String? @db.VarChar(100)
-  city       String? @db.VarChar(50)
+  city       String? @db.VarChar(100)
   avatarUrl  String? @map("avatar_url") @db.VarChar(255)
   userId     Int     @unique @map("user_id")
 
