@@ -255,9 +255,42 @@
   left: 200%;
 }
 
+.google-login-container {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.login-divider span {
+  padding: 0 1rem;
+}
+
+.google-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .register-prompt {
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   color: #94a3b8;
   font-size: 0.95rem;
 }

@@ -59,5 +59,9 @@ export class AuthService {
   Login(email: string, password: string): Observable<AuthResponse> {
     return this.http.post<any>(this.AUTH_URL + "/login", { email, password });
   }
+
+  LoginWithGoogle(idToken: string): Observable<AuthResponse> {
+    return this.http.post<any>(this.AUTH_URL + "/google", { idToken });
+  }
 }
 
