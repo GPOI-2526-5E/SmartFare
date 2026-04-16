@@ -34,7 +34,7 @@ router.post("/login", async (req: Request, res: Response) => {
 
 router.post("/register", async (req: Request, res: Response) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, name, surname, avatarUrl, street, city } = req.body;
 
         if (!email || !password) {
             return res.status(400).json({
@@ -42,7 +42,15 @@ router.post("/register", async (req: Request, res: Response) => {
             });
         }
 
-        const result = await authService.Register({ email, password });
+        const result = await authService.Register({ 
+            email, 
+            password, 
+            name, 
+            surname, 
+            avatarUrl, 
+            street, 
+            city 
+        });
 
         if (!result.success) {
             return res.status(401).json(result);

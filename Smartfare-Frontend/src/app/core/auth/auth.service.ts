@@ -40,6 +40,18 @@ export class AuthService {
     return !!token && !this.isTokenExpired(token);
   }
 
+  getUserData(): any {
+    if (!this.IsAuthenticated()) return null;
+
+    try {
+      const parts = this.tokenSignal()!.split('.');
+      if (parts.length !== 3) return null;
+      return JSON.parse(atob(parts[1]));
+    } catch (error) {
+      return null;
+    }
+  }
+
   isTokenExpired(token: string): boolean {
     try {
       const parts = token.split('.');

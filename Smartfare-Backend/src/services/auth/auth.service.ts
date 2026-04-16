@@ -21,7 +21,12 @@ export class AuthService {
                     userId: true,
                     email: true,
                     passwordHash: true,
-                    sessionId: true
+                    sessionId: true,
+                    userData: {
+                        select: {
+                            avatarUrl: true
+                        }
+                    }
                 }
             });
 
@@ -61,7 +66,8 @@ export class AuthService {
                     userId: user.userId,
                     email: user.email,
                     username: user.email,
-                    sessionId: sessionId
+                    sessionId: sessionId,
+                    avatarUrl: user.userData?.avatarUrl
                 },
                 JWT_SECRET,
                 {
@@ -157,7 +163,15 @@ export class AuthService {
             // 1. Controlliamo se l'utente esiste già
             let user = await prisma.user.findUnique({
                 where: { email },
-                select: { userId: true, email: true }
+                select: { 
+                    userId: true, 
+                    email: true,
+                    userData: {
+                        select: {
+                            avatarUrl: true
+                        }
+                    }
+                }
             });
 
             // 2. Se l'utente non esiste, NON lo registriamo automaticamente
@@ -191,7 +205,8 @@ export class AuthService {
                     userId: user.userId,
                     email: email,
                     username: email,
-                    sessionId: sessionId
+                    sessionId: sessionId,
+                    avatarUrl: user.userData?.avatarUrl
                 },
                 JWT_SECRET,
                 {

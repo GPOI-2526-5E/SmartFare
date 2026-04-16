@@ -60,6 +60,10 @@ export class NavbarComponent {
     return this.authService.IsAuthenticated();
   }
 
+  get userAvatar() {
+    return this.authService.getUserData()?.avatarUrl;
+  }
+
   async login() {
     this.closeMobileMenu();
     try {
