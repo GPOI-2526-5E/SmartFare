@@ -1,1 +1,65 @@
-<p>register.component works!</p>
+<div class="register-hero-page">
+  <div class="background-layer"></div>
+  <div class="animated-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="overlay"></div>
+
+  <div class="content-layer">
+    <app-navbar class="navbar-overlay"></app-navbar>
+
+    <div class="register-container">
+      <div class="glass-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="card-header">
+          <h2 class="logo-text">Smart<span class="text-accent">Fare</span></h2>
+          <p class="subtitle" *ngIf="!isGoogleRegistration">Crea un nuovo account per iniziare il tuo viaggio.</p>
+          <p class="subtitle" *ngIf="isGoogleRegistration">Quasi fatto! Completa il tuo profilo per terminare l'accesso con Google.</p>
+        </div>
+
+        <form class="register-form-wrapper" (submit)="onSubmit()">
+          
+          <div class="form-row">
+            <div class="form-group floating-input">
+              <input id="name" type="text" [(ngModel)]="registerData.name" name="name" required placeholder=" " />
+              <label for="name">Nome</label>
+            </div>
+            <div class="form-group floating-input">
+              <input id="surname" type="text" [(ngModel)]="registerData.surname" name="surname" required placeholder=" " />
+              <label for="surname">Cognome</label>
+            </div>
+          </div>
+
+          <div class="form-group floating-input">
+            <input id="email" type="email" [(ngModel)]="registerData.email" name="email" required placeholder=" " [disabled]="isGoogleRegistration" />
+            <label for="email">Indirizzo Email</label>
+          </div>
+
+          <div class="form-group floating-input">
+            <input id="password" type="password" [(ngModel)]="registerData.password" name="password" required placeholder=" " />
+            <label for="password">Nuova Password</label>
+          </div>
+
+          <div class="form-group floating-input">
+            <input id="confirmPassword" type="password" [(ngModel)]="registerData.confirmPassword" name="confirmPassword" required placeholder=" " />
+            <label for="confirmPassword">Conferma Password</label>
+          </div>
+
+          <button type="submit" class="register-btn">
+            <span>{{ isGoogleRegistration ? 'Completa Registrazione' : 'Registrati' }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+
+          <div class="login-prompt">
+            <p>Hai già un account? <a [routerLink]="['/login']" (click)="goToLogin()" class="login-link">Accedi</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

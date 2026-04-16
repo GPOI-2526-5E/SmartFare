@@ -27,10 +27,10 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly videoRotationMs = 9000;
   protected readonly heroTypingLines = ['Explore the World', 'With SmartFare'];
   protected readonly videoSources = [
-    'assets/videos/background-3.mp4',
-    'assets/videos/background-4.mp4',
-    'assets/videos/background-5.mp4',
-    'assets/videos/background-6.mp4',
+    'assets/videos/home/background-3.mp4',
+    'assets/videos/home/background-4.mp4',
+    'assets/videos/home/background-5.mp4',
+    'assets/videos/home/background-6.mp4',
   ];
 
   protected readonly videoLayers = [

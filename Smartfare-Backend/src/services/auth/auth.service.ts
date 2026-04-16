@@ -106,7 +106,11 @@ export class AuthService {
                     passwordHash: hashedPassword,
                     authProvider: "local",
                     userData: {
-                        create: {} // Create an empty profile for the user
+                        create: {
+                            name: registerData.name,
+                            surname: registerData.surname,
+                            avatarUrl: registerData.avatarUrl
+                        }
                     }
                 }
             });
@@ -149,30 +153,23 @@ export class AuthService {
                 select: { userId: true, email: true }
             });
 
-            // 2. Se l'utente non esiste, lo registriamo
+            // 2. Se l'utente non esiste, NON lo registriamo automaticamente
+            // Restituiamo i dati al frontend così può completare la registrazione
             if (!user) {
-                console.log("Nuovo utente da Google, registrazione automatica in corso:", email);
-                const randomPassword = randomUUID() + randomUUID();
-                const hashedPassword = await bcrypt.hash(randomPassword, 10);
-
-                user = await prisma.user.create({
-                    data: {
+                console.log("Nuovo utente da Google, richiesta completamento registrazione:", email);
+                return {
+                    success: true,
+                    needsRegistration: true,
+                    userData: {
                         email: email,
-                        passwordHash: hashedPassword,
-                        authProvider: "google",
-                        userData: {
-                            create: {
-                                name: payload.given_name,
-                                surname: payload.family_name,
-                                avatarUrl: payload.picture
-                            }
-                        }
-                    },
-                    select: { userId: true, email: true }
-                });
+                        name: payload.given_name,
+                        surname: payload.family_name,
+                        avatarUrl: payload.picture
+                    }
+                };
             }
 
-            // 3. Creiamo la sessione
+            // 3. Se l'utente esiste, creiamo la sessione
             const sessionId = randomUUID();
             console.log("Nuovo sessionId generato per l'accesso Google di " + email);
 

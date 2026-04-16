@@ -63,5 +63,9 @@ export class AuthService {
   LoginWithGoogle(idToken: string): Observable<AuthResponse> {
     return this.http.post<any>(this.AUTH_URL + "/google", { idToken });
   }
+
+  Register(data: any): Observable<any> {
+    return this.http.post<any>(this.AUTH_URL + "/register", data);
+  }
 }
 

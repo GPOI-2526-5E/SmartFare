@@ -27,7 +27,7 @@
       <i class="bi bi-person-circle fs-3 align-self-center"></i>
       <button class="btn btn-outline-danger" (click)="logout()">Logout</button>
       }@else {
-      <a class="btn login-btn" [routerLink]="['/login']">Login</a>
+      <button class="btn login-btn" (click)="login()">Login</button>
       <a class="btn register-btn" [routerLink]="['/register']">Register</a>
       }
     </div>
@@ -58,7 +58,7 @@
       <button class="btn btn-outline-danger w-100" type="button" (click)="logout()">Logout</button>
       </div>
       }@else {
-      <a class="btn login-btn w-100" [routerLink]="['/login']" (click)="closeMobileMenu()">Login</a>
+      <button class="btn login-btn w-100" (click)="login()">Login</button>
       <a class="btn register-btn w-100" [routerLink]="['/register']" (click)="closeMobileMenu()">Register</a>
       }
     </div>

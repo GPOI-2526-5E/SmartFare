@@ -1,8 +1,8 @@
 export interface User {
-    id: string;
+    userId: number;
     email: string;
-    password: string;
-    session_id: string | null;
+    password?: string;
+    sessionId: string | null;
 }
 
 export interface LoginParams {
@@ -12,5 +12,8 @@ export interface LoginParams {
 
 export interface RegisterData {
     email: string,
-    password: string
+    password: string,
+    name?: string;
+    surname?: string;
+    avatarUrl?: string;
 }

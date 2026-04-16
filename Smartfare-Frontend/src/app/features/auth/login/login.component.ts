@@ -3,12 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { AlertService } from '../../../core/services/alert.service';
 import { AuthService } from '../../../core/auth/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { GoogleSigninButtonModule, SocialAuthService } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-login.component',
-  imports: [NavbarComponent, FormsModule, GoogleSigninButtonModule],
+  imports: [NavbarComponent, FormsModule, GoogleSigninButtonModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -34,9 +34,14 @@ export class LoginComponent implements OnInit {
 
         this.authService.LoginWithGoogle(user.idToken).subscribe({
           next: (res) => {
-            this.alertService.success(res.message || 'Accesso Google completato!');
-            this.authService.saveAuth(res.token);
-            this.router.navigate(['/']);
+            if (res.needsRegistration && res.userData) {
+              this.alertService.success('Completa la registrazione per continuare');
+              this.router.navigate(['/register'], { state: { googleData: res.userData } });
+            } else if (res.token) {
+              this.alertService.success(res.message || 'Accesso Google completato!');
+              this.authService.saveAuth(res.token);
+              this.router.navigate(['/']);
+            }
             this.googleLoginInProgress = false;
           },
           error: (error) => {
@@ -54,12 +59,14 @@ export class LoginComponent implements OnInit {
 
     this.authService.Login(this.email, this.password).subscribe({
       next: (res) => {
-        this.alertService.success(res.message || 'Login effettuato con successo !');
-        this.authService.saveAuth(res.token);
-        this.router.navigate(['/']);
+        if (res.token) {
+          this.alertService.success(res.message || 'Login effettuato con successo !');
+          this.authService.saveAuth(res.token);
+          this.router.navigate(['/']);
+        }
       },
       error: (error) => {
-        this.alertService.error(error.error.message);
+        this.alertService.error(error.error?.message || 'Errore durante il login');
       }
     })
 

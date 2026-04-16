@@ -60,6 +60,17 @@ export class NavbarComponent {
     return this.authService.IsAuthenticated();
   }
 
+  async login() {
+    this.closeMobileMenu();
+    try {
+      // Sign out from social to break potential redirect loops when going to login
+      await this.socialAuthService.signOut(true);
+    } catch {
+      // Ignore
+    }
+    this.router.navigate(['/login']);
+  }
+
   async logout() {
     this.closeMobileMenu();
 
