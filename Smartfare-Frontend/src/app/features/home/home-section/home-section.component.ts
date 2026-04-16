@@ -10,11 +10,12 @@ import {
 } from '@angular/core';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { BookingFormComponent } from "../booking-form/booking-form.component";
+import { RevealOnScrollDirective } from '../../../core/directives/reveal-on-scroll.directive';
 
 @Component({
   selector: 'app-home-section',
   standalone: true,
-  imports: [NavbarComponent, BookingFormComponent],
+  imports: [NavbarComponent, BookingFormComponent, RevealOnScrollDirective],
   templateUrl: './home-section.component.html',
   styleUrl: './home-section.component.css',
 })
