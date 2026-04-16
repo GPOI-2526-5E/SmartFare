@@ -13,35 +13,6 @@
   z-index: 2;
   pointer-events: none;
 }
-.airport-select {
-  padding-left: 2.2rem !important;
-  background: linear-gradient(90deg, #232b3a 80%, #283040 100%);
-  color: #e5e7eb;
-  border: 2px solid var(--primary, #2563eb);
-  border-radius: 12px;
-  font-size: 1.08rem;
-  font-weight: 500;
-  box-shadow: 0 4px 18px #0003;
-  min-height: 48px;
-  transition:
-    border 0.2s,
-    box-shadow 0.2s;
-  outline: none;
-  appearance: none;
-  cursor: pointer;
-}
-.airport-select:focus {
-  border: 2.5px solid #60a5fa;
-  box-shadow: 0 0 0 3px #60a5fa33;
-}
-.airport-select:hover {
-  border: 2.5px solid #8fb4ff;
-}
-.airport-select option[disabled] {
-  color: #b6c2d6;
-  font-style: italic;
-  background: #232b3a;
-}
 .airport-option {
   background: #232b3a;
   color: #8fb4ff;
@@ -49,83 +20,21 @@
   padding: 0.7rem 1.2rem;
   border-radius: 8px;
 }
-.airport-city {
-  color: #b6c2d6;
-  font-size: 0.98em;
-  margin-left: 0.2em;
-}
-/* --- SELECT AEROPORTI --- */
-.form-select {
-  background-color: #1e2a38;
-  color: #ffffff;
-  border: 1px solid #3a4a5c;
-  border-radius: 8px;
-  padding: 0.6rem 1rem;
-}
 
-.form-select:focus {
-  border-color: #0d6efd; /* blu bootstrap */
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-  background-color: #243447;
-  color: #fff;
-}
-
-/* freccia bianca */
-.form-select {
-  background-image: url("data:image/svg+xml,%3Csvg fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6 6 6-6'/%3E%3C/svg%3E");
-}
-
-/* Etichette icone (se presenti) */
-.search-field label {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-weight: 500;
-  color: #ffffff;
-}
-
-/* Sfondo generale dei contenitori */
-.search-field {
-  margin-bottom: 1rem;
-}
-/* --- SEARCH ROW PER HOTEL --- */
-.search-row {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  gap: 1rem;
-}
-
-.search-row .search-field {
-  flex: 1 1 0;
-  margin-bottom: 0;
-}
-
-.search-row .search-action.no-grow {
-  flex: 0 0 auto;
-  align-self: stretch;
-  display: flex;
-  align-items: stretch;
-  margin-bottom: 0;
-}
-
-@media (max-width: 992px) {
-  .search-row {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .search-row .search-action.no-grow {
-    width: 100%;
-  }
-}
 /* --- SWITCH CUSTOM --- */
 .switch-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
   gap: 1rem;
+  margin: 0;
+  cursor: pointer;
+  height: 100%;
 }
 
 .switch {
@@ -133,6 +42,7 @@
   display: inline-block;
   width: 44px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .switch input {
@@ -148,7 +58,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #b6c2d6;
+  background: rgba(255,255,255,0.2);
   border-radius: 24px;
   transition: background 0.3s;
 }
@@ -162,12 +72,12 @@
   bottom: 3px;
   background: #fff;
   border-radius: 50%;
-  transition: transform 0.3s;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .switch input:checked + .slider {
-  background: var(--primary);
+  background: #3b82f6;
 }
 
 .switch input:checked + .slider:before {
@@ -180,56 +90,44 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
 /* --- VARIABILI E RESET --- */
 :host {
   --primary: #2563eb;
-  --primary-hover: #1d4ed8;
   --bg-card: #181f2a;
-  --text-main: #e5e7eb;
-  --text-muted: #b6c2d6;
-  --border-color: #283040;
-  --radius: 16px;
-
   display: block;
   width: 100%;
-  max-width: 100%;
-  margin: 1rem auto;
-  padding: 0;
-  font-family: 'Inter', sans-serif;
+  max-width: 1100px;
+  margin: 1rem auto 3rem;
+  font-family: 'Inter', inherit;
 }
 
-/* --- TABS (A FILO CON LA CARD) --- */
+/* --- TABS --- */
 .category-tabs {
   display: flex;
   flex-wrap: nowrap;
   gap: 4px;
-  margin-bottom: 0; /* Fondamentale per l'effetto a filo */
-  padding-left: 8px;
+  margin-bottom: 0;
+  padding-left: 24px;
   overflow-x: auto;
-  scrollbar-width: none; /* Nasconde scrollbar su Firefox */
+  scrollbar-width: none;
 }
 
 .category-tabs::-webkit-scrollbar {
-  display: none; /* Nasconde scrollbar su Chrome/Safari */
+  display: none;
 }
 
 .tab-item {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-bottom: none;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
-  color: #ffffff;
-  padding: 12px 20px;
-  border-radius: 12px 12px 0 0;
+  color: #a0aec0;
+  padding: 14px 28px;
+  border-radius: 20px 20px 0 0;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -238,250 +136,310 @@
   align-items: center;
   gap: 0.6rem;
   white-space: nowrap;
+  position: relative;
+  top: 1px;
 }
 
 .tab-item:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 .tab-item.active {
-  background: var(--bg-card);
-  color: var(--primary);
-  position: relative;
+  background: rgba(15, 23, 42, 0.65);
+  color: #3b82f6;
   z-index: 2;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* --- SEARCH CARD --- */
 .search-card {
-  background: rgba(10, 15, 26, 0.62); /* come navbar */
-  padding: 1.5rem;
-  border-radius: 0 var(--radius) var(--radius) var(--radius);
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  background: rgba(15, 23, 42, 0.65);
+  padding: 1rem 1rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   position: relative;
   z-index: 3;
-  color: #fff;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   width: 100%;
-  max-width: 100%;
-  overflow: visible;
 }
 
-/* --- GRID LAYOUT --- */
+@media (min-width: 992px) {
+  .search-card {
+    padding: 1.5rem 1.5rem;
+    border-top-left-radius: 4px;
+  }
+}
+
+/* Let Hotel specific child dictate its own spacing if it's already a pill */
+app-hotel-search-bar {
+  display: block;
+}
+/* For hotel-search-bar to avoid double margin */
+app-hotel-search-bar ::ng-deep .hotel-search {
+  margin: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+}
+
+app-hotel-search-bar ::ng-deep .search-form {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 60px;
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+/* --- PILL STYLING PER ALTRE SEZIONI --- */
 .search-grid {
-  display: grid;
-  gap: 1rem;
-  align-items: stretch;
   width: 100%;
-}
-
-/* --- FORM FIELDS --- */
-/* --- FORM FIELDS --- */
-.search-field {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 0.8rem 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
-}
-
-.search-field:focus-within {
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12);
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.search-field label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #cbd5e1;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-}
-
-.search-field label i {
-  color: var(--primary);
-  font-size: 0.9rem;
-}
-
-.search-field input {
-  border: none;
-  background: transparent;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  outline: none;
-  width: 100%;
-  padding: 0;
-  min-width: 0;
-}
-
-.form-select,
-.airport-select,
-.btn-submit {
-  width: 100%;
-  max-width: 100%;
 }
 
 .search-row {
   display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 60px;
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  padding: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-row:hover, app-hotel-search-bar ::ng-deep .search-form:hover {
+  box-shadow: 
+    0 30px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.search-field {
+  flex: 1;
+  position: relative;
+  display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 0.75rem;
-  width: 100%;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 20px;
+  height: 80px;
+  border-radius: 60px;
+  background: transparent;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
   min-width: 0;
+  text-overflow: ellipsis;
 }
 
-.search-row > * {
-  min-width: 0;
+/* Dividers */
+.search-field:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 50%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  transition: opacity 0.2s ease;
 }
 
-.search-row .search-field,
-.search-row .search-action.no-grow {
-  flex: 1 1 auto;
-  margin-bottom: 0;
+.search-field:hover::after,
+.search-field:focus-within::after,
+.search-field:focus-within + .search-field::after,
+.search-field:hover + .search-field::after {
+  opacity: 0;
 }
 
-.search-row .search-action.no-grow {
+.search-field:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.search-field:focus-within {
+  background: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+/* Labels */
+.search-field label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+  pointer-events: none;
+}
+
+.search-field label i {
+  color: #3b82f6; 
+  font-size: 0.9rem;
+}
+
+/* Inputs, Selects reset */
+.search-field input,
+.search-field select {
   width: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent !important;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-family: inherit;
+  color-scheme: dark;
+  box-shadow: none !important;
+  appearance: none;
+  cursor: text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-field select {
+  cursor: pointer;
+}
+
+.search-field input[type="date"] {
+  cursor: pointer;
 }
 
 .search-field input::placeholder {
-  color: #b6c2d6;
-  font-weight: 400;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
 }
 
-/* --- GRUPPI SPECIFICI (DATE/GUESTS) --- */
-.date-group,
+::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.8);
+  cursor: pointer;
+}
+
+/* Switch container special style */
+.search-field:has(.switch-label) {
+  cursor: pointer;
+}
+.search-field:has(.switch-label) label {
+  pointer-events: auto;
+}
+
+/* Guests */
 .guest-inputs {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-.sep {
-  width: 1px;
-  height: 18px;
-  background: var(--border-color);
+.guest-inputs input {
+  width: 44px !important;
 }
 
-.counter-box {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.counter-box span {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+.guest-inputs span {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
   font-weight: 500;
+  pointer-events: none;
 }
 
 /* --- ACTION BUTTON --- */
 .search-action {
-  display: flex;
-  align-items: stretch;
+  padding: 8px 10px 8px 0;
 }
 
 .btn-submit {
-  background: var(--primary);
-  color: #ffffff;
-  border: none;
-  width: 100%;
-  min-height: 60px;
-  padding: 0 1.5rem;
-  border-radius: 12px;
+  height: 64px;
+  padding: 0 32px;
+  border: 0;
+  border-radius: 40px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.05rem;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  gap: 10px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+  white-space: nowrap;
 }
 
 .btn-submit:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  box-shadow: 0 12px 32px rgba(37, 99, 235, 0.5);
 }
 
 .btn-submit:active {
-  transform: translateY(0);
+  transform: translateY(1px);
 }
 
-/* --- RESPONSIVE --- */
+/* --- Itinerary Action Specific --- */
+.search-grid > .search-action {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
 
-@media (min-width: 992px) {
-  :host {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-  }
+.search-grid > .search-action .btn-submit {
+  min-width: 200px;
+}
 
+/* Responsive Overrides */
+@media (max-width: 1024px) {
   .search-row {
-    flex-direction: row;
-    gap: 1rem;
+    flex-wrap: wrap;
+    border-radius: 32px;
+    padding: 8px;
+    gap: 8px;
   }
-
-  .search-row .search-field {
-    flex: 1 1 0;
+  app-hotel-search-bar ::ng-deep .search-form {
+    border-radius: 32px !important;
   }
-
-  .search-row .search-action.no-grow {
-    flex: 0 0 auto;
-    width: auto;
+  .search-field {
+    flex: 1 1 40%;
+    border-radius: 24px;
+    height: 70px;
+    padding: 12px 20px;
+  }
+  .search-field:not(:last-child)::after {
+    display: none;
+  }
+  .search-action {
+    flex: 1 1 100%;
+    padding: 4px;
+  }
+  .btn-submit {
+    width: 100%;
+    height: 60px;
+    border-radius: 20px;
+  }
+  .search-card {
+    border-radius: 0 20px 20px 20px;
   }
 }
 
-@media (max-width: 600px) {
-  :host {
-    margin: 1rem auto;
-  }
-
-  .category-tabs {
-    padding-left: 4px;
-  }
-
-  .tab-item {
-    padding: 10px 16px;
-    font-size: 0.85rem;
-  }
-
-  .search-card {
-    padding: 1rem;
-    border-radius: var(--radius); /* Torna arrotondata su mobile */
-  }
-
-  .search-grid {
-    gap: 0.75rem;
-  }
-
+@media (max-width: 640px) {
   .search-field {
-    padding: 0.7rem 1rem;
+    flex: 1 1 100%;
   }
-
-  .date-group {
-    flex-direction: row; /* Mantieni le date affiancate se possibile */
+  .category-tabs {
+    padding-left: 10px;
   }
-
-  .btn-submit {
-    margin-top: 0.5rem;
+  .tab-item {
+    padding: 12px 18px;
+    font-size: 0.9rem;
   }
 }

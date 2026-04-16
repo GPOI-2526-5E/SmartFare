@@ -1,14 +1,31 @@
-<div class="hotel-page">
+<div class="hotel-page" [class.hero-mode]="!hasSearched">
+  @if (!hasSearched) {
+  <div class="hero-video-wrap">
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="/assets/videos/background-3.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-overlay"></div>
+  </div>
+  }
+
   <div class="page-content">
     <div class="hotel-nav-shell">
       <app-navbar></app-navbar>
     </div>
 
     <section class="booking-shell">
+      @if (!hasSearched) {
+      <div class="hero-titles">
+        <h1 class="hero-title">Trova il tuo hotel ideale</h1>
+        <p class="hero-subtitle">Scegli la destinazione e le date, l'Intelligenza Artificiale farà il resto.</p>
+      </div>
+      }
+
       <app-hotel-search-bar [destination]="hotelSearch.destination" [checkin]="hotelSearch.checkin"
         [checkout]="hotelSearch.checkout" [guests]="hotelSearch.guests"
         [userPreference]="hotelSearch.userPreference ?? ''" (search)="onSearch($event)"></app-hotel-search-bar>
 
+      @if (hasSearched) {
       <div class="content-grid">
         <div class="sidebar-shell">
           <section class="mini-map-shell">
@@ -137,6 +154,7 @@
           }
         </aside>
       </div>
+      }
 
       @if (mapDrawerOpen) {
       <div class="map-drawer-backdrop" (click)="closeMapDrawer()">

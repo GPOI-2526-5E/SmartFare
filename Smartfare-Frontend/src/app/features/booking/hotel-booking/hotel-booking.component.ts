@@ -37,6 +37,7 @@ export class HotelBookingComponent implements OnInit {
   showMap = true;
   mapDrawerOpen = false;
   isLoading = false;
+  hasSearched = false;
   errorMessage = '';
   totalResults = 0;
   totalPages = 1;
@@ -231,6 +232,7 @@ export class HotelBookingComponent implements OnInit {
 
   private fetchHotels(): void {
     this.isLoading = true;
+    this.hasSearched = true;
     this.errorMessage = '';
 
     this.smartfareService.searchHotels(this.hotelSearch, this.currentPage, this.pageSize).subscribe({

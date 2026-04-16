@@ -104,6 +104,7 @@ export class HotelSearchBarComponent implements OnInit {
     const query = this.normalizeSearchValue(this.destination);
 
     if (!query) {
+      this.filteredLocations.set([]);
       return;
     }
 
