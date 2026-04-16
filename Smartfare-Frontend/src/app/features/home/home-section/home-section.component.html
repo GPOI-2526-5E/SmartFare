@@ -1,5 +1,9 @@
-<div class="travel-hero-page position-relative min-vh-100 d-flex flex-column" >
+<div class="travel-hero-page position-relative min-vh-100 d-flex flex-column">
   <div class="background-layer w-100 h-100 position-absolute top-0 start-0">
+    @for (videoSrc of videoLayers; track $index) {
+    <video #backgroundVideo class="background-video" [class.is-active]="$index === activeVideoLayer"
+      [attr.src]="videoSrc" autoplay muted playsinline loop preload="auto" (loadeddata)="onVideoLoaded($index)"></video>
+    }
     <div class="overlay w-100 h-100 position-absolute top-0 start-0"></div>
   </div>
 
@@ -11,10 +15,13 @@
         <div class="col-12 col-lg-10 mx-auto" data-aos="fade-up">
           <span class="badge rounded-pill text-bg-light px-3 py-2 mb-3">SmartFare Tickets</span>
           <h1 class="hero-title mb-3">
-            Explore the World
-            <span>With MyTravel</span>
+            <span class="typing-line">
+              {{ heroLineTop() }}
+            </span>
+            <span class="typing-line hero-title-accent">
+              {{ heroLineBottom() }}
+            </span>
           </h1>
-          <p class="hero-subtitle mx-auto mb-4">Find the best hotels, tours, and activities for your next adventure. Book with confidence and get the best prices.</p>
         </div>
       </div>
     </main>

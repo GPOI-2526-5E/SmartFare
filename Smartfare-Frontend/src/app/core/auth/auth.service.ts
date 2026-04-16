@@ -13,7 +13,7 @@ export class AuthService {
 
   private readonly tokenSignal = signal<string | null>(null);
 
-  private AUTH_URL = 'http://localhost:3200/auth';
+  private AUTH_URL = 'http://localhost:3000/auth';
 
   constructor(private http: HttpClient) {
     const token = localStorage.getItem(this.TOKEN_KEY);

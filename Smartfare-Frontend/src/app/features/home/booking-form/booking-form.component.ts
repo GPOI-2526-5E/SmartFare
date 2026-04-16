@@ -76,14 +76,14 @@ export class BookingFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.smartfareService.getAirports().subscribe({
-      next: (res) => {
-        console.log(res);
-        this.airports.set(res);
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
+    // this.smartfareService.getAirports().subscribe({
+    //   next: (res) => {
+    //     console.log(res);
+    //     this.airports.set(res);
+    //   },
+    //   error: (error) => {
+    //     console.error(error);
+    //   }
+    // });
   }
 }

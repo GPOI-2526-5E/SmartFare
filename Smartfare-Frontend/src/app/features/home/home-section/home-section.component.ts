@@ -1,4 +1,13 @@
-import { Component } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  QueryList,
+  ViewChildren,
+  signal,
+} from '@angular/core';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { BookingFormComponent } from "../booking-form/booking-form.component";
 
@@ -9,6 +18,258 @@ import { BookingFormComponent } from "../booking-form/booking-form.component";
   templateUrl: './home-section.component.html',
   styleUrl: './home-section.component.css',
 })
-export class HomeSectionComponent {
+export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChildren('backgroundVideo')
+  private backgroundVideos!: QueryList<ElementRef<HTMLVideoElement>>;
 
+  protected readonly transitionMs = 1200;
+  protected readonly videoRotationMs = 9000;
+  protected readonly heroTypingLines = ['Explore the World', 'With SmartFare'];
+  protected readonly videoSources = [
+    'assets/videos/background-3.mp4',
+    'assets/videos/background-4.mp4',
+    'assets/videos/background-5.mp4',
+    'assets/videos/background-6.mp4',
+  ];
+
+  protected readonly videoLayers = [
+    this.videoSources[0],
+    this.videoSources[1] ?? this.videoSources[0],
+  ];
+
+  protected activeVideoLayer = 0;
+  protected readonly heroLineTop = signal('');
+  protected readonly heroLineBottom = signal('');
+  protected readonly caretLine = signal<0 | 1>(0);
+
+  private currentVideoIndex = 0;
+  private queuedVideoIndex = 1;
+  private rotationTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private cleanupTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private typingTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private typingStage = 0;
+
+  ngOnInit(): void {
+    this.startTypingLoop();
+  }
+
+  ngAfterViewInit(): void {
+    queueMicrotask(() => {
+      this.prepareVideoElements();
+      this.playLayer(this.activeVideoLayer);
+    });
+
+    this.scheduleNextTransition();
+  }
+
+  ngOnDestroy(): void {
+    this.clearTimers();
+  }
+
+  protected onVideoLoaded(layerIndex: number): void {
+    const video = this.getVideoElement(layerIndex);
+    if (!video) {
+      return;
+    }
+
+    video.currentTime = 0;
+
+    if (layerIndex === this.activeVideoLayer) {
+      this.playVideo(video);
+      return;
+    }
+
+    if (layerIndex !== this.getHiddenLayerIndex()) {
+      return;
+    }
+
+    this.playVideo(video).then(() => {
+      this.activeVideoLayer = layerIndex;
+      this.currentVideoIndex = this.queuedVideoIndex;
+
+      if (this.cleanupTimeoutId) {
+        clearTimeout(this.cleanupTimeoutId);
+      }
+
+      this.cleanupTimeoutId = setTimeout(() => {
+        const previousLayer = this.getHiddenLayerIndex();
+        const previousVideo = this.getVideoElement(previousLayer);
+
+        if (previousVideo) {
+          previousVideo.pause();
+          previousVideo.currentTime = 0;
+        }
+      }, this.transitionMs);
+
+      this.scheduleNextTransition();
+    });
+  }
+
+  private scheduleNextTransition(): void {
+    if (this.videoSources.length < 2) {
+      return;
+    }
+
+    if (this.rotationTimeoutId) {
+      clearTimeout(this.rotationTimeoutId);
+    }
+
+    this.rotationTimeoutId = setTimeout(() => {
+      this.prepareNextVideo();
+    }, this.videoRotationMs);
+  }
+
+  private prepareNextVideo(): void {
+    const hiddenLayer = this.getHiddenLayerIndex();
+    const nextVideoIndex = (this.currentVideoIndex + 1) % this.videoSources.length;
+
+    this.queuedVideoIndex = nextVideoIndex;
+    this.videoLayers[hiddenLayer] = this.videoSources[nextVideoIndex];
+
+    queueMicrotask(() => {
+      const hiddenVideo = this.getVideoElement(hiddenLayer);
+      if (!hiddenVideo) {
+        return;
+      }
+
+      hiddenVideo.load();
+    });
+  }
+
+  private playLayer(layerIndex: number): void {
+    const video = this.getVideoElement(layerIndex);
+    if (video) {
+      video.currentTime = 0;
+      void this.playVideo(video);
+    }
+  }
+
+  private prepareVideoElements(): void {
+    this.backgroundVideos?.forEach((videoRef) => {
+      const video = videoRef.nativeElement;
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', 'true');
+      video.load();
+    });
+  }
+
+  private getVideoElement(layerIndex: number): HTMLVideoElement | undefined {
+    return this.backgroundVideos?.get(layerIndex)?.nativeElement;
+  }
+
+  private getHiddenLayerIndex(): number {
+    return this.activeVideoLayer === 0 ? 1 : 0;
+  }
+
+  private async playVideo(video: HTMLVideoElement): Promise<void> {
+    try {
+      await video.play();
+    } catch {
+    }
+  }
+
+  private clearTimers(): void {
+    if (this.rotationTimeoutId) {
+      clearTimeout(this.rotationTimeoutId);
+      this.rotationTimeoutId = null;
+    }
+
+    if (this.cleanupTimeoutId) {
+      clearTimeout(this.cleanupTimeoutId);
+      this.cleanupTimeoutId = null;
+    }
+
+    if (this.typingTimeoutId) {
+      clearTimeout(this.typingTimeoutId);
+      this.typingTimeoutId = null;
+    }
+  }
+
+  private startTypingLoop(): void {
+    const topTarget = this.heroTypingLines[0] ?? '';
+    const bottomTarget = this.heroTypingLines[1] ?? '';
+    const top = this.heroLineTop();
+    const bottom = this.heroLineBottom();
+
+    switch (this.typingStage) {
+      case 0:
+        this.caretLine.set(0);
+        if (top.length < topTarget.length) {
+          this.heroLineTop.set(topTarget.slice(0, top.length + 1));
+          this.queueTypingFrame(85);
+          return;
+        }
+
+        this.typingStage = 1;
+        this.queueTypingFrame(700);
+        return;
+
+      case 1:
+        this.caretLine.set(1);
+        this.typingStage = 2;
+        this.queueTypingFrame(80);
+        return;
+
+      case 2:
+        this.caretLine.set(1);
+        if (bottom.length < bottomTarget.length) {
+          this.heroLineBottom.set(bottomTarget.slice(0, bottom.length + 1));
+          this.queueTypingFrame(85);
+          return;
+        }
+
+        this.typingStage = 3;
+        this.queueTypingFrame(2500);
+        return;
+
+      case 3:
+        this.caretLine.set(1);
+        this.typingStage = 4;
+        this.queueTypingFrame(45);
+        return;
+
+      case 4:
+        this.caretLine.set(1);
+        if (bottom.length > 0) {
+          this.heroLineBottom.set(bottom.slice(0, -1));
+          this.queueTypingFrame(45);
+          return;
+        }
+
+        this.typingStage = 5;
+        this.queueTypingFrame(260);
+        return;
+
+      case 5:
+        this.caretLine.set(0);
+        this.typingStage = 6;
+        this.queueTypingFrame(45);
+        return;
+
+      case 6:
+        this.caretLine.set(0);
+        if (top.length > 0) {
+          this.heroLineTop.set(top.slice(0, -1));
+          this.queueTypingFrame(45);
+          return;
+        }
+
+        this.typingStage = 7;
+        this.queueTypingFrame(350);
+        return;
+
+      default:
+        this.typingStage = 0;
+        this.queueTypingFrame(90);
+        return;
+    }
+  }
+
+  private queueTypingFrame(delayMs: number): void {
+    this.typingTimeoutId = setTimeout(() => this.startTypingLoop(), delayMs);
+  }
 }
