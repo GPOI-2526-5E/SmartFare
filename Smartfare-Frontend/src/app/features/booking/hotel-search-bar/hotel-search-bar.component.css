@@ -64,7 +64,7 @@
 }
 
 .destination {
-  z-index: 60;
+  z-index: 2500;
 }
 
 .location-suggestions {
@@ -80,7 +80,7 @@
   background: rgba(17, 27, 46, 0.98);
   box-shadow: 0 18px 30px rgba(3, 7, 18, 0.34);
   backdrop-filter: blur(10px);
-  z-index: 999;
+  z-index: 2500;
 }
 
 .location-option {
