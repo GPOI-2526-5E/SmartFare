@@ -1,23 +1,51 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { AlertService } from '../../../core/services/alert.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Router } from '@angular/router';
+import { GoogleSigninButtonModule, SocialAuthService } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-login.component',
-  imports: [NavbarComponent, FormsModule],
+  imports: [NavbarComponent, FormsModule, GoogleSigninButtonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email: string = '';
   password: string = '';
+  private googleLoginInProgress = false;
 
-  constructor(private alertService: AlertService, private authService: AuthService, private router: Router) {
+  constructor(
+    private alertService: AlertService,
+    private authService: AuthService,
+    private router: Router,
+    private socialAuthService: SocialAuthService
+  ) {
     if (this.authService.IsAuthenticated())
       this.router.navigate(['/']);
+  }
+
+  ngOnInit() {
+    this.socialAuthService.authState.subscribe((user) => {
+      if (user && user.idToken && !this.googleLoginInProgress && !this.authService.IsAuthenticated()) {
+        this.googleLoginInProgress = true;
+
+        this.authService.LoginWithGoogle(user.idToken).subscribe({
+          next: (res) => {
+            this.alertService.success(res.message || 'Accesso Google completato!');
+            this.authService.saveAuth(res.token);
+            this.router.navigate(['/']);
+            this.googleLoginInProgress = false;
+          },
+          error: (error) => {
+            this.alertService.error(error.error?.message || 'Errore durante l\'accesso con Google');
+            this.googleLoginInProgress = false;
+          }
+        });
+      }
+    });
   }
 
   Login() {

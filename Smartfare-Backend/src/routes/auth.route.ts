@@ -58,6 +58,32 @@ router.post("/register", async (req: Request, res: Response) => {
     }
 });
 
+router.post("/google", async (req: Request, res: Response) => {
+    try {
+        const { idToken } = req.body;
+
+        if (!idToken) {
+            return res.status(400).json({
+                error: "Token mancante",
+            });
+        }
+
+        const result = await authService.GoogleLogin(idToken);
+
+        if (!result.success) {
+            return res.status(401).json(result);
+        }
+
+        return res.status(200).json(result);
+    } catch (error: any) {
+        console.log("❌ Errore nel server: ", error);
+        return res.status(500).json({
+            error: "Errore durante il login con Google," + error.status,
+            message: error.message
+        });
+    }
+});
+
 router.get('/user', async (req: Request, res: Response) => {
 
 });
