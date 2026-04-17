@@ -1,1 +1,65 @@
-<p>experiences-carousel works!</p>
+<section class="experiences-section position-relative min-vh-100 d-flex align-items-center w-100">
+  
+  @for (exp of experiences; track exp.id) {
+    <div 
+      class="bg-image position-absolute top-0 start-0 w-100 h-100"
+      [class.active]="activeExperience().id === exp.id"
+      [style.backgroundImage]="'url(' + exp.imageUrl + ')'">
+    </div>
+  }
+  
+  <div class="overlay position-absolute top-0 start-0 w-100 h-100"></div>
+
+  <div class="container position-relative z-1 h-100 d-flex flex-column justify-content-center py-5">
+    <div class="row w-100 mt-n5">
+      <div class="col-lg-7 col-md-9 text-white content-animate" [class.show]="activeExperience()">
+        <span class="category-badge mb-3 d-inline-block px-3 py-2 rounded-pill shadow-sm">
+          &bull; {{ activeExperience().category }}
+        </span>
+        <h2 class="display-2 fw-bold mb-4 experience-title">
+          {{ activeExperience().title }}
+        </h2>
+        <p class="fs-5 mb-5 experience-desc text-light opacity-75 pe-md-5">
+          {{ activeExperience().description }}
+        </p>
+        <button class="btn btn-primary btn-lg rounded-pill px-5 py-3 explore-btn fw-bold shadow-lg">
+          Explore Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="carousel-bottom-wrapper position-absolute bottom-0 end-0 z-2 mb-4 px-3 px-lg-5">
+    <div class="d-flex align-items-center justify-content-end w-100" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+      
+      <!-- Left Navigation Button -->
+      <button class="btn btn-outline-light rounded-circle carousel-nav-btn d-flex align-items-center justify-content-center me-3 flex-shrink-0" (click)="scrollLeft()">
+        <span class="fs-5 lh-1">&lsaquo;</span>
+      </button>
+
+      <!-- Scrollable Container -->
+      <div class="cards-carousel d-flex gap-3 pb-2 px-2 overflow-x-auto" style="scrollbar-width: none;" #carouselContainer>
+        @for (exp of displayExperiences; track $index) {
+          <div 
+            class="experience-card rounded-4 overflow-hidden position-relative flex-shrink-0"
+            [class.active-card]="activeExperience().id === exp.id"
+            (click)="selectExperience(exp)">
+            @if (!exp.imageUrl) {
+              <div class="spinner-border text-light position-absolute top-50 start-50 translate-middle" role="status"></div>
+            }
+            <img [src]="exp.imageUrl" [alt]="exp.title" class="w-100 h-100 object-fit-cover position-absolute top-0 start-0">
+            <div class="card-overlay position-absolute bottom-0 start-0 w-100 p-3 pt-5">
+              <h6 class="mb-0 text-white fw-bold">{{ exp.category }}</h6>
+            </div>
+          </div>
+        }
+      </div>
+      
+      <!-- Right Navigation Button -->
+      <button class="btn btn-outline-light rounded-circle carousel-nav-btn d-flex align-items-center justify-content-center ms-3 flex-shrink-0" (click)="scrollRight()">
+        <span class="fs-5 lh-1">&rsaquo;</span>
+      </button>
+
+    </div>
+  </div>
+</section>
