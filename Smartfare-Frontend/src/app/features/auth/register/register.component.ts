@@ -22,9 +22,7 @@ export class RegisterComponent implements OnInit {
     confirmPassword: '',
     name: '',
     surname: '',
-    avatarUrl: '',
-    street: '',
-    city: ''
+    avatarUrl: ''
   };
 
   isGoogleRegistration = false;

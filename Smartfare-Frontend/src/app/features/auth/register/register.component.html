@@ -36,16 +36,7 @@
             <label for="email">Indirizzo Email</label>
           </div>
 
-          <div class="form-row">
-            <div class="form-group floating-input">
-              <input id="street" type="text" [(ngModel)]="registerData.street" name="street" placeholder=" " />
-              <label for="street">Indirizzo (Via/Piazza)</label>
-            </div>
-            <div class="form-group floating-input">
-              <input id="city" type="text" [(ngModel)]="registerData.city" name="city" placeholder=" " />
-              <label for="city">Città</label>
-            </div>
-          </div>
+
 
           <div class="form-group floating-input" [class.input-mismatch]="registerData.confirmPassword && registerData.password !== registerData.confirmPassword">
             <input id="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="registerData.password" name="password" required placeholder=" " />
