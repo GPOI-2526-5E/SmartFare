@@ -114,7 +114,7 @@ async function loadHotelSearchContext(
                     capacity: { gte: guests }
                 }
             },
-            service: true
+            services: true
         }
     });
 
@@ -155,8 +155,10 @@ async function loadHotelSearchContext(
         if (hotel.location) {
             locationsById.set(hotel.location.locationId, hotel.location);
         }
-        if (hotel.service) {
-            servicesById.set(hotel.service.serviceId, hotel.service.description || "");
+        if (hotel.services && hotel.services.length > 0) {
+            for (const s of hotel.services) {
+                servicesById.set(s.serviceId, s.description || "");
+            }
         }
         allRooms.push(...hotel.rooms);
     }
@@ -248,7 +250,7 @@ function buildRoomOffers(
                 roomType: room.description || "Camera",
                 roomCapacity: Number(room.capacity ?? 0),
                 availability: "disponibile",
-                services: hotel.service ? [hotel.service.description].filter(Boolean) : [],
+                services: (hotel.services || []).map((s: any) => s.description).filter(Boolean),
             };
         })
         .filter((offer): offer is HotelRoomOffer => offer !== null)
