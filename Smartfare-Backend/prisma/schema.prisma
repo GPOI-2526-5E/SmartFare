@@ -30,7 +30,7 @@ model UserData {
   surname    String? @db.VarChar(100)
   street     String? @db.VarChar(100)
   city       String? @db.VarChar(100)
-  avatarUrl  String? @map("avatar_url") @db.VarChar(255)
+  avatarUrl  String? @default("https://rpcgfwithmoyezrdeahj.supabase.co/storage/v1/object/public/users/user.png") @map("avatar_url") @db.VarChar(255)
   userId     Int     @unique @map("user_id")
 
   user User @relation(fields: [userId], references: [userId])
@@ -141,7 +141,7 @@ model Hotel {
   name        String  @db.VarChar(100)
   street      String? @db.VarChar(100)
   stars       Int?
-  city        String? @db.VarChar(50)
+  city        String? @db.VarChar(100)
   priceMedium Float?  @map("price_medium")
   latitude    Float?
   longitude   Float?
@@ -170,11 +170,12 @@ model Room {
 }
 
 model Service {
-  serviceId   Int     @id @default(autoincrement()) @map("services_id")
+  serviceId   Int     @id @default(autoincrement()) @map("service_id")
   name        String  @db.VarChar(50)
   description String? @db.VarChar(200)
+  hotelId     Int?    @map("hotel_id")
 
-  hotels Hotel[]
+  hotel Hotel? @relation(fields: [hotelId], references: [hotelId])
 
   @@map("services")
 }
@@ -335,6 +336,10 @@ model Aircraft {
   airline    String? @db.VarChar(50)
   model      String? @db.VarChar(50)
   capacity   Int?
+  rangeKm    Int?       @map("range_km")
+  status     String?    @db.VarChar(20)
+  age        Int?
+  size       String?    @db.VarChar(20)
 
   routeSegments FlightRouteSegment[]
 
