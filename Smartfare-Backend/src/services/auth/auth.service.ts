@@ -13,6 +13,7 @@ export class AuthService {
 
     async Login(loginData: LoginParams) {
         try {
+            // password here is already hashed with SHA-256 on the client side
             const { email, password } = loginData;
 
             const user = await prisma.user.findUnique({
@@ -106,6 +107,8 @@ export class AuthService {
 
             console.log("DATI REGISTRAZIONE RICEVUTI:", JSON.stringify(registerData, null, 2));
 
+            // registerData.password is already hashed with SHA-256 on the client side
+            // We hash it again with Bcrypt for database security (Double Hashing)
             const hashedPassword = await bcrypt.hash(registerData.password, 10);
             
             // If registering after Google pre-fill, keep google as provider

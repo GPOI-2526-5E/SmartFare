@@ -2,6 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom, Observable } from 'rxjs';
 import { AuthResponse } from '../models/response.model';
 import { HttpClient } from '@angular/common/http';
+import { SHA256 } from 'crypto-js';
 import { Token } from '@angular/compiler';
 
 @Injectable({
@@ -81,7 +82,8 @@ export class AuthService {
   }
 
   Login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<any>(this.AUTH_URL + "/login", { email, password });
+    const hashedPassword = SHA256(password).toString();
+    return this.http.post<any>(this.AUTH_URL + '/login', { email, password: hashedPassword });
   }
 
   LoginWithGoogle(idToken: string): Observable<AuthResponse> {
@@ -89,7 +91,11 @@ export class AuthService {
   }
 
   Register(data: any): Observable<any> {
-    return this.http.post<any>(this.AUTH_URL + "/register", data);
+    const dataWithHashedPassword = {
+      ...data,
+      password: SHA256(data.password).toString(),
+    };
+    return this.http.post<any>(this.AUTH_URL + '/register', dataWithHashedPassword);
   }
 }
 
