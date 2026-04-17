@@ -204,9 +204,10 @@ model Location {
   longitude  Float?
   latitude   Float?
 
-  hotels   Hotel[]
-  stations Station[]
-  airports Airport[]
+  hotels     Hotel[]
+  stations   Station[]
+  airports   Airport[]
+  activities Activity[]
 
   @@map("locations")
 }
@@ -363,16 +364,15 @@ model FlightPriceHistory {
 
 model Activity {
   activityId  Int      @id @default(autoincrement()) @map("activity_id")
-  name        String   @db.VarChar(50)
+  name        String   @db.VarChar(100)
   price       Float?
-  duration    DateTime @db.Time
-  description String?  @db.VarChar(200)
   latitude    Float?
   longitude   Float?
-  date        DateTime @db.Date
   categoryId  Int?     @map("category_id")
-
+  locationId  Int?     @map("location_id")
+  
   category     ActivityCategory? @relation(fields: [categoryId], references: [categoryId])
+  location     Location?         @relation(fields: [locationId], references: [locationId])
   reservations ActivityReservation[]
 
   @@map("activities")
