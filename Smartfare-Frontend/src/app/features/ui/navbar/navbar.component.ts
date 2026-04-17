@@ -40,6 +40,7 @@ export class NavbarComponent {
   mobileMenuOpen = false;
   isPinned = false;
   readonly pinOffset = 44;
+  avatarError = false;
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
@@ -61,7 +62,13 @@ export class NavbarComponent {
   }
 
   get userAvatar() {
-    return this.authService.getUserData()?.avatarUrl;
+    const avatar = this.authService.getUserData()?.avatarUrl;
+    return this.avatarError ? null : avatar;
+  }
+
+  handleImageError() {
+    console.warn("L'URL dell'avatar non è raggiungibile o è corrotto.");
+    this.avatarError = true;
   }
 
   async login() {

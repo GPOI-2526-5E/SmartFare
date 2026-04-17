@@ -46,8 +46,20 @@ export class AuthService {
     try {
       const parts = this.tokenSignal()!.split('.');
       if (parts.length !== 3) return null;
-      return JSON.parse(atob(parts[1]));
+
+      // JWT uses Base64URL which atob doesn't native support for all chars
+      let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const pad = base64.length % 4;
+      if (pad) {
+        if (pad === 1) throw new Error('Invalid base64 string');
+        base64 += new Array(5 - pad).join('=');
+      }
+
+      const decoded = JSON.parse(atob(base64));
+      console.log('Decoded User Data:', decoded); // Debug login data
+      return decoded;
     } catch (error) {
+      console.error('Error decoding token:', error);
       return null;
     }
   }
