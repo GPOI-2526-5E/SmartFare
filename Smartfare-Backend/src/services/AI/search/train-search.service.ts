@@ -76,8 +76,8 @@ export async function searchTrainOffers(params: TrainSearchParams): Promise<Trai
                     : "disponibile",
             };
         })
-        .filter((offer): offer is TrainSearchOffer => offer !== null)
-        .sort((first, second) => first.price - second.price);
+        .filter((offer: TrainSearchOffer | null): offer is TrainSearchOffer => offer !== null)
+        .sort((first: TrainSearchOffer, second: TrainSearchOffer) => first.price - second.price);
 
     console.log("[TRAINS][SEARCH] Offerte finali dopo tutti i filtri:", filteredOffers.length);
 
