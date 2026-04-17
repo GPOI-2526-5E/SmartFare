@@ -304,7 +304,7 @@ model FlightRouteSegment {
   offerId       Int      @map("offer_id")
   originId      Int      @map("origin")
   destinationId Int      @map("destination")
-  aircraftId    Int      @map("aircraft_id")
+  aircraftId    String      @map("aircraft_id")
 
   offer       FlightOffer @relation(fields: [offerId], references: [offerId])
   origin      Airport     @relation("OriginAirport", fields: [originId], references: [airportId])
@@ -331,7 +331,7 @@ model Airport {
 }
 
 model Aircraft {
-  aircraftId Int     @id @default(autoincrement()) @map("aircraft_id")
+  aircraftId String     @id @db.VarChar(5) @map("aircraft_id")
   airline    String? @db.VarChar(50)
   model      String? @db.VarChar(50)
   capacity   Int?

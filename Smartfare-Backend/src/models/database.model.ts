@@ -39,7 +39,6 @@ export interface HotelRecord {
     longitude?: number | null;
     image?: string | null;
     locationId?: number | null;
-    serviceId?: number | null;
 }
 
 export interface RoomRecord {
