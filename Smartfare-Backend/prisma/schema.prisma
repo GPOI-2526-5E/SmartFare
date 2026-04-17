@@ -147,10 +147,9 @@ model Hotel {
   longitude   Float?
   image       String? @db.VarChar(500)
   locationId  Int?    @map("location_id")
-  serviceId   Int?    @map("service_id")
 
   location Location? @relation(fields: [locationId], references: [locationId])
-  service  Service?  @relation(fields: [serviceId], references: [serviceId])
+  services Service[]
   rooms    Room[]
 
   @@map("hotels")
@@ -171,7 +170,7 @@ model Room {
 }
 
 model Service {
-  serviceId   Int     @id @default(autoincrement()) @map("service_id")
+  serviceId   Int     @id @default(autoincrement()) @map("services_id")
   name        String  @db.VarChar(50)
   description String? @db.VarChar(200)
 
