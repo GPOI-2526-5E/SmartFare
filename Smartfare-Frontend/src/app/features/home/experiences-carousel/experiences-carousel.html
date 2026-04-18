@@ -1,65 +1,122 @@
 <section class="experiences-section position-relative min-vh-100 d-flex align-items-center w-100">
-  
+
+  <!-- Animated background images -->
   @for (exp of experiences; track exp.id) {
-    <div 
+    <div
       class="bg-image position-absolute top-0 start-0 w-100 h-100"
       [class.active]="activeExperience().id === exp.id"
       [style.backgroundImage]="'url(' + exp.imageUrl + ')'">
     </div>
   }
-  
-  <div class="overlay position-absolute top-0 start-0 w-100 h-100"></div>
 
-  <div class="container position-relative z-1 h-100 d-flex flex-column justify-content-center py-5">
-    <div class="row w-100 mt-n5">
-      <div class="col-lg-7 col-md-9 text-white content-animate" [class.show]="activeExperience()">
-        <span class="category-badge mb-3 d-inline-block px-3 py-2 rounded-pill shadow-sm">
-          &bull; {{ activeExperience().category }}
-        </span>
-        <h2 class="display-2 fw-bold mb-4 experience-title">
+  <!-- Cinematic overlay: dark left panel + subtle vignette -->
+  <div class="overlay-left position-absolute top-0 start-0 h-100"></div>
+  <div class="overlay-vignette position-absolute top-0 start-0 w-100 h-100"></div>
+
+  <!-- ===== LEFT CONTENT PANEL ===== -->
+  <div class="container-fluid px-4 px-lg-5 position-relative z-2 h-100 d-flex flex-column justify-content-center">
+    <div class="row w-100 align-items-center">
+
+      <div class="col-xl-5 col-lg-6 col-md-8 left-panel" [class.panel-show]="activeExperience()">
+
+        <!-- Category badge with per-experience accent gradient -->
+        <div
+          class="category-pill d-inline-flex align-items-center gap-2 mb-4"
+          [style.background]="activeExperience().accentGradient">
+          <span class="category-icon">{{ activeExperience().categoryIcon }}</span>
+          <span class="category-label">{{ activeExperience().category }}</span>
+        </div>
+
+        <!-- Main headline using Playfair Display -->
+        <h2 class="experience-headline mb-2">
           {{ activeExperience().title }}
         </h2>
-        <p class="fs-5 mb-5 experience-desc text-light opacity-75 pe-md-5">
-          {{ activeExperience().description }}
-        </p>
-        <button class="btn btn-primary btn-lg rounded-pill px-5 py-3 explore-btn fw-bold shadow-lg">
-          Explore Now
+
+        <!-- Subtitle in Outfit -->
+        <p class="experience-subtitle mb-4">{{ activeExperience().subtitle }}</p>
+
+        <!-- Decorative divider -->
+        <div class="headline-divider mb-4" [style.background]="activeExperience().accentGradient"></div>
+
+        <!-- Description -->
+        <p class="experience-desc mb-5">{{ activeExperience().description }}</p>
+
+        <!-- CTA button -->
+        <button
+          class="explore-btn d-inline-flex align-items-center gap-3"
+          [style.--btn-gradient]="activeExperience().accentGradient"
+          [style.--btn-glow]="activeExperience().glowColor">
+          <span>Explore Now</span>
+          <span class="btn-arrow">→</span>
         </button>
+
       </div>
     </div>
   </div>
 
-  <div class="carousel-bottom-wrapper position-absolute bottom-0 end-0 z-2 mb-4 px-3 px-lg-5">
-    <div class="d-flex align-items-center justify-content-end w-100" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-      
-      <!-- Left Navigation Button -->
-      <button class="btn btn-outline-light rounded-circle carousel-nav-btn d-flex align-items-center justify-content-center me-3 flex-shrink-0" (click)="scrollLeft()">
-        <span class="fs-5 lh-1">&lsaquo;</span>
+  <!-- ===== BOTTOM CAROUSEL STRIP ===== -->
+  <div class="carousel-strip position-absolute bottom-0 start-0 end-0 z-3 px-4 px-lg-5 pb-4 pt-6"
+       (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+
+    <div class="carousel-row d-flex align-items-center gap-3">
+
+      <!-- Left nav -->
+      <button class="nav-btn flex-shrink-0" (click)="scrollLeft()" aria-label="Scroll left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
       </button>
 
-      <!-- Scrollable Container -->
-      <div class="cards-carousel d-flex gap-3 pb-2 px-2 overflow-x-auto" style="scrollbar-width: none;" #carouselContainer>
+      <!-- Scrollable cards -->
+      <div class="cards-track d-flex gap-3" #carouselContainer>
         @for (exp of displayExperiences; track $index) {
-          <div 
-            class="experience-card rounded-4 overflow-hidden position-relative flex-shrink-0"
-            [class.active-card]="activeExperience().id === exp.id"
+          <div
+            #cardEl
+            class="exp-card flex-shrink-0"
+            [class.exp-card--active]="activeExperience().id === exp.id"
+            [style.--card-glow]="exp.glowColor"
+            [style.--card-gradient]="exp.accentGradient"
             (click)="selectExperience(exp)">
+
+            <!-- Card image -->
             @if (!exp.imageUrl) {
               <div class="spinner-border text-light position-absolute top-50 start-50 translate-middle" role="status"></div>
             }
-            <img [src]="exp.imageUrl" [alt]="exp.title" class="w-100 h-100 object-fit-cover position-absolute top-0 start-0">
-            <div class="card-overlay position-absolute bottom-0 start-0 w-100 p-3 pt-5">
-              <h6 class="mb-0 text-white fw-bold">{{ exp.category }}</h6>
+            <img [src]="exp.imageUrl" [alt]="exp.title" class="card-img">
+
+            <!-- Card overlay with title -->
+            <div class="card-info">
+              <span class="card-icon">{{ exp.categoryIcon }}</span>
+              <span class="card-category">{{ exp.category }}</span>
             </div>
+
+            <!-- Active indicator line -->
+            <div class="card-active-line" [style.background]="exp.accentGradient"></div>
           </div>
         }
       </div>
-      
-      <!-- Right Navigation Button -->
-      <button class="btn btn-outline-light rounded-circle carousel-nav-btn d-flex align-items-center justify-content-center ms-3 flex-shrink-0" (click)="scrollRight()">
-        <span class="fs-5 lh-1">&rsaquo;</span>
+
+      <!-- Right nav -->
+      <button class="nav-btn flex-shrink-0" (click)="scrollRight()" aria-label="Scroll right">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
       </button>
 
     </div>
+
+    <!-- Progress dots -->
+    <div class="progress-dots d-flex justify-content-end gap-2 mt-3 pe-2">
+      @for (exp of experiences; track exp.id) {
+        <span
+          class="prog-dot"
+          [class.prog-dot--active]="activeExperience().id === exp.id"
+          [style.background]="activeExperience().id === exp.id ? exp.accentGradient : undefined"
+          (click)="selectExperience(exp)">
+        </span>
+      }
+    </div>
+
   </div>
+
 </section>
