@@ -163,7 +163,6 @@ export class AuthService {
 
             const email = payload.email;
 
-            // 1. Controlliamo se l'utente esiste già
             let user = await prisma.user.findUnique({
                 where: { email },
                 select: { 
@@ -177,8 +176,6 @@ export class AuthService {
                 }
             });
 
-            // 2. Se l'utente non esiste, NON lo registriamo automaticamente
-            // Restituiamo i dati al frontend così può completare la registrazione
             if (!user) {
                 console.log("Nuovo utente da Google, richiesta completamento registrazione:", email);
                 return {
@@ -193,7 +190,6 @@ export class AuthService {
                 };
             }
 
-            // 3. Se l'utente esiste, creiamo la sessione
             const sessionId = randomUUID();
             console.log("Nuovo sessionId generato per l'accesso Google di " + email);
 
@@ -202,7 +198,6 @@ export class AuthService {
                 data: { sessionId }
             });
 
-            // 4. Generiamo il nostro JWT
             const token = jwt.sign(
                 {
                     userId: user.userId,

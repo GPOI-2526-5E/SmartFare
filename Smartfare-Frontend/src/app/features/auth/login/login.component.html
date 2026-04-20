@@ -24,8 +24,16 @@
           </div>
 
           <div class="form-group floating-input">
-            <input id="password" type="password" [(ngModel)]="password" name="password" required placeholder=" " />
+            <input id="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password" required placeholder=" " />
             <label for="password">Password</label>
+          </div>
+
+          <div class="form-options">
+            <label class="checkbox-container">
+              <input type="checkbox" [(ngModel)]="showPassword" name="showPassword">
+              <span class="checkmark"></span>
+              Mostra password
+            </label>
           </div>
 
           <div class="form-actions">

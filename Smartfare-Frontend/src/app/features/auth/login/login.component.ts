@@ -15,6 +15,7 @@ import { GoogleSigninButtonModule, SocialAuthService } from '@abacritt/angularx-
 export class LoginComponent implements OnInit {
   email: string = '';
   password: string = '';
+  showPassword = false;
   private googleLoginInProgress = false;
 
   constructor(
