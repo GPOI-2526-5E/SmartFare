@@ -124,8 +124,8 @@ export class AuthService {
                             name: registerData.name || null,
                             surname: registerData.surname || null,
                             avatarUrl: registerData.avatarUrl || null,
-                            street: registerData.street || null,
-                            city: registerData.city || null
+                            street: null,
+                            city: null
                         }
                     }
                 }

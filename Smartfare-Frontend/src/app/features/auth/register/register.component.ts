@@ -99,9 +99,6 @@ export class RegisterComponent implements OnInit {
 
     const { confirmPassword, ...data } = this.registerData;
 
-    // Aggiungo log per debug in console (F12)
-    console.log("INVIO DATI REGISTRAZIONE:", data);
-
     this.authService.Register(data).subscribe({
       next: (res) => {
         this.alertService.success('Registrazione completata! Ora puoi effettuare il login.');

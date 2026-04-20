@@ -1,21 +1,31 @@
 import { Router, Request, Response } from "express";
 import { AuthService } from '../services/auth/auth.service';
+import rateLimit from 'express-rate-limit';
+import { z } from 'zod';
 
 const router = Router();
-
 const authService = new AuthService();
 
-router.post("/login", async (req: Request, res: Response) => {
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        error: 'Troppi tentativi. Riprova tra 15 minuti.'
+    }
+});
 
-    try {
+
+// ─── POST /auth/login ─────────────────────────────────────────────────────────
+router.post("/login", authLimiter, async (req: Request, res: Response) => {
+    try {        
         const { email, password } = req.body;
-
         if (!email || !password) {
             return res.status(400).json({
-                error: "Parametri mancanti",
+                error: "Dati non validi"
             });
         }
-
         const result = await authService.Login({ email, password });
 
         if (!result.success) {
@@ -24,55 +34,55 @@ router.post("/login", async (req: Request, res: Response) => {
 
         return res.status(200).json(result);
     } catch (error: any) {
-        console.log("❌ Errore nel server: ", error);
+        console.log("❌ Errore nel server durante il login");
         return res.status(500).json({
-            error: "Errore durante il login",
-            message: error.message
+            error: "Errore durante il login"
         });
     }
 });
 
-router.post("/register", async (req: Request, res: Response) => {
+// ─── POST /auth/register ──────────────────────────────────────────────────────
+router.post("/register", authLimiter, async (req: Request, res: Response) => {
     try {
-        const { email, password, name, surname, avatarUrl, street, city } = req.body;
-
-        if (!email || !password) {
+        
+        const { email, password, name, surname, avatarUrl} = req.body;
+        
+        if (!email || !password || !name || !surname || !avatarUrl) {
             return res.status(400).json({
-                error: "Parametri mancanti",
+                error: "Dati non validi",
             });
         }
-
-        const result = await authService.Register({ 
-            email, 
-            password, 
-            name, 
-            surname, 
-            avatarUrl, 
-            street, 
-            city 
+        const result = await authService.Register({
+            email,
+            password,
+            name,
+            surname,
+            avatarUrl
         });
 
         if (!result.success) {
-            return res.status(401).json(result);
+            // 409 Conflict per email già esistente, 400 per altri errori
+            const status = result.message === 'Email già esistente' ? 409 : 400;
+            return res.status(status).json(result);
         }
 
-        return res.status(200).json(result);
+        return res.status(201).json(result);
     } catch (error: any) {
-        console.log("❌ Errore nel server: ", error);
+        console.log("❌ Errore nel server durante la registrazione");
         return res.status(500).json({
-            error: "Errore durante il login",
-            message: error.message
+            error: "Errore durante la registrazione"
         });
     }
 });
 
-router.post("/google", async (req: Request, res: Response) => {
+// ─── POST /auth/google ────────────────────────────────────────────────────────
+router.post("/google", authLimiter, async (req: Request, res: Response) => {
     try {
         const { idToken } = req.body;
 
-        if (!idToken) {
+        if (!idToken || typeof idToken !== 'string') {
             return res.status(400).json({
-                error: "Token mancante",
+                error: "Token mancante o non valido",
             });
         }
 
@@ -84,10 +94,9 @@ router.post("/google", async (req: Request, res: Response) => {
 
         return res.status(200).json(result);
     } catch (error: any) {
-        console.log("❌ Errore nel server: ", error);
+        console.log("❌ Errore nel server durante il login Google");
         return res.status(500).json({
-            error: "Errore durante il login con Google," + error.status,
-            message: error.message
+            error: "Errore durante il login con Google"
         });
     }
 });

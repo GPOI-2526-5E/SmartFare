@@ -10,7 +10,18 @@ import hotelsRoutes from './routes/hotel.route';
 export function createApp() {
   const app = express();
 
-  app.use(cors());
+  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:4200').split(',').map(o => o.trim());
+  app.use(cors({
+    origin: (origin, callback) => {
+      // Permetti richieste senza origin (es. Postman, server-to-server) solo in sviluppo
+      if (!origin && process.env.NODE_ENV !== 'production') return callback(null, true);
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS non autorizzato per origin: ${origin}`));
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  }));
   app.use(express.json());
 
   // Middleware
@@ -22,7 +33,10 @@ export function createApp() {
     }
 
     if (req.body && Object.keys(req.body).length > 0) {
-      parts.push(`body: ${JSON.stringify(req.body)}`);
+      const safeBody = { ...req.body };
+      if (safeBody.password) safeBody.password = '[REDACTED]';
+      if (safeBody.idToken) safeBody.idToken = '[REDACTED]';
+      parts.push(`body: ${JSON.stringify(safeBody)}`);
     }
 
     console.log(parts.join(" - "));

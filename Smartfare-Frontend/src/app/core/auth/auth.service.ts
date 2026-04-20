@@ -1,9 +1,9 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AuthResponse } from '../models/response.model';
 import { HttpClient } from '@angular/common/http';
 import { SHA256 } from 'crypto-js';
-import { Token } from '@angular/compiler';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,7 @@ export class AuthService {
 
   private readonly tokenSignal = signal<string | null>(null);
 
-  private AUTH_URL = 'http://localhost:3200/auth';
+  private AUTH_URL = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) {
     const token = localStorage.getItem(this.TOKEN_KEY);
@@ -57,7 +57,6 @@ export class AuthService {
       }
 
       const decoded = JSON.parse(atob(base64));
-      console.log('Decoded User Data:', decoded); // Debug login data
       return decoded;
     } catch (error) {
       console.error('Error decoding token:', error);
