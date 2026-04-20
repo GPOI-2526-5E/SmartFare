@@ -1,7 +1,6 @@
 import { Router, Request, Response } from "express";
 import { AuthService } from '../services/auth/auth.service';
 import rateLimit from 'express-rate-limit';
-import { z } from 'zod';
 
 const router = Router();
 const authService = new AuthService();
@@ -19,7 +18,7 @@ const authLimiter = rateLimit({
 
 // ─── POST /auth/login ─────────────────────────────────────────────────────────
 router.post("/login", authLimiter, async (req: Request, res: Response) => {
-    try {        
+    try {
         const { email, password } = req.body;
         if (!email || !password) {
             return res.status(400).json({
@@ -44,10 +43,10 @@ router.post("/login", authLimiter, async (req: Request, res: Response) => {
 // ─── POST /auth/register ──────────────────────────────────────────────────────
 router.post("/register", authLimiter, async (req: Request, res: Response) => {
     try {
-        
-        const { email, password, name, surname, avatarUrl} = req.body;
-        
-        if (!email || !password || !name || !surname || !avatarUrl) {
+
+        const { email, password, name, surname, avatarUrl, authProvider } = req.body;
+
+        if (!email || !password || !name || !surname) {
             return res.status(400).json({
                 error: "Dati non validi",
             });
@@ -57,6 +56,7 @@ router.post("/register", authLimiter, async (req: Request, res: Response) => {
             password,
             name,
             surname,
+            authProvider,
             avatarUrl
         });
 

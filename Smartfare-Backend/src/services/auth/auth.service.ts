@@ -23,11 +23,11 @@ export class AuthService {
             const user = await prisma.user.findUnique({
                 where: { email },
                 select: {
-                    userId: true,
+                    id: true,
                     email: true,
                     passwordHash: true,
                     sessionId: true,
-                    userData: {
+                    profile: {
                         select: {
                             avatarUrl: true
                         }
@@ -62,17 +62,17 @@ export class AuthService {
             console.log("Nuovo sessionId generato per " + user.email);
 
             await prisma.user.update({
-                where: { userId: user.userId },
+                where: { id: user.id },
                 data: { sessionId }
             });
 
             const token = jwt.sign(
                 {
-                    userId: user.userId,
+                    userId: user.id,
                     email: user.email,
                     username: user.email,
                     sessionId: sessionId,
-                    avatarUrl: user.userData?.avatarUrl
+                    avatarUrl: user.profile?.avatarUrl
                 },
                 JWT_SECRET,
                 {
@@ -98,7 +98,7 @@ export class AuthService {
         try {
             const existingUser = await prisma.user.findUnique({
                 where: { email: registerData.email },
-                select: { userId: true }
+                select: { id: true }
             });
 
             if (existingUser) {
@@ -114,16 +114,16 @@ export class AuthService {
             // registerData.password is already hashed with SHA-256 on the client side
             // We hash it again with Bcrypt for database security (Double Hashing)
             const hashedPassword = await bcrypt.hash(registerData.password, 10);
-            
-            // If registering after Google pre-fill, keep google as provider
-            const provider = registerData.avatarUrl ? "google" : "local";
+
+            // Use explicit provider when available, fallback to local.
+            const provider = registerData.authProvider === "google" ? "google" : "local";
 
             await prisma.user.create({
                 data: {
                     email: registerData.email,
                     passwordHash: hashedPassword,
                     authProvider: provider,
-                    userData: {
+                    profile: {
                         create: {
                             name: registerData.name || null,
                             surname: registerData.surname || null,
@@ -169,10 +169,10 @@ export class AuthService {
 
             let user = await prisma.user.findUnique({
                 where: { email },
-                select: { 
-                    userId: true, 
+                select: {
+                    id: true,
                     email: true,
-                    userData: {
+                    profile: {
                         select: {
                             avatarUrl: true
                         }
@@ -198,17 +198,17 @@ export class AuthService {
             console.log("Nuovo sessionId generato per l'accesso Google di " + email);
 
             await prisma.user.update({
-                where: { userId: user.userId },
+                where: { id: user.id },
                 data: { sessionId }
             });
 
             const token = jwt.sign(
                 {
-                    userId: user.userId,
+                    userId: user.id,
                     email: email,
                     username: email,
                     sessionId: sessionId,
-                    avatarUrl: user.userData?.avatarUrl
+                    avatarUrl: user.profile?.avatarUrl
                 },
                 JWT_SECRET,
                 {
@@ -243,15 +243,15 @@ export class AuthService {
 
             // Create explicit random token
             const resetToken = crypto.randomBytes(32).toString("hex");
-            
+
             // Hash token for database (security best practice)
             const resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-            
+
             // Set expire to 10 mins from now
             const resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000);
 
             await prisma.user.update({
-                where: { userId: user.userId },
+                where: { id: user.id },
                 data: {
                     resetPasswordToken,
                     resetPasswordExpires,
@@ -261,7 +261,7 @@ export class AuthService {
             // Send Email
             const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
             const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
-            
+
             await emailService.sendPasswordResetEmail(user.email, resetLink);
 
             return { success: true };
@@ -299,7 +299,7 @@ export class AuthService {
             const passwordHash = await bcrypt.hash(newPassword, 10);
 
             await prisma.user.update({
-                where: { userId: user.userId },
+                where: { id: user.id },
                 data: {
                     passwordHash,
                     resetPasswordToken: null,

@@ -1,4 +1,4 @@
-location_id,name,province,latitude,longitude,cap
+id,name,province,latitude,longitude,cap
 1,Abano Terme,PD,45.359374,11.788694,35031
 2,Abbadia Cerreto,LO,45.312306,9.592549,26834
 3,Abbadia Lariana,LC,45.899204,9.332069,23821

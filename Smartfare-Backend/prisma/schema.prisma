@@ -1,390 +1,335 @@
+datasource db {
+  provider = "postgresql"
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider  = "postgresql"
-}
-
 model User {
-  userId        Int      @id @default(autoincrement()) @map("user_id")
-  email         String   @unique @db.VarChar(100)
-  passwordHash  String?  @map("password_hash") @db.VarChar(500)
-  authProvider  String   @default("local") @map("auth_provider") @db.VarChar(20)
-  sessionId     String?  @map("session_id") @db.VarChar(100)
-  resetPasswordToken   String?   @map("reset_password_token") @db.VarChar(255)
-  resetPasswordExpires DateTime? @map("reset_password_expires") @db.Timestamp(3)
+  id                   Int       @id @default(autoincrement())
+  email                String    @unique @db.VarChar(150)
+  passwordHash         String?   @db.VarChar(255)
+  authProvider         String    @default("local") @db.VarChar(40)
+  sessionId            String?   @db.VarChar(120)
+  resetPasswordToken   String?   @db.VarChar(255)
+  resetPasswordExpires DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
-  userData        UserData?
-  preferences     UserPreference?
-  itineraries     Itinerary[]
-  roomReservations RoomReservation[]
-  trainReservations TrainReservation[]
-  flightReservations FlightReservation[]
-  activityReservations ActivityReservation[]
+  profile             UserProfile?
+  preferences         UserPreference?
+  itineraries         Itinerary[]         @relation("CreatedBy")
+  favoriteItineraries ItineraryFavorite[]
 
-  @@map("users")
+  @@index([email])
 }
 
-model UserData {
-  userDataId Int     @id @default(autoincrement()) @map("user_data_id")
-  name       String? @db.VarChar(100)
-  surname    String? @db.VarChar(100)
-  street     String? @db.VarChar(100)
-  city       String? @db.VarChar(100)
-  avatarUrl  String? @default("https://rpcgfwithmoyezrdeahj.supabase.co/storage/v1/object/public/users/user.png") @map("avatar_url") @db.VarChar(255)
-  userId     Int     @unique @map("user_id")
-
-  user User @relation(fields: [userId], references: [userId])
-
-  @@map("users_data")
+model UserProfile {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String?   @db.VarChar(80)
+  surname   String?   @db.VarChar(80)
+  city      String?   @db.VarChar(80)
+  street    String?   @db.VarChar(120)
+  avatarUrl String?   @db.VarChar(500)
+  birthDate DateTime? @db.Date
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model UserPreference {
-  preferenceId Int    @id @default(autoincrement()) @map("preferences_id")
-  budgetMin    Float? @map("budget_min")
-  budgetMax    Float? @map("budget_max")
-  userId       Int    @unique @map("user_id")
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  budgetLevelCode    String   @default("MEDIUM") @db.VarChar(20)
+  travelStyle        String?  @db.VarChar(40)
+  pace               String?  @db.VarChar(40)
+  preferredTransport String?  @db.VarChar(40)
+  prefersNightlife   Boolean?
+  familyFriendly     Boolean?
+  maxDailyBudget     Decimal? @db.Decimal(10, 2)
+  notes              String?  @db.Text
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [userId])
+  interests UserPreferenceInterest[]
 
-  @@map("users_preferences")
+  @@index([budgetLevelCode])
+}
+
+model UserPreferenceInterest {
+  id           Int            @id @default(autoincrement())
+  preferenceId Int
+  preference   UserPreference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
+  interestCode String         @db.VarChar(40)
+  weight       Int            @default(1)
+
+  @@unique([preferenceId, interestCode])
+  @@index([interestCode])
+}
+
+model GuestSession {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique @db.VarChar(120)
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+  ipAddress    String?  @db.VarChar(64)
+  userAgent    String?  @db.VarChar(255)
+
+  itineraries Itinerary[]
+
+  @@index([expiresAt])
+}
+
+model ItineraryVisibility {
+  code        String  @id @db.VarChar(20)
+  name        String  @db.VarChar(50)
+  description String? @db.VarChar(200)
+
+  itineraries Itinerary[]
 }
 
 model Itinerary {
-  itineraryId Int     @id @default(autoincrement()) @map("itinerary_id")
-  name        String? @db.VarChar(50)
+  id             Int       @id @default(autoincrement())
+  name           String    @db.VarChar(120)
+  description    String?   @db.Text
+  isPublished    Boolean   @default(false)
+  visibilityCode String    @default("PRIVATE") @db.VarChar(20)
+  publicSlug     String?   @unique @db.VarChar(180)
+  startDate      DateTime? @db.Date
+  endDate        DateTime? @db.Date
+  aiPrompt       String?   @db.Text
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  userId Int?
+  user   User? @relation("CreatedBy", fields: [userId], references: [id], onDelete: SetNull)
+
+  guestSessionId Int?
+  guestSession   GuestSession? @relation(fields: [guestSessionId], references: [id], onDelete: SetNull)
+
+  visibility ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
+
+  items   ItineraryItem[]
+  likedBy ItineraryFavorite[]
+
+  @@index([userId])
+  @@index([guestSessionId])
+  @@index([isPublished])
+  @@index([visibilityCode])
+  @@index([createdAt])
+}
+
+model ItineraryFavorite {
+  userId      Int
+  itineraryId Int
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itinerary Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+
+  @@id([userId, itineraryId])
+  @@index([itineraryId])
+}
+
+model ItineraryItemType {
+  code        String  @id @db.VarChar(30)
+  label       String  @db.VarChar(50)
   description String? @db.VarChar(200)
-  totalPrice  Float?  @map("total_price")
-  isPublished Boolean @default(false) @map("is_published")
-  userId      Int     @map("user_id")
 
-  user User @relation(fields: [userId], references: [userId])
-  
-  roomReservations     RoomReservation[]
-  trainReservations    TrainReservation[]
-  flightReservations   FlightReservation[]
-  activityReservations ActivityReservation[]
-
-  @@map("itineraries")
+  itineraryItems ItineraryItem[]
 }
 
-model RoomReservation {
-  reservationId Int      @id @default(autoincrement()) @map("reservation_id")
-  totalPrice    Float?   @map("total_price")
-  createdAt     DateTime @default(now()) @map("created_at")
-  status        String?  @db.VarChar(50)
-  checkIn       DateTime @map("check_in") @db.Date
-  checkOut      DateTime @map("check_out") @db.Date
-  userId        Int      @map("user_id")
-  roomId        Int      @map("room_id")
-  itineraryId   Int?     @map("itinerary_id")
+model ItineraryItem {
+  id           Int               @id @default(autoincrement())
+  itineraryId  Int
+  itinerary    Itinerary         @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  itemTypeCode String            @db.VarChar(30)
+  itemType     ItineraryItemType @relation(fields: [itemTypeCode], references: [code])
 
-  user      User      @relation(fields: [userId], references: [userId])
-  room      Room      @relation(fields: [roomId], references: [roomId])
-  itinerary Itinerary? @relation(fields: [itineraryId], references: [itineraryId])
+  dayNumber      Int
+  orderInt       Int
+  title          String?   @db.VarChar(120)
+  note           String?   @db.VarChar(400)
+  plannedStartAt DateTime?
+  plannedEndAt   DateTime?
 
-  @@map("room_reservations")
-}
+  activityId Int?
+  activity   Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
 
-model TrainReservation {
-  reservationId Int      @id @default(autoincrement()) @map("reservation_id")
-  totalPrice    Float?   @map("total_price")
-  createdAt     DateTime @default(now()) @map("created_at")
-  status        String?  @db.VarChar(50)
-  dateReservation DateTime @map("date_reservation") @db.Date
-  userId        Int      @map("user_id")
-  trainOfferId  Int      @map("train_offer")
-  itineraryId   Int?     @map("itinerary_id")
+  accommodationId Int?
+  accommodation   Accommodation? @relation(fields: [accommodationId], references: [id], onDelete: SetNull)
 
-  user       User       @relation(fields: [userId], references: [userId])
-  trainOffer TrainOffer @relation(fields: [trainOfferId], references: [offerId])
-  itinerary  Itinerary?  @relation(fields: [itineraryId], references: [itineraryId])
+  routeSegmentId Int?
+  routeSegment   RouteSegment? @relation(fields: [routeSegmentId], references: [id], onDelete: SetNull)
 
-  @@map("train_reservations")
-}
-
-model FlightReservation {
-  reservationId Int      @id @default(autoincrement()) @map("reservation_id")
-  totalPrice    Float?   @map("total_price")
-  createdAt     DateTime @default(now()) @map("created_at")
-  status        String?  @db.VarChar(50)
-  dateReservation DateTime @map("date_reservation") @db.Date
-  userId        Int      @map("user_id")
-  flightOfferId Int      @map("flights_offer")
-  itineraryId   Int?     @map("itinerary_id")
-
-  user        User        @relation(fields: [userId], references: [userId])
-  flightOffer FlightOffer @relation(fields: [flightOfferId], references: [offerId])
-  itinerary   Itinerary?   @relation(fields: [itineraryId], references: [itineraryId])
-
-  @@map("flight_reservations")
-}
-
-model ActivityReservation {
-  reservationId Int      @id @default(autoincrement()) @map("reservation_id")
-  totalPrice    Float?   @map("total_price")
-  createdAt     DateTime @default(now()) @map("created_at")
-  status        String?  @db.VarChar(50)
-  dateReservation DateTime @map("date_reservation") @db.Date
-  userId        Int      @map("user_id")
-  activityId    Int      @map("activity_id")
-  itineraryId   Int?     @map("itinerary_id")
-
-  user      User      @relation(fields: [userId], references: [userId])
-  activity  Activity  @relation(fields: [activityId], references: [activityId])
-  itinerary Itinerary? @relation(fields: [itineraryId], references: [itineraryId])
-
-  @@map("activity_reservations")
-}
-
-model Hotel {
-  hotelId     Int     @id @default(autoincrement()) @map("hotel_id")
-  name        String  @db.VarChar(100)
-  street      String? @db.VarChar(100)
-  stars       Int?
-  city        String? @db.VarChar(100)
-  priceMedium Float?  @map("price_medium")
-  latitude    Float?
-  longitude   Float?
-  image       String? @db.VarChar(500)
-  locationId  Int?    @map("location_id")
-
-  location Location? @relation(fields: [locationId], references: [locationId])
-  services Service[]
-  rooms    Room[]
-
-  @@map("hotels")
-}
-
-model Room {
-  roomId      Int     @id @default(autoincrement()) @map("room_id")
-  price       Float
-  capacity    Int?
-  description String? @db.VarChar(200)
-  hotelId     Int     @map("hotel_id")
-
-  hotel            Hotel             @relation(fields: [hotelId], references: [hotelId])
-  reservations     RoomReservation[]
-  priceHistories   RoomPriceHistory[]
-
-  @@map("rooms")
-}
-
-model Service {
-  serviceId   Int     @id @default(autoincrement()) @map("service_id")
-  name        String  @db.VarChar(50)
-  description String? @db.VarChar(200)
-  hotelId     Int?    @map("hotel_id")
-
-  hotel Hotel? @relation(fields: [hotelId], references: [hotelId])
-
-  @@map("services")
-}
-
-model RoomPriceHistory {
-  id             Int      @id @default(autoincrement()) @map("history_id")
-  totalPrice     Float?   @map("total_price")
-  capturedAt     DateTime @default(now()) @map("captured_at")
-  previousPrice  Float?   @map("previous_price")
-  changePercent  Float?   @map("change_percent")
-  comment        String?  @db.VarChar(200)
-  searchKey      String   @map("search_key") @db.VarChar(500)
-  roomId         Int      @map("room_id")
-  hotelId        Int      @map("hotel_id")
-
-  room Room @relation(fields: [roomId], references: [roomId])
-
-  @@map("rooms_price_history")
+  @@unique([itineraryId, dayNumber, orderInt])
+  @@index([itineraryId])
+  @@index([itemTypeCode])
+  @@index([dayNumber])
 }
 
 model Location {
-  locationId Int     @id @default(autoincrement()) @map("location_id")
-  name       String  @db.VarChar(100)
-  province   String? @db.VarChar(50)
-  cap        Int?
-  longitude  Float?
-  latitude   Float?
+  id        Int     @id @default(autoincrement())
+  name      String  @db.VarChar(120)
+  province  String? @db.VarChar(80)
+  cap       String? @db.VarChar(10)
+  latitude  Float
+  longitude Float
 
-  hotels     Hotel[]
-  stations   Station[]
-  airports   Airport[]
-  activities Activity[]
+  activities     Activity[]
+  accommodations Accommodation[]
+  stations       Station[]
+  airports       Airport[]
+  metroStations  MetroStation[]
 
-  @@map("locations")
+  @@index([name])
 }
 
-model Train {
-  trainId   Int     @id @default(autoincrement()) @map("train_id")
-  trainCode Int     @map("train_code")
-  type      String? @db.VarChar(100)
+model Accommodation {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(150)
+  street     String?  @db.VarChar(150)
+  stars      Int      @default(0)
+  latitude   Float
+  longitude  Float
+  imageUrl   String?  @db.VarChar(500)
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id])
 
-  offers        TrainOffer[]
-  routeSegments TrainRouteSegment[]
+  itineraryItems ItineraryItem[]
 
-  @@map("trains")
+  @@index([locationId])
+  @@index([name])
 }
 
-model TrainOffer {
-  offerId       Int    @id @default(autoincrement()) @map("offer_id")
-  price         Float?
-  availableSeat Int?   @map("available_seat")
-  trainId       Int    @map("train_id")
+model TransportType {
+  code        String  @id @db.VarChar(30)
+  label       String  @db.VarChar(50)
+  description String? @db.VarChar(200)
 
-  train          Train             @relation(fields: [trainId], references: [trainId])
-  reservations   TrainReservation[]
-  priceHistories TrainPriceHistory[]
-  routeSegments  TrainRouteSegment[]
-
-  @@map("trains_offers")
+  transports Transport[]
 }
 
-model TrainRouteSegment {
-  segmentId     Int      @id @default(autoincrement()) @map("segment_id")
-  stopOrder     Int?     @map("stop_order")
-  arrivalTime   DateTime @map("arrival_time") @db.Time
-  departureTime DateTime @map("departure_time") @db.Time
-  offerId       Int      @map("offer_id")
-  originId      Int      @map("origin")
-  arrivalStationId Int   @map("arrival")
-  trainId       Int      @map("train_id")
+model Transport {
+  id            Int           @id @default(autoincrement())
+  transportCode String        @unique @db.VarChar(30)
+  transportType String        @db.VarChar(30)
+  type          TransportType @relation(fields: [transportType], references: [code])
 
-  offer          TrainOffer @relation(fields: [offerId], references: [offerId])
-  originStation  Station    @relation("OriginStation", fields: [originId], references: [stationId])
-  arrivalStation Station    @relation("ArrivalStation", fields: [arrivalStationId], references: [stationId])
-  train          Train      @relation(fields: [trainId], references: [trainId])
+  segments RouteSegment[]
 
-  @@map("trains_route_segments")
+  @@index([transportType])
+}
+
+model RouteSegment {
+  id                      Int           @id @default(autoincrement())
+  transportId             Int
+  transport               Transport     @relation(fields: [transportId], references: [id])
+  departureAt             DateTime
+  arrivalAt               DateTime
+  departureStationId      Int?
+  departureStation        Station?      @relation("RouteSegmentDepartureStation", fields: [departureStationId], references: [id])
+  arrivalStationId        Int?
+  arrivalStation          Station?      @relation("RouteSegmentArrivalStation", fields: [arrivalStationId], references: [id])
+  departureAirportId      Int?
+  departureAirport        Airport?      @relation("RouteSegmentDepartureAirport", fields: [departureAirportId], references: [id])
+  arrivalAirportId        Int?
+  arrivalAirport          Airport?      @relation("RouteSegmentArrivalAirport", fields: [arrivalAirportId], references: [id])
+  departureMetroStationId Int?
+  departureMetroStation   MetroStation? @relation("RouteSegmentDepartureMetroStation", fields: [departureMetroStationId], references: [id])
+  arrivalMetroStationId   Int?
+  arrivalMetroStation     MetroStation? @relation("RouteSegmentArrivalMetroStation", fields: [arrivalMetroStationId], references: [id])
+
+  itineraryItems ItineraryItem[]
+
+  @@index([transportId])
+  @@index([departureStationId])
+  @@index([arrivalStationId])
+  @@index([departureAirportId])
+  @@index([arrivalAirportId])
+  @@index([departureMetroStationId])
+  @@index([arrivalMetroStationId])
+  @@index([departureAt])
 }
 
 model Station {
-  stationId  Int     @id @default(autoincrement()) @map("station_id")
-  latitude   Float?
-  longitude  Float?
-  name       String  @db.VarChar(100)
-  locationId Int?    @map("location_id")
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(120)
+  latitude   Float
+  longitude  Float
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id])
 
-  location Location? @relation(fields: [locationId], references: [locationId])
-  originSegments   TrainRouteSegment[] @relation("OriginStation")
-  arrivalSegments  TrainRouteSegment[] @relation("ArrivalStation")
+  departureSegments RouteSegment[] @relation("RouteSegmentDepartureStation")
+  arrivalSegments   RouteSegment[] @relation("RouteSegmentArrivalStation")
 
-  @@map("stations")
-}
-
-model TrainPriceHistory {
-  id             Int      @id @default(autoincrement()) @map("history_id")
-  totalPrice     Float?   @map("total_price")
-  capturedAt     DateTime @default(now()) @map("captured_at")
-  previousPrice  Float?   @map("previous_price")
-  changePercent  Float?   @map("change_percent")
-  comment        String?  @db.VarChar(200)
-  routeKey       String   @map("route_key") @db.VarChar(500)
-  trainOfferId   Int      @map("offer_id")
-
-  offer TrainOffer @relation(fields: [trainOfferId], references: [offerId])
-
-  @@map("trains_price_history")
-}
-
-model FlightOffer {
-  offerId       Int    @id @default(autoincrement()) @map("offer_id")
-  price         Float?
-  availableSeat Int?   @map("available_seat")
-
-  reservations   FlightReservation[]
-  priceHistories FlightPriceHistory[]
-  routeSegments  FlightRouteSegment[]
-
-  @@map("flights_offers")
-}
-
-model FlightRouteSegment {
-  segmentId     Int      @id @default(autoincrement()) @map("segment_id")
-  flightNumber  String?  @map("flight_number") @db.VarChar(10)
-  departureTime DateTime @map("departure_time") @db.Time
-  arrivalTime   DateTime @map("arrival_time") @db.Time
-  durationTime  DateTime @map("duration_time") @db.Time
-  stopOrder     Int?     @map("stop_order")
-  offerId       Int      @map("offer_id")
-  originId      Int      @map("origin")
-  destinationId Int      @map("destination")
-  aircraftId    String      @map("aircraft_id")
-
-  offer       FlightOffer @relation(fields: [offerId], references: [offerId])
-  origin      Airport     @relation("OriginAirport", fields: [originId], references: [airportId])
-  destination Airport     @relation("DestinationAirport", fields: [destinationId], references: [airportId])
-  aircraft    Aircraft    @relation(fields: [aircraftId], references: [aircraftId])
-
-  @@map("flights_route_segments")
+  @@index([locationId])
+  @@index([name])
 }
 
 model Airport {
-  airportId  Int     @id @default(autoincrement()) @map("airport_id")
-  name       String  @db.VarChar(100)
-  iata       String? @db.VarChar(10)
-  icao       String? @db.VarChar(10)
-  latitude   Float?
-  longitude  Float?
-  locationId Int?    @map("location_id")
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(120)
+  iataCode   String?  @db.VarChar(10)
+  icaoCode   String?  @db.VarChar(10)
+  latitude   Float
+  longitude  Float
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id])
 
-  location Location? @relation(fields: [locationId], references: [locationId])
-  originFlights      FlightRouteSegment[] @relation("OriginAirport")
-  destinationFlights FlightRouteSegment[] @relation("DestinationAirport")
+  departureSegments RouteSegment[] @relation("RouteSegmentDepartureAirport")
+  arrivalSegments   RouteSegment[] @relation("RouteSegmentArrivalAirport")
 
-  @@map("airports")
+  @@index([locationId])
+  @@index([name])
 }
 
-model Aircraft {
-  aircraftId String     @id @db.VarChar(5) @map("aircraft_id")
-  airline    String? @db.VarChar(50)
-  model      String? @db.VarChar(50)
-  capacity   Int?
-  rangeKm    Int?       @map("range_km")
-  status     String?    @db.VarChar(20)
-  age        Int?
-  size       String?    @db.VarChar(20)
+model MetroStation {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(120)
+  line       String?  @db.VarChar(80)
+  latitude   Float
+  longitude  Float
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id])
 
-  routeSegments FlightRouteSegment[]
+  departureSegments RouteSegment[] @relation("RouteSegmentDepartureMetroStation")
+  arrivalSegments   RouteSegment[] @relation("RouteSegmentArrivalMetroStation")
 
-  @@map("aircrafts")
-}
-
-model FlightPriceHistory {
-  historyId      Int      @id @default(autoincrement()) @map("history_id")
-  totalPrice     Float?   @map("total_price")
-  capturedAt     DateTime @map("captured_at") @db.Date
-  previousPrice  Float?   @map("previous_price")
-  changedPercent Float?   @map("changed_percent")
-  comment        String?  @db.VarChar(100)
-  routeKey       String?  @map("route_key") @db.VarChar(500)
-  offerId        Int      @map("offer_id")
-
-  offer FlightOffer @relation(fields: [offerId], references: [offerId])
-
-  @@map("flights_price_history")
-}
-
-model Activity {
-  activityId  Int      @id @default(autoincrement()) @map("activity_id")
-  name        String   @db.VarChar(100)
-  price       Float?
-  latitude    Float?
-  longitude   Float?
-  categoryId  Int?     @map("category_id")
-  locationId  Int?     @map("location_id")
-  
-  category     ActivityCategory? @relation(fields: [categoryId], references: [categoryId])
-  location     Location?         @relation(fields: [locationId], references: [locationId])
-  reservations ActivityReservation[]
-
-  @@map("activities")
+  @@index([locationId])
+  @@index([name])
 }
 
 model ActivityCategory {
-  categoryId Int    @id @default(autoincrement()) @map("category_id")
-  name       String @db.VarChar(50)
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(80)
+  description String?  @db.VarChar(200)
+  iconUrl     String?  @db.VarChar(500)
+  createdAt   DateTime @default(now())
 
   activities Activity[]
+}
 
-  @@map("activity_categories")
+model Activity {
+  id          Int              @id @default(autoincrement())
+  name        String           @db.VarChar(150)
+  description String?          @db.Text
+  street      String?          @db.VarChar(150)
+  latitude    Float
+  longitude   Float
+  imageUrl    String?          @db.VarChar(500)
+  locationId  Int
+  location    Location         @relation(fields: [locationId], references: [id])
+  categoryId  Int
+  category    ActivityCategory @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime         @default(now())
+
+  itineraryItems ItineraryItem[]
+
+  @@index([locationId])
+  @@index([categoryId])
+  @@index([name])
 }

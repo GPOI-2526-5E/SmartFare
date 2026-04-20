@@ -1,5 +1,5 @@
 export interface User {
-    userId: number;
+    id: string;
     email: string;
     password?: string;
     sessionId: string | null;
@@ -15,6 +15,7 @@ export interface RegisterData {
     password: string,
     name?: string;
     surname?: string;
+    authProvider?: string;
     avatarUrl?: string;
     street?: string;
     city?: string;
