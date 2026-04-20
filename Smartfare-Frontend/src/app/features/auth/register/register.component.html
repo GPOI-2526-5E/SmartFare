@@ -14,8 +14,11 @@
       <div class="glass-card" data-aos="fade-up" data-aos-delay="100">
         <div class="card-header">
           <h2 class="logo-text">Smart<span class="text-accent">Fare</span></h2>
-          <p class="subtitle" *ngIf="!isGoogleRegistration">Crea un nuovo account per iniziare il tuo viaggio.</p>
-          <p class="subtitle" *ngIf="isGoogleRegistration">Quasi fatto! Completa il tuo profilo per terminare l'accesso con Google.</p>
+          @if (!isGoogleRegistration) {
+            <p class="subtitle">Crea un nuovo account per iniziare il tuo viaggio.</p>
+          } @else {
+            <p class="subtitle">Quasi fatto! Completa il tuo profilo per terminare l'accesso con Google.</p>
+          }
         </div>
 
         <form class="register-form-wrapper" (submit)="onSubmit()">
