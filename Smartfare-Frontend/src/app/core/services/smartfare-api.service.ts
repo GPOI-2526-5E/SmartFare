@@ -5,13 +5,14 @@ import { HttpClient } from '@angular/common/http';
 import Location from '../models/location.model';
 import { HotelSearchCriteria } from '../models/hotel-search.model';
 import { HotelSearchApiResponse } from '../models/hotel-booking.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 
 export class SmartfareService {
-  private readonly APIENDPOINT = 'http://localhost:3200/api';
+  private readonly APIENDPOINT = `${environment.apiUrl}/api`;
   private airportsRequest$?: Observable<Airports[]>;
   private locationsRequest$?: Observable<Location[]>;
 

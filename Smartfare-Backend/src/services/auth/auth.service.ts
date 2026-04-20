@@ -1,10 +1,14 @@
 import prisma from "../../lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import { randomUUID } from "crypto";
 import { RegisterData } from "../../models/auth.model";
 import { LoginParams } from "../../models/auth.model";
 import { OAuth2Client } from "google-auth-library";
+import { EmailService } from "../email/email.service";
+
+const emailService = new EmailService();
 
 const JWT_SECRET: string = process.env.JWT_SECRET || "";
 const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "";
@@ -222,6 +226,94 @@ export class AuthService {
             return {
                 success: false,
                 message: "Errore durante il login con Google",
+            };
+        }
+    }
+
+    async ForgotPassword(email: string) {
+        try {
+            const user = await prisma.user.findUnique({
+                where: { email },
+            });
+
+            if (!user) {
+                // Return success even if not found to prevent user enumeration
+                return { success: true };
+            }
+
+            // Create explicit random token
+            const resetToken = crypto.randomBytes(32).toString("hex");
+            
+            // Hash token for database (security best practice)
+            const resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+            
+            // Set expire to 10 mins from now
+            const resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+            await prisma.user.update({
+                where: { userId: user.userId },
+                data: {
+                    resetPasswordToken,
+                    resetPasswordExpires,
+                },
+            });
+
+            // Send Email
+            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+            const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
+            
+            await emailService.sendPasswordResetEmail(user.email, resetLink);
+
+            return { success: true };
+        } catch (error) {
+            console.error("❌ Errore durante ForgotPassword:", error);
+            return {
+                success: false,
+                message: "Errore durante il processo di reset password",
+            };
+        }
+    }
+
+    async ResetPassword({ token, newPassword }: { token: string; newPassword: string }) {
+        try {
+            const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+            const user = await prisma.user.findFirst({
+                where: {
+                    resetPasswordToken: hashedToken,
+                    resetPasswordExpires: {
+                        gt: new Date(), // Check if not expired
+                    },
+                },
+            });
+
+            if (!user) {
+                return {
+                    success: false,
+                    message: "Token non valido o scaduto",
+                };
+            }
+
+            // In our system, frontend sends hashed password, but just in case we need to re-hash internally. 
+            // In register we do bcrypt.hash(password, 10).
+            const passwordHash = await bcrypt.hash(newPassword, 10);
+
+            await prisma.user.update({
+                where: { userId: user.userId },
+                data: {
+                    passwordHash,
+                    resetPasswordToken: null,
+                    resetPasswordExpires: null,
+                    sessionId: null, // Clear session to force re-login
+                },
+            });
+
+            return { success: true };
+        } catch (error) {
+            console.error("❌ Errore durante ResetPassword:", error);
+            return {
+                success: false,
+                message: "Errore durante l'aggiornamento della password",
             };
         }
     }

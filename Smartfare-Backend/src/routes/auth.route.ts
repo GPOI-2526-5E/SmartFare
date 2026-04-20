@@ -101,6 +101,48 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
     }
 });
 
+// ─── POST /auth/forgot-password ───────────────────────────────────────────────
+router.post("/forgot-password", authLimiter, async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ error: "L'email è obbligatoria" });
+        }
+
+        const result = await authService.ForgotPassword(email);
+
+        if (!result.success) {
+            return res.status(500).json(result);
+        }
+
+        return res.status(200).json({ success: true, message: "Se l'email è registrata, riceverai un link per il reset" });
+    } catch (error: any) {
+        console.log("❌ Errore nel server durante forgot password");
+        return res.status(500).json({ error: "Errore durante la richiesta di recupero password" });
+    }
+});
+
+// ─── POST /auth/reset-password ────────────────────────────────────────────────
+router.post("/reset-password", authLimiter, async (req: Request, res: Response) => {
+    try {
+        const { token, newPassword } = req.body;
+        if (!token || !newPassword) {
+            return res.status(400).json({ error: "Token e nuova password sono obbligatori" });
+        }
+
+        const result = await authService.ResetPassword({ token, newPassword });
+
+        if (!result.success) {
+            return res.status(400).json(result); // 400 since token invalid
+        }
+
+        return res.status(200).json({ success: true, message: "Password aggiornata con successo" });
+    } catch (error: any) {
+        console.log("❌ Errore nel server durante reset password");
+        return res.status(500).json({ error: "Errore durante il salvataggio della nuova password" });
+    }
+});
+
 router.get('/user', async (req: Request, res: Response) => {
 
 });

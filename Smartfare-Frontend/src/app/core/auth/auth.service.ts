@@ -96,5 +96,14 @@ export class AuthService {
     };
     return this.http.post<any>(this.AUTH_URL + '/register', dataWithHashedPassword);
   }
+
+  ForgotPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${this.AUTH_URL}/forgot-password`, { email });
+  }
+
+  ResetPassword(token: string, password: string): Observable<any> {
+    const hashedPassword = SHA256(password).toString();
+    return this.http.post<any>(`${this.AUTH_URL}/reset-password`, { token, newPassword: hashedPassword });
+  }
 }
 

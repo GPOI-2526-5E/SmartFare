@@ -24,7 +24,7 @@
     <div class="actions d-none d-lg-flex gap-2">
       @if (isAuthenticated) {
       @if (userAvatar) {
-        <img [src]="userAvatar" (error)="handleImageError()" alt="User Avatar" class="user-avatar-nav align-self-center pointer" />
+        <img [src]="userAvatar" alt="User Avatar" class="user-avatar-nav align-self-center pointer" />
       } @else {
         <i class="bi bi-person-circle fs-3 align-self-center"></i>
       }
@@ -58,7 +58,7 @@
       @if (isAuthenticated) {
       <div class="d-flex flex-column gap-2 align-items-center">
         @if (userAvatar) {
-          <img [src]="userAvatar" (error)="handleImageError()" alt="User Avatar" class="user-avatar-mobile" />
+          <img [src]="userAvatar" alt="User Avatar" class="user-avatar-mobile" />
         } @else {
           <i class="bi bi-person-circle fs-1"></i>
         }

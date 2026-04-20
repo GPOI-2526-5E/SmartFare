@@ -5,6 +5,8 @@ export const APP_ROUTES: Routes = [
   { path: 'home', loadComponent: () => import('./features/home/home-section/home-section.component').then((h) => h.HomeSectionComponent) },
   { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then((l) => l.LoginComponent) },
   { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then((r) => r.RegisterComponent) },
+  { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then((c) => c.ForgotPasswordComponent) },
+  { path: 'reset-password', loadComponent: () => import('./features/auth/reset-password/reset-password.component').then((c) => c.ResetPasswordComponent) },
   { path: 'hotel', loadComponent: () => import('./features/booking/hotel-booking/hotel-booking.component').then((h) => h.HotelBookingComponent) },
   { path: '**', redirectTo: '' }
 ];
