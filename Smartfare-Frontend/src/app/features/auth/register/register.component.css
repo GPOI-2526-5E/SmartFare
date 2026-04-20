@@ -339,8 +339,4 @@
   .form-row {
     grid-template-columns: 1fr;
   }
-  
-  .navbar-overlay {
-    padding: 15px 20px;
-  }
 }
