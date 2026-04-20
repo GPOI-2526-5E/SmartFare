@@ -1,11 +1,8 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
-import trainsRoute from "./routes/trains.route";
 import authRoutes from "./routes/auth.route";
-import flightsRoutes from './routes/flights.route';
 import locationsRoutes from './routes/location.route';
-import hotelsRoutes from './routes/hotel.route';
 
 export function createApp() {
   const app = express();
@@ -53,9 +50,6 @@ export function createApp() {
 
   // API Routes
   app.use("/api/locations", locationsRoutes);
-  app.use("/api/hotels", hotelsRoutes);
-  app.use("/api/trains", trainsRoute);
-  app.use("/api/flights", flightsRoutes);
   app.use("/auth", authRoutes);
 
   // Error handling

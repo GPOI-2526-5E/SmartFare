@@ -1,89 +1,83 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Airports } from '../../../core/models/flights.model'
-import { HotelSearchCriteria } from '../../../core/models/hotel-search.model';
-import { HotelSearchBarComponent } from '../../booking/hotel-search-bar/hotel-search-bar.component';
-import { SmartfareService } from '../../../core/services/smartfare-api.service';
 import { AlertService } from '../../../core/services/alert.service';
+
 @Component({
   selector: 'app-booking-form',
-  imports: [CommonModule, FormsModule, HotelSearchBarComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './booking-form.component.html',
   styleUrl: './booking-form.component.css',
   standalone: true,
 })
-export class BookingFormComponent implements OnInit {
+export class BookingFormComponent implements OnInit, OnDestroy {
 
-  departureAirport: string = '';
-  arrivalAirport: string = '';
+  travelQuery: string = '';
+  currentPlaceholder: string = '';
 
-  constructor(
-    private smartfareService: SmartfareService,
-    private router: Router,
-    private alertService: AlertService
-  ) { };
-
-  airports = signal<Airports[]>([]);
-
-  readonly bookingTypes = [
-    { label: 'Hotel', icon: 'bi-building' },
-    { label: 'Flights', icon: 'bi-airplane-engines' },
-    { label: 'Trains', icon: 'bi-train-front' },
-    { label: 'Bus', icon: 'bi-bus-front' },
-    { label: 'Itinerary', icon: 'bi-geo-alt' },
+  private placeholders: string[] = [
+    "Es: Voglio fare un weekend romantico a Parigi...",
+    "Es: Organizza un viaggio on the road in California...",
+    "Es: Cerco una vacanza rilassante al mare in Puglia...",
+    "Es: Portami a scoprire l'aurora boreale in Islanda..."
   ];
 
-  activeType = this.bookingTypes[0]?.label ?? '';
+  private placeholderIndex: number = 0;
+  private charIndex: number = 0;
+  private isDeleting: boolean = false;
+  private typingTimeout: any;
 
-  showReturnFlight = signal<boolean>(false);
-  showReturnTrain = signal<boolean>(false);
-
-  readonly destinationPlaceholder = 'Where are you going?';
-  readonly today = new Date().toISOString().split('T')[0];
-
-  setActiveType(label: string): void {
-    this.activeType = label;
-    this.showReturnFlight.set(false);
-    this.showReturnTrain.set(false);
-  }
-
-  onSubmit(event: Event): void {
-    event.preventDefault();
-  }
-
-  onHotelSearch(criteria: HotelSearchCriteria): void {
-    const queryParams: Record<string, string | number> = {};
-
-    if (!criteria.destination) {
-      return this.alertService.error("Selezionare la destinazione");
-    }
-    queryParams['destination'] = criteria.destination;
-
-    if (!criteria.checkin) {
-      return this.alertService.error("Selezionare la data di checkin");
-    }
-    queryParams['checkin'] = criteria.checkin;
-
-    if (!criteria.checkout) {
-      return this.alertService.error("Selezionare la data di checkout");
-    }
-    queryParams['checkout'] = criteria.checkout;
-    queryParams['guests'] = criteria.guests;
-
-    this.router.navigate(['/hotel'], { queryParams });
-  }
+  constructor(
+    private router: Router,
+    private alertService: AlertService
+  ) { }
 
   ngOnInit() {
-    // this.smartfareService.getAirports().subscribe({
-    //   next: (res) => {
-    //     console.log(res);
-    //     this.airports.set(res);
-    //   },
-    //   error: (error) => {
-    //     console.error(error);
-    //   }
-    // });
+    this.typeNext();
+  }
+
+  ngOnDestroy() {
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+    }
+  }
+
+  private typeNext() {
+    const currentText = this.placeholders[this.placeholderIndex];
+    let typeSpeed = 50;
+
+    if (this.isDeleting) {
+      this.currentPlaceholder = currentText.substring(0, this.charIndex - 1);
+      this.charIndex--;
+      typeSpeed = 25; // Faster deletion
+    } else {
+      this.currentPlaceholder = currentText.substring(0, this.charIndex + 1);
+      this.charIndex++;
+    }
+
+    if (!this.isDeleting && this.charIndex === currentText.length) {
+      typeSpeed = 2500; // Pause at end of text
+      this.isDeleting = true;
+    } else if (this.isDeleting && this.charIndex === 0) {
+      this.isDeleting = false;
+      this.placeholderIndex = (this.placeholderIndex + 1) % this.placeholders.length;
+      typeSpeed = 500; // Pause before starting next text
+    }
+
+    this.typingTimeout = setTimeout(() => this.typeNext(), typeSpeed);
+  }
+
+  onAIGenerate(): void {
+    if (!this.travelQuery.trim()) {
+      this.alertService.show("Inserisci almeno qualche dettaglio per far lavorare l'IA.");
+      return;
+    }
+    // Navigate to the AI Planner with the user's prompt as a query parameter
+    this.router.navigate(['/planner'], { queryParams: { prompt: this.travelQuery } });
+  }
+
+  onManualCreate(): void {
+    this.router.navigate(['/itineraries', 'new']);
   }
 }

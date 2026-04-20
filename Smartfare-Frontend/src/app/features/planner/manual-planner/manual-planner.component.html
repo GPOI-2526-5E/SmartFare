@@ -1,0 +1,55 @@
+<div class="manual-planner-container">
+    <!-- Video Background -->
+    <video autoplay muted loop class="background-video">
+        <source src="assets/videos/home/background-3.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <div class="navbar-layer">
+        <app-navbar></app-navbar>
+    </div>
+
+    <!-- Form Content centered -->
+    <div class="content-wrapper container">
+        <div class="glass-card mx-auto mt-5 p-4 p-md-5">
+            <h2 class="text-center mb-4 title">La Tua Prossima Avventura</h2>
+            <p class="text-center subtitle mb-5">Costruisci il tuo itinerario ideale, passo dopo passo.</p>
+
+            <form class="horizontal-planner-form" (submit)="startPlanning(); $event.preventDefault()">
+
+                <div class="search-row glass-search-bar">
+                    <!-- Destination field -->
+                    <div class="search-field">
+                        <label><i class="bi bi-geo-alt"></i> Dove vuoi andare?</label>
+                        <input type="text" class="frameless-input" [(ngModel)]="destination" name="destination"
+                            placeholder="Es. Roma, Parigi, Tokyo...">
+                    </div>
+
+                    <div class="field-divider"></div>
+
+                    <!-- Check In -->
+                    <div class="search-field">
+                        <label><i class="bi bi-calendar-check"></i> Arrivo</label>
+                        <input type="date" class="frameless-input" [(ngModel)]="checkinDate" name="checkinDate">
+                    </div>
+
+                    <div class="field-divider"></div>
+
+                    <!-- Check Out -->
+                    <div class="search-field">
+                        <label><i class="bi bi-calendar-minus"></i> Ritorno</label>
+                        <input type="date" class="frameless-input" [(ngModel)]="checkoutDate" name="checkoutDate">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="search-action">
+                        <button type="submit" class="btn-submit-glass horizontal-submit">
+                            Pianifica
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,157 +1,22 @@
-<section class="booking-search-container" >
-  <div class="category-tabs d-flex flex-nowrap">
-    @for (type of bookingTypes; track type.label) {
-    <button type="button" class="tab-item" [class.active]="activeType === type.label"
-      (click)="setActiveType(type.label)">
-      <i class="bi" [class]="'bi ' + type.icon"></i>
-      <span>{{ type.label }}</span>
-    </button>
-    }
+<section class="booking-search-container">
+  <div class="search-card dual-mode-card mb-3">
+    <div class="search-row ai-prompt-row position-relative">
+      <div class="search-field prompt-field w-100">
+        <input type="text" [(ngModel)]="travelQuery" class="w-100 pe-5 placeholder-animated"
+          [placeholder]="currentPlaceholder" (keydown.enter)="onAIGenerate()">
+      </div>
+
+      <!-- Send Arrow Button inside the input -->
+      <button type="button" class="btn-prompt-submit" (click)="onAIGenerate()" [disabled]="!travelQuery.trim()"
+        title="Genera con l'IA">
+        <i class="bi bi-arrow-up"></i>
+      </button>
+    </div>
   </div>
 
-  <div class="search-card">
-    <form class="search-grid" (submit)="onSubmit($event)">
-
-      @switch (activeType) {
-      @case ('Hotel') {
-        <app-hotel-search-bar (search)="onHotelSearch($event)"></app-hotel-search-bar>
-      }
-
-      @case ('Flights') {
-      <div class="search-row">
-        <div class="search-field">
-          <label><i class="bi bi-airplane-engines"></i> Da dove?</label>
-          <select id="departureSelect" name="departureAirport" [(ngModel)]="departureAirport" class="form-select">
-            <option value="">Seleziona aeroporto di partenza</option>
-            @for (airport of airports(); track airport.id) {
-            <option [value]="airport.id">
-              {{ airport.name }}
-            </option>
-            }
-          </select>
-        </div>
-        <div class="search-field">
-          <label><i class="bi bi-airplane"></i> A dove?</label>
-          <select name="arrivalAirport" [(ngModel)]="arrivalAirport" class="form-select airport-select">
-            <option value="" disabled selected hidden>Seleziona aeroporto di arrivo</option>
-            @for (airport of airports(); track airport.id) {
-            <option [value]="airport.id" class="airport-option">
-              {{ airport.name }}
-            </option>
-            }
-          </select>
-        </div>
-        <div class="search-field">
-          <label><i class="bi bi-calendar-check"></i> Data</label>
-          <input type="date" placeholder="Seleziona data">
-        </div>
-        @if (showReturnFlight()) {
-        <div class="search-field date-picker animate-fade-in">
-          <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
-          <input type="date" placeholder="Seleziona data">
-        </div>
-        }
-        <div class="search-field">
-          <label class="switch-label">
-            <span>Aggiungi ritorno</span>
-            <span class="switch">
-              <input type="checkbox" name="showReturnFlight" [(ngModel)]="showReturnFlight">
-              <span class="slider"></span>
-            </span>
-          </label>
-        </div>
-        <div class="search-action no-grow">
-          <button type="submit" class="btn-submit">
-            <i class="bi bi-search"></i> <span>Cerca</span>
-          </button>
-        </div>
-      </div>
-      }
-      @case ('Trains') {
-      <div class="search-row">
-        <div class="search-field">
-          <label><i class="bi bi-geo-alt"></i> Da dove?</label>
-          <input type="text" placeholder="Stazione di partenza">
-        </div>
-        <div class="search-field">
-          <label><i class="bi bi-geo"></i> A dove?</label>
-          <input type="text" placeholder="Stazione di arrivo">
-        </div>
-        <div class="search-field date-picker">
-          <label><i class="bi bi-calendar-check"></i> Data andata</label>
-          <input type="date" placeholder="Seleziona data">
-        </div>
-        @if (showReturnTrain()) {
-        <div class="search-field date-picker animate-fade-in">
-          <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
-          <input type="date" placeholder="Seleziona data">
-        </div>
-        }
-        <div class="search-field">
-          <label class="switch-label">
-            <span>Aggiungi ritorno</span>
-            <span class="switch">
-              <input type="checkbox" name="showReturnTrain" [(ngModel)]="showReturnTrain">
-              <span class="slider"></span>
-            </span>
-          </label>
-        </div>
-        <div class="search-field guests">
-          <label><i class="bi bi-people"></i> Passeggeri</label>
-          <div class="guest-inputs">
-            <input type="number" min="1" value="1" placeholder="Numero persone">
-            <span>Persone</span>
-          </div>
-        </div>
-        <div class="search-action no-grow">
-          <button type="submit" class="btn-submit">
-            <i class="bi bi-search"></i> <span>Cerca</span>
-          </button>
-        </div>
-      </div>
-      }
-
-      @case ('Bus') {
-      <div class="search-row">
-        <div class="search-field">
-          <label><i class="bi bi-geo-alt"></i> Da dove?</label>
-          <input type="text" placeholder="Fermata di partenza">
-        </div>
-        <div class="search-field">
-          <label><i class="bi bi-geo"></i> A dove?</label>
-          <input type="text" placeholder="Fermata di arrivo">
-        </div>
-        <div class="search-field date-picker">
-          <label><i class="bi bi-calendar-check"></i> Data andata</label>
-          <input type="date" placeholder="Seleziona data">
-        </div>
-        <div class="search-field date-picker">
-          <label><i class="bi bi-calendar-x"></i> Data ritorno</label>
-          <input type="date" placeholder="Seleziona data">
-        </div>
-        <div class="search-field guests">
-          <label><i class="bi bi-people"></i> Passeggeri</label>
-          <div class="guest-inputs">
-            <input type="number" min="1" value="1" placeholder="Numero persone">
-            <span>Persone</span>
-          </div>
-        </div>
-        <div class="search-action no-grow">
-          <button type="submit" class="btn-submit">
-            <i class="bi bi-search"></i> <span>Cerca</span>
-          </button>
-        </div>
-      </div>
-      }
-      }
-
-      @if(activeType === 'Itinerary'){
-      <div class="search-action">
-        <button type="submit" class="btn-submit">
-          <i class="bi bi-globe"></i> <span>Crea</span>
-        </button>
-      </div>
-      }
-    </form>
+  <div class="text-center mt-3 animate-fade-in">
+    <span class="text-white-50 fs-6 me-2">Oppure preferisci organizzare tutto nei minimi dettagli?</span>
+    <a class="text-decoration-none manual-link fw-bold" (click)="onManualCreate()">Crea Manualmente <i
+        class="bi bi-arrow-right-short"></i></a>
   </div>
 </section>

@@ -2,16 +2,16 @@
 
   <app-top-navbar></app-top-navbar>
   <!-- MAIN NAVBAR -->
-  <div class="main-bar d-flex align-items-center justify-content-between" [class.is-pinned]="isPinned">
+  <div class="main-bar">
 
     <!-- LOGO -->
-    <div class="logo d-flex align-items-center gap-2">
+    <div class="nav-brand logo d-flex align-items-center gap-2">
       <img class='logo-img' src="favicon.png" alt='smartfareLogo'>
       <span class="logo-text">SMARTFARE</span>
     </div>
 
     <!-- NAV LINKS DESKTOP -->
-    <div class="nav-links d-none d-lg-flex gap-4">
+    <div class="nav-center nav-links d-none d-lg-flex gap-4">
       @for (item of navItems; track item.label) {
       <a class="nav-item d-flex align-items-center gap-2" [routerLink]="item.route">
         <i [class]="item.icon"></i>
@@ -21,14 +21,77 @@
     </div>
 
     <!-- ACTION BUTTONS DESKTOP -->
-    <div class="actions d-none d-lg-flex gap-2">
+    <div class="nav-actions actions d-none d-lg-flex gap-2">
       @if (isAuthenticated) {
       @if (userAvatar) {
-        <img [src]="userAvatar" alt="User Avatar" class="user-avatar-nav align-self-center pointer" />
+      <div class="dropdown">
+        <img [src]="userAvatar" alt="User Avatar" class="user-avatar-nav align-self-center pointer"
+          data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"/>
+        <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
+              <i class="bi bi-journal-bookmark"></i>
+              <span>I miei Itinerari</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
+              <i class="bi bi-heart"></i>
+              <span>Itinerari Preferiti</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
+              <i class="bi bi-gear"></i>
+              <span>Impostazioni</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li>
+            <button class="dropdown-item text-danger d-flex align-items-center gap-2 py-2" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </button>
+          </li>
+        </ul>
+      </div>
       } @else {
-        <i class="bi bi-person-circle fs-3 align-self-center"></i>
+      <div class="dropdown">
+        <i class="bi bi-person-circle fs-3 align-self-center pointer" data-bs-toggle="dropdown" data-bs-display="static"
+          aria-expanded="false"></i>
+        <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
+              <i class="bi bi-journal-bookmark"></i>
+              <span>I miei Itinerari</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
+              <i class="bi bi-heart"></i>
+              <span>Itinerari Preferiti</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
+              <i class="bi bi-gear"></i>
+              <span>Impostazioni</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li>
+            <button class="dropdown-item text-danger d-flex align-items-center gap-2 py-2" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </button>
+          </li>
+        </ul>
+      </div>
       }
-      <button class="btn btn-outline-danger" (click)="logout()">Logout</button>
       }@else {
       <button class="btn login-btn" (click)="login()">Login</button>
       <a class="btn register-btn" [routerLink]="['/register']">Register</a>
@@ -58,11 +121,26 @@
       @if (isAuthenticated) {
       <div class="d-flex flex-column gap-2 align-items-center">
         @if (userAvatar) {
-          <img [src]="userAvatar" alt="User Avatar" class="user-avatar-mobile" />
+        <img [src]="userAvatar" alt="User Avatar" class="user-avatar-mobile"/>
         } @else {
-          <i class="bi bi-person-circle fs-1"></i>
+        <i class="bi bi-person-circle fs-1"></i>
         }
-      <button class="btn btn-outline-danger w-100" type="button" (click)="logout()">Logout</button>
+        <a class="btn btn-outline-primary w-100 mt-2 d-flex justify-content-center align-items-center gap-2"
+          [routerLink]="['/itineraries']" (click)="closeMobileMenu()">
+          <i class="bi bi-journal-bookmark"></i>
+          <span>I miei Itinerari</span>
+        </a>
+        <a class="btn btn-outline-secondary w-100 mt-2 d-flex justify-content-center align-items-center gap-2"
+          [routerLink]="['/favorites']" (click)="closeMobileMenu()">
+          <i class="bi bi-heart"></i>
+          <span>Itinerari Preferiti</span>
+        </a>
+        <a class="btn btn-outline-secondary w-100 mt-2 d-flex justify-content-center align-items-center gap-2"
+          [routerLink]="['/settings']" (click)="closeMobileMenu()">
+          <i class="bi bi-gear"></i>
+          <span>Impostazioni</span>
+        </a>
+        <button class="btn btn-outline-danger w-100 mt-3" type="button" (click)="logout()">Logout</button>
       </div>
       }@else {
       <button class="btn login-btn w-100" (click)="login()">Login</button>
