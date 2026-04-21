@@ -10,27 +10,138 @@
   font-family: 'Inter', sans-serif;
 }
 
-.background-video {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  transform: translateX(-50%) translateY(-50%);
-  object-fit: cover;
-  z-index: -2;
-}
-
-.video-overlay {
+/* --- Animated Floating Background --- */
+.animated-background {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.8) 100%);
-  z-index: -1;
+  overflow: hidden;
+  z-index: -2;
+}
+
+.gradient-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  z-index: 0;
+}
+
+.floating-element {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.15);
+  z-index: 1;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.polaroid-1 {
+  width: 200px;
+  height: 240px;
+  top: 10%;
+  left: 5%;
+  animation: float1 25s ease-in-out infinite alternate, rotate1 30s linear infinite;
+  padding-bottom: 40px; /* Polaroid style */
+}
+
+.polaroid-1 i { font-size: 5rem; }
+
+.postcard-1 {
+  width: 250px;
+  height: 160px;
+  top: 60%;
+  right: 10%;
+  animation: float2 20s ease-in-out infinite alternate, rotate2 40s linear infinite reverse;
+}
+
+.postcard-1 i { font-size: 4rem; }
+
+.ticket-1 {
+  width: 220px;
+  height: 100px;
+  border-radius: 10px;
+  border-left: 4px dashed rgba(255,255,255,0.1);
+  border-right: 4px dashed rgba(255,255,255,0.1);
+  top: 75%;
+  left: 15%;
+  animation: float3 22s ease-in-out infinite alternate, rotate3 35s linear infinite;
+}
+
+.ticket-1 i { font-size: 3rem; }
+
+.map-1 {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  top: 15%;
+  right: 5%;
+  animation: float1 28s ease-in-out infinite alternate, rotate2 45s linear infinite;
+}
+
+.map-1 i { font-size: 8rem; }
+
+.compass-1 {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  bottom: 5%;
+  left: 45%;
+  animation: float2 18s ease-in-out infinite alternate, rotate3 25s linear infinite alternate;
+}
+
+.compass-1 i { font-size: 4.5rem; }
+
+.passport-1 {
+  width: 140px;
+  height: 200px;
+  border-radius: 12px;
+  top: 35%;
+  left: 30%;
+  animation: float3 30s ease-in-out infinite alternate, rotate1 50s linear infinite reverse;
+}
+
+.passport-1 i { font-size: 4rem; }
+
+/* Keyframes for Floating and Rotation */
+@keyframes float1 {
+  0% { margin-top: 0; margin-left: 0; }
+  100% { margin-top: -50px; margin-left: 30px; }
+}
+
+@keyframes float2 {
+  0% { margin-top: 0; margin-left: 0; }
+  100% { margin-top: 40px; margin-left: -40px; }
+}
+
+@keyframes float3 {
+  0% { margin-top: 0; margin-left: 0; }
+  100% { margin-top: -30px; margin-left: -20px; }
+}
+
+@keyframes rotate1 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes rotate2 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+@keyframes rotate3 {
+  0% { transform: rotate(-15deg); }
+  100% { transform: rotate(15deg); }
 }
 
 .navbar-layer {
@@ -89,13 +200,14 @@
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 100px;
+  border-radius: 80px;
   box-shadow: 
     0 24px 48px rgba(0, 0, 0, 0.4),
     inset 0 1px 1px rgba(255, 255, 255, 0.2);
-  padding: 12px;
+  padding: 0;
   max-width: 950px;
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
 }
 
 .premium-search-widget:focus-within {
@@ -117,9 +229,9 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 28px;
+  padding: 16px 20px;
   height: 80px;
-  border-radius: 80px;
+  border-radius: 0;
   transition: background 0.2s, box-shadow 0.2s;
   cursor: text;
 }
@@ -136,6 +248,7 @@
 /* Only destination is broader */
 .loc-field {
   flex: 1.5;
+  padding-left: 36px;
 }
 
 .field-icon {
@@ -214,14 +327,15 @@
 
 /* --- Submit Button --- */
 .widget-action {
-  padding-left: 8px;
+  padding: 0;
+  height: 80px;
 }
 
 .premium-btn-submit {
   position: relative;
-  height: 80px;
-  padding: 0 40px;
-  border-radius: 80px;
+  height: 100%;
+  padding: 0 45px;
+  border-radius: 0;
   border: none;
   background: #2563eb;
   color: #fff;

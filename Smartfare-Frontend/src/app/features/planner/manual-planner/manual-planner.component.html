@@ -1,9 +1,14 @@
 <div class="manual-planner-container">
-    <!-- Video Background -->
-    <video autoplay muted loop playsinline class="background-video">
-        <source src="assets/videos/home/background-3.mp4" type="video/mp4">
-    </video>
-    <div class="video-overlay"></div>
+    <!-- Animated Floating Background -->
+    <div class="animated-background">
+        <div class="gradient-bg"></div>
+        <div class="floating-element polaroid-1"><i class="bi bi-camera"></i></div>
+        <div class="floating-element postcard-1"><i class="bi bi-geo-alt"></i></div>
+        <div class="floating-element ticket-1"><i class="bi bi-ticket-detailed"></i></div>
+        <div class="floating-element map-1"><i class="bi bi-map"></i></div>
+        <div class="floating-element compass-1"><i class="bi bi-compass"></i></div>
+        <div class="floating-element passport-1"><i class="bi bi-journal-bookmark"></i></div>
+    </div>
 
     <div class="navbar-layer">
         <app-navbar></app-navbar>
@@ -11,7 +16,7 @@
 
     <!-- Form Content centered -->
     <div class="content-wrapper container">
-        
+
         <div class="hero-text-section text-center">
             <h1 class="premium-title">
                 Progetta il tuo <span class="text-gradient">viaggio ideale</span>
@@ -21,7 +26,7 @@
 
         <div class="premium-search-widget mx-auto">
             <form class="planner-form" (submit)="startPlanning(); $event.preventDefault()">
-                
+
                 <!-- Destination -->
                 <div class="widget-field loc-field position-relative" tabindex="0">
                     <div class="field-icon">
@@ -30,7 +35,8 @@
                     <div class="field-content">
                         <label>Destinazione</label>
                         <input type="text" class="field-input" [ngModel]="destination()" name="destination"
-                            (input)="onDestinationInput($event)" placeholder="Dove vuoi andare?" autocomplete="off" spellcheck="false">
+                            (input)="onDestinationInput($event)" placeholder="Dove vuoi andare?" autocomplete="off"
+                            spellcheck="false">
                     </div>
 
                     @if (showSuggestions()) {
@@ -57,7 +63,8 @@
                     </div>
                     <div class="field-content">
                         <label>Arrivo</label>
-                        <input type="date" class="field-input" [ngModel]="checkinDate()" (ngModelChange)="checkinDate.set($event)" name="checkinDate">
+                        <input type="date" class="field-input" [ngModel]="checkinDate()"
+                            (ngModelChange)="checkinDate.set($event)" name="checkinDate">
                     </div>
                 </div>
 
@@ -70,7 +77,8 @@
                     </div>
                     <div class="field-content">
                         <label>Ritorno</label>
-                        <input type="date" class="field-input" [ngModel]="checkoutDate()" (ngModelChange)="checkoutDate.set($event)" name="checkoutDate">
+                        <input type="date" class="field-input" [ngModel]="checkoutDate()"
+                            (ngModelChange)="checkoutDate.set($event)" name="checkoutDate">
                     </div>
                 </div>
 
@@ -97,10 +105,12 @@
                 <i class="bi bi-clock-history"></i>
             </div>
             <h2 class="modal-title mb-3">Itinerario trovato</h2>
-            <p class="modal-subtitle mb-5">Abbiamo trovato un piano incompiuto. Vuoi continuare da dove eri rimasto o iniziarne uno nuovo?</p>
-            
+            <p class="modal-subtitle mb-5">Abbiamo trovato un piano incompiuto. Vuoi continuare da dove eri rimasto o
+                iniziarne uno nuovo?</p>
+
             <div class="d-flex flex-column gap-3">
-                <button class="btn premium-btn-submit w-100 py-3" style="border-radius: 16px; min-height: 60px;" (click)="resumeItinerary()">
+                <button class="btn premium-btn-submit w-100 py-3" style="border-radius: 16px; min-height: 60px;"
+                    (click)="resumeItinerary()">
                     <span class="position-relative z-1 d-flex align-items-center justify-content-center w-100">
                         <i class="bi bi-play-circle me-2"></i> Continua quello precedente
                     </span>

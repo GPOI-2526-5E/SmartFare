@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Output, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../../../../core/auth/auth.service';
-import { ItineraryService } from '../../../../../core/services/itinerary.service';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { Router, RouterLink } from '@angular/router';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
-import { AlertService } from '../../../../../core/services/alert.service';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-builder-header',
@@ -64,13 +64,13 @@ export class BuilderHeaderComponent {
       this.itineraryService.saveToBackend(current).subscribe({
         next: (saved) => {
           this.alertService.success('Itinerario salvato con successo!');
-          
+
           if (saved && saved.id) {
             // Track exactly what we saved to avoid resume prompts for it
             sessionStorage.setItem('last_saved_itinerary_id', saved.id.toString());
             sessionStorage.setItem('last_saved_itinerary_updated_at', saved.updatedAt || '');
           }
-          
+
           this.itineraryService.clearDraft();
           this.router.navigate(['/home']);
         },

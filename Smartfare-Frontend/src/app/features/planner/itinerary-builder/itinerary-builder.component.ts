@@ -1,11 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-
-import { BuilderHeaderComponent } from './components/builder-header/builder-header.component';
-import { BuilderSidebarComponent } from './components/builder-sidebar/builder-sidebar.component';
-import { BuilderMapComponent } from './components/builder-map/builder-map.component';
-import { BuilderChatComponent } from './components/builder-chat/builder-chat.component';
+import { BuilderHeaderComponent } from './builder-header/builder-header.component';
+import { BuilderSidebarComponent } from './builder-sidebar/builder-sidebar.component';
+import { BuilderMapComponent } from './builder-map/builder-map.component';
+import { BuilderChatComponent } from './builder-chat/builder-chat.component';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { LoginPromptModalComponent } from '../../ui/modals/login-prompt-modal/login-prompt-modal.component';
