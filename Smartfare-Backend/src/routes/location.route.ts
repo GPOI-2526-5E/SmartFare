@@ -5,8 +5,6 @@ const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
     try {
-        // With Prisma, we can fetch all locations simply. 
-        // If the table grows very large, we can reconsider pagination.
         const locations = await prisma.location.findMany();
 
         res.status(200).send(locations);

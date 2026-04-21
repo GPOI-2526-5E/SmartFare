@@ -1,6 +1,6 @@
 <div class="builder-container">
-    <!-- Header with toolbars (Now a sub-component) -->
-    <app-builder-header></app-builder-header>
+    <!-- Header with toolbars -->
+    <app-builder-header (navRequest)="handleNavigationIntercept($event)"></app-builder-header>
 
     <!-- Main Workspace divided in 3 horizontal sections -->
     <main class="builder-workspace">
@@ -19,4 +19,13 @@
             <app-builder-chat></app-builder-chat>
         </aside>
     </main>
+
+    <!-- Modals -->
+    @if (showLoginPrompt()) {
+        <app-login-prompt-modal
+            (login)="onLoginRedirect()"
+            (continueWithoutSaving)="onContinueExit()"
+            (close)="closeModal()">
+        </app-login-prompt-modal>
+    }
 </div>

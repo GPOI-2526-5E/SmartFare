@@ -1,0 +1,27 @@
+<div class="modal-backdrop" (click)="onClose()">
+      <div class="modal-container glass-card d-flex flex-column gap-3 p-4" (click)="$event.stopPropagation()">
+        <div class="modal-header d-flex align-items-center gap-3">
+          <div class="icon-warning">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+          <h2 class="modal-title m-0">Salva il tuo lavoro</h2>
+        </div>
+        
+        <div class="modal-body">
+          <p class="description">Non sei loggato. Se esci ora, i tuoi progressi sull'itinerario non verranno salvati permanentemente.</p>
+          <p class="highlight">Accedi o registrati per non perdere quello che hai fatto!</p>
+        </div>
+
+        <div class="modal-footer d-flex flex-column gap-2 mt-2">
+          <button class="btn btn-login-modal" (click)="onLogin()">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Accedi per salvare
+          </button>
+          <button class="btn btn-ghost-modal" (click)="onContinueWithoutSaving()">
+            Esci senza salvare
+          </button>
+          <button class="btn btn-link-modal" (click)="onClose()">
+            Resta qui
+          </button>
+        </div>
+      </div>
+    </div>

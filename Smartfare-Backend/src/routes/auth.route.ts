@@ -15,7 +15,6 @@ const authLimiter = rateLimit({
     }
 });
 
-
 // ─── POST /auth/login ─────────────────────────────────────────────────────────
 router.post("/login", authLimiter, async (req: Request, res: Response) => {
     try {

@@ -66,4 +66,26 @@
             </form>
         </div>
     </div>
+
+    <!-- PERSISTENCE OVERLAY: Resume or New -->
+    @if (showResumeChoice()) {
+    <div class="resume-choice-overlay">
+        <div class="glass-card p-5 text-center modal-container">
+            <div class="icon-pulse mb-4">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <h2 class="title mb-3">Itinerario trovato</h2>
+            <p class="subtitle mb-5">Abbiamo trovato un piano incompiuto. Vuoi continuare da dove eri rimasto o iniziarne uno nuovo?</p>
+            
+            <div class="d-flex flex-column gap-3">
+                <button class="btn btn-submit-glass w-100" (click)="resumeItinerary()">
+                    <i class="bi bi-play-circle me-2"></i>Continua quello precedente
+                </button>
+                <button class="btn btn-outline-light rounded-pill py-3 btn-new" (click)="createNewItinerary()">
+                    <i class="bi bi-plus-circle me-2"></i>Riparti da zero
+                </button>
+            </div>
+        </div>
+    </div>
+    }
 </div>

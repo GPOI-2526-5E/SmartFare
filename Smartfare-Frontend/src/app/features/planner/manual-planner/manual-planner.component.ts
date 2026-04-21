@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
 import { SmartfareService } from '../../../core/services/smartfare-api.service';
+import { ItineraryService } from '../../../core/services/itinerary.service';
 import Location from '../../../core/models/location.model';
 
 @Component({
@@ -22,12 +23,28 @@ export class ManualPlannerComponent implements OnInit {
   filteredLocations: Location[] = [];
   showSuggestions: boolean = false;
 
+  // Persistence State
+  showResumeChoice = signal(false);
+
   constructor(
     private router: Router,
-    private smartfareService: SmartfareService
-  ) { }
+    private smartfareService: SmartfareService,
+    private itineraryService: ItineraryService
+  ) {
+    this.setDefaultDates();
+  }
+
+  private setDefaultDates() {
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    this.checkinDate = today.toISOString().split('T')[0];
+    this.checkoutDate = tomorrow.toISOString().split('T')[0];
+  }
 
   ngOnInit(): void {
+    // 1. Fetch Locations for autocomplete
     this.smartfareService.getLocations().subscribe({
       next: (locations) => {
         this.allLocations = locations;
@@ -36,6 +53,35 @@ export class ManualPlannerComponent implements OnInit {
         console.error('Error fetching locations:', err);
       }
     });
+
+    // 2. Check for existing draft to offer resume
+    // In-memory first, then backend for logged users
+    if (this.itineraryService.hasDraft()) {
+      this.showResumeChoice.set(true);
+    } else {
+      this.itineraryService.loadLatestFromBackend().subscribe(draft => {
+        if (draft) {
+          this.showResumeChoice.set(true);
+        }
+      });
+    }
+  }
+
+  resumeItinerary() {
+    const draft = this.itineraryService.itinerary();
+    if (draft) {
+      // Navigate to builder
+      this.router.navigate(['/itineraries', 'builder']);
+    }
+    this.showResumeChoice.set(false);
+  }
+
+  createNewItinerary() {
+    // Clear everything and hide choice
+    this.itineraryService.clearDraft();
+    this.showResumeChoice.set(false);
+    this.destination = '';
+    this.setDefaultDates();
   }
 
   onDestinationInput() {
@@ -69,15 +115,20 @@ export class ManualPlannerComponent implements OnInit {
       return;
     }
 
-    // Convert to whatever shape the query params need
-    // For now we navigate to the itinerary builder with route params
+    // Set persistence state before navigating
+    this.itineraryService.setCurrentItinerary({
+      name: `Viaggio a ${this.destination}`,
+      startDate: this.checkinDate,
+      endDate: this.checkoutDate,
+      items: []
+    });
+
     const queryParams = {
       dest: this.destination,
       in: this.checkinDate,
       out: this.checkoutDate
     };
 
-    // Using a placeholder route /itineraries/builder or similar dashboard route
     this.router.navigate(['/itineraries', 'builder'], { queryParams });
   }
 }

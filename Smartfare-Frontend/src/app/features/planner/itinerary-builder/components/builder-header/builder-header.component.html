@@ -1,88 +1,121 @@
 <header class="builder-header">
-    <!-- Top Toolbar -->
-    <div class="top-toolbar">
-        <div class="toolbar-left">
-            <a [routerLink]="['/home']" class="brand anchor-reset">
-                <img src="favicon.png" alt="logo" class="logo-small">
-                <span class="brand-name">SMARTFARE</span>
+  <!-- Top Toolbar -->
+  <div class="top-toolbar">
+    <div class="toolbar-left">
+      <a href="/home" (click)="onNavRequest('/home', $event)" class="brand anchor-reset">
+        <img src="favicon.png" alt="logo" class="logo-small">
+        <span class="brand-name">SMARTFARE</span>
+      </a>
+      <div class="itinerary-name-container">
+        <input type="text" class="itinerary-name-input" [ngModel]="itinerary()?.name"
+          (ngModelChange)="updateName($event)" placeholder="Senza titolo">
+        <span class="save-status" [ngClass]="{
+          'is-saving': autosaveStatus() === 'saving',
+          'is-error': autosaveStatus() === 'error'
+        }">
+          <i [class]="saveStatusIcon"></i>
+        </span>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn"><i class="bi bi-list"></i></button>
+        <button class="icon-btn"><i class="bi bi-layers"></i></button>
+        <button class="icon-btn"><i class="bi bi-star"></i></button>
+      </div>
+    </div>
+
+    <div class="toolbar-right">
+      <div class="dropdown">
+        <div class="user-avatar pointer" data-bs-toggle="dropdown" aria-expanded="false">
+          @if (user()?.avatarUrl) {
+          <img [src]="user()?.avatarUrl" [alt]="user()?.name" class="avatar-img">
+          } @else {
+          {{ user()?.name?.charAt(0) || 'U' }}{{ user()?.surname?.charAt(0) || '' }}
+          }
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
+              <i class="bi bi-journal-bookmark"></i>
+              <span>I miei Itinerari</span>
             </a>
-            <div class="status-badge">
-                <span class="dot"></span>
-                Bozza
-            </div>
-            <div class="header-actions">
-                <button class="icon-btn"><i class="bi bi-list"></i></button>
-                <button class="icon-btn"><i class="bi bi-layers"></i></button>
-                <button class="icon-btn"><i class="bi bi-cloud-check"></i></button>
-            </div>
-        </div>
-
-        <div class="toolbar-right">
-            <div class="collaborators">
-                <button class="icon-btn-ghost"><i class="bi bi-people"></i></button>
-                <button class="icon-btn-ghost"><i class="bi bi-chat-left-dots"></i></button>
-                <button class="icon-btn-ghost"><i class="bi bi-play-circle"></i></button>
-                <button class="icon-btn-ghost"><i class="bi bi-camera-video"></i></button>
-            </div>
-            
-            <button class="btn-share">
-                <i class="bi bi-send-fill"></i>
-                Condividere
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
+              <i class="bi bi-heart"></i>
+              <span>Preferiti</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
+              <i class="bi bi-gear"></i>
+              <span>Impostazioni</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider border-white-10">
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/home']">
+              <i class="bi bi-house"></i>
+              <span>Torna alla Home</span>
+            </a>
+          </li>
+          <li>
+            <button class="dropdown-item d-flex align-items-center gap-2 py-2 text-success-light" (click)="saveItinerary()">
+              <i class="bi bi-cloud-arrow-up"></i>
+              <span>Salva nei miei itinerari</span>
             </button>
-            
-            <button class="icon-btn-ghost ms-2"><i class="bi bi-link-45deg"></i></button>
-            
-            <div class="user-avatar ms-3">
-                DN
-            </div>
-        </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Toolbar (Formatting) -->
+  <div class="bottom-toolbar">
+    <div class="format-group border-end pe-3 me-3">
+      <button class="toolbar-tool"><i class="bi bi-brush"></i></button>
     </div>
 
-    <!-- Bottom Toolbar (Formatting) -->
-    <div class="bottom-toolbar">
-        <div class="format-group border-end pe-3 me-3">
-            <button class="toolbar-tool"><i class="bi bi-brush"></i></button>
-        </div>
-        
-        <div class="format-group">
-            <div class="font-selector">
-                Inter <i class="bi bi-chevron-down ms-2"></i>
-            </div>
-            <div class="font-size">
-                10 pt <i class="bi bi-chevron-expand ms-2"></i>
-            </div>
-        </div>
-
-        <div class="format-group divider-left">
-            <button class="format-btn">B</button>
-            <button class="format-btn">I</button>
-            <button class="format-btn">U</button>
-            <button class="format-btn text-color-btn">
-                A <div class="color-indicator"></div>
-            </button>
-            <button class="format-btn"><i class="bi bi-text-left"></i></button>
-            <button class="format-btn"><i class="bi bi-list-ul"></i></button>
-        </div>
-
-        <div class="format-group divider-left">
-            <button class="format-btn"><i class="bi bi-circle"></i></button>
-            <button class="format-btn active-tool"><i class="bi bi-pentagon"></i></button>
-            <button class="format-btn"><i class="bi bi-hash"></i></button>
-            <button class="format-btn"><i class="bi bi-sticky"></i></button>
-        </div>
-
-        <div class="format-group divider-left">
-            <button class="format-btn"><i class="bi bi-dash-lg"></i></button>
-            <button class="format-btn"><i class="bi bi-distribute-vertical"></i></button>
-            <button class="format-btn">Nessuna <i class="bi bi-chevron-down ms-1"></i></button>
-            <button class="format-btn"><i class="bi bi-arrow-right-short"></i></button>
-            <button class="format-btn">Nessuna <i class="bi bi-chevron-down ms-1"></i></button>
-        </div>
-
-        <div class="spacer"></div>
-
-        <div class="format-group">
-            <button class="icon-btn-ghost"><i class="bi bi-layout-sidebar"></i></button>
-        </div>
+    <div class="format-group">
+      <div class="font-selector">
+        Inter <i class="bi bi-chevron-down ms-2"></i>
+      </div>
+      <div class="font-size">
+        10 pt <i class="bi bi-chevron-expand ms-2"></i>
+      </div>
     </div>
+
+    <div class="format-group divider-left">
+      <button class="format-btn">B</button>
+      <button class="format-btn">I</button>
+      <button class="format-btn">U</button>
+      <button class="format-btn text-color-btn">
+        A <div class="color-indicator"></div>
+      </button>
+      <button class="format-btn"><i class="bi bi-text-left"></i></button>
+      <button class="format-btn"><i class="bi bi-list-ul"></i></button>
+    </div>
+
+    <div class="format-group divider-left">
+      <button class="format-btn"><i class="bi bi-circle"></i></button>
+      <button class="format-btn active-tool"><i class="bi bi-pentagon"></i></button>
+      <button class="format-btn"><i class="bi bi-hash"></i></button>
+      <button class="format-btn"><i class="bi bi-sticky"></i></button>
+    </div>
+
+    <div class="format-group divider-left">
+      <button class="format-btn"><i class="bi bi-dash-lg"></i></button>
+      <button class="format-btn"><i class="bi bi-distribute-vertical"></i></button>
+      <button class="format-btn">Nessuna <i class="bi bi-chevron-down ms-1"></i></button>
+      <button class="format-btn"><i class="bi bi-arrow-right-short"></i></button>
+      <button class="format-btn">Nessuna <i class="bi bi-chevron-down ms-1"></i></button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="format-group">
+      <button class="icon-btn-ghost"><i class="bi bi-layout-sidebar"></i></button>
+    </div>
+  </div>
 </header>

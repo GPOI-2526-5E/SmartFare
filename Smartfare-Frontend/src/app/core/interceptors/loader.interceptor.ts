@@ -19,6 +19,14 @@ function getLoaderMessage(url: string): string {
 
 export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
   const loaderService = inject(LoaderService);
+  const normalized = req.url.toLowerCase();
+
+  const skipLoader = normalized.includes('/api/itineraries');
+
+  if (skipLoader) {
+    return next(req);
+  }
+
   const message = getLoaderMessage(req.url);
 
   loaderService.show(message);

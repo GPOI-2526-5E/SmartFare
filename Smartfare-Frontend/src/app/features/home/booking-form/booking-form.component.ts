@@ -34,7 +34,8 @@ export class BookingFormComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.typeNext();
+    // Delay the initial call to avoid ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(() => this.typeNext(), 0);
   }
 
   ngOnDestroy() {
