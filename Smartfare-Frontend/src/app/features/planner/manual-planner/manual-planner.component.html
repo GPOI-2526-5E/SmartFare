@@ -21,12 +21,12 @@
                     <!-- Destination field -->
                     <div class="search-field position-relative">
                         <label><i class="bi bi-geo-alt"></i> Dove vuoi andare?</label>
-                        <input type="text" class="frameless-input" [(ngModel)]="destination" name="destination"
-                            (input)="onDestinationInput()" placeholder="Es. Roma, MI o CAP 20100..." autocomplete="off">
+                        <input type="text" class="frameless-input" [ngModel]="destination()" name="destination"
+                            (input)="onDestinationInput($event)" placeholder="Es. Roma, MI o CAP 20100..." autocomplete="off">
 
-                        @if (showSuggestions) {
+                        @if (showSuggestions()) {
                         <div class="suggestions-dropdown">
-                            @for (loc of filteredLocations; track loc.id) {
+                            @for (loc of filteredLocations(); track loc.id) {
                             <div class="suggestion-item" (click)="selectLocation(loc)">
                                 <i class="bi bi-geo-alt-fill"></i>
                                 <div class="loc-info">
@@ -44,7 +44,7 @@
                     <!-- Check In -->
                     <div class="search-field">
                         <label><i class="bi bi-calendar-check"></i> Arrivo</label>
-                        <input type="date" class="frameless-input" [(ngModel)]="checkinDate" name="checkinDate">
+                        <input type="date" class="frameless-input" [ngModel]="checkinDate()" (ngModelChange)="checkinDate.set($event)" name="checkinDate">
                     </div>
 
                     <div class="field-divider"></div>
@@ -52,7 +52,7 @@
                     <!-- Check Out -->
                     <div class="search-field">
                         <label><i class="bi bi-calendar-minus"></i> Ritorno</label>
-                        <input type="date" class="frameless-input" [(ngModel)]="checkoutDate" name="checkoutDate">
+                        <input type="date" class="frameless-input" [ngModel]="checkoutDate()" (ngModelChange)="checkoutDate.set($event)" name="checkoutDate">
                     </div>
 
                     <!-- Submit Button -->

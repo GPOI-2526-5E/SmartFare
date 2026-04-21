@@ -1,6 +1,9 @@
 <div class="builder-container">
     <!-- Header with toolbars -->
-    <app-builder-header (navRequest)="handleNavigationIntercept($event)"></app-builder-header>
+    <app-builder-header 
+        (navRequest)="handleNavigationIntercept($event)"
+        (saveRequest)="handleSaveRequest()">
+    </app-builder-header>
 
     <!-- Main Workspace divided in 3 horizontal sections -->
     <main class="builder-workspace">

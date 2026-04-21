@@ -1,0 +1,24 @@
+import { z } from "zod";
+
+export const loginSchema = z.object({
+    email: z.string().email("Email non valida"),
+    password: z.string().min(6, "La password deve avere almeno 6 caratteri")
+});
+
+export const registerSchema = z.object({
+    email: z.string().email("Email non valida"),
+    password: z.string().min(6, "La password deve avere almeno 6 caratteri"),
+    name: z.string().min(1, "Il nome è obbligatorio"),
+    surname: z.string().min(1, "Il cognome è obbligatorio"),
+    avatarUrl: z.string().url().optional(),
+    authProvider: z.string().optional()
+});
+
+export const forgotPasswordSchema = z.object({
+    email: z.string().email("Email non valida")
+});
+
+export const resetPasswordSchema = z.object({
+    token: z.string().min(1, "Token mancante"),
+    newPassword: z.string().min(6, "La nuova password deve avere almeno 6 caratteri")
+});

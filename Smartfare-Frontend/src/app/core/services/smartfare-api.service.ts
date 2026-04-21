@@ -14,7 +14,14 @@ export class SmartfareService {
 
   constructor(private http: HttpClient) { };
 
-  getLocations(): Observable<Location[]> {
+  getLocations(q?: string): Observable<Location[]> {
+    if (q) {
+      // Dynamic search from backend
+      return this.http.get<Location[]>(`${this.APIENDPOINT}/locations`, {
+        params: { q }
+      });
+    }
+
     if (!this.locationsRequest$) {
       this.locationsRequest$ = this.http
         .get<Location[]>(this.APIENDPOINT + '/locations')

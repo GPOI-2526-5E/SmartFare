@@ -5,7 +5,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
 import { TopNavbarComponent } from "../top-navbar/top-navbar.component";
 import { SocialAuthService } from '@abacritt/angularx-social-login';
-
+import { ItineraryService } from '../../../core/services/itinerary.service';
 
 interface NavItem {
   icon: string;
@@ -26,7 +26,8 @@ export class NavbarComponent {
     private authService: AuthService,
     private router: Router,
     private alertService: AlertService,
-    private socialAuthService: SocialAuthService
+    private socialAuthService: SocialAuthService,
+    private itineraryService: ItineraryService
   ) { };
 
   readonly navItems: NavItem[] = [
@@ -85,6 +86,7 @@ export class NavbarComponent {
     }
 
     this.authService.Logout();
+    this.itineraryService.clearDraft();
     this.alertService.show('Logout effettuato con successo!');
     this.router.navigate(['/']);
   }

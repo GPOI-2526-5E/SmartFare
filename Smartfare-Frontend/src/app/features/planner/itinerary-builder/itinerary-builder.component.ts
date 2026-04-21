@@ -37,7 +37,13 @@ export class ItineraryBuilderComponent implements OnInit {
 
   ngOnInit(): void {
     const hasCurrentInMemory = !!this.itineraryService.itinerary();
-    if (hasCurrentInMemory || !this.authService.IsAuthenticated()) return;
+    if (hasCurrentInMemory) return;
+
+    // Guest users: try loading from storage first
+    if (!this.authService.IsAuthenticated()) {
+      this.itineraryService.loadFromStorage();
+      return;
+    }
 
     this.itineraryService.loadLatestFromBackend().subscribe((draft) => {
       if (draft) return;
@@ -79,9 +85,18 @@ export class ItineraryBuilderComponent implements OnInit {
     }
   }
 
+  handleSaveRequest() {
+    // Header emitted a save request but user is NOT authenticated
+    this.targetUrl = null; // No final navigation target, just want to save
+    this.showLoginPrompt.set(true);
+  }
+
   onLoginRedirect() {
-    // Navigate to login, we'll lose the draft in memory but it stays in localStorage
-    // because ItineraryService.setCurrentItinerary writes there.
+    // Ensure the current draft is in localStorage so it can be reloaded after login
+    const current = this.itineraryService.itinerary();
+    if (current) {
+      this.itineraryService.setCurrentItinerary(current);
+    }
     this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
   }
 

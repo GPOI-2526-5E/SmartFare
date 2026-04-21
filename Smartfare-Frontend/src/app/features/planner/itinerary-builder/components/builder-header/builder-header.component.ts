@@ -16,12 +16,15 @@ import { AlertService } from '../../../../../core/services/alert.service';
 })
 export class BuilderHeaderComponent {
   @Output() navRequest = new EventEmitter<string>();
+  @Output() saveRequest = new EventEmitter<void>();
 
   private authService = inject(AuthService);
   private itineraryService = inject(ItineraryService);
   private router = inject(Router);
   private alertService = inject(AlertService);
   private socialAuthService = inject(SocialAuthService);
+
+  isAuthenticated = computed(() => this.authService.IsAuthenticated());
 
   // Use computed to react to token changes immediately
   user = computed(() => this.authService.getUserData());
@@ -51,10 +54,26 @@ export class BuilderHeaderComponent {
     }
   }
   saveItinerary() {
+    if (!this.isAuthenticated()) {
+      this.saveRequest.emit();
+      return;
+    }
+
     const current = this.itinerary();
     if (current) {
       this.itineraryService.saveToBackend(current).subscribe({
-        next: () => this.alertService.success('Itinerario salvato con successo!'),
+        next: (saved) => {
+          this.alertService.success('Itinerario salvato con successo!');
+          
+          if (saved && saved.id) {
+            // Track exactly what we saved to avoid resume prompts for it
+            sessionStorage.setItem('last_saved_itinerary_id', saved.id.toString());
+            sessionStorage.setItem('last_saved_itinerary_updated_at', saved.updatedAt || '');
+          }
+          
+          this.itineraryService.clearDraft();
+          this.router.navigate(['/home']);
+        },
         error: () => this.alertService.error('Errore durante il salvataggio.')
       });
     }
@@ -67,6 +86,7 @@ export class BuilderHeaderComponent {
       // Ignore
     }
     this.authService.Logout();
+    this.itineraryService.clearDraft();
     this.alertService.success('Logout effettuato con successo!');
     this.router.navigate(['/']);
   }

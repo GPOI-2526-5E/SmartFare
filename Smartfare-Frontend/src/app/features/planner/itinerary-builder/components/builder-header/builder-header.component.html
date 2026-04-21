@@ -27,35 +27,54 @@
       <div class="dropdown">
         <div class="user-avatar pointer" data-bs-toggle="dropdown" aria-expanded="false">
           @if (user()?.avatarUrl) {
-          <img [src]="user()?.avatarUrl" [alt]="user()?.name" class="avatar-img">
+          <img [src]="user()?.avatarUrl" [alt]="user()?.name" class="avatar-img" referrerpolicy="no-referrer">
           } @else {
           {{ user()?.name?.charAt(0) || 'U' }}{{ user()?.surname?.charAt(0) || '' }}
           }
         </div>
         <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
+          @if (isAuthenticated()) {
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
+                <i class="bi bi-journal-bookmark"></i>
+                <span>I miei Itinerari</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
+                <i class="bi bi-heart"></i>
+                <span>Preferiti</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
+                <i class="bi bi-gear"></i>
+                <span>Impostazioni</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider border-white-10">
+            </li>
+          } @else {
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/login']">
+                <i class="bi bi-person"></i>
+                <span>Accedi</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/register']">
+                <i class="bi bi-person-plus"></i>
+                <span>Registrati</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider border-white-10">
+            </li>
+          }
+
           <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
-              <i class="bi bi-journal-bookmark"></i>
-              <span>I miei Itinerari</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
-              <i class="bi bi-heart"></i>
-              <span>Preferiti</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
-              <i class="bi bi-gear"></i>
-              <span>Impostazioni</span>
-            </a>
-          </li>
-          <li>
-            <hr class="dropdown-divider border-white-10">
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/home']">
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/home" (click)="onNavRequest('/home', $event)">
               <i class="bi bi-house"></i>
               <span>Torna alla Home</span>
             </a>

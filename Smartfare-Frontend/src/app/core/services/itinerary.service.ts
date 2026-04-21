@@ -10,6 +10,7 @@ import { AuthService } from '../auth/auth.service';
 })
 export class ItineraryService {
   private readonly API_URL = `${environment.apiUrl}/api/itineraries`;
+  private readonly STORAGE_KEY = 'sf_itinerary_draft';
 
   // State using Signals
   private itinerarySignal = signal<Itinerary | null>(null);
@@ -52,29 +53,58 @@ export class ItineraryService {
   setCurrentItinerary(data: Itinerary, options?: { autosave?: boolean }) {
     this.itinerarySignal.set(data);
 
-    if (options?.autosave === false) return;
-    if (!this.authService.IsAuthenticated()) return;
+    // Persistence for guests
+    if (!this.authService.IsAuthenticated()) {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+      return;
+    }
 
+    if (options?.autosave === false) return;
     this.autosaveQueue$.next(data);
+  }
+
+  loadFromStorage(): boolean {
+    const data = localStorage.getItem(this.STORAGE_KEY);
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        this.itinerarySignal.set(parsed);
+        return true;
+      } catch (e) {
+        console.error('Failed to parse itinerary from storage', e);
+        localStorage.removeItem(this.STORAGE_KEY);
+      }
+    }
+    return false;
+  }
+
+  clearStorageDraft() {
+    localStorage.removeItem(this.STORAGE_KEY);
   }
 
   clearDraft() {
     this.itinerarySignal.set(null);
     this.autosaveStatusSignal.set('idle');
+    this.clearStorageDraft();
   }
 
-  // Load latest from backend
-  loadLatestFromBackend(): Observable<Itinerary | null> {
+  // Load latest from backend (as an Observable, without affecting current state automatically)
+  getLatestFromBackend(): Observable<Itinerary | null> {
     if (!this.authService.IsAuthenticated()) return of(null);
-
     return this.http.get<Itinerary>(`${this.API_URL}/latest`).pipe(
+      catchError(() => of(null))
+    );
+  }
+
+  // Maintains current behavior for other callers if any, but prefers explicit set
+  loadLatestFromBackend(): Observable<Itinerary | null> {
+    return this.getLatestFromBackend().pipe(
       tap(data => {
         if (data) {
           this.setCurrentItinerary(data, { autosave: false });
           this.autosaveStatusSignal.set('saved');
         }
-      }),
-      catchError(() => of(null))
+      })
     );
   }
 
@@ -97,6 +127,7 @@ export class ItineraryService {
         if (saved) {
           this.setCurrentItinerary(saved, { autosave: false });
           this.autosaveStatusSignal.set('saved');
+          this.clearStorageDraft(); // Once saved to backend, we can clear the local copy
           return;
         }
 

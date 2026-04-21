@@ -21,7 +21,7 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
   const loaderService = inject(LoaderService);
   const normalized = req.url.toLowerCase();
 
-  const skipLoader = normalized.includes('/api/itineraries');
+  const skipLoader = normalized.includes('/api/itineraries') || normalized.includes('/api/locations');
 
   if (skipLoader) {
     return next(req);

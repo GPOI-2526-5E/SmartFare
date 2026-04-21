@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
@@ -28,11 +28,13 @@ export class RegisterComponent implements OnInit {
   isGoogleRegistration = false;
   showPassword = false;
   private googleLoginInProgress = false;
+  private returnUrl: string = '/';
 
   constructor(
     private authService: AuthService,
     private alertService: AlertService,
     private router: Router,
+    private route: ActivatedRoute,
     private socialAuthService: SocialAuthService
   ) {
     const navigation = this.router.getCurrentNavigation();
@@ -44,6 +46,7 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.socialAuthService.authState.subscribe((user) => {
       if (user && user.idToken && !this.googleLoginInProgress && !this.authService.IsAuthenticated()) {
         this.googleLoginInProgress = true;
@@ -55,7 +58,7 @@ export class RegisterComponent implements OnInit {
             } else if (res.token) {
               this.alertService.success('Accesso effettuato con successo!');
               this.authService.saveAuth(res.token);
-              this.router.navigate(['/']);
+              this.router.navigateByUrl(this.returnUrl);
             }
             this.googleLoginInProgress = false;
           },
@@ -83,7 +86,7 @@ export class RegisterComponent implements OnInit {
     } catch (e) {
       // In case they weren't logged in to begin with
     }
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl } });
   }
 
   onSubmit() {
@@ -102,7 +105,7 @@ export class RegisterComponent implements OnInit {
     this.authService.Register(data).subscribe({
       next: (res) => {
         this.alertService.success('Registrazione completata! Ora puoi effettuare il login.');
-        this.router.navigate(['/login']);
+        this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl } });
       },
       error: (err) => {
         this.alertService.error(err.error?.message || 'Errore durante la registrazione');

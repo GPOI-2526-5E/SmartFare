@@ -1,6 +1,8 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { AuthService } from '../services/auth/auth.service';
 import rateLimit from 'express-rate-limit';
+import { loginSchema, registerSchema, forgotPasswordSchema, resetPasswordSchema } from "../schemas/auth.schema";
+
 
 const router = Router();
 const authService = new AuthService();
@@ -16,66 +18,40 @@ const authLimiter = rateLimit({
 });
 
 // ─── POST /auth/login ─────────────────────────────────────────────────────────
-router.post("/login", authLimiter, async (req: Request, res: Response) => {
+router.post("/login", authLimiter, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).json({
-                error: "Dati non validi"
-            });
-        }
-        const result = await authService.Login({ email, password });
+        const body = loginSchema.parse(req.body);
+        const result = await authService.Login(body);
 
         if (!result.success) {
             return res.status(401).json(result);
         }
 
         return res.status(200).json(result);
-    } catch (error: any) {
-        console.log("❌ Errore nel server durante il login");
-        return res.status(500).json({
-            error: "Errore durante il login"
-        });
+    } catch (error) {
+        next(error);
     }
 });
 
 // ─── POST /auth/register ──────────────────────────────────────────────────────
-router.post("/register", authLimiter, async (req: Request, res: Response) => {
+router.post("/register", authLimiter, async (req: Request, res: Response, next: NextFunction) => {
     try {
-
-        const { email, password, name, surname, avatarUrl, authProvider } = req.body;
-
-        if (!email || !password || !name || !surname) {
-            return res.status(400).json({
-                error: "Dati non validi",
-            });
-        }
-        const result = await authService.Register({
-            email,
-            password,
-            name,
-            surname,
-            authProvider,
-            avatarUrl
-        });
+        const body = registerSchema.parse(req.body);
+        const result = await authService.Register(body);
 
         if (!result.success) {
-            // 409 Conflict per email già esistente, 400 per altri errori
             const status = result.message === 'Email già esistente' ? 409 : 400;
             return res.status(status).json(result);
         }
 
         return res.status(201).json(result);
-    } catch (error: any) {
-        console.log("❌ Errore nel server durante la registrazione");
-        return res.status(500).json({
-            error: "Errore durante la registrazione"
-        });
+    } catch (error) {
+        next(error);
     }
 });
 
 // ─── POST /auth/google ────────────────────────────────────────────────────────
-router.post("/google", authLimiter, async (req: Request, res: Response) => {
+router.post("/google", authLimiter, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { idToken } = req.body;
 
@@ -92,22 +68,15 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
         }
 
         return res.status(200).json(result);
-    } catch (error: any) {
-        console.log("❌ Errore nel server durante il login Google");
-        return res.status(500).json({
-            error: "Errore durante il login con Google"
-        });
+    } catch (error) {
+        next(error);
     }
 });
 
 // ─── POST /auth/forgot-password ───────────────────────────────────────────────
-router.post("/forgot-password", authLimiter, async (req: Request, res: Response) => {
+router.post("/forgot-password", authLimiter, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email } = req.body;
-        if (!email) {
-            return res.status(400).json({ error: "L'email è obbligatoria" });
-        }
-
+        const { email } = forgotPasswordSchema.parse(req.body);
         const result = await authService.ForgotPassword(email);
 
         if (!result.success) {
@@ -115,35 +84,25 @@ router.post("/forgot-password", authLimiter, async (req: Request, res: Response)
         }
 
         return res.status(200).json({ success: true, message: "Se l'email è registrata, riceverai un link per il reset" });
-    } catch (error: any) {
-        console.log("❌ Errore nel server durante forgot password");
-        return res.status(500).json({ error: "Errore durante la richiesta di recupero password" });
+    } catch (error) {
+        next(error);
     }
 });
 
 // ─── POST /auth/reset-password ────────────────────────────────────────────────
-router.post("/reset-password", authLimiter, async (req: Request, res: Response) => {
+router.post("/reset-password", authLimiter, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { token, newPassword } = req.body;
-        if (!token || !newPassword) {
-            return res.status(400).json({ error: "Token e nuova password sono obbligatori" });
-        }
-
-        const result = await authService.ResetPassword({ token, newPassword });
+        const body = resetPasswordSchema.parse(req.body);
+        const result = await authService.ResetPassword(body);
 
         if (!result.success) {
-            return res.status(400).json(result); // 400 since token invalid
+            return res.status(400).json(result);
         }
 
         return res.status(200).json({ success: true, message: "Password aggiornata con successo" });
-    } catch (error: any) {
-        console.log("❌ Errore nel server durante reset password");
-        return res.status(500).json({ error: "Errore durante il salvataggio della nuova password" });
+    } catch (error) {
+        next(error);
     }
-});
-
-router.get('/user', async (req: Request, res: Response) => {
-
 });
 
 export default router;
