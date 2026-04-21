@@ -1,0 +1,24 @@
+<section class="ai-prompt-container d-flex flex-column align-items-center w-100">
+  <div class="glow-wrapper w-100 mb-4 position-relative">
+    <div class="glow-effect position-absolute top-0 start-0 w-100 h-100"></div>
+    <div class="prompt-bar position-relative d-flex align-items-center w-100">
+      <div class="ai-icon-container">
+        <i class="bi bi-stars"></i>
+      </div>
+      <input type="text" [(ngModel)]="travelQuery" class="prompt-input flex-grow-1"
+        [placeholder]="currentPlaceholder" (keydown.enter)="onAIGenerate()" spellcheck="false" autocomplete="off">
+      <button type="button" class="btn-send" (click)="onAIGenerate()" [class.active]="travelQuery.trim()"
+        title="Genera Viaggio">
+        <i class="bi bi-arrow-up-short"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="manual-create-prompt">
+    <span class="text-white-50 me-2 fs-6">Preferisci organizzare i dettagli passo passo?</span>
+    <button class="btn-manual" (click)="onManualCreate()">
+      <span>Crea Manualmente</span>
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+</section>

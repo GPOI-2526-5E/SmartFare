@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
-import { SmartfareService } from '../../../core/services/smartfare-api.service';
+import { LocationService } from '../../../core/services/location.service';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
@@ -35,7 +35,7 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private smartfareService: SmartfareService,
+    private locationService: LocationService,
     private itineraryService: ItineraryService,
     private authService: AuthService,
     private alertService: AlertService
@@ -59,7 +59,7 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       switchMap(query => {
         if (query.length < 2) return [[]];
-        return this.smartfareService.getLocations(query);
+        return this.locationService.getLocations(query);
       }),
       takeUntil(this.destroy$)
     ).subscribe({

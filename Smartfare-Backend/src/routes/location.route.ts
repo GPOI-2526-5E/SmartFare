@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from "express";
-import prisma from "../lib/prisma";
+import prisma from "../config/prisma";
 
 const router = Router();
 
+// ─── GET /api/locations────────────────────────────────────────────────
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { q } = req.query;
@@ -20,7 +21,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
                 ]
             };
         } else if (q) {
-             return res.status(200).send([]);
+            return res.status(200).send([]);
         }
 
         const locations = await prisma.location.findMany({

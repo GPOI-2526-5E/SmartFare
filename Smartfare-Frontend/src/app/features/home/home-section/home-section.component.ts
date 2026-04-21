@@ -9,14 +9,14 @@ import {
   signal,
 } from '@angular/core';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
-import { BookingFormComponent } from "../booking-form/booking-form.component";
+import { AiPromptBarComponent } from "../ai-prompt-bar/ai-prompt-bar.component";
 import { RevealOnScrollDirective } from '../../../core/directives/reveal-on-scroll.directive';
 import { ExperiencesCarousel } from "../experiences-carousel/experiences-carousel";
 
 @Component({
   selector: 'app-home-section',
   standalone: true,
-  imports: [NavbarComponent, BookingFormComponent, RevealOnScrollDirective, ExperiencesCarousel],
+  imports: [NavbarComponent, AiPromptBarComponent, RevealOnScrollDirective, ExperiencesCarousel],
   templateUrl: './home-section.component.html',
   styleUrl: './home-section.component.css',
 })

@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 
-export class SmartfareService {
+export class LocationService {
   private readonly APIENDPOINT = `${environment.apiUrl}/api`;
   private locationsRequest$?: Observable<Location[]>;
 

@@ -33,7 +33,7 @@ export class AuthService {
 
   Logout() {
     localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem('sf_itinerary_draft'); // Clear itinerary draft on logout
+    localStorage.removeItem('sf_itinerary_draft');
     this.tokenSignal.set(null);
   }
 

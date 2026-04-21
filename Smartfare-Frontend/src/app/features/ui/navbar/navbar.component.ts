@@ -38,8 +38,6 @@ export class NavbarComponent {
   ];
 
   mobileMenuOpen = false;
-  isPinned = false;
-  readonly pinOffset = 44;
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
@@ -49,11 +47,6 @@ export class NavbarComponent {
   closeMobileMenu(): void {
     this.mobileMenuOpen = false;
     this.syncBodyScroll();
-  }
-
-  @HostListener('window:scroll')
-  onWindowScroll(): void {
-    this.isPinned = window.scrollY > this.pinOffset;
   }
 
   get isAuthenticated() {
@@ -68,10 +61,8 @@ export class NavbarComponent {
   async login() {
     this.closeMobileMenu();
     try {
-      // Sign out from social to break potential redirect loops when going to login
       await this.socialAuthService.signOut(true);
     } catch {
-      // Ignore
     }
     this.router.navigate(['/login']);
   }
@@ -82,7 +73,6 @@ export class NavbarComponent {
     try {
       await this.socialAuthService.signOut(true);
     } catch {
-      // Ignore: user might not be logged in with a social provider.
     }
 
     this.authService.Logout();

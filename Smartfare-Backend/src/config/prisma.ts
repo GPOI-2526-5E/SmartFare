@@ -6,7 +6,6 @@ import 'dotenv/config';
 const connectionString = process.env.DATABASE_URL;
 
 const prismaClientSingleton = () => {
-  console.log(`[PRISMA] Inizializzazione pooler su: ${connectionString?.split('@')[1] || 'URL MANCANTE'}`);
   const pool = new Pool({ 
     connectionString,
     ssl: { rejectUnauthorized: false }
