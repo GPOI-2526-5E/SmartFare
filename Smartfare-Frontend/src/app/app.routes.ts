@@ -8,5 +8,6 @@ export const APP_ROUTES: Routes = [
   { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then((c) => c.ForgotPasswordComponent) },
   { path: 'reset-password', loadComponent: () => import('./features/auth/reset-password/reset-password.component').then((c) => c.ResetPasswordComponent) },
   { path: 'itineraries/new', loadComponent: () => import('./features/planner/manual-planner/manual-planner.component').then((m) => m.ManualPlannerComponent) },
-{ path: '**', redirectTo: '' }
+  { path: 'itineraries/builder', loadComponent: () => import('./features/planner/itinerary-builder/itinerary-builder.component').then((m) => m.ItineraryBuilderComponent) },
+  { path: '**', redirectTo: '' }
 ];

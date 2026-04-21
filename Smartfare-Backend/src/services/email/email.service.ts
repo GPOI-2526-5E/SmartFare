@@ -130,7 +130,7 @@ export class EmailService {
                         
                         <br>
                         <p class="bold">Se invece non eri tu:</p>
-                        <p>Il tuo account SmartFare potrebbe essere stato compromesso e dovresti seguire alcuni passaggi per renderlo sicuro. Prima di tutto, <a href="${resetLink}" target="_blank">ripristina subito la <span class="highlight">password</span></a>. Se non hai ancora aggiunto la verifica in due passaggi al tuo account, ti consigliamo di attivarla subito per migliorare la sicurezza del tuo account e prevenire accessi non autorizzati.</p>
+                        <p>Il tuo account SmartFare potrebbe essere stato compromesso e dovresti <a href="${resetLink}" target="_blank">ripristinare subito la password</a>. Se non hai ancora aggiunto la verifica in due passaggi al tuo account, ti consigliamo di attivarla subito per migliorare la sicurezza del tuo account e prevenire accessi non autorizzati.</p>
                         
                         <br><br>
                         <p>Cordialmente,</p>

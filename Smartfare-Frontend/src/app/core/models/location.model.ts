@@ -1,8 +1,8 @@
-export default interface Location{
+export default interface Location {
   id: number,
   name: string,
   province: string,
-  cap: number,
+  cap: string | number,
   latitude: number,
   longitude: number
 }

@@ -19,10 +19,24 @@
 
                 <div class="search-row glass-search-bar">
                     <!-- Destination field -->
-                    <div class="search-field">
+                    <div class="search-field position-relative">
                         <label><i class="bi bi-geo-alt"></i> Dove vuoi andare?</label>
                         <input type="text" class="frameless-input" [(ngModel)]="destination" name="destination"
-                            placeholder="Es. Roma, Parigi, Tokyo...">
+                            (input)="onDestinationInput()" placeholder="Es. Roma, MI o CAP 20100..." autocomplete="off">
+
+                        @if (showSuggestions) {
+                        <div class="suggestions-dropdown">
+                            @for (loc of filteredLocations; track loc.id) {
+                            <div class="suggestion-item" (click)="selectLocation(loc)">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <div class="loc-info">
+                                    <span class="loc-name">{{ loc.name }}</span>
+                                    <span class="loc-prov">{{ loc.province }} • CAP {{ loc.cap }}</span>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                        }
                     </div>
 
                     <div class="field-divider"></div>

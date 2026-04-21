@@ -31,10 +31,9 @@ export class NavbarComponent {
 
   readonly navItems: NavItem[] = [
     { icon: 'bi bi-house-door', label: 'Home', route: '/home' },
-    { icon: 'bi bi-building', label: 'Hotel', route: '/hotel' },
-    { icon: 'bi bi-airplane', label: 'Flights', route: '/flights' },
-    { icon: 'bi bi-train-front', label: 'Trains', route: '/trains' },
-    { icon: 'bi bi-activity', label: 'Activity', route: '/activity' },
+    { icon: 'bi bi-magic', label: 'Pianifica', route: '/planner' },
+    { icon: 'bi bi-compass', label: 'Scopri', route: '/discover' },
+    { icon: 'bi bi-info-circle', label: 'Chi Siamo', route: '/about' }
   ];
 
   mobileMenuOpen = false;
