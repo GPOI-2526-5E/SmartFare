@@ -4,12 +4,13 @@ export class ItineraryService {
 
     async saveItinerary(userId: number, data: any) {
         try {
-            const { id, name, description, startDate, endDate } = data;
+            const { id, name, description, startDate, endDate, isPublished } = data;
             const draftPayload = {
                 name: name || "Il mio Viaggio",
                 description,
                 startDate: startDate ? new Date(startDate) : null,
                 endDate: endDate ? new Date(endDate) : null,
+                isPublished: isPublished === true ? true : false
             };
 
             // If an ID is provided, we try to update
