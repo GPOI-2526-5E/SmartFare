@@ -68,18 +68,6 @@ model UserPreferenceInterest {
   @@index([interestCode])
 }
 
-model GuestSession {
-  id           Int         @id @default(autoincrement())
-  sessionToken String      @unique @db.VarChar(120)
-  createdAt    DateTime    @default(now())
-  expiresAt    DateTime
-  ipAddress    String?     @db.VarChar(64)
-  userAgent    String?     @db.VarChar(255)
-  itineraries  Itinerary[]
-
-  @@index([expiresAt])
-}
-
 model ItineraryVisibility {
   code        String      @id @db.VarChar(20)
   name        String      @db.VarChar(50)
@@ -100,15 +88,13 @@ model Itinerary {
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
   userId         Int?
-  guestSessionId Int?
-  guestSession   GuestSession?       @relation(fields: [guestSessionId], references: [id])
+
   user           User?               @relation("CreatedBy", fields: [userId], references: [id])
   visibility     ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
   likedBy        ItineraryFavorite[]
   items          ItineraryItem[]
 
   @@index([userId])
-  @@index([guestSessionId])
   @@index([isPublished])
   @@index([visibilityCode])
   @@index([createdAt])

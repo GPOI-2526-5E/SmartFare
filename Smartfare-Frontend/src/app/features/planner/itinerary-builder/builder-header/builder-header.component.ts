@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, computed } from '@angular/core';
+import { Component, EventEmitter, Output, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -6,6 +6,9 @@ import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { Router, RouterLink } from '@angular/router';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AlertService } from '../../../../core/services/alert.service';
+import { ActivityService } from '../../../../core/services/activity.service';
+import { UIStateService } from '../../../../core/services/ui-state.service';
+import { ActivityCategory } from '../../../../core/models/activity.model';
 
 @Component({
   selector: 'app-builder-header',
@@ -14,7 +17,7 @@ import { AlertService } from '../../../../core/services/alert.service';
   templateUrl: './builder-header.component.html',
   styleUrl: './builder-header.component.css'
 })
-export class BuilderHeaderComponent {
+export class BuilderHeaderComponent implements OnInit {
   @Output() navRequest = new EventEmitter<string>();
   @Output() saveRequest = new EventEmitter<void>();
 
@@ -23,6 +26,10 @@ export class BuilderHeaderComponent {
   private router = inject(Router);
   private alertService = inject(AlertService);
   private socialAuthService = inject(SocialAuthService);
+  private activityService = inject(ActivityService);
+  ui = inject(UIStateService);
+
+  categories = signal<ActivityCategory[]>([]);
 
   isAuthenticated = computed(() => this.authService.IsAuthenticated());
 
@@ -30,6 +37,12 @@ export class BuilderHeaderComponent {
   user = computed(() => this.authService.getUserData());
   itinerary = this.itineraryService.itinerary;
   autosaveStatus = this.itineraryService.autosaveStatus;
+
+  ngOnInit() {
+    this.activityService.getCategories().subscribe(cats => {
+      this.categories.set(cats);
+    });
+  }
 
   get saveStatusIcon(): string {
     const status = this.autosaveStatus();
@@ -89,5 +102,26 @@ export class BuilderHeaderComponent {
     this.itineraryService.clearDraft();
     this.alertService.success('Logout effettuato con successo!');
     this.router.navigate(['/']);
+  }
+
+  onCategoryChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const val = select.value === 'all' ? 'all' : parseInt(select.value, 10);
+    this.ui.setCategory(val as number | 'all');
+  }
+
+  onColorChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.ui.setMarkerColor(input.value);
+  }
+
+  showSelectedMarkers() {
+    console.log('Filtro: Mostra solo marker selezionati');
+    this.alertService.info('Filtro applicato: Mostra solo marker selezionati');
+  }
+
+  showAreaMarkers() {
+    console.log('Filtro: Mostra tutti i marker in questa zona');
+    this.alertService.info('Filtro applicato: Mostra tutti i marker in zona');
   }
 }

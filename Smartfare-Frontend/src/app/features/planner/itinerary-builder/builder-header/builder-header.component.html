@@ -29,53 +29,55 @@
         </div>
         <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
           @if (isAuthenticated()) {
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
-                <i class="bi bi-journal-bookmark"></i>
-                <span>I miei Itinerari</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
-                <i class="bi bi-heart"></i>
-                <span>Preferiti</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
-                <i class="bi bi-gear"></i>
-                <span>Impostazioni</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider border-white-10">
-            </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
+              <i class="bi bi-journal-bookmark"></i>
+              <span>I miei Itinerari</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
+              <i class="bi bi-heart"></i>
+              <span>Preferiti</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
+              <i class="bi bi-gear"></i>
+              <span>Impostazioni</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider border-white-10">
+          </li>
           } @else {
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/login']">
-                <i class="bi bi-person"></i>
-                <span>Accedi</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/register']">
-                <i class="bi bi-person-plus"></i>
-                <span>Registrati</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider border-white-10">
-            </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/login']">
+              <i class="bi bi-person"></i>
+              <span>Accedi</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/register']">
+              <i class="bi bi-person-plus"></i>
+              <span>Registrati</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider border-white-10">
+          </li>
           }
 
           <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/home" (click)="onNavRequest('/home', $event)">
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/home"
+              (click)="onNavRequest('/home', $event)">
               <i class="bi bi-house"></i>
               <span>Torna alla Home</span>
             </a>
           </li>
           <li>
-            <button class="dropdown-item d-flex align-items-center gap-2 py-2 text-success-light" (click)="saveItinerary()">
+            <button class="dropdown-item d-flex align-items-center gap-2 py-2 text-success-light"
+              (click)="saveItinerary()">
               <i class="bi bi-cloud-arrow-up"></i>
               <span>Salva nei miei itinerari</span>
             </button>
@@ -85,51 +87,53 @@
     </div>
   </div>
 
-  <!-- Bottom Toolbar (Formatting) -->
+  <!-- Bottom Toolbar (Planner Controls) -->
   <div class="bottom-toolbar">
-    <div class="format-group border-end pe-3 me-3">
-      <button class="toolbar-tool"><i class="bi bi-brush"></i></button>
+    <div class="toolbar-group">
+      <div class="control-wrapper">
+        <label for="category-select" class="control-label">Filtra per categoria</label>
+        <select id="category-select" class="toolbar-select" (change)="onCategoryChange($event)">
+          <option value="all">Tutte le categorie</option>
+          @for (cat of categories(); track cat.id) {
+          <option [value]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+      </div>
     </div>
 
-    <div class="format-group">
-      <div class="font-selector">
-        Inter <i class="bi bi-chevron-down ms-2"></i>
-      </div>
-      <div class="font-size">
-        10 pt <i class="bi bi-chevron-expand ms-2"></i>
-      </div>
-    </div>
-
-    <div class="format-group divider-left">
-      <button class="format-btn">B</button>
-      <button class="format-btn">I</button>
-      <button class="format-btn">U</button>
-      <button class="format-btn text-color-btn">
-        A <div class="color-indicator"></div>
+    <div class="toolbar-group divider-left">
+      <button class="toolbar-btn" (click)="showSelectedMarkers()"
+        title="Mostra solo i marker delle attività selezionate">
+        <i class="bi bi-pin-map"></i>
+        <span>Mostra selezionati</span>
       </button>
-      <button class="format-btn"><i class="bi bi-text-left"></i></button>
-      <button class="format-btn"><i class="bi bi-list-ul"></i></button>
+      <button class="toolbar-btn" (click)="showAreaMarkers()" title="Mostra tutti i marker disponibili in questa zona">
+        <i class="bi bi-geo"></i>
+        <span>Mostra tutti in zona</span>
+      </button>
     </div>
 
-    <div class="format-group divider-left">
-      <button class="format-btn"><i class="bi bi-circle"></i></button>
-      <button class="format-btn active-tool"><i class="bi bi-pentagon"></i></button>
-      <button class="format-btn"><i class="bi bi-hash"></i></button>
-      <button class="format-btn"><i class="bi bi-sticky"></i></button>
-    </div>
-
-    <div class="format-group divider-left">
-      <button class="format-btn"><i class="bi bi-dash-lg"></i></button>
-      <button class="format-btn"><i class="bi bi-distribute-vertical"></i></button>
-      <button class="format-btn">Nessuna <i class="bi bi-chevron-down ms-1"></i></button>
-      <button class="format-btn"><i class="bi bi-arrow-right-short"></i></button>
-      <button class="format-btn">Nessuna <i class="bi bi-chevron-down ms-1"></i></button>
+    <div class="toolbar-group divider-left">
+      <div class="control-wrapper">
+        <label class="control-label">Colore Marker</label>
+        <div class="color-picker-container">
+          <input type="color" [value]="ui.markerColor()" (input)="onColorChange($event)" class="toolbar-color-input">
+          <div class="color-preview" [style.background-color]="ui.markerColor()"></div>
+        </div>
+      </div>
     </div>
 
     <div class="spacer"></div>
 
-    <div class="format-group">
-      <button class="icon-btn-ghost"><i class="bi bi-layout-sidebar"></i></button>
+    <div class="toolbar-group">
+      <button class="toolbar-btn icon-only" [class.active]="ui.showSidebar()" (click)="ui.toggleSidebar()"
+        title="Toggle Sidebar">
+        <i class="bi bi-layout-sidebar"></i>
+      </button>
+      <button class="toolbar-btn icon-only" [class.active]="ui.showChat()" (click)="ui.toggleChat()"
+        title="Toggle AI Chat">
+        <i class="bi bi-chat-dots"></i>
+      </button>
     </div>
   </div>
 </header>

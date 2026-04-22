@@ -8,9 +8,11 @@
     <!-- Main Workspace divided in 3 horizontal sections -->
     <main class="builder-workspace">
         <!-- Section 1: Hotel/Activity selection (Left) -->
-        <aside class="workspace-sidebar">
-            <app-builder-sidebar></app-builder-sidebar>
-        </aside>
+        @if (ui.showSidebar()) {
+            <aside class="workspace-sidebar">
+                <app-builder-sidebar></app-builder-sidebar>
+            </aside>
+        }
 
         <!-- Section 2: Map visualization (Center) -->
         <section class="workspace-map">
@@ -18,9 +20,11 @@
         </section>
 
         <!-- Section 3: AI Chat (Right) -->
-        <aside class="workspace-chat">
-            <app-builder-chat></app-builder-chat>
-        </aside>
+        @if (ui.showChat()) {
+            <aside class="workspace-chat">
+                <app-builder-chat></app-builder-chat>
+            </aside>
+        }
     </main>
 
     <!-- Modals -->

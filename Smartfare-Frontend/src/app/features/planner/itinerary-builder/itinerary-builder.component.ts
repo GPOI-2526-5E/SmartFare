@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BuilderHeaderComponent } from './builder-header/builder-header.component';
@@ -8,6 +8,7 @@ import { BuilderChatComponent } from './builder-chat/builder-chat.component';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { LoginPromptModalComponent } from '../../ui/modals/login-prompt-modal/login-prompt-modal.component';
+import { UIStateService } from '../../../core/services/ui-state.service';
 
 @Component({
   selector: 'app-itinerary-builder',
@@ -25,6 +26,7 @@ import { LoginPromptModalComponent } from '../../ui/modals/login-prompt-modal/lo
 })
 export class ItineraryBuilderComponent implements OnInit {
   showLoginPrompt = signal(false);
+  ui = inject(UIStateService);
   private targetUrl: string | null = null;
 
   constructor(
