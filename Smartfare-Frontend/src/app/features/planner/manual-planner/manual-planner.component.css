@@ -207,7 +207,7 @@
   padding: 0;
   max-width: 950px;
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .premium-search-widget:focus-within {
@@ -249,6 +249,7 @@
 .loc-field {
   flex: 1.5;
   padding-left: 36px;
+  border-radius: 80px 0 0 80px;
 }
 
 .field-icon {
@@ -335,7 +336,7 @@
   position: relative;
   height: 100%;
   padding: 0 45px;
-  border-radius: 0;
+  border-radius: 0 80px 80px 0;
   border: none;
   background: #2563eb;
   color: #fff;

@@ -1,26 +1,25 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id                   Int       @id @default(autoincrement())
-  email                String    @unique @db.VarChar(150)
-  passwordHash         String?   @db.VarChar(255)
-  authProvider         String    @default("local") @db.VarChar(40)
-  sessionId            String?   @db.VarChar(120)
-  resetPasswordToken   String?   @db.VarChar(255)
-  resetPasswordExpires DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+datasource db {
+  provider = "postgresql"
+}
 
-  profile             UserProfile?
-  preferences         UserPreference?
-  itineraries         Itinerary[]         @relation("CreatedBy")
-  favoriteItineraries ItineraryFavorite[]
+model User {
+  id                   Int                 @id @default(autoincrement())
+  email                String              @unique @db.VarChar(150)
+  passwordHash         String?             @db.VarChar(255)
+  authProvider         String              @default("local") @db.VarChar(40)
+  sessionId            String?             @db.VarChar(120)
+  resetPasswordToken   String?             @db.VarChar(255)
+  resetPasswordExpires DateTime?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  itineraries          Itinerary[]         @relation("CreatedBy")
+  favoriteItineraries  ItineraryFavorite[]
+  preferences          UserPreference?
+  profile              UserProfile?
 
   @@index([email])
 }
@@ -28,7 +27,6 @@ model User {
 model UserProfile {
   id        Int       @id @default(autoincrement())
   userId    Int       @unique
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String?   @db.VarChar(80)
   surname   String?   @db.VarChar(80)
   city      String?   @db.VarChar(80)
@@ -37,24 +35,24 @@ model UserProfile {
   birthDate DateTime? @db.Date
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserPreference {
-  id                 Int      @id @default(autoincrement())
-  userId             Int      @unique
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  budgetLevelCode    String   @default("MEDIUM") @db.VarChar(20)
-  travelStyle        String?  @db.VarChar(40)
-  pace               String?  @db.VarChar(40)
-  preferredTransport String?  @db.VarChar(40)
+  id                 Int                      @id @default(autoincrement())
+  userId             Int                      @unique
+  budgetLevelCode    String                   @default("MEDIUM") @db.VarChar(20)
+  travelStyle        String?                  @db.VarChar(40)
+  pace               String?                  @db.VarChar(40)
+  preferredTransport String?                  @db.VarChar(40)
   prefersNightlife   Boolean?
   familyFriendly     Boolean?
-  maxDailyBudget     Decimal? @db.Decimal(10, 2)
-  notes              String?  @db.Text
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  interests UserPreferenceInterest[]
+  maxDailyBudget     Decimal?                 @db.Decimal(10, 2)
+  notes              String?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  user               User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interests          UserPreferenceInterest[]
 
   @@index([budgetLevelCode])
 }
@@ -62,58 +60,52 @@ model UserPreference {
 model UserPreferenceInterest {
   id           Int            @id @default(autoincrement())
   preferenceId Int
-  preference   UserPreference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
   interestCode String         @db.VarChar(40)
   weight       Int            @default(1)
+  preference   UserPreference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
 
   @@unique([preferenceId, interestCode])
   @@index([interestCode])
 }
 
 model GuestSession {
-  id           Int      @id @default(autoincrement())
-  sessionToken String   @unique @db.VarChar(120)
-  createdAt    DateTime @default(now())
+  id           Int         @id @default(autoincrement())
+  sessionToken String      @unique @db.VarChar(120)
+  createdAt    DateTime    @default(now())
   expiresAt    DateTime
-  ipAddress    String?  @db.VarChar(64)
-  userAgent    String?  @db.VarChar(255)
-
-  itineraries Itinerary[]
+  ipAddress    String?     @db.VarChar(64)
+  userAgent    String?     @db.VarChar(255)
+  itineraries  Itinerary[]
 
   @@index([expiresAt])
 }
 
 model ItineraryVisibility {
-  code        String  @id @db.VarChar(20)
-  name        String  @db.VarChar(50)
-  description String? @db.VarChar(200)
-
+  code        String      @id @db.VarChar(20)
+  name        String      @db.VarChar(50)
+  description String?     @db.VarChar(200)
   itineraries Itinerary[]
 }
 
 model Itinerary {
-  id             Int       @id @default(autoincrement())
-  name           String    @db.VarChar(120)
-  description    String?   @db.Text
-  isPublished    Boolean   @default(false)
-  visibilityCode String    @default("PRIVATE") @db.VarChar(20)
-  publicSlug     String?   @unique @db.VarChar(180)
-  startDate      DateTime? @db.Date
-  endDate        DateTime? @db.Date
-  aiPrompt       String?   @db.Text
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  userId Int?
-  user   User? @relation("CreatedBy", fields: [userId], references: [id], onDelete: SetNull)
-
+  id             Int                 @id @default(autoincrement())
+  name           String              @db.VarChar(120)
+  description    String?
+  isPublished    Boolean             @default(false)
+  visibilityCode String              @default("PRIVATE") @db.VarChar(20)
+  publicSlug     String?             @unique @db.VarChar(180)
+  startDate      DateTime?           @db.Date
+  endDate        DateTime?           @db.Date
+  aiPrompt       String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  userId         Int?
   guestSessionId Int?
-  guestSession   GuestSession? @relation(fields: [guestSessionId], references: [id], onDelete: SetNull)
-
-  visibility ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
-
-  items   ItineraryItem[]
-  likedBy ItineraryFavorite[]
+  guestSession   GuestSession?       @relation(fields: [guestSessionId], references: [id])
+  user           User?               @relation("CreatedBy", fields: [userId], references: [id])
+  visibility     ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
+  likedBy        ItineraryFavorite[]
+  items          ItineraryItem[]
 
   @@index([userId])
   @@index([guestSessionId])
@@ -125,45 +117,39 @@ model Itinerary {
 model ItineraryFavorite {
   userId      Int
   itineraryId Int
-  createdAt   DateTime @default(now())
-
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  itinerary Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, itineraryId])
   @@index([itineraryId])
 }
 
 model ItineraryItemType {
-  code        String  @id @db.VarChar(30)
-  label       String  @db.VarChar(50)
-  description String? @db.VarChar(200)
-
+  code           String          @id @db.VarChar(30)
+  label          String          @db.VarChar(50)
+  description    String?         @db.VarChar(200)
   itineraryItems ItineraryItem[]
 }
 
 model ItineraryItem {
-  id           Int               @id @default(autoincrement())
-  itineraryId  Int
-  itinerary    Itinerary         @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
-  itemTypeCode String            @db.VarChar(30)
-  itemType     ItineraryItemType @relation(fields: [itemTypeCode], references: [code])
-
-  dayNumber      Int
-  orderInt       Int
-  title          String?   @db.VarChar(120)
-  note           String?   @db.VarChar(400)
-  plannedStartAt DateTime?
-  plannedEndAt   DateTime?
-
-  activityId Int?
-  activity   Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
-
+  id              Int               @id @default(autoincrement())
+  itineraryId     Int
+  itemTypeCode    String            @db.VarChar(30)
+  dayNumber       Int
+  orderInt        Int
+  title           String?           @db.VarChar(120)
+  note            String?           @db.VarChar(400)
+  plannedStartAt  DateTime?
+  plannedEndAt    DateTime?
+  activityId      Int?
   accommodationId Int?
-  accommodation   Accommodation? @relation(fields: [accommodationId], references: [id], onDelete: SetNull)
-
-  routeSegmentId Int?
-  routeSegment   RouteSegment? @relation(fields: [routeSegmentId], references: [id], onDelete: SetNull)
+  routeSegmentId  Int?
+  accommodation   Accommodation?    @relation(fields: [accommodationId], references: [id])
+  activity        Activity?         @relation(fields: [activityId], references: [id])
+  itemType        ItineraryItemType @relation(fields: [itemTypeCode], references: [code])
+  itinerary       Itinerary         @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  routeSegment    RouteSegment?     @relation(fields: [routeSegmentId], references: [id])
 
   @@unique([itineraryId, dayNumber, orderInt])
   @@index([itineraryId])
@@ -172,33 +158,31 @@ model ItineraryItem {
 }
 
 model Location {
-  id        Int     @id @default(autoincrement())
-  name      String  @db.VarChar(120)
-  province  String? @db.VarChar(80)
-  cap       String? @db.VarChar(10)
-  latitude  Float
-  longitude Float
-
-  activities     Activity[]
+  id             Int             @id @default(autoincrement())
+  name           String          @db.VarChar(120)
+  province       String?         @db.VarChar(80)
+  cap            String?         @db.VarChar(10)
+  latitude       Float
+  longitude      Float
   accommodations Accommodation[]
-  stations       Station[]
+  activities     Activity[]
   airports       Airport[]
   metroStations  MetroStation[]
+  stations       Station[]
 
   @@index([name])
 }
 
 model Accommodation {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(150)
-  street     String?  @db.VarChar(150)
-  stars      Int      @default(0)
-  latitude   Float
-  longitude  Float
-  imageUrl   String?  @db.VarChar(500)
-  locationId Int
-  location   Location @relation(fields: [locationId], references: [id])
-
+  id             Int             @id @default(autoincrement())
+  name           String          @db.VarChar(150)
+  street         String?         @db.VarChar(150)
+  stars          Int             @default(0)
+  latitude       Float
+  longitude      Float
+  imageUrl       String?         @db.VarChar(500)
+  locationId     Int
+  location       Location        @relation(fields: [locationId], references: [id])
   itineraryItems ItineraryItem[]
 
   @@index([locationId])
@@ -206,44 +190,41 @@ model Accommodation {
 }
 
 model TransportType {
-  code        String  @id @db.VarChar(30)
-  label       String  @db.VarChar(50)
-  description String? @db.VarChar(200)
-
-  transports Transport[]
+  code        String      @id @db.VarChar(30)
+  label       String      @db.VarChar(50)
+  description String?     @db.VarChar(200)
+  transports  Transport[]
 }
 
 model Transport {
-  id            Int           @id @default(autoincrement())
-  transportCode String        @unique @db.VarChar(30)
-  transportType String        @db.VarChar(30)
-  type          TransportType @relation(fields: [transportType], references: [code])
-
-  segments RouteSegment[]
+  id            Int            @id @default(autoincrement())
+  transportCode String         @unique @db.VarChar(30)
+  transportType String         @db.VarChar(30)
+  segments      RouteSegment[]
+  type          TransportType  @relation(fields: [transportType], references: [code])
 
   @@index([transportType])
 }
 
 model RouteSegment {
-  id                      Int           @id @default(autoincrement())
+  id                      Int             @id @default(autoincrement())
   transportId             Int
-  transport               Transport     @relation(fields: [transportId], references: [id])
   departureAt             DateTime
   arrivalAt               DateTime
   departureStationId      Int?
-  departureStation        Station?      @relation("RouteSegmentDepartureStation", fields: [departureStationId], references: [id])
   arrivalStationId        Int?
-  arrivalStation          Station?      @relation("RouteSegmentArrivalStation", fields: [arrivalStationId], references: [id])
   departureAirportId      Int?
-  departureAirport        Airport?      @relation("RouteSegmentDepartureAirport", fields: [departureAirportId], references: [id])
   arrivalAirportId        Int?
-  arrivalAirport          Airport?      @relation("RouteSegmentArrivalAirport", fields: [arrivalAirportId], references: [id])
   departureMetroStationId Int?
-  departureMetroStation   MetroStation? @relation("RouteSegmentDepartureMetroStation", fields: [departureMetroStationId], references: [id])
   arrivalMetroStationId   Int?
-  arrivalMetroStation     MetroStation? @relation("RouteSegmentArrivalMetroStation", fields: [arrivalMetroStationId], references: [id])
-
-  itineraryItems ItineraryItem[]
+  itineraryItems          ItineraryItem[]
+  arrivalAirport          Airport?        @relation("RouteSegmentArrivalAirport", fields: [arrivalAirportId], references: [id])
+  arrivalMetroStation     MetroStation?   @relation("RouteSegmentArrivalMetroStation", fields: [arrivalMetroStationId], references: [id])
+  arrivalStation          Station?        @relation("RouteSegmentArrivalStation", fields: [arrivalStationId], references: [id])
+  departureAirport        Airport?        @relation("RouteSegmentDepartureAirport", fields: [departureAirportId], references: [id])
+  departureMetroStation   MetroStation?   @relation("RouteSegmentDepartureMetroStation", fields: [departureMetroStationId], references: [id])
+  departureStation        Station?        @relation("RouteSegmentDepartureStation", fields: [departureStationId], references: [id])
+  transport               Transport       @relation(fields: [transportId], references: [id])
 
   @@index([transportId])
   @@index([departureStationId])
@@ -256,77 +237,72 @@ model RouteSegment {
 }
 
 model Station {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(120)
-  latitude   Float
-  longitude  Float
-  locationId Int
-  location   Location @relation(fields: [locationId], references: [id])
-
-  departureSegments RouteSegment[] @relation("RouteSegmentDepartureStation")
+  id                Int            @id @default(autoincrement())
+  name              String         @db.VarChar(120)
+  latitude          Float
+  longitude         Float
+  locationId        Int
   arrivalSegments   RouteSegment[] @relation("RouteSegmentArrivalStation")
+  departureSegments RouteSegment[] @relation("RouteSegmentDepartureStation")
+  location          Location       @relation(fields: [locationId], references: [id])
 
   @@index([locationId])
   @@index([name])
 }
 
 model Airport {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(120)
-  iataCode   String?  @db.VarChar(10)
-  icaoCode   String?  @db.VarChar(10)
-  latitude   Float
-  longitude  Float
-  locationId Int
-  location   Location @relation(fields: [locationId], references: [id])
-
-  departureSegments RouteSegment[] @relation("RouteSegmentDepartureAirport")
+  id                Int            @id @default(autoincrement())
+  name              String         @db.VarChar(120)
+  iataCode          String?        @db.VarChar(10)
+  icaoCode          String?        @db.VarChar(10)
+  latitude          Float
+  longitude         Float
+  locationId        Int
+  location          Location       @relation(fields: [locationId], references: [id])
   arrivalSegments   RouteSegment[] @relation("RouteSegmentArrivalAirport")
+  departureSegments RouteSegment[] @relation("RouteSegmentDepartureAirport")
 
   @@index([locationId])
   @@index([name])
 }
 
 model MetroStation {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(120)
-  line       String?  @db.VarChar(80)
-  latitude   Float
-  longitude  Float
-  locationId Int
-  location   Location @relation(fields: [locationId], references: [id])
-
-  departureSegments RouteSegment[] @relation("RouteSegmentDepartureMetroStation")
+  id                Int            @id @default(autoincrement())
+  name              String         @db.VarChar(120)
+  line              String?        @db.VarChar(80)
+  latitude          Float
+  longitude         Float
+  locationId        Int
+  location          Location       @relation(fields: [locationId], references: [id])
   arrivalSegments   RouteSegment[] @relation("RouteSegmentArrivalMetroStation")
+  departureSegments RouteSegment[] @relation("RouteSegmentDepartureMetroStation")
 
   @@index([locationId])
   @@index([name])
 }
 
 model ActivityCategory {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique @db.VarChar(80)
-  description String?  @db.VarChar(200)
-  iconUrl     String?  @db.VarChar(500)
-  createdAt   DateTime @default(now())
-
-  activities Activity[]
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(80)
+  description String?    @db.VarChar(200)
+  iconUrl     String?    @db.VarChar(500)
+  createdAt   DateTime   @default(now())
+  activities  Activity[]
 }
 
 model Activity {
-  id          Int              @id @default(autoincrement())
-  name        String           @db.VarChar(150)
-  description String?          @db.Text
-  street      String?          @db.VarChar(150)
-  latitude    Float
-  longitude   Float
-  imageUrl    String?          @db.VarChar(500)
-  locationId  Int
-  location    Location         @relation(fields: [locationId], references: [id])
-  categoryId  Int
-  category    ActivityCategory @relation(fields: [categoryId], references: [id])
-  createdAt   DateTime         @default(now())
-
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(150)
+  description    String?
+  street         String?          @db.VarChar(150)
+  latitude       Float
+  longitude      Float
+  imageUrl       String?          @db.VarChar(500)
+  locationId     Int
+  categoryId     Int
+  createdAt      DateTime         @default(now())
+  category       ActivityCategory @relation(fields: [categoryId], references: [id])
+  location       Location         @relation(fields: [locationId], references: [id])
   itineraryItems ItineraryItem[]
 
   @@index([locationId])
