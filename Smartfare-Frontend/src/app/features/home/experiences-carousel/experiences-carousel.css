@@ -205,6 +205,19 @@
 
 .carousel-row {
   overflow: visible;
+  margin-left: auto;
+}
+
+@media (min-width: 992px) {
+  .carousel-row {
+    max-width: 65vw;
+  }
+}
+
+@media (min-width: 1200px) {
+  .carousel-row {
+    max-width: 55vw;
+  }
 }
 
 /* ── Cards track ────────────────────────────────────── */
