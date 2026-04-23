@@ -1,0 +1,10 @@
+    .sidebar-container {
+      padding: 20px;
+      height: 100%;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(10px);
+      color: #fff;
+    }
+    h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: #fff; }
+    p { color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; }

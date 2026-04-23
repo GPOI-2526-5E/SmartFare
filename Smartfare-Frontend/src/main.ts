@@ -3,13 +3,14 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AppComponent } from './app/app.component';
 import { APP_ROUTES } from './app/app.routes';
+import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { loaderInterceptor } from './app/core/interceptors/loader.interceptor';
 import { GoogleLoginProvider, SOCIAL_AUTH_CONFIG, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(APP_ROUTES),
-    provideHttpClient(withInterceptors([loaderInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, loaderInterceptor])),
     {
       provide: SOCIAL_AUTH_CONFIG,
       useValue: {

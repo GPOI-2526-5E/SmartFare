@@ -1,0 +1,158 @@
+<header class="builder-header">
+  <!-- Top Toolbar -->
+  <div class="top-toolbar">
+    <div class="toolbar-left">
+      <a href="/home" (click)="onNavRequest('/home', $event)" class="brand anchor-reset">
+        <img src="favicon.png" alt="logo" class="logo-small">
+        <span class="brand-name">SMARTFARE</span>
+      </a>
+      <div class="top-divider"></div>
+      <div class="itinerary-name-container">
+        <i class="bi bi-pencil-simple name-edit-icon"></i>
+        <input type="text" class="itinerary-name-input" [ngModel]="itinerary()?.name"
+          (ngModelChange)="updateName($event)" placeholder="Senza titolo">
+        <span class="save-status" [ngClass]="{
+          'is-saving': autosaveStatus() === 'saving',
+          'is-error': autosaveStatus() === 'error'
+        }">
+          <i [class]="saveStatusIcon"></i>
+        </span>
+      </div>
+    </div>
+
+    <div class="toolbar-right">
+      <div class="dropdown">
+        <div class="user-avatar pointer" data-bs-toggle="dropdown" aria-expanded="false">
+          @if (user()?.avatarUrl) {
+          <img [src]="user()?.avatarUrl" [alt]="user()?.name" class="avatar-img" referrerpolicy="no-referrer">
+          } @else {
+          {{ user()?.name?.charAt(0) || 'U' }}{{ user()?.surname?.charAt(0) || '' }}
+          }
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
+          @if (isAuthenticated()) {
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
+              <i class="bi bi-journal-bookmark"></i>
+              <span>I miei Itinerari</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
+              <i class="bi bi-heart"></i>
+              <span>Preferiti</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
+              <i class="bi bi-gear"></i>
+              <span>Impostazioni</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider border-white-10">
+          </li>
+          } @else {
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/login']">
+              <i class="bi bi-person"></i>
+              <span>Accedi</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/register']">
+              <i class="bi bi-person-plus"></i>
+              <span>Registrati</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider border-white-10">
+          </li>
+          }
+
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/home"
+              (click)="onNavRequest('/home', $event)">
+              <i class="bi bi-house"></i>
+              <span>Torna alla Home</span>
+            </a>
+          </li>
+          <li>
+            <button class="dropdown-item d-flex align-items-center gap-2 py-2 text-success-light"
+              (click)="saveItinerary()">
+              <i class="bi bi-cloud-arrow-up"></i>
+              <span>Salva nei miei itinerari</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Toolbar (Planner Controls) -->
+  <div class="bottom-toolbar">
+
+    <!-- Category Filter -->
+    <div class="toolbar-section">
+      <span class="section-label">Categoria</span>
+      <div class="select-wrapper">
+        <i class="bi bi-tags select-icon"></i>
+        <select id="category-select" class="toolbar-select" (change)="onCategoryChange($event)">
+          <option value="all">Tutte</option>
+          @for (cat of categories(); track cat.id) {
+          <option [value]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+        <i class="bi bi-chevron-down select-chevron"></i>
+      </div>
+    </div>
+
+    <div class="v-divider"></div>
+
+    <!-- Map View Buttons -->
+    <div class="toolbar-section">
+      <span class="section-label">Vista mappa</span>
+      <div class="btn-group-pill">
+        <button class="pill-btn" (click)="showSelectedMarkers()" title="Mostra solo i marker selezionati">
+          <i class="bi bi-pin-map-fill"></i>
+          <span>Selezionati</span>
+        </button>
+        <button class="pill-btn" (click)="showAreaMarkers()" title="Mostra tutti i marker disponibili in zona">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>In zona</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="v-divider"></div>
+
+    <!-- Marker Color -->
+    <div class="toolbar-section">
+      <span class="section-label">Marker</span>
+      <label class="color-swatch-label" title="Cambia colore marker">
+        <input type="color" [value]="ui.markerColor()" (input)="onColorChange($event)" class="hidden-color-input">
+        <div class="color-swatch" [style.background-color]="ui.markerColor()">
+          <i class="bi bi-eyedropper"></i>
+        </div>
+      </label>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Layout Toggles -->
+    <div class="toolbar-section">
+      <span class="section-label">Layout</span>
+      <div class="toggle-group">
+        <button class="toggle-btn" [class.active]="ui.showSidebar()" (click)="ui.toggleSidebar()" title="Sidebar">
+          <i class="bi bi-layout-sidebar"></i>
+          <span class="toggle-label">Sidebar</span>
+        </button>
+        <button class="toggle-btn" [class.active]="ui.showChat()" (click)="ui.toggleChat()" title="AI Chat">
+          <i class="bi bi-stars"></i>
+          <span class="toggle-label">AI</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</header>

@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { AlertService } from '../../../core/services/alert.service';
 import { AuthService } from '../../../core/auth/auth.service';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GoogleSigninButtonModule, SocialAuthService } from '@abacritt/angularx-social-login';
 
 @Component({
@@ -17,11 +17,13 @@ export class LoginComponent implements OnInit {
   password: string = '';
   showPassword = false;
   private googleLoginInProgress = false;
+  private returnUrl: string = '/';
 
   constructor(
     private alertService: AlertService,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private socialAuthService: SocialAuthService
   ) {
     if (this.authService.IsAuthenticated())
@@ -29,6 +31,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.socialAuthService.authState.subscribe((user) => {
       if (user && user.idToken && !this.googleLoginInProgress && !this.authService.IsAuthenticated()) {
         this.googleLoginInProgress = true;
@@ -41,7 +44,7 @@ export class LoginComponent implements OnInit {
             } else if (res.token) {
               this.alertService.success(res.message || 'Accesso effettuato con successo!');
               this.authService.saveAuth(res.token);
-              this.router.navigate(['/']);
+              this.router.navigateByUrl(this.returnUrl);
             }
             this.googleLoginInProgress = false;
           },
@@ -63,7 +66,7 @@ export class LoginComponent implements OnInit {
         if (res.token) {
           this.alertService.success(res.message || 'Login effettuato con successo !');
           this.authService.saveAuth(res.token);
-          this.router.navigate(['/']);
+          this.router.navigateByUrl(this.returnUrl);
         }
       },
       error: (error) => {

@@ -33,12 +33,19 @@ export class AuthService {
 
   Logout() {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem('sf_itinerary_draft');
     this.tokenSignal.set(null);
   }
 
   IsAuthenticated(): boolean {
     const token = this.tokenSignal();
     return !!token && !this.isTokenExpired(token);
+  }
+
+  getAccessToken(): string | null {
+    const token = this.tokenSignal();
+    if (!token || this.isTokenExpired(token)) return null;
+    return token;
   }
 
   getUserData(): any {
@@ -48,7 +55,6 @@ export class AuthService {
       const parts = this.tokenSignal()!.split('.');
       if (parts.length !== 3) return null;
 
-      // JWT uses Base64URL which atob doesn't native support for all chars
       let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
       const pad = base64.length % 4;
       if (pad) {

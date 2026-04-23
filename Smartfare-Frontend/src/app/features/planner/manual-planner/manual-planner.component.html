@@ -1,9 +1,14 @@
 <div class="manual-planner-container">
-    <!-- Video Background -->
-    <video autoplay muted loop class="background-video">
-        <source src="assets/videos/home/background-3.mp4" type="video/mp4">
-    </video>
-    <div class="video-overlay"></div>
+    <!-- Animated Floating Background -->
+    <div class="animated-background">
+        <div class="gradient-bg"></div>
+        <div class="floating-element polaroid-1"><i class="bi bi-camera"></i></div>
+        <div class="floating-element postcard-1"><i class="bi bi-geo-alt"></i></div>
+        <div class="floating-element ticket-1"><i class="bi bi-ticket-detailed"></i></div>
+        <div class="floating-element map-1"><i class="bi bi-map"></i></div>
+        <div class="floating-element compass-1"><i class="bi bi-compass"></i></div>
+        <div class="floating-element passport-1"><i class="bi bi-journal-bookmark"></i></div>
+    </div>
 
     <div class="navbar-layer">
         <app-navbar></app-navbar>
@@ -11,59 +16,111 @@
 
     <!-- Form Content centered -->
     <div class="content-wrapper container">
-        <div class="glass-card mx-auto mt-5 p-4 p-md-5">
-            <h2 class="text-center mb-4 title">La Tua Prossima Avventura</h2>
-            <p class="text-center subtitle mb-5">Costruisci il tuo itinerario ideale, passo dopo passo.</p>
 
-            <form class="horizontal-planner-form" (submit)="startPlanning(); $event.preventDefault()">
+        <div class="hero-text-section text-center">
+            <h1 class="premium-title">
+                Progetta il tuo <span class="text-gradient">viaggio ideale</span>
+            </h1>
+            <p class="premium-subtitle">Decidi le date, scegli la meta. Parti all'avventura.</p>
+        </div>
 
-                <div class="search-row glass-search-bar">
-                    <!-- Destination field -->
-                    <div class="search-field position-relative">
-                        <label><i class="bi bi-geo-alt"></i> Dove vuoi andare?</label>
-                        <input type="text" class="frameless-input" [(ngModel)]="destination" name="destination"
-                            (input)="onDestinationInput()" placeholder="Es. Roma, MI o CAP 20100..." autocomplete="off">
+        <div class="premium-search-widget mx-auto">
+            <form class="planner-form" (submit)="startPlanning(); $event.preventDefault()">
 
-                        @if (showSuggestions) {
-                        <div class="suggestions-dropdown">
-                            @for (loc of filteredLocations; track loc.id) {
-                            <div class="suggestion-item" (click)="selectLocation(loc)">
-                                <i class="bi bi-geo-alt-fill"></i>
-                                <div class="loc-info">
-                                    <span class="loc-name">{{ loc.name }}</span>
-                                    <span class="loc-prov">{{ loc.province }} • CAP {{ loc.cap }}</span>
-                                </div>
+                <!-- Destination -->
+                <div class="widget-field loc-field position-relative" tabindex="0">
+                    <div class="field-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+                    <div class="field-content">
+                        <label>Destinazione</label>
+                        <input type="text" class="field-input" [ngModel]="destination()" name="destination"
+                            (input)="onDestinationInput($event)" placeholder="Dove vuoi andare?" autocomplete="off"
+                            spellcheck="false">
+                    </div>
+
+                    @if (showSuggestions()) {
+                    <div class="premium-dropdown">
+                        @for (loc of filteredLocations(); track loc.id) {
+                        <div class="dropdown-item" (click)="selectLocation(loc)">
+                            <div class="item-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                            <div class="item-details">
+                                <span class="loc-name">{{ loc.name }}</span>
+                                <span class="loc-prov">{{ loc.province }} • CAP {{ loc.cap }}</span>
                             </div>
-                            }
                         </div>
                         }
                     </div>
+                    }
+                </div>
 
-                    <div class="field-divider"></div>
+                <div class="widget-divider"></div>
 
-                    <!-- Check In -->
-                    <div class="search-field">
-                        <label><i class="bi bi-calendar-check"></i> Arrivo</label>
-                        <input type="date" class="frameless-input" [(ngModel)]="checkinDate" name="checkinDate">
+                <!-- Check In -->
+                <div class="widget-field date-field" tabindex="0">
+                    <div class="field-icon">
+                        <i class="bi bi-calendar2-check"></i>
                     </div>
-
-                    <div class="field-divider"></div>
-
-                    <!-- Check Out -->
-                    <div class="search-field">
-                        <label><i class="bi bi-calendar-minus"></i> Ritorno</label>
-                        <input type="date" class="frameless-input" [(ngModel)]="checkoutDate" name="checkoutDate">
+                    <div class="field-content">
+                        <label>Arrivo</label>
+                        <input type="date" class="field-input" [ngModel]="checkinDate()"
+                            (ngModelChange)="checkinDate.set($event)" name="checkinDate">
                     </div>
+                </div>
 
-                    <!-- Submit Button -->
-                    <div class="search-action">
-                        <button type="submit" class="btn-submit-glass horizontal-submit">
-                            Pianifica
-                        </button>
+                <div class="widget-divider"></div>
+
+                <!-- Check Out -->
+                <div class="widget-field date-field" tabindex="0">
+                    <div class="field-icon">
+                        <i class="bi bi-calendar2-minus"></i>
                     </div>
+                    <div class="field-content">
+                        <label>Ritorno</label>
+                        <input type="date" class="field-input" [ngModel]="checkoutDate()"
+                            (ngModelChange)="checkoutDate.set($event)" name="checkoutDate">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="widget-action">
+                    <button type="submit" class="premium-btn-submit">
+                        <div class="btn-text">
+                            Pianifica <i class="bi bi-arrow-right-short ms-1 h4 mb-0"></i>
+                        </div>
+                        <div class="btn-glow"></div>
+                    </button>
                 </div>
 
             </form>
         </div>
+
     </div>
+
+    <!-- PERSISTENCE OVERLAY: Resume or New -->
+    @if (showResumeChoice()) {
+    <div class="resume-choice-overlay">
+        <div class="glass-card p-5 text-center modal-container">
+            <div class="icon-pulse mb-4">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <h2 class="modal-title mb-3">Itinerario trovato</h2>
+            <p class="modal-subtitle mb-5">Abbiamo trovato un piano incompiuto. Vuoi continuare da dove eri rimasto o
+                iniziarne uno nuovo?</p>
+
+            <div class="d-flex flex-column gap-3">
+                <button class="btn premium-btn-submit w-100 py-3" style="border-radius: 16px; min-height: 60px;"
+                    (click)="resumeItinerary()">
+                    <span class="position-relative z-1 d-flex align-items-center justify-content-center w-100">
+                        <i class="bi bi-play-circle me-2"></i> Continua quello precedente
+                    </span>
+                    <div class="btn-glow"></div>
+                </button>
+                <button class="btn btn-outline-light rounded-pill py-3 btn-new" (click)="createNewItinerary()">
+                    <i class="bi bi-plus-circle me-2"></i> Riparti da zero
+                </button>
+            </div>
+        </div>
+    </div>
+    }
 </div>

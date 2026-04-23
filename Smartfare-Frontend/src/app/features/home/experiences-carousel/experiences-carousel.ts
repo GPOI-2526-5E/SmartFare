@@ -174,8 +174,7 @@ export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
       behavior: 'smooth',
     });
   }
-
-  /** Returns CSS custom properties string for a card's accent colors */
+  
   cardVars(exp: Experience): Record<string, string> {
     return {
       '--card-glow': exp.glowColor,

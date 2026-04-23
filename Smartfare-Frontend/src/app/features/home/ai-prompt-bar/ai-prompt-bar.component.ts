@@ -5,19 +5,18 @@ import { Router } from '@angular/router';
 import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
-  selector: 'app-booking-form',
+  selector: 'app-ai-prompt-bar',
   imports: [CommonModule, FormsModule],
-  templateUrl: './booking-form.component.html',
-  styleUrl: './booking-form.component.css',
+  templateUrl: './ai-prompt-bar.component.html',
+  styleUrl: './ai-prompt-bar.component.css',
   standalone: true,
 })
-export class BookingFormComponent implements OnInit, OnDestroy {
+export class AiPromptBarComponent implements OnInit, OnDestroy {
 
   travelQuery: string = '';
   currentPlaceholder: string = '';
 
   private placeholders: string[] = [
-    "Es: Voglio fare un weekend romantico a Parigi...",
     "Es: Organizza un viaggio on the road in California...",
     "Es: Cerco una vacanza rilassante al mare in Puglia...",
     "Es: Portami a scoprire l'aurora boreale in Islanda..."
@@ -34,7 +33,7 @@ export class BookingFormComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.typeNext();
+    setTimeout(() => this.typeNext(), 0);
   }
 
   ngOnDestroy() {
@@ -73,7 +72,7 @@ export class BookingFormComponent implements OnInit, OnDestroy {
       this.alertService.show("Inserisci almeno qualche dettaglio per far lavorare l'IA.");
       return;
     }
-    // Navigate to the AI Planner with the user's prompt as a query parameter
+    
     this.router.navigate(['/planner'], { queryParams: { prompt: this.travelQuery } });
   }
 

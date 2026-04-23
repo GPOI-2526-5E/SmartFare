@@ -26,7 +26,7 @@
       @if (userAvatar) {
       <div class="dropdown">
         <img [src]="userAvatar" alt="User Avatar" class="user-avatar-nav align-self-center pointer"
-          data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"/>
+          referrerpolicy="no-referrer" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"/>
         <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
@@ -121,7 +121,7 @@
       @if (isAuthenticated) {
       <div class="d-flex flex-column gap-2 align-items-center">
         @if (userAvatar) {
-        <img [src]="userAvatar" alt="User Avatar" class="user-avatar-mobile"/>
+        <img [src]="userAvatar" alt="User Avatar" class="user-avatar-mobile" referrerpolicy="no-referrer"/>
         } @else {
         <i class="bi bi-person-circle fs-1"></i>
         }
