@@ -112,3 +112,60 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #7ea8ff rgba(8, 12, 20, 0.9);
 }
+
+/* =====================================================
+   Global Theme Switch (Light / Dark)
+   ===================================================== */
+.global-theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 99999;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(20, 25, 40, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.global-theme-toggle:hover {
+  transform: scale(1.15) rotate(15deg);
+  background: rgba(30, 40, 60, 0.8);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+body.light-theme .global-theme-toggle {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  color: #1e293b;
+}
+
+body.light-theme .global-theme-toggle:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* Auto-invert strategy for Light Theme */
+body.light-theme {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #0f172a;
+}
+
+/* Re-invert elements that shouldn't be inverted (images, videos, the toggle itself) */
+body.light-theme img,
+body.light-theme video,
+body.light-theme .background-layer,
+body.light-theme .global-theme-toggle,
+body.light-theme .experiences-img {
+  filter: invert(1) hue-rotate(180deg);
+}

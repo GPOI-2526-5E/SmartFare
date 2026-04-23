@@ -1,3 +1,13 @@
 <app-loader [show]="isLoading()" [message]="loaderMessage()"></app-loader>
 <app-alert></app-alert>
+
+<!-- Global Theme Toggle -->
+<button class="global-theme-toggle" (click)="toggleTheme()" [attr.aria-label]="'Toggle theme'">
+  @if (isDarkMode()) {
+    <i class="bi bi-sun-fill text-warning"></i>
+  } @else {
+    <i class="bi bi-moon-stars-fill text-primary"></i>
+  }
+</button>
+
 <router-outlet></router-outlet>
