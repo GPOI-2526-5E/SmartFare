@@ -6,7 +6,7 @@
 
 .navbar-shell {
   font-family: 'Inter', sans-serif;
-  color: #fff;
+  color: var(--text-color);
   position: relative;
   z-index: 1200;
   isolation: isolate;
@@ -39,8 +39,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: rgba(10, 15, 26, 0.62);
-  backdrop-filter: blur(8px);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
   transition:
     background 0.28s ease,
     box-shadow 0.28s ease,
@@ -51,9 +51,9 @@
 }
 
 .navbar-shell.is-pinned .main-bar {
-  background: rgba(10, 15, 26, 0.88);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 40px rgba(5, 10, 20, 0.28);
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--card-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-shell.pin-animating-in .main-bar {
@@ -92,7 +92,7 @@
 /* --- NAV LINKS --- */
 .nav-links .nav-item {
   text-decoration: none;
-  color: #fff;
+  color: var(--text-color);
   font-weight: 500;
   transition: color 0.2s;
 }
@@ -146,7 +146,7 @@
   background: transparent;
   border: none;
   font-size: 1.5rem;
-  color: #fff;
+  color: var(--text-color);
 }
 
 /* --- MOBILE MENU --- */
@@ -285,21 +285,17 @@
 
 /* --- DROPDOWN MENUS --- */
 .dropdown-menu {
-  background: rgba(15, 23, 42, 0.85);
+  background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   transform-origin: top right;
   animation: dropdownFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   min-width: 220px;
 }
 
-[data-theme="light"] .dropdown-menu {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
+/* Removed redundant data-theme light block as variables handle it */
 
 @keyframes dropdownFadeIn {
   from {
@@ -313,7 +309,7 @@
 }
 
 .dropdown-item {
-  color: #f1f5f9;
+  color: var(--text-color);
   font-weight: 500;
   transition: all 0.2s ease;
   border-radius: 8px;
@@ -321,20 +317,15 @@
   width: calc(100% - 8px);
 }
 
-[data-theme="light"] .dropdown-item {
-  color: #334155;
-}
+/* Removed redundant data-theme light block */
 
 .dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--accent-color-glow);
   color: #60a5fa;
   transform: translateX(4px);
 }
 
-[data-theme="light"] .dropdown-item:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
-}
+/* Removed redundant data-theme light block */
 
 .dropdown-item.text-danger:hover {
   background: rgba(239, 68, 68, 0.15) !important;
@@ -347,13 +338,11 @@
 }
 
 .dropdown-divider {
-  border-top-color: rgba(255, 255, 255, 0.1);
+  border-top-color: var(--card-border);
   margin: 8px 0;
 }
 
-[data-theme="light"] .dropdown-divider {
-  border-top-color: rgba(0, 0, 0, 0.08);
-}
+/* Removed redundant data-theme light block */
 
 .pointer {
   cursor: pointer;

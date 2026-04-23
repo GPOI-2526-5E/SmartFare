@@ -112,25 +112,26 @@
     <!-- PERSISTENCE OVERLAY: Resume or New -->
     @if (showResumeChoice()) {
     <div class="resume-choice-overlay">
-        <div class="glass-card p-5 text-center modal-container">
-            <div class="icon-pulse mb-4">
-                <i class="bi bi-clock-history"></i>
-            </div>
-            <h2 class="modal-title mb-3">Itinerario trovato</h2>
-            <p class="modal-subtitle mb-5">Abbiamo trovato un piano incompiuto. Vuoi continuare da dove eri rimasto o
-                iniziarne uno nuovo?</p>
+        <div class="modal-container">
+            <div class="glass-card text-center">
+                <div class="icon-pulse">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <h2 class="modal-title mb-3">Itinerario trovato</h2>
+                <p class="modal-subtitle mb-5">Abbiamo trovato un piano incompiuto. Vuoi continuare da dove eri rimasto o
+                    iniziarne uno nuovo?</p>
 
-            <div class="d-flex flex-column gap-3">
-                <button class="btn premium-btn-submit w-100 py-3" style="border-radius: 16px; min-height: 60px;"
-                    (click)="resumeItinerary()">
-                    <span class="position-relative z-1 d-flex align-items-center justify-content-center w-100">
-                        <i class="bi bi-play-circle me-2"></i> Continua quello precedente
-                    </span>
-                    <div class="btn-glow"></div>
-                </button>
-                <button class="btn btn-outline-light rounded-pill py-3 btn-new" (click)="createNewItinerary()">
-                    <i class="bi bi-plus-circle me-2"></i> Riparti da zero
-                </button>
+                <div class="d-flex flex-column gap-3 w-100">
+                    <button class="btn premium-btn-submit py-3" (click)="resumeItinerary()">
+                        <span class="position-relative z-1 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-play-circle me-2"></i> Continua quello precedente
+                        </span>
+                        <div class="btn-glow"></div>
+                    </button>
+                    <button class="btn btn-outline-light rounded-pill py-3 btn-new" (click)="createNewItinerary()">
+                        <i class="bi bi-plus-circle me-2"></i> Riparti da zero
+                    </button>
+                </div>
             </div>
         </div>
     </div>

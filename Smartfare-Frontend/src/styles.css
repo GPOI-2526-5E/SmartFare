@@ -1,6 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800;0,6..12,900;1,6..12,400&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Outfit:wght@300;400;500;600;700&display=swap');
 @import 'aos/dist/aos.css';
 
+:root {
+  /* Dark Theme (Default) */
+  --bg-color: #0f172a;
+  --bg-color-rgb: 15, 23, 42;
+  --bg-color-alt: #1e293b;
+  --text-color: #f8fafc;
+  --text-color-muted: #94a3b8;
+  --accent-color: #3b82f6;
+  --accent-color-glow: rgba(59, 130, 246, 0.5);
+  --card-bg: rgba(20, 25, 40, 0.6);
+  --card-border: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(15, 23, 42, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --scrollbar-track: rgba(8, 12, 20, 0.9);
+  --scrollbar-thumb: linear-gradient(180deg, #7ea8ff 0%, #00d289 100%);
+}
+
+body.light-theme {
+  --bg-color: #f8fafc;
+  --bg-color-rgb: 248, 250, 252;
+  --bg-color-alt: #f1f5f9;
+  --text-color: #0f172a;
+  --text-color-muted: #64748b;
+  --accent-color: #2563eb;
+  --accent-color-glow: rgba(37, 99, 235, 0.3);
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --scrollbar-track: #e2e8f0;
+  --scrollbar-thumb: linear-gradient(180deg, #3b82f6 0%, #10b981 100%);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -16,9 +49,10 @@ body {
 
 body {
   font-family: 'Nunito Sans', sans-serif;
-  background: #f0f1f4;
-  color: #1f2836;
+  background: var(--bg-color);
+  color: var(--text-color);
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .reveal-on-scroll {
@@ -70,7 +104,7 @@ body {
 }
 
 /* =====================================================
-   Custom Scrollbar — SmartFare dark theme
+   Custom Scrollbar
    ===================================================== */
 
 /* Webkit (Chrome, Edge, Safari) */
@@ -80,27 +114,19 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(8, 12, 20, 0.9);
+  background: var(--scrollbar-track);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    #7ea8ff 0%,
-    #00d289 100%
-  );
+  background: var(--scrollbar-thumb);
   border-radius: 999px;
-  border: 2px solid rgba(8, 12, 20, 0.85);
+  border: 2px solid transparent;
   transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    #a4beff 0%,
-    #00f0a0 100%
-  );
+  opacity: 0.8;
 }
 
 ::-webkit-scrollbar-corner {
@@ -110,7 +136,7 @@ body {
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #7ea8ff rgba(8, 12, 20, 0.9);
+  scrollbar-color: var(--accent-color) var(--scrollbar-track);
 }
 
 /* =====================================================
@@ -118,17 +144,17 @@ body {
    ===================================================== */
 .global-theme-toggle {
   position: fixed;
-  top: 24px;
-  right: 24px;
+  bottom: 24px;
+  left: 24px;
   z-index: 99999;
   width: 54px;
   height: 54px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(20, 25, 40, 0.6);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  color: #fff;
+  color: var(--text-color);
   font-size: 1.6rem;
   display: flex;
   align-items: center;
@@ -140,32 +166,14 @@ body {
 
 .global-theme-toggle:hover {
   transform: scale(1.15) rotate(15deg);
-  background: rgba(30, 40, 60, 0.8);
+  background: var(--card-bg);
+  opacity: 0.9;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
 body.light-theme .global-theme-toggle {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  color: #1e293b;
-}
-
-body.light-theme .global-theme-toggle:hover {
-  background: rgba(255, 255, 255, 1);
-}
-
-/* Auto-invert strategy for Light Theme */
-body.light-theme {
-  filter: invert(1) hue-rotate(180deg);
-  background-color: #0f172a;
-}
-
-/* Re-invert elements that shouldn't be inverted (images, videos, the toggle itself) */
-body.light-theme img,
-body.light-theme video,
-body.light-theme .background-layer,
-body.light-theme .global-theme-toggle,
-body.light-theme .experiences-img {
-  filter: invert(1) hue-rotate(180deg);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
 }
