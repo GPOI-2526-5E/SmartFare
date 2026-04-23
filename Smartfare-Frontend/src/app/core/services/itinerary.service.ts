@@ -2,7 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, catchError, debounceTime, of, switchMap, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Itinerary } from '../models/itinerary.model';
+import { Itinerary, ItineraryWorkspace } from '../models/itinerary.model';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({
@@ -94,6 +94,14 @@ export class ItineraryService {
     return this.http.get<Itinerary>(`${this.API_URL}/latest`).pipe(
       catchError(() => of(null))
     );
+  }
+
+  getWorkspace(locationId: number): Observable<ItineraryWorkspace | null> {
+    return this.http
+      .get<ItineraryWorkspace>(`${this.API_URL}/workspace`, {
+        params: { locationId: locationId.toString() }
+      })
+      .pipe(catchError(() => of(null)));
   }
 
   // Maintains current behavior for other callers if any, but prefers explicit set

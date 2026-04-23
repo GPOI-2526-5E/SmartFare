@@ -29,3 +29,22 @@ export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunct
     res.status(401).json({ error: 'Autenticazione richiesta' });
   }
 };
+
+export const optionalAuthenticateJWT = (req: AuthRequest, _res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    next();
+    return;
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+    if (!err) {
+      req.user = user;
+    }
+
+    next();
+  });
+};

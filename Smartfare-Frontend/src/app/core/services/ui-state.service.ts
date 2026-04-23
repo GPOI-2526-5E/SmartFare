@@ -7,6 +7,9 @@ export class UIStateService {
   readonly showSidebar = signal(true);
   readonly showChat = signal(true);
   readonly selectedCategory = signal<number | 'all'>('all');
+  readonly selectedType = signal<'all' | 'accommodation' | 'activity'>('all');
+  readonly mapView = signal<'selected' | 'all'>('selected');
+  readonly activeSurface = signal<'sidebar' | 'map'>('sidebar');
   readonly markerColor = signal('#22c55e'); // Default green
 
   toggleSidebar() {
@@ -19,6 +22,18 @@ export class UIStateService {
 
   setCategory(categoryId: number | 'all') {
     this.selectedCategory.set(categoryId);
+  }
+
+  setType(type: 'all' | 'accommodation' | 'activity') {
+    this.selectedType.set(type);
+  }
+
+  setMapView(mode: 'selected' | 'all') {
+    this.mapView.set(mode);
+  }
+
+  setActiveSurface(surface: 'sidebar' | 'map') {
+    this.activeSurface.set(surface);
   }
 
   setMarkerColor(color: string) {

@@ -1,9 +1,26 @@
 import { Router, Response, NextFunction } from "express";
 import { ItineraryService } from "../services/itinerary/itinerary.service";
-import { authenticateJWT, AuthRequest } from "../middleware/auth.middleware";
+import { authenticateJWT, optionalAuthenticateJWT, AuthRequest } from "../middleware/auth.middleware";
 import { itinerarySchema } from "../schemas/itinerary.schema";
 const router = Router();
 const itineraryService = new ItineraryService();
+
+
+// GET /api/itineraries/workspace?locationId=1 - Aggregated workspace payload for the builder
+router.get("/workspace", optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const locationId = Number(req.query.locationId);
+
+        if (!locationId || Number.isNaN(locationId)) {
+            return res.status(400).json({ error: "locationId mancante o non valido" });
+        }
+
+        const workspace = await itineraryService.getWorkspaceData(locationId, req.user?.userId ? Number(req.user.userId) : undefined);
+        res.status(200).json(workspace);
+    } catch (error) {
+        next(error);
+    }
+});
 
 
 // GET /api/itineraries/latest - Get the latest draft for the logged user

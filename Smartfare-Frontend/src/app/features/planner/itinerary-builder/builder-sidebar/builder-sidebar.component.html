@@ -1,4 +1,59 @@
-<div class="sidebar-container">
-    <h3>Selezione Hotel & Attività</h3>
-    <p>Qui potrai cercare e selezionare elementi per il tuo itinerario.</p>
+<div class="sidebar-container" (click)="focusSidebar.emit()">
+    <div class="sidebar-header">
+        <h3>Esplora la destinazione</h3>
+        <p class="sidebar-subtitle">
+            @if (workspace?.location) {
+            {{ workspace?.location?.name }}
+            } @else {
+            Nessuna destinazione
+            }
+        </p>
+    </div>
+
+    <div class="type-tabs">
+        <button type="button" class="type-tab" [class.active]="ui.selectedType() === 'all'"
+            (click)="setType('all')">Tutto</button>
+        <button type="button" class="type-tab" [class.active]="ui.selectedType() === 'accommodation'"
+            (click)="setType('accommodation')">Hotel</button>
+        <button type="button" class="type-tab" [class.active]="ui.selectedType() === 'activity'"
+            (click)="setType('activity')">Attività</button>
+    </div>
+
+    <div class="filter-row">
+        <label for="categorySelect">Categoria attività</label>
+        <select id="categorySelect" class="category-select" [value]="ui.selectedCategory()"
+            (change)="setCategory(($any($event.target)).value)">
+            <option value="all">Tutte</option>
+            @for (cat of workspace?.categories || []; track cat.id) {
+            <option [value]="cat.id">{{ cat.name }}</option>
+            }
+        </select>
+    </div>
+
+    <div class="poi-list">
+        @if (filteredList().length === 0) {
+        <div class="empty-state">
+            Nessun risultato per i filtri selezionati.
+        </div>
+        }
+
+        @for (poi of filteredList(); track poi.key) {
+        <article class="poi-card" [class.saved]="isSaved(poi)" (click)="onPreview(poi)">
+            <div class="poi-main">
+                <h4>{{ poi.title }}</h4>
+                <p>{{ poi.subtitle }}</p>
+                <span class="poi-meta">{{ poi.type === 'accommodation' ? 'Hotel' : (poi.categoryName || 'Attività')
+                    }}</span>
+            </div>
+            <div class="poi-actions">
+                <button type="button" class="btn-preview"
+                    (click)="onPreview(poi); $event.stopPropagation()">Mostra</button>
+                <button type="button" class="btn-add" [disabled]="isSaved(poi)"
+                    (click)="onAdd(poi); $event.stopPropagation()">
+                    {{ isSaved(poi) ? 'Aggiunto' : 'Aggiungi' }}
+                </button>
+            </div>
+        </article>
+        }
+    </div>
 </div>

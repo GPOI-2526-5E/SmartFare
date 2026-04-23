@@ -76,25 +76,28 @@ model ItineraryVisibility {
 }
 
 model Itinerary {
-  id             Int                 @id @default(autoincrement())
-  name           String              @db.VarChar(120)
+  id             Int       @id @default(autoincrement())
+  name           String    @db.VarChar(120)
   description    String?
-  isPublished    Boolean             @default(false)
-  visibilityCode String              @default("PRIVATE") @db.VarChar(20)
-  publicSlug     String?             @unique @db.VarChar(180)
-  startDate      DateTime?           @db.Date
-  endDate        DateTime?           @db.Date
+  isPublished    Boolean   @default(false)
+  visibilityCode String    @default("PRIVATE") @db.VarChar(20)
+  publicSlug     String?   @unique @db.VarChar(180)
+  startDate      DateTime? @db.Date
+  endDate        DateTime? @db.Date
   aiPrompt       String?
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  locationId     Int?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
   userId         Int?
 
-  user           User?               @relation("CreatedBy", fields: [userId], references: [id])
-  visibility     ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
-  likedBy        ItineraryFavorite[]
-  items          ItineraryItem[]
+  user       User?               @relation("CreatedBy", fields: [userId], references: [id])
+  location   Location?           @relation(fields: [locationId], references: [id])
+  visibility ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
+  likedBy    ItineraryFavorite[]
+  items      ItineraryItem[]
 
   @@index([userId])
+  @@index([locationId])
   @@index([isPublished])
   @@index([visibilityCode])
   @@index([createdAt])
@@ -151,6 +154,7 @@ model Location {
   latitude       Float
   longitude      Float
   accommodations Accommodation[]
+  itineraries    Itinerary[]
   activities     Activity[]
   airports       Airport[]
   metroStations  MetroStation[]

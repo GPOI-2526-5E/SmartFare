@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, computed, signal, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -6,9 +6,8 @@ import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { Router, RouterLink } from '@angular/router';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AlertService } from '../../../../core/services/alert.service';
-import { ActivityService } from '../../../../core/services/activity.service';
 import { UIStateService } from '../../../../core/services/ui-state.service';
-import { ActivityCategory } from '../../../../core/models/activity.model';
+import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 
 @Component({
   selector: 'app-builder-header',
@@ -17,19 +16,19 @@ import { ActivityCategory } from '../../../../core/models/activity.model';
   templateUrl: './builder-header.component.html',
   styleUrl: './builder-header.component.css'
 })
-export class BuilderHeaderComponent implements OnInit {
+export class BuilderHeaderComponent {
+  @Input() workspace: ItineraryWorkspace | null = null;
+
   @Output() navRequest = new EventEmitter<string>();
   @Output() saveRequest = new EventEmitter<void>();
+  @Output() changeLocationRequest = new EventEmitter<void>();
 
   private authService = inject(AuthService);
   private itineraryService = inject(ItineraryService);
   private router = inject(Router);
   private alertService = inject(AlertService);
   private socialAuthService = inject(SocialAuthService);
-  private activityService = inject(ActivityService);
   ui = inject(UIStateService);
-
-  categories = signal<ActivityCategory[]>([]);
 
   isAuthenticated = computed(() => this.authService.IsAuthenticated());
 
@@ -37,12 +36,6 @@ export class BuilderHeaderComponent implements OnInit {
   user = computed(() => this.authService.getUserData());
   itinerary = this.itineraryService.itinerary;
   autosaveStatus = this.itineraryService.autosaveStatus;
-
-  ngOnInit() {
-    this.activityService.getCategories().subscribe(cats => {
-      this.categories.set(cats);
-    });
-  }
 
   get saveStatusIcon(): string {
     const status = this.autosaveStatus();
@@ -108,20 +101,30 @@ export class BuilderHeaderComponent implements OnInit {
     const select = event.target as HTMLSelectElement;
     const val = select.value === 'all' ? 'all' : parseInt(select.value, 10);
     this.ui.setCategory(val as number | 'all');
+    this.ui.setActiveSurface('sidebar');
+  }
+
+  onTypeChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.ui.setType(select.value as 'all' | 'accommodation' | 'activity');
+    this.ui.setActiveSurface('sidebar');
   }
 
   onColorChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.ui.setMarkerColor(input.value);
+    this.ui.setActiveSurface('map');
   }
 
   showSelectedMarkers() {
-    console.log('Filtro: Mostra solo marker selezionati');
-    this.alertService.info('Filtro applicato: Mostra solo marker selezionati');
+    this.ui.setMapView('selected');
+    this.ui.setActiveSurface('map');
+    this.alertService.info('Vista mappa: solo marker selezionati');
   }
 
   showAreaMarkers() {
-    console.log('Filtro: Mostra tutti i marker in questa zona');
-    this.alertService.info('Filtro applicato: Mostra tutti i marker in zona');
+    this.ui.setMapView('all');
+    this.ui.setActiveSurface('map');
+    this.alertService.info('Vista mappa: tutti i punti disponibili');
   }
 }

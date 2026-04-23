@@ -92,16 +92,31 @@
   <!-- Bottom Toolbar (Planner Controls) -->
   <div class="bottom-toolbar">
 
-    <!-- Category Filter -->
     <div class="toolbar-section">
-      <span class="section-label">Categoria</span>
+      <span class="section-label">Luogo</span>
+      <div class="btn-group-pill">
+        <button class="pill-btn" type="button" (click)="changeLocationRequest.emit()">
+          <i class="bi bi-arrow-repeat"></i>
+          <span>Cambia destinazione</span>
+        </button>
+        <button class="pill-btn" type="button" disabled>
+          <i class="bi bi-geo-alt"></i>
+          <span>{{ workspace?.location?.name || 'Nessuna località' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="v-divider"></div>
+
+    @if (ui.activeSurface() === 'sidebar') {
+    <div class="toolbar-section">
+      <span class="section-label">Tipo contenuto</span>
       <div class="select-wrapper">
-        <i class="bi bi-tags select-icon"></i>
-        <select id="category-select" class="toolbar-select" (change)="onCategoryChange($event)">
-          <option value="all">Tutte</option>
-          @for (cat of categories(); track cat.id) {
-          <option [value]="cat.id">{{ cat.name }}</option>
-          }
+        <i class="bi bi-collection select-icon"></i>
+        <select class="toolbar-select" (change)="onTypeChange($event)">
+          <option value="all">Tutto</option>
+          <option value="accommodation">Hotel</option>
+          <option value="activity">Attività</option>
         </select>
         <i class="bi bi-chevron-down select-chevron"></i>
       </div>
@@ -109,7 +124,20 @@
 
     <div class="v-divider"></div>
 
-    <!-- Map View Buttons -->
+    <div class="toolbar-section">
+      <span class="section-label">Categoria attività</span>
+      <div class="select-wrapper">
+        <i class="bi bi-tags select-icon"></i>
+        <select id="category-select" class="toolbar-select" (change)="onCategoryChange($event)">
+          <option value="all">Tutte</option>
+          @for (cat of workspace?.categories || []; track cat.id) {
+          <option [value]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+        <i class="bi bi-chevron-down select-chevron"></i>
+      </div>
+    </div>
+    } @else {
     <div class="toolbar-section">
       <span class="section-label">Vista mappa</span>
       <div class="btn-group-pill">
@@ -126,7 +154,6 @@
 
     <div class="v-divider"></div>
 
-    <!-- Marker Color -->
     <div class="toolbar-section">
       <span class="section-label">Marker</span>
       <label class="color-swatch-label" title="Cambia colore marker">
@@ -136,6 +163,7 @@
         </div>
       </label>
     </div>
+    }
 
     <div class="spacer"></div>
 

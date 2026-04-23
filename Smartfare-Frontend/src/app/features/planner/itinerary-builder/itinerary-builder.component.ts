@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BuilderHeaderComponent } from './builder-header/builder-header.component';
@@ -6,9 +6,12 @@ import { BuilderSidebarComponent } from './builder-sidebar/builder-sidebar.compo
 import { BuilderMapComponent } from './builder-map/builder-map.component';
 import { BuilderChatComponent } from './builder-chat/builder-chat.component';
 import { ItineraryService } from '../../../core/services/itinerary.service';
+import { Itinerary, ItineraryItem, ItineraryWorkspace } from '../../../core/models/itinerary.model';
 import { AuthService } from '../../../core/auth/auth.service';
 import { LoginPromptModalComponent } from '../../ui/modals/login-prompt-modal/login-prompt-modal.component';
 import { UIStateService } from '../../../core/services/ui-state.service';
+import { AlertService } from '../../../core/services/alert.service';
+import { BuilderPoi } from './builder.types';
 
 @Component({
   selector: 'app-itinerary-builder',
@@ -26,6 +29,11 @@ import { UIStateService } from '../../../core/services/ui-state.service';
 })
 export class ItineraryBuilderComponent implements OnInit {
   showLoginPrompt = signal(false);
+  isLoadingWorkspace = signal(false);
+  workspaceError = signal<string | null>(null);
+  workspace = signal<ItineraryWorkspace | null>(null);
+  previewPoi = signal<BuilderPoi | null>(null);
+
   ui = inject(UIStateService);
   private targetUrl: string | null = null;
 
@@ -33,33 +41,235 @@ export class ItineraryBuilderComponent implements OnInit {
     private itineraryService: ItineraryService,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private alertService: AlertService
   ) { }
 
-  ngOnInit(): void {
-    const hasCurrentInMemory = !!this.itineraryService.itinerary();
-    if (hasCurrentInMemory) return;
+  readonly allPois = computed(() => {
+    const ws = this.workspace();
+    if (!ws) return [] as BuilderPoi[];
 
-    // Guest users: try loading from storage first
-    if (!this.authService.IsAuthenticated()) {
-      this.itineraryService.loadFromStorage();
+    const accommodationPois = ws.accommodations.map((acc) => ({
+      key: `accommodation-${acc.id}`,
+      type: 'accommodation' as const,
+      entityId: acc.id,
+      title: acc.name,
+      subtitle: acc.street || 'Hotel',
+      latitude: acc.latitude,
+      longitude: acc.longitude,
+      itemTypeCode: 'ACCOMMODATION' as const
+    }));
+
+    const activityPois = ws.activities.map((activity) => ({
+      key: `activity-${activity.id}`,
+      type: 'activity' as const,
+      entityId: activity.id,
+      title: activity.name,
+      subtitle: activity.category?.name || activity.street || 'Attività',
+      latitude: activity.latitude,
+      longitude: activity.longitude,
+      categoryId: activity.categoryId,
+      categoryName: activity.category?.name,
+      itemTypeCode: 'ACTIVITY' as const
+    }));
+
+    return [...accommodationPois, ...activityPois];
+  });
+
+  readonly savedPois = computed(() => {
+    const current = this.itineraryService.itinerary();
+    const index = new Map(this.allPois().map((poi) => [poi.key, poi]));
+
+    return (current?.items || [])
+      .map((item) => {
+        if (item.accommodationId) return index.get(`accommodation-${item.accommodationId}`) || null;
+        if (item.activityId) return index.get(`activity-${item.activityId}`) || null;
+        return null;
+      })
+      .filter((poi): poi is BuilderPoi => !!poi);
+  });
+
+  readonly savedPoiKeys = computed(() => new Set(this.savedPois().map((poi) => poi.key)));
+
+  readonly filteredPois = computed(() => {
+    const selectedType = this.ui.selectedType();
+    const selectedCategory = this.ui.selectedCategory();
+
+    return this.allPois().filter((poi) => {
+      if (selectedType !== 'all' && poi.type !== selectedType) return false;
+      if (selectedCategory !== 'all' && poi.type === 'activity' && poi.categoryId !== selectedCategory) return false;
+      return true;
+    });
+  });
+
+  readonly filteredSavedPois = computed(() => {
+    const allowedKeys = new Set(this.filteredPois().map((poi) => poi.key));
+    return this.savedPois().filter((poi) => allowedKeys.has(poi.key));
+  });
+
+  readonly mapAvailablePois = computed(() => {
+    if (this.ui.mapView() !== 'all') return [] as BuilderPoi[];
+    return this.filteredPois();
+  });
+
+  ngOnInit(): void {
+    const current = this.itineraryService.itinerary();
+    if (current) {
+      this.bootstrapWorkspace(current);
       return;
     }
 
-    this.itineraryService.loadLatestFromBackend().subscribe((draft) => {
-      if (draft) return;
+    if (!this.authService.IsAuthenticated()) {
+      const hasStorageDraft = this.itineraryService.loadFromStorage();
+      if (hasStorageDraft && this.itineraryService.itinerary()) {
+        this.bootstrapWorkspace(this.itineraryService.itinerary()!);
+      } else {
+        this.seedFromRouteQuery();
+      }
+      return;
+    }
 
-      const query = this.route.snapshot.queryParams;
-      const destination = query['dest'];
+    this.itineraryService.loadLatestFromBackend().subscribe(() => {
+      const resolved = this.itineraryService.itinerary();
+      if (resolved) {
+        this.bootstrapWorkspace(resolved);
+        return;
+      }
 
-      if (!destination) return;
+      this.seedFromRouteQuery();
+    });
+  }
 
-      this.itineraryService.setCurrentItinerary({
-        name: `Viaggio a ${destination}`,
+  private getLocationIdFromQuery(): number | null {
+    const queryId = Number(this.route.snapshot.queryParams['locationId']);
+    if (!queryId || Number.isNaN(queryId)) return null;
+    return queryId;
+  }
+
+  private seedFromRouteQuery() {
+    const query = this.route.snapshot.queryParams;
+    const locationId = this.getLocationIdFromQuery();
+    if (!locationId) {
+      this.workspaceError.set('Nessuna destinazione selezionata. Scegli prima una città dal planner manuale.');
+      return;
+    }
+
+    this.itineraryService.setCurrentItinerary(
+      {
+        name: query['dest'] ? `Viaggio a ${query['dest']}` : 'Il mio Viaggio',
         startDate: query['in'],
         endDate: query['out'],
+        locationId,
         items: []
-      });
+      },
+      { autosave: false }
+    );
+
+    this.bootstrapWorkspace(this.itineraryService.itinerary()!);
+  }
+
+  private bootstrapWorkspace(itinerary: Itinerary) {
+    const queryLocationId = this.getLocationIdFromQuery();
+    const locationId = itinerary.locationId || queryLocationId;
+
+    if (!locationId) {
+      this.workspaceError.set('Impossibile aprire il builder: manca la destinazione del viaggio.');
+      return;
+    }
+
+    if (!itinerary.locationId) {
+      this.itineraryService.setCurrentItinerary({ ...itinerary, locationId }, { autosave: false });
+    }
+
+    this.loadWorkspace(locationId);
+  }
+
+  private loadWorkspace(locationId: number) {
+    this.isLoadingWorkspace.set(true);
+    this.workspaceError.set(null);
+
+    this.itineraryService.getWorkspace(locationId).subscribe((ws) => {
+      this.isLoadingWorkspace.set(false);
+
+      if (!ws || !ws.location) {
+        this.workspaceError.set('Non siamo riusciti a caricare i dati della destinazione selezionata.');
+        return;
+      }
+
+      this.workspace.set(ws);
+
+      const current = this.itineraryService.itinerary();
+      if (current) {
+        this.itineraryService.setCurrentItinerary(
+          {
+            ...current,
+            locationId: ws.location.id,
+            location: ws.location
+          },
+          { autosave: false }
+        );
+      }
+    });
+  }
+
+  onSidebarFocused() {
+    this.ui.setActiveSurface('sidebar');
+  }
+
+  onMapFocused() {
+    this.ui.setActiveSurface('map');
+  }
+
+  onPreviewPoi(poi: BuilderPoi) {
+    this.previewPoi.set(poi);
+    this.ui.setActiveSurface('sidebar');
+  }
+
+  onAddPoi(poi: BuilderPoi) {
+    const current = this.itineraryService.itinerary();
+    if (!current) return;
+
+    const currentItems = [...(current.items || [])];
+    const alreadyAdded = currentItems.some(
+      (item) =>
+        (poi.type === 'accommodation' && item.accommodationId === poi.entityId) ||
+        (poi.type === 'activity' && item.activityId === poi.entityId)
+    );
+
+    if (alreadyAdded) {
+      this.previewPoi.set(poi);
+      this.alertService.info('Elemento già presente nell’itinerario.');
+      return;
+    }
+
+    const maxOrder = currentItems.reduce((acc, item) => Math.max(acc, item.orderInt || 0), 0);
+    const newItem: ItineraryItem = {
+      dayNumber: 1,
+      orderInt: maxOrder + 1,
+      title: poi.title,
+      itemTypeCode: poi.itemTypeCode,
+      activityId: poi.type === 'activity' ? poi.entityId : undefined,
+      accommodationId: poi.type === 'accommodation' ? poi.entityId : undefined
+    };
+
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      locationId: current.locationId || this.workspace()?.location?.id,
+      location: current.location || this.workspace()?.location || undefined,
+      items: [...currentItems, newItem]
+    });
+
+    this.previewPoi.set(poi);
+    this.alertService.success('Punto aggiunto e salvato automaticamente.');
+  }
+
+  onChangeLocationRequest() {
+    const current = this.itineraryService.itinerary();
+    this.router.navigate(['/itineraries/new'], {
+      queryParams: {
+        in: current?.startDate,
+        out: current?.endDate
+      }
     });
   }
 

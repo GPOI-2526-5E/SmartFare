@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
 import { LocationService } from '../../../core/services/location.service';
 import { ItineraryService } from '../../../core/services/itinerary.service';
@@ -22,6 +22,7 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
   destination = signal('');
   checkinDate = signal('');
   checkoutDate = signal('');
+  selectedLocation = signal<Location | null>(null);
 
   filteredLocations = signal<Location[]>([]);
   showSuggestions = signal(false);
@@ -35,6 +36,7 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private locationService: LocationService,
     private itineraryService: ItineraryService,
     private authService: AuthService,
@@ -53,6 +55,11 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const inDate = this.route.snapshot.queryParams['in'];
+    const outDate = this.route.snapshot.queryParams['out'];
+    if (inDate) this.checkinDate.set(inDate);
+    if (outDate) this.checkoutDate.set(outDate);
+
     // 1. Setup debounced location search
     this.searchSubject.pipe(
       debounceTime(300),
@@ -101,6 +108,7 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
   onDestinationInput(event: Event) {
     const val = (event.target as HTMLInputElement).value;
     this.destination.set(val);
+    this.selectedLocation.set(null);
     this.searchSubject.next(val);
   }
 
@@ -117,11 +125,13 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
     this.itineraryService.clearDraft();
     this.showResumeChoice.set(false);
     this.destination.set('');
+    this.selectedLocation.set(null);
     this.setDefaultDates();
   }
 
   selectLocation(location: Location) {
     this.destination.set(`${location.name} (${location.province})`);
+    this.selectedLocation.set(location);
     this.showSuggestions.set(false);
     this.filteredLocations.set([]);
   }
@@ -130,9 +140,15 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
     const dest = this.destination();
     const cin = this.checkinDate();
     const cout = this.checkoutDate();
+    const location = this.selectedLocation();
 
     if (!dest || !cin || !cout) {
       this.alertService.warning('Per favore, compila tutti i campi richiesti.');
+      return;
+    }
+
+    if (!location) {
+      this.alertService.warning('Seleziona una destinazione valida dalla lista suggerimenti.');
       return;
     }
 
@@ -147,11 +163,14 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
       name: `Viaggio a ${dest}`,
       startDate: cin,
       endDate: cout,
+      locationId: location.id,
+      location,
       items: []
     });
 
     const queryParams = {
       dest: dest,
+      locationId: location.id,
       in: cin,
       out: cout
     };
