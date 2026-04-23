@@ -6,7 +6,9 @@
         <img src="favicon.png" alt="logo" class="logo-small">
         <span class="brand-name">SMARTFARE</span>
       </a>
+      <div class="top-divider"></div>
       <div class="itinerary-name-container">
+        <i class="bi bi-pencil-simple name-edit-icon"></i>
         <input type="text" class="itinerary-name-input" [ngModel]="itinerary()?.name"
           (ngModelChange)="updateName($event)" placeholder="Senza titolo">
         <span class="save-status" [ngClass]="{
@@ -89,51 +91,68 @@
 
   <!-- Bottom Toolbar (Planner Controls) -->
   <div class="bottom-toolbar">
-    <div class="toolbar-group">
-      <div class="control-wrapper">
-        <label for="category-select" class="control-label">Filtra per categoria</label>
+
+    <!-- Category Filter -->
+    <div class="toolbar-section">
+      <span class="section-label">Categoria</span>
+      <div class="select-wrapper">
+        <i class="bi bi-tags select-icon"></i>
         <select id="category-select" class="toolbar-select" (change)="onCategoryChange($event)">
-          <option value="all">Tutte le categorie</option>
+          <option value="all">Tutte</option>
           @for (cat of categories(); track cat.id) {
           <option [value]="cat.id">{{ cat.name }}</option>
           }
         </select>
+        <i class="bi bi-chevron-down select-chevron"></i>
       </div>
     </div>
 
-    <div class="toolbar-group divider-left">
-      <button class="toolbar-btn" (click)="showSelectedMarkers()"
-        title="Mostra solo i marker delle attività selezionate">
-        <i class="bi bi-pin-map"></i>
-        <span>Mostra selezionati</span>
-      </button>
-      <button class="toolbar-btn" (click)="showAreaMarkers()" title="Mostra tutti i marker disponibili in questa zona">
-        <i class="bi bi-geo"></i>
-        <span>Mostra tutti in zona</span>
-      </button>
+    <div class="v-divider"></div>
+
+    <!-- Map View Buttons -->
+    <div class="toolbar-section">
+      <span class="section-label">Vista mappa</span>
+      <div class="btn-group-pill">
+        <button class="pill-btn" (click)="showSelectedMarkers()" title="Mostra solo i marker selezionati">
+          <i class="bi bi-pin-map-fill"></i>
+          <span>Selezionati</span>
+        </button>
+        <button class="pill-btn" (click)="showAreaMarkers()" title="Mostra tutti i marker disponibili in zona">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>In zona</span>
+        </button>
+      </div>
     </div>
 
-    <div class="toolbar-group divider-left">
-      <div class="control-wrapper">
-        <label class="control-label">Colore Marker</label>
-        <div class="color-picker-container">
-          <input type="color" [value]="ui.markerColor()" (input)="onColorChange($event)" class="toolbar-color-input">
-          <div class="color-preview" [style.background-color]="ui.markerColor()"></div>
+    <div class="v-divider"></div>
+
+    <!-- Marker Color -->
+    <div class="toolbar-section">
+      <span class="section-label">Marker</span>
+      <label class="color-swatch-label" title="Cambia colore marker">
+        <input type="color" [value]="ui.markerColor()" (input)="onColorChange($event)" class="hidden-color-input">
+        <div class="color-swatch" [style.background-color]="ui.markerColor()">
+          <i class="bi bi-eyedropper"></i>
         </div>
-      </div>
+      </label>
     </div>
 
     <div class="spacer"></div>
 
-    <div class="toolbar-group">
-      <button class="toolbar-btn icon-only" [class.active]="ui.showSidebar()" (click)="ui.toggleSidebar()"
-        title="Toggle Sidebar">
-        <i class="bi bi-layout-sidebar"></i>
-      </button>
-      <button class="toolbar-btn icon-only" [class.active]="ui.showChat()" (click)="ui.toggleChat()"
-        title="Toggle AI Chat">
-        <i class="bi bi-chat-dots"></i>
-      </button>
+    <!-- Layout Toggles -->
+    <div class="toolbar-section">
+      <span class="section-label">Layout</span>
+      <div class="toggle-group">
+        <button class="toggle-btn" [class.active]="ui.showSidebar()" (click)="ui.toggleSidebar()" title="Sidebar">
+          <i class="bi bi-layout-sidebar"></i>
+          <span class="toggle-label">Sidebar</span>
+        </button>
+        <button class="toggle-btn" [class.active]="ui.showChat()" (click)="ui.toggleChat()" title="AI Chat">
+          <i class="bi bi-stars"></i>
+          <span class="toggle-label">AI</span>
+        </button>
+      </div>
     </div>
+
   </div>
 </header>

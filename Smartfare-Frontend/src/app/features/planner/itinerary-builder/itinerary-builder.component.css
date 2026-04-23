@@ -17,7 +17,7 @@
 }
 
 .workspace-sidebar {
-    width: 320px; /* Fixed width for selection sidebar */
+    width: 500px; /* Fixed width for selection sidebar */
     flex-shrink: 0;
 }
 
