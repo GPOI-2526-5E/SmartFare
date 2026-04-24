@@ -74,23 +74,9 @@
                         <i class="bi bi-calendar2-check"></i>
                     </div>
                     <div class="field-content">
-                        <label>Arrivo</label>
+                        <label>Partenza</label>
                         <input type="date" class="field-input" [ngModel]="checkinDate()"
-                            (ngModelChange)="checkinDate.set($event)" name="checkinDate">
-                    </div>
-                </div>
-
-                <div class="widget-divider"></div>
-
-                <!-- Check Out -->
-                <div class="widget-field date-field" tabindex="0">
-                    <div class="field-icon">
-                        <i class="bi bi-calendar2-minus"></i>
-                    </div>
-                    <div class="field-content">
-                        <label>Ritorno</label>
-                        <input type="date" class="field-input" [ngModel]="checkoutDate()"
-                            (ngModelChange)="checkoutDate.set($event)" name="checkoutDate">
+                            (ngModelChange)="onCheckinChange($event)" name="checkinDate">
                     </div>
                 </div>
 

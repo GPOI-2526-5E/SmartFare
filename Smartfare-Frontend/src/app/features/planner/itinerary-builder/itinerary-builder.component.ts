@@ -51,7 +51,7 @@ export class ItineraryBuilderComponent implements OnInit {
     const ws = this.workspace();
     if (!ws) return [] as BuilderPoi[];
 
-    const accommodationPois = ws.accommodations.map((acc) => ({
+    const accommodationPois: BuilderPoi[] = ws.accommodations.map((acc) => ({
       key: `accommodation-${acc.id}`,
       type: 'accommodation' as const,
       entityId: acc.id,
@@ -59,10 +59,13 @@ export class ItineraryBuilderComponent implements OnInit {
       subtitle: acc.street || 'Hotel',
       latitude: acc.latitude,
       longitude: acc.longitude,
-      itemTypeCode: 'ACCOMMODATION' as const
+      itemTypeCode: 'ACCOMMODATION' as const,
+      imageUrl: acc.imageUrl,
+      price: acc.pricePerNight,
+      rating: acc.stars
     }));
 
-    const activityPois = ws.activities.map((activity) => ({
+    const activityPois: BuilderPoi[] = ws.activities.map((activity) => ({
       key: `activity-${activity.id}`,
       type: 'activity' as const,
       entityId: activity.id,
@@ -72,7 +75,10 @@ export class ItineraryBuilderComponent implements OnInit {
       longitude: activity.longitude,
       categoryId: activity.categoryId,
       categoryName: activity.category?.name,
-      itemTypeCode: 'ACTIVITY' as const
+      itemTypeCode: 'ACTIVITY' as const,
+      imageUrl: activity.imageUrl,
+      price: activity.price,
+      rating: activity.rating
     }));
 
     return [...accommodationPois, ...activityPois];
@@ -83,12 +89,26 @@ export class ItineraryBuilderComponent implements OnInit {
     const index = new Map(this.allPois().map((poi) => [poi.key, poi]));
 
     return (current?.items || [])
+      .slice()
+      .sort((a, b) => {
+        if (a.dayNumber !== b.dayNumber) return a.dayNumber - b.dayNumber;
+        return a.orderInt - b.orderInt;
+      })
       .map((item) => {
-        if (item.accommodationId) return index.get(`accommodation-${item.accommodationId}`) || null;
-        if (item.activityId) return index.get(`activity-${item.activityId}`) || null;
+        const poi = item.accommodationId
+          ? index.get(`accommodation-${item.accommodationId}`)
+          : index.get(`activity-${item.activityId}`);
+
+        if (poi) {
+          return { 
+            ...poi, 
+            dayNumber: item.dayNumber,
+            note: item.note 
+          } as BuilderPoi;
+        }
         return null;
       })
-      .filter((poi): poi is BuilderPoi => !!poi);
+      .filter((poi): poi is BuilderPoi => poi !== null);
   });
 
   readonly savedPoiKeys = computed(() => new Set(this.savedPois().map((poi) => poi.key)));
@@ -224,7 +244,8 @@ export class ItineraryBuilderComponent implements OnInit {
 
   onPreviewPoi(poi: BuilderPoi) {
     this.previewPoi.set(poi);
-    this.ui.setActiveSurface('sidebar');
+    this.ui.showSummary.set(false);
+    this.ui.setActiveSurface('map');
   }
 
   onAddPoi(poi: BuilderPoi) {
@@ -248,7 +269,6 @@ export class ItineraryBuilderComponent implements OnInit {
     const newItem: ItineraryItem = {
       dayNumber: 1,
       orderInt: maxOrder + 1,
-      title: poi.title,
       itemTypeCode: poi.itemTypeCode,
       activityId: poi.type === 'activity' ? poi.entityId : undefined,
       accommodationId: poi.type === 'accommodation' ? poi.entityId : undefined

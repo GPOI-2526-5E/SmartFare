@@ -6,5 +6,6 @@ export interface Accommodation {
     latitude: number;
     longitude: number;
     imageUrl?: string;
+    pricePerNight?: number;
     locationId: number;
 }

@@ -23,7 +23,8 @@
                 (mapFocused)="onMapFocused()">
             </app-builder-map>
             } @else {
-            <app-builder-summary [workspace]="workspace()" [savedPois]="savedPois()">
+            <app-builder-summary [workspace]="workspace()" [savedPois]="savedPois()"
+                (showOnMap)="onPreviewPoi($event)">
             </app-builder-summary>
             }
         </section>

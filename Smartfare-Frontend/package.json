@@ -24,6 +24,7 @@
   "packageManager": "npm@11.6.1",
   "dependencies": {
     "@abacritt/angularx-social-login": "^2.6.0",
+    "@angular/cdk": "^21.2.8",
     "@angular/common": "^21.1.4",
     "@angular/compiler": "^21.1.4",
     "@angular/core": "^21.1.4",

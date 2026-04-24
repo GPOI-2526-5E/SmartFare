@@ -3,7 +3,6 @@ export interface ActivityCategory {
   name: string;
   description?: string;
   iconUrl?: string;
-  createdAt?: string | Date;
 }
 
 export interface Activity {
@@ -17,4 +16,6 @@ export interface Activity {
   locationId: number;
   categoryId: number;
   category?: ActivityCategory;
+  price?: number;
+  rating?: number;
 }
