@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
@@ -8,7 +9,7 @@ import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from 
 @Component({
   selector: 'app-builder-summary',
   standalone: true,
-  imports: [CommonModule, DragDropModule],
+  imports: [CommonModule, DragDropModule, FormsModule],
   templateUrl: './builder-summary.component.html',
   styleUrl: './builder-summary.component.css'
 })
@@ -126,6 +127,24 @@ export class BuilderSummaryComponent {
     const updatedItems = current.items.filter(item => {
       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
       return key !== poi.key;
+    });
+
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      items: updatedItems
+    });
+  }
+
+  updateNotes(poi: BuilderPoi, note: string) {
+    const current = this.itinerary();
+    if (!current || !current.items) return;
+
+    const updatedItems = current.items.map(item => {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      if (key === poi.key) {
+        return { ...item, note };
+      }
+      return item;
     });
 
     this.itineraryService.setCurrentItinerary({

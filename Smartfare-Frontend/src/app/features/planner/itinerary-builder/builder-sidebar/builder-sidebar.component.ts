@@ -42,7 +42,7 @@ export class BuilderSidebarComponent {
     const workspace = this.workspaceSignal();
     if (!workspace) return [] as BuilderPoi[];
 
-    const accommodations = workspace.accommodations.map((acc) => ({
+    const accommodations: BuilderPoi[] = workspace.accommodations.map((acc) => ({
       key: `accommodation-${acc.id}`,
       type: 'accommodation' as const,
       entityId: acc.id,
@@ -50,10 +50,13 @@ export class BuilderSidebarComponent {
       subtitle: acc.street || 'Hotel',
       latitude: acc.latitude,
       longitude: acc.longitude,
-      itemTypeCode: 'ACCOMMODATION' as const
+      itemTypeCode: 'ACCOMMODATION' as const,
+      imageUrl: acc.imageUrl,
+      price: acc.pricePerNight,
+      rating: acc.stars
     }));
 
-    const activities = workspace.activities.map((activity) => ({
+    const activities: BuilderPoi[] = workspace.activities.map((activity) => ({
       key: `activity-${activity.id}`,
       type: 'activity' as const,
       entityId: activity.id,
@@ -63,10 +66,17 @@ export class BuilderSidebarComponent {
       longitude: activity.longitude,
       categoryId: activity.categoryId,
       categoryName: activity.category?.name,
-      itemTypeCode: 'ACTIVITY' as const
+      itemTypeCode: 'ACTIVITY' as const,
+      imageUrl: activity.imageUrl,
+      price: activity.price,
+      rating: activity.rating
     }));
 
     return [...accommodations, ...activities];
+  });
+
+  readonly hotelList = computed(() => {
+    return this.poiList().filter(p => p.type === 'accommodation');
   });
 
   readonly filteredList = computed(() => {

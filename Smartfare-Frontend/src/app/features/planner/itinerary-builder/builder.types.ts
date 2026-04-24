@@ -14,6 +14,10 @@ export interface BuilderPoi {
     categoryName?: string;
     itemTypeCode: 'ACCOMMODATION' | 'ACTIVITY';
     dayNumber?: number;
+    note?: string;
+    imageUrl?: string;
+    price?: number;
+    rating?: number;
 }
 
 export interface SidebarFilterState {

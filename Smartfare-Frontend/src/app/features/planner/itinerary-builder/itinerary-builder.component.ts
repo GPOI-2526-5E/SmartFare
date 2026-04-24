@@ -51,7 +51,7 @@ export class ItineraryBuilderComponent implements OnInit {
     const ws = this.workspace();
     if (!ws) return [] as BuilderPoi[];
 
-    const accommodationPois = ws.accommodations.map((acc) => ({
+    const accommodationPois: BuilderPoi[] = ws.accommodations.map((acc) => ({
       key: `accommodation-${acc.id}`,
       type: 'accommodation' as const,
       entityId: acc.id,
@@ -59,10 +59,13 @@ export class ItineraryBuilderComponent implements OnInit {
       subtitle: acc.street || 'Hotel',
       latitude: acc.latitude,
       longitude: acc.longitude,
-      itemTypeCode: 'ACCOMMODATION' as const
+      itemTypeCode: 'ACCOMMODATION' as const,
+      imageUrl: acc.imageUrl,
+      price: acc.pricePerNight,
+      rating: acc.stars
     }));
 
-    const activityPois = ws.activities.map((activity) => ({
+    const activityPois: BuilderPoi[] = ws.activities.map((activity) => ({
       key: `activity-${activity.id}`,
       type: 'activity' as const,
       entityId: activity.id,
@@ -72,7 +75,10 @@ export class ItineraryBuilderComponent implements OnInit {
       longitude: activity.longitude,
       categoryId: activity.categoryId,
       categoryName: activity.category?.name,
-      itemTypeCode: 'ACTIVITY' as const
+      itemTypeCode: 'ACTIVITY' as const,
+      imageUrl: activity.imageUrl,
+      price: activity.price,
+      rating: activity.rating
     }));
 
     return [...accommodationPois, ...activityPois];
@@ -94,7 +100,11 @@ export class ItineraryBuilderComponent implements OnInit {
           : index.get(`activity-${item.activityId}`);
 
         if (poi) {
-          return { ...poi, dayNumber: item.dayNumber } as BuilderPoi;
+          return { 
+            ...poi, 
+            dayNumber: item.dayNumber,
+            note: item.note 
+          } as BuilderPoi;
         }
         return null;
       })

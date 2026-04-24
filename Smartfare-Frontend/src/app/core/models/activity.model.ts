@@ -17,4 +17,6 @@ export interface Activity {
   locationId: number;
   categoryId: number;
   category?: ActivityCategory;
+  price?: number;
+  rating?: number;
 }

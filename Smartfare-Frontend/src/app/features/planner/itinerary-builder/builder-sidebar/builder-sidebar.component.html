@@ -39,77 +39,115 @@
   </div>
 
   <!-- POI List -->
-  <div class="poi-list">
-
-    @if (filteredList().length === 0) {
-    <div class="empty-state">
-      <div class="empty-state-icon">
-        <i class="bi bi-search"></i>
-      </div>
-      <p>Nessun risultato per i filtri selezionati.</p>
-    </div>
-    }
-
-    @for (poi of filteredList(); track poi.key) {
-    <article class="poi-card" [class.saved]="isSaved(poi)" (click)="onPreview(poi)">
-
-      <!-- Card body: icon + content -->
-      <div class="poi-card-body">
-        <div class="poi-icon-box" [class.accommodation]="poi.type === 'accommodation'"
-          [class.activity]="poi.type === 'activity'">
-          @if (poi.type === 'accommodation') {
-          <i class="bi bi-building"></i>
-          } @else {
-          <i class="bi bi-lightning-charge-fill"></i>
-          }
-          @if (isSaved(poi)) {
-          <span class="poi-saved-badge">
-            <i class="bi bi-check"></i>
-          </span>
+  <div class="sidebar-scroll-area">
+    
+    <!-- Optional: Horizontal Carousel for Hotels -->
+    @if (ui.selectedType() === 'all' && hotelList().length > 0) {
+      <div class="carousel-section">
+        <div class="carousel-header">
+          <h4>Soggiorni consigliati</h4>
+          <span class="carousel-subtitle">I migliori hotel della zona</span>
+        </div>
+        <div class="hotel-carousel">
+          @for (hotel of hotelList(); track hotel.key) {
+            <div class="hotel-card" [class.saved]="isSaved(hotel)" (click)="onPreview(hotel)">
+              <div class="hotel-image" [style.background-image]="'url(' + (hotel.imageUrl || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80') + ')'">
+                <div class="hotel-overlay">
+                  @if (hotel.rating) {
+                    <div class="hotel-rating">
+                      <i class="bi bi-star-fill"></i>
+                      <span>{{ hotel.rating }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="hotel-body">
+                <h5 class="hotel-title">{{ hotel.title }}</h5>
+                <div class="hotel-price">da {{ hotel.price || '??' }}€</div>
+              </div>
+              @if (isSaved(hotel)) {
+                <div class="hotel-saved-tag"><i class="bi bi-check-circle-fill"></i></div>
+              }
+            </div>
           }
         </div>
+      </div>
+    }
 
-        <div class="poi-content">
-          <h4 class="poi-title">{{ poi.title }}</h4>
-          <p class="poi-subtitle">{{ poi.subtitle }}</p>
-          <div class="poi-badges">
-            @if (poi.type === 'accommodation') {
-            <span class="poi-badge accommodation-badge">
-              <i class="bi bi-building"></i>
-              Hotel
-            </span>
-            } @else {
-            <span class="poi-badge activity-badge">
-              <i class="bi bi-tag-fill"></i>
-              {{ poi.categoryName || 'Attività' }}
-            </span>
-            }
+    <div class="poi-list">
+      <div class="list-header">
+        <h4>{{ ui.selectedType() === 'accommodation' ? 'Hotel' : (ui.selectedType() === 'activity' ? 'Attività' : 'Tutti i risultati') }}</h4>
+      </div>
+
+      @if (filteredList().length === 0) {
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i class="bi bi-search"></i>
+        </div>
+        <p>Nessun risultato per i filtri selezionati.</p>
+      </div>
+      }
+
+      @for (poi of filteredList(); track poi.key) {
+      <article class="poi-card" [class.saved]="isSaved(poi)" (click)="onPreview(poi)">
+        
+        @if (poi.imageUrl) {
+          <div class="poi-card-image" [style.background-image]="'url(' + poi.imageUrl + ')'">
+            <div class="poi-card-badge" [class.accommodation]="poi.type === 'accommodation'">
+              <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
+            </div>
+          </div>
+        }
+
+        <div class="poi-card-main">
+          <div class="poi-card-body">
+            <div class="poi-content">
+              <div class="poi-header-row">
+                <h4 class="poi-title">{{ poi.title }}</h4>
+                @if (poi.rating) {
+                  <span class="poi-rating">
+                    <i class="bi bi-star-fill"></i>
+                    {{ poi.rating }}
+                  </span>
+                }
+              </div>
+              <p class="poi-subtitle">{{ poi.subtitle }}</p>
+              
+              <div class="poi-details">
+                @if (poi.price) {
+                  <span class="poi-price-tag">
+                    {{ poi.price }}€
+                  </span>
+                }
+                <span class="poi-badge" [class.accommodation-badge]="poi.type === 'accommodation'" [class.activity-badge]="poi.type === 'activity'">
+                  {{ poi.categoryName || (poi.type === 'accommodation' ? 'Hotel' : 'Attività') }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="poi-card-footer">
+            <button type="button" class="btn-preview"
+              (click)="onPreview(poi); $event.stopPropagation()">
+              <i class="bi bi-eye"></i>
+              Mostra
+            </button>
+            <button type="button" class="btn-add" [disabled]="isSaved(poi)"
+              (click)="onAdd(poi); $event.stopPropagation()">
+              @if (isSaved(poi)) {
+              <i class="bi bi-check-circle-fill"></i>
+              Aggiunto
+              } @else {
+              <i class="bi bi-plus-circle"></i>
+              Aggiungi
+              }
+            </button>
           </div>
         </div>
-      </div>
 
-      <!-- Card footer: actions -->
-      <div class="poi-card-footer">
-        <button type="button" class="btn-preview"
-          (click)="onPreview(poi); $event.stopPropagation()">
-          <i class="bi bi-eye"></i>
-          Mostra
-        </button>
-        <button type="button" class="btn-add" [disabled]="isSaved(poi)"
-          (click)="onAdd(poi); $event.stopPropagation()">
-          @if (isSaved(poi)) {
-          <i class="bi bi-check-circle-fill"></i>
-          Aggiunto
-          } @else {
-          <i class="bi bi-plus-circle"></i>
-          Aggiungi
-          }
-        </button>
-      </div>
-
-    </article>
-    }
-
+      </article>
+      }
+    </div>
   </div>
 
 </div>
