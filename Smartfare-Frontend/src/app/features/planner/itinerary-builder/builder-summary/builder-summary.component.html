@@ -53,6 +53,14 @@
 
           <div class="poi-list" cdkDropList [cdkDropListData]="group.items"
             (cdkDropListDropped)="drop($event, group.day)">
+            
+            @if (group.items.length === 0) {
+              <div class="day-empty-state">
+                <i class="bi bi-plus-circle-dotted"></i>
+                <span>Trascina qui un'attività per questo giorno</span>
+              </div>
+            }
+
             @for (poi of group.items; track poi.key) {
             <div class="poi-card" [class.accommodation]="poi.type === 'accommodation'" [cdkDragData]="poi" cdkDrag>
 
@@ -71,9 +79,16 @@
                 {{ poi.type === 'accommodation' ? 'Hotel' : 'Attività' }}
               </div>
 
-              <button class="remove-btn" (click)="removeItem(poi)" title="Rimuovi dall'itinerario">
-                <i class="bi bi-trash3"></i>
-              </button>
+              <div class="poi-actions">
+                <button class="view-btn" (click)="viewOnMap(poi)" title="Mostra sulla mappa">
+                  <i class="bi bi-eye"></i>
+                  <span>Mostra</span>
+                </button>
+
+                <button class="remove-btn" (click)="removeItem(poi)" title="Rimuovi dall'itinerario">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
 
               <!-- Placeholder while dragging -->
               <div class="drag-placeholder" *cdkDragPlaceholder></div>
@@ -82,6 +97,11 @@
           </div>
         </div>
         }
+
+        <button class="add-day-btn" (click)="addDay()">
+          <i class="bi bi-plus-circle"></i>
+          <span>Aggiungi un giorno al viaggio</span>
+        </button>
       </div>
       }
     </div>

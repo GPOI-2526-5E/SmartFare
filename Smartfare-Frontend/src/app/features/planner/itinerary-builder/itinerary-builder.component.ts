@@ -234,7 +234,8 @@ export class ItineraryBuilderComponent implements OnInit {
 
   onPreviewPoi(poi: BuilderPoi) {
     this.previewPoi.set(poi);
-    this.ui.setActiveSurface('sidebar');
+    this.ui.showSummary.set(false);
+    this.ui.setActiveSurface('map');
   }
 
   onAddPoi(poi: BuilderPoi) {

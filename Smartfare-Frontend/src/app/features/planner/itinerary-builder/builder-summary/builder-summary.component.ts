@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, EventEmitter, Output, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../builder.types';
@@ -16,6 +16,8 @@ export class BuilderSummaryComponent {
   workspace = input<ItineraryWorkspace | null>(null);
   savedPois = input<BuilderPoi[]>([]);
 
+  @Output() showOnMap = new EventEmitter<BuilderPoi>();
+
   private itineraryService = inject(ItineraryService);
   itinerary = this.itineraryService.itinerary;
 
@@ -24,17 +26,23 @@ export class BuilderSummaryComponent {
 
   groupedDays = computed(() => {
     const daysMap = new Map<number, BuilderPoi[]>();
+    const totalDays = this.getDaysCount();
+    const groups: { day: number, items: BuilderPoi[] }[] = [];
 
-    // Group items by day
+    // Initialize all days
+    for (let i = 1; i <= totalDays; i++) {
+      daysMap.set(i, []);
+    }
+
+    // Group existing items by day
     this.savedPois().forEach(poi => {
       const day = poi.dayNumber || 1;
-      if (!daysMap.has(day)) {
-        daysMap.set(day, []);
+      if (day <= totalDays) {
+        daysMap.get(day)?.push(poi);
       }
-      daysMap.get(day)?.push(poi);
     });
 
-    // Sort days and return as array
+    // Return as array
     return Array.from(daysMap.entries())
       .sort(([a], [b]) => a - b)
       .map(([day, items]) => ({ day, items }));
@@ -123,6 +131,23 @@ export class BuilderSummaryComponent {
     this.itineraryService.setCurrentItinerary({
       ...current,
       items: updatedItems
+    });
+  }
+
+  viewOnMap(poi: BuilderPoi) {
+    this.showOnMap.emit(poi);
+  }
+
+  addDay() {
+    const current = this.itinerary();
+    if (!current || !current.endDate) return;
+
+    const d = new Date(current.endDate);
+    d.setDate(d.getDate() + 1);
+    
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      endDate: d.toISOString().split('T')[0]
     });
   }
 

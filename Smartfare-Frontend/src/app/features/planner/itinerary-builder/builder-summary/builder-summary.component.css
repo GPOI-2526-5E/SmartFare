@@ -153,6 +153,53 @@
   gap: 0.75rem;
   padding-left: 1rem;
   border-left: 1px solid rgba(255, 255, 255, 0.05);
+  min-height: 40px;
+}
+
+.day-empty-state {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.day-empty-state i {
+  font-size: 1.1rem;
+}
+
+.add-day-btn {
+  margin-top: 1rem;
+  background: rgba(34, 197, 94, 0.05);
+  border: 1px dashed rgba(34, 197, 94, 0.3);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  color: #22c55e;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.add-day-btn:hover {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.1);
+}
+
+.add-day-btn:active {
+  transform: translateY(0);
 }
 
 .poi-card {
@@ -263,6 +310,40 @@
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.4);
   font-weight: 600;
+}
+
+.poi-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.view-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  border-radius: 0.75rem;
+  font-weight: 500;
+}
+
+.view-btn i {
+  font-size: 1rem;
+}
+
+.view-btn:hover {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
 }
 
 .remove-btn {

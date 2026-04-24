@@ -112,6 +112,15 @@ export class ManualPlannerComponent implements OnInit, OnDestroy {
     this.searchSubject.next(val);
   }
 
+  onCheckinChange(newDate: string) {
+    this.checkinDate.set(newDate);
+    if (newDate) {
+      const d = new Date(newDate);
+      d.setDate(d.getDate() + 1);
+      this.checkoutDate.set(d.toISOString().split('T')[0]);
+    }
+  }
+
   resumeItinerary() {
     const draft = this.itineraryService.itinerary() || this.pendingDraft();
     if (draft) {
