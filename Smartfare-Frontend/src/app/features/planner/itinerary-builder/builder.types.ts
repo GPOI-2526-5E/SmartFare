@@ -13,6 +13,7 @@ export interface BuilderPoi {
     categoryId?: number;
     categoryName?: string;
     itemTypeCode: 'ACCOMMODATION' | 'ACTIVITY';
+    dayNumber?: number;
 }
 
 export interface SidebarFilterState {

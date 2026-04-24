@@ -83,12 +83,22 @@ export class ItineraryBuilderComponent implements OnInit {
     const index = new Map(this.allPois().map((poi) => [poi.key, poi]));
 
     return (current?.items || [])
+      .slice()
+      .sort((a, b) => {
+        if (a.dayNumber !== b.dayNumber) return a.dayNumber - b.dayNumber;
+        return a.orderInt - b.orderInt;
+      })
       .map((item) => {
-        if (item.accommodationId) return index.get(`accommodation-${item.accommodationId}`) || null;
-        if (item.activityId) return index.get(`activity-${item.activityId}`) || null;
+        const poi = item.accommodationId
+          ? index.get(`accommodation-${item.accommodationId}`)
+          : index.get(`activity-${item.activityId}`);
+
+        if (poi) {
+          return { ...poi, dayNumber: item.dayNumber } as BuilderPoi;
+        }
         return null;
       })
-      .filter((poi): poi is BuilderPoi => !!poi);
+      .filter((poi): poi is BuilderPoi => poi !== null);
   });
 
   readonly savedPoiKeys = computed(() => new Set(this.savedPois().map((poi) => poi.key)));
