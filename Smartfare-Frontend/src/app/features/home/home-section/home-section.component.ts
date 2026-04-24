@@ -7,6 +7,10 @@ import {
   QueryList,
   ViewChildren,
   signal,
+  ChangeDetectionStrategy,
+  NgZone,
+  ChangeDetectorRef,
+  inject
 } from '@angular/core';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { AiPromptBarComponent } from "../ai-prompt-bar/ai-prompt-bar.component";
@@ -19,6 +23,7 @@ import { ExperiencesCarousel } from "../experiences-carousel/experiences-carouse
   imports: [NavbarComponent, AiPromptBarComponent, RevealOnScrollDirective, ExperiencesCarousel],
   templateUrl: './home-section.component.html',
   styleUrl: './home-section.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('backgroundVideo')
@@ -50,6 +55,9 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   private cleanupTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private typingTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private typingStage = 0;
+
+  private readonly ngZone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.startTypingLoop();
@@ -272,6 +280,11 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private queueTypingFrame(delayMs: number): void {
-    this.typingTimeoutId = setTimeout(() => this.startTypingLoop(), delayMs);
+    this.ngZone.runOutsideAngular(() => {
+      this.typingTimeoutId = setTimeout(() => {
+        this.startTypingLoop();
+        this.cdr.detectChanges();
+      }, delayMs);
+    });
   }
 }

@@ -8,6 +8,9 @@ import {
   signal,
   ViewChild,
   ViewChildren,
+  ChangeDetectionStrategy,
+  inject,
+  NgZone
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -32,6 +35,7 @@ export interface Experience {
   imports: [CommonModule],
   templateUrl: './experiences-carousel.html',
   styleUrl: './experiences-carousel.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
   experiences: Experience[] = [
@@ -136,13 +140,17 @@ export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
     this.activeExperience.set(exp);
   }
 
+  private readonly ngZone = inject(NgZone);
+
   startAutoScroll() {
     if (!this.autoScrollInterval) {
-      this.autoScrollInterval = setInterval(() => {
-        if (!this.isHovering) {
-          this.scrollRight();
-        }
-      }, 3800);
+      this.ngZone.runOutsideAngular(() => {
+        this.autoScrollInterval = setInterval(() => {
+          if (!this.isHovering) {
+            this.scrollRight();
+          }
+        }, 3800);
+      });
     }
   }
 
