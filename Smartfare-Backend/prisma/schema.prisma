@@ -58,14 +58,15 @@ model UserPreference {
 }
 
 model UserPreferenceInterest {
-  id           Int            @id @default(autoincrement())
-  preferenceId Int
-  interestCode String         @db.VarChar(40)
-  weight       Int            @default(1)
-  preference   UserPreference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
+  id                 Int              @id @default(autoincrement())
+  preferenceId       Int
+  activityCategoryId Int
+  weight             Int              @default(1)
+  preference         UserPreference   @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
+  activityCategory   ActivityCategory @relation(fields: [activityCategoryId], references: [id])
 
-  @@unique([preferenceId, interestCode])
-  @@index([interestCode])
+  @@unique([preferenceId, activityCategoryId])
+  @@index([activityCategoryId])
 }
 
 model ItineraryVisibility {
@@ -127,7 +128,6 @@ model ItineraryItem {
   itemTypeCode    String            @db.VarChar(30)
   dayNumber       Int
   orderInt        Int
-  title           String?           @db.VarChar(120)
   note            String?           @db.VarChar(400)
   plannedStartAt  DateTime?
   plannedEndAt    DateTime?
@@ -272,12 +272,12 @@ model MetroStation {
 }
 
 model ActivityCategory {
-  id          Int        @id @default(autoincrement())
-  name        String     @unique @db.VarChar(80)
-  description String?    @db.VarChar(200)
-  iconUrl     String?    @db.VarChar(500)
-  createdAt   DateTime   @default(now())
-  activities  Activity[]
+  id            Int                      @id @default(autoincrement())
+  name          String                   @unique @db.VarChar(80)
+  description   String?                  @db.VarChar(200)
+  iconUrl       String?                  @db.VarChar(500)
+  activities    Activity[]
+  userInterests UserPreferenceInterest[]
 }
 
 model Activity {

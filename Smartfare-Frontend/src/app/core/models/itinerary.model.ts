@@ -19,7 +19,6 @@ export interface ItineraryItem {
     id?: number;
     dayNumber: number;
     orderInt: number;
-    title?: string;
     note?: string;
     itemTypeCode: string;
     activityId?: number;

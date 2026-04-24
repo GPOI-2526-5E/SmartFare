@@ -19,10 +19,68 @@
 
 /* ── Sidebar Header ── */
 .sidebar-header {
-  padding: 20px 18px 16px;
+  padding: 16px 16px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.018);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px 36px 10px 38px;
+  color: #fff;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .sidebar-header-top {
@@ -165,119 +223,6 @@
 .sidebar-scroll-area::-webkit-scrollbar-thumb {
   background: rgba(139, 92, 246, 0.3);
   border-radius: 999px;
-}
-
-/* ── Carousel Section ── */
-.carousel-section {
-  padding: 16px 0 20px;
-  background: rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.carousel-header {
-  padding: 0 16px 12px;
-}
-
-.carousel-header h4 {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #f8fafc;
-}
-
-.carousel-subtitle {
-  font-size: 0.72rem;
-  color: rgba(148, 163, 184, 0.5);
-}
-
-.hotel-carousel {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 0 16px 4px;
-  scrollbar-width: none;
-}
-
-.hotel-carousel::-webkit-scrollbar { display: none; }
-
-.hotel-card {
-  flex: 0 0 160px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.hotel-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(139, 92, 246, 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
-
-.hotel-image {
-  height: 100px;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-}
-
-.hotel-overlay {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-}
-
-.hotel-rating {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #fbbf24;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.hotel-body {
-  padding: 8px 10px;
-}
-
-.hotel-title {
-  margin: 0;
-  font-size: 0.8rem;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #fff;
-}
-
-.hotel-price {
-  font-size: 0.72rem;
-  color: #6ee7b7;
-  font-weight: 600;
-  margin-top: 2px;
-}
-
-.hotel-saved-tag {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  background: #10b981;
-  color: #fff;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* ── POI List & Cards Redesign ── */

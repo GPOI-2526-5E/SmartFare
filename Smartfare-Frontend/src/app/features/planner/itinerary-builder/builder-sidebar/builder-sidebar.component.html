@@ -6,15 +6,28 @@
       <h3 class="sidebar-title">Esplora</h3>
       <span class="sidebar-count">{{ filteredList().length }} risultati</span>
     </div>
+
+    <!-- Search Input -->
+    <div class="search-box">
+      <i class="bi bi-search search-icon"></i>
+      <input 
+        type="text" 
+        [ngModel]="searchTerm()" 
+        (ngModelChange)="searchTerm.set($event)"
+        placeholder="Cerca hotel o attività..." 
+        class="search-input"
+      >
+      @if (searchTerm()) {
+        <button class="clear-btn" (click)="searchTerm.set('')">
+          <i class="bi bi-x"></i>
+        </button>
+      }
+    </div>
+
     @if (workspace?.location) {
     <div class="sidebar-location-pill">
       <i class="bi bi-geo-alt-fill"></i>
       {{ workspace?.location?.name }}
-    </div>
-    } @else {
-    <div class="sidebar-location-pill">
-      <i class="bi bi-geo-alt"></i>
-      Nessuna destinazione
     </div>
     }
   </div>
@@ -24,59 +37,26 @@
     <button type="button" class="type-tab" [class.active]="ui.selectedType() === 'all'"
       (click)="setType('all')">
       <i class="bi bi-grid-3x3-gap-fill"></i>
-      Tutto
+      TUTTO
     </button>
     <button type="button" class="type-tab" [class.active]="ui.selectedType() === 'accommodation'"
       (click)="setType('accommodation')">
       <i class="bi bi-building"></i>
-      Hotel
+      HOTEL
     </button>
     <button type="button" class="type-tab" [class.active]="ui.selectedType() === 'activity'"
       (click)="setType('activity')">
       <i class="bi bi-lightning-charge-fill"></i>
-      Attività
+      ATTIVITÀ
     </button>
   </div>
 
   <!-- POI List -->
   <div class="sidebar-scroll-area">
     
-    <!-- Optional: Horizontal Carousel for Hotels -->
-    @if (ui.selectedType() === 'all' && hotelList().length > 0) {
-      <div class="carousel-section">
-        <div class="carousel-header">
-          <h4>Soggiorni consigliati</h4>
-          <span class="carousel-subtitle">I migliori hotel della zona</span>
-        </div>
-        <div class="hotel-carousel">
-          @for (hotel of hotelList(); track hotel.key) {
-            <div class="hotel-card" [class.saved]="isSaved(hotel)" (click)="onPreview(hotel)">
-              <div class="hotel-image" [style.background-image]="'url(' + (hotel.imageUrl || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80') + ')'">
-                <div class="hotel-overlay">
-                  @if (hotel.rating) {
-                    <div class="hotel-rating">
-                      <i class="bi bi-star-fill"></i>
-                      <span>{{ hotel.rating }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
-              <div class="hotel-body">
-                <h5 class="hotel-title">{{ hotel.title }}</h5>
-                <div class="hotel-price">da {{ hotel.price || '??' }}€</div>
-              </div>
-              @if (isSaved(hotel)) {
-                <div class="hotel-saved-tag"><i class="bi bi-check-circle-fill"></i></div>
-              }
-            </div>
-          }
-        </div>
-      </div>
-    }
-
     <div class="poi-list">
       <div class="list-header">
-        <h4>{{ ui.selectedType() === 'accommodation' ? 'Hotel' : (ui.selectedType() === 'activity' ? 'Attività' : 'Tutti i risultati') }}</h4>
+        <h4>{{ searchTerm() ? 'Risultati ricerca' : (ui.selectedType() === 'accommodation' ? 'Hotel' : (ui.selectedType() === 'activity' ? 'Attività' : 'Tutti i risultati')) }}</h4>
       </div>
 
       @if (filteredList().length === 0) {

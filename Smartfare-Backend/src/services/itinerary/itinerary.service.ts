@@ -4,7 +4,6 @@ type DraftItemPayload = {
     itemTypeCode: string;
     dayNumber: number;
     orderInt: number;
-    title: string | null;
     note: string | null;
     plannedStartAt: Date | null;
     plannedEndAt: Date | null;
@@ -37,7 +36,6 @@ export class ItineraryService {
             itemTypeCode: item.itemTypeCode,
             dayNumber: Number(item.dayNumber || 1),
             orderInt: Number(item.orderInt || 1),
-            title: item.title || null,
             note: item.note || null,
             plannedStartAt: item.plannedStartAt ? new Date(item.plannedStartAt) : null,
             plannedEndAt: item.plannedEndAt ? new Date(item.plannedEndAt) : null,

@@ -15,6 +15,7 @@ import { BuilderPoi } from '../builder.types';
 export class BuilderSidebarComponent {
   private workspaceSignal = signal<ItineraryWorkspace | null>(null);
   private savedPoiKeysSignal = signal<Set<string>>(new Set<string>());
+  searchTerm = signal('');
 
   @Input({ required: true })
   set workspace(value: ItineraryWorkspace | null) {
@@ -75,17 +76,20 @@ export class BuilderSidebarComponent {
     return [...accommodations, ...activities];
   });
 
-  readonly hotelList = computed(() => {
-    return this.poiList().filter(p => p.type === 'accommodation');
-  });
-
   readonly filteredList = computed(() => {
     const selectedType = this.ui.selectedType();
     const selectedCategory = this.ui.selectedCategory();
+    const term = this.searchTerm().toLowerCase().trim();
 
     return this.poiList().filter((poi) => {
       if (selectedType !== 'all' && poi.type !== selectedType) return false;
       if (selectedCategory !== 'all' && poi.type === 'activity' && poi.categoryId !== selectedCategory) return false;
+      
+      if (term) {
+        return poi.title.toLowerCase().includes(term) || 
+               (poi.subtitle && poi.subtitle.toLowerCase().includes(term));
+      }
+      
       return true;
     });
   });

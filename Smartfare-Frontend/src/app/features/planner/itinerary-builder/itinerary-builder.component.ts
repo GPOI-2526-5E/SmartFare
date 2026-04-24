@@ -269,7 +269,6 @@ export class ItineraryBuilderComponent implements OnInit {
     const newItem: ItineraryItem = {
       dayNumber: 1,
       orderInt: maxOrder + 1,
-      title: poi.title,
       itemTypeCode: poi.itemTypeCode,
       activityId: poi.type === 'activity' ? poi.entityId : undefined,
       accommodationId: poi.type === 'accommodation' ? poi.entityId : undefined

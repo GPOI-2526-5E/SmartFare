@@ -45,9 +45,9 @@ INSERT INTO "UserPreference" ("id", "userId", "budgetLevelCode", "travelStyle", 
 VALUES (1, 1, 'MEDIUM', 'RELAXED', now(), now())
 ON CONFLICT ("id") DO NOTHING;
 
-INSERT INTO "UserPreferenceInterest" ("preferenceId", "interestCode", "weight")
-VALUES (1, 'CULTURA', 5)
-ON CONFLICT ("preferenceId", "interestCode") DO NOTHING;
+INSERT INTO "UserPreferenceInterest" ("preferenceId", "activityCategoryId", "weight")
+VALUES (1, 1, 5)
+ON CONFLICT ("preferenceId", "activityCategoryId") DO NOTHING;
 
 INSERT INTO "GuestSession" ("sessionToken", "expiresAt", "createdAt")
 VALUES ('guest_token_xyz_123', NOW() + INTERVAL '7 days', now())
@@ -89,16 +89,16 @@ VALUES (1, 1, '2026-06-01 08:30:00+02', '2026-06-01 10:45:00+02', 1, 1)
 ON CONFLICT ("id") DO NOTHING;
 
 -- 6. Elementi dell'Itinerario (Uno per tipologia)
-INSERT INTO "ItineraryItem" ("itineraryId", "itemTypeCode", "dayNumber", "orderInt", "title", "activityId")
-VALUES (1, 'ACTIVITY', 1, 1, 'Visita all''Arco d''Augusto', 1)
+INSERT INTO "ItineraryItem" ("itineraryId", "itemTypeCode", "dayNumber", "orderInt", "activityId")
+VALUES (1, 'ACTIVITY', 1, 1, 1)
 ON CONFLICT ("itineraryId", "dayNumber", "orderInt") DO NOTHING;
 
-INSERT INTO "ItineraryItem" ("itineraryId", "itemTypeCode", "dayNumber", "orderInt", "title", "accommodationId")
-VALUES (1, 'ACCOMMODATION', 1, 2, 'Pernottamento Grand Hotel', 1)
+INSERT INTO "ItineraryItem" ("itineraryId", "itemTypeCode", "dayNumber", "orderInt", "accommodationId")
+VALUES (1, 'ACCOMMODATION', 1, 2, 1)
 ON CONFLICT ("itineraryId", "dayNumber", "orderInt") DO NOTHING;
 
-INSERT INTO "ItineraryItem" ("itineraryId", "itemTypeCode", "dayNumber", "orderInt", "title", "routeSegmentId")
-VALUES (1, 'TRANSPORT', 2, 1, 'Viaggio di ritorno', 1)
+INSERT INTO "ItineraryItem" ("itineraryId", "itemTypeCode", "dayNumber", "orderInt", "routeSegmentId")
+VALUES (1, 'TRANSPORT', 2, 1, 1)
 ON CONFLICT ("itineraryId", "dayNumber", "orderInt") DO NOTHING;
 
 INSERT INTO "ItineraryFavorite" ("userId", "itineraryId", "createdAt")
