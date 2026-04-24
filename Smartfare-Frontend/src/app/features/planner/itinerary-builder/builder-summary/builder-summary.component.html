@@ -1,0 +1,95 @@
+<div class="summary-container">
+  <div class="summary-header">
+    <div class="header-content">
+      <h2 class="destination-name">{{ workspace?.location?.name || 'Il tuo Viaggio' }}</h2>
+      <div class="trip-meta">
+        <span class="meta-item">
+          <i class="bi bi-calendar3"></i>
+          {{ itinerary()?.startDate | date:'dd MMM' }} - {{ itinerary()?.endDate | date:'dd MMM yyyy' }}
+        </span>
+        <span class="meta-item">
+          <i class="bi bi-clock"></i>
+          {{ getDaysCount() }} Giorni
+        </span>
+        <span class="meta-item">
+          <i class="bi bi-geo-alt"></i>
+          {{ workspace?.location?.province }}
+        </span>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-card">
+        <span class="stat-value">{{ accommodations().length }}</span>
+        <span class="stat-label">Hotel</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ activities().length }}</span>
+        <span class="stat-label">Attività</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <!-- Left Column: Itinerary Timeline/List -->
+    <div class="summary-section items-section">
+      <div class="section-header">
+        <i class="bi bi-list-check"></i>
+        <h3>Programma del Viaggio</h3>
+      </div>
+      
+      @if (savedPois.length === 0) {
+        <div class="empty-state">
+          <i class="bi bi-map"></i>
+          <p>Il tuo itinerario è vuoto. Aggiungi hotel e attività dalla mappa per vederli qui.</p>
+        </div>
+      } @else {
+        <div class="poi-list">
+          @for (poi of savedPois; track poi.key) {
+            <div class="poi-card" [class.accommodation]="poi.type === 'accommodation'">
+              <div class="poi-icon">
+                <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
+              </div>
+              <div class="poi-info">
+                <h4>{{ poi.title }}</h4>
+                <p>{{ poi.subtitle }}</p>
+              </div>
+              <div class="poi-type-badge">
+                {{ poi.type === 'accommodation' ? 'Hotel' : 'Attività' }}
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Right Column: Destination Info & Highlights -->
+    <div class="summary-section info-section">
+      <div class="section-header">
+        <i class="bi bi-info-circle"></i>
+        <h3>Dettagli Destinazione</h3>
+      </div>
+      
+      <div class="destination-card">
+        <div class="dest-image">
+          <div class="dest-overlay"></div>
+        </div>
+        <div class="dest-content">
+          <p class="dest-description">
+            {{ 'Esplora le meraviglie di ' + (workspace?.location?.name || 'questa destinazione') + '. Una città tutta da scoprire con hotel accoglienti e attività entusiasmanti per rendere il tuo viaggio indimenticabile.' }}
+          </p>
+          
+          <div class="dest-tags">
+            @for (cat of workspace?.categories?.slice(0, 5); track cat.id) {
+              <span class="dest-tag">#{{ cat.name }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-notes">
+        <h4>Note di Viaggio</h4>
+        <textarea placeholder="Aggiungi qui le tue note, promemoria o desideri per questo viaggio..." class="notes-input"></textarea>
+      </div>
+    </div>
+  </div>
+</div>

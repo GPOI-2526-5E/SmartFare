@@ -11,6 +11,7 @@ export class UIStateService {
   readonly mapView = signal<'selected' | 'all'>('selected');
   readonly activeSurface = signal<'sidebar' | 'map'>('sidebar');
   readonly markerColor = signal('#22c55e'); // Default green
+  readonly showSummary = signal(false);
 
   toggleSidebar() {
     this.showSidebar.update(v => !v);
@@ -38,5 +39,9 @@ export class UIStateService {
 
   setMarkerColor(color: string) {
     this.markerColor.set(color);
+  }
+
+  toggleSummary() {
+    this.showSummary.update(v => !v);
   }
 }

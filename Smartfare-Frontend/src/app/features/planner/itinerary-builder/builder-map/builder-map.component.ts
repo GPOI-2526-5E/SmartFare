@@ -19,41 +19,8 @@ import { BuilderPoi } from '../builder.types';
   selector: 'app-builder-map',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="map-container" (click)="mapFocused.emit()">
-      <div #mapRoot class="map-root"></div>
-      @if (!location) {
-        <div class="map-overlay">Seleziona una destinazione per iniziare</div>
-      }
-    </div>
-  `,
-  styles: [`
-    .map-container {
-      height: 100%;
-      width: 100%;
-      background: #111827;
-      position: relative;
-    }
-
-    .map-root {
-      height: 100%;
-      width: 100%;
-    }
-
-    .map-overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(2, 6, 23, 0.55);
-      color: #e2e8f0;
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      pointer-events: none;
-    }
-  `]
+  templateUrl: './builder-map.component.html',
+  styleUrl: './builder-map.component.css'
 })
 export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('mapRoot', { static: true }) mapRoot!: ElementRef<HTMLDivElement>;

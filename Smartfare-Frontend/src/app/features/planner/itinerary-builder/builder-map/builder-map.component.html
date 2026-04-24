@@ -1,0 +1,15 @@
+<div class="map-container" (click)="mapFocused.emit()">
+  <div #mapRoot class="map-root"></div>
+
+  @if (!location) {
+  <div class="map-overlay">
+    <div class="map-overlay-content">
+      <div class="map-overlay-icon">
+        <i class="bi bi-map"></i>
+      </div>
+      <h3 class="map-overlay-title">Nessuna destinazione selezionata</h3>
+      <p class="map-overlay-sub">Scegli una destinazione per iniziare a esplorare la mappa</p>
+    </div>
+  </div>
+  }
+</div>

@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BuilderHeaderComponent } from './builder-header/builder-header.component';
 import { BuilderSidebarComponent } from './builder-sidebar/builder-sidebar.component';
 import { BuilderMapComponent } from './builder-map/builder-map.component';
+import { BuilderSummaryComponent } from './builder-summary/builder-summary.component';
 import { BuilderChatComponent } from './builder-chat/builder-chat.component';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { Itinerary, ItineraryItem, ItineraryWorkspace } from '../../../core/models/itinerary.model';
@@ -21,6 +22,7 @@ import { BuilderPoi } from './builder.types';
     BuilderHeaderComponent,
     BuilderSidebarComponent,
     BuilderMapComponent,
+    BuilderSummaryComponent,
     BuilderChatComponent,
     LoginPromptModalComponent
   ],

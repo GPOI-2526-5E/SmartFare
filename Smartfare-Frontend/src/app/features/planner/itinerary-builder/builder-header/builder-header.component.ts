@@ -110,6 +110,11 @@ export class BuilderHeaderComponent {
     this.ui.setActiveSurface('sidebar');
   }
 
+  onTypeChangeDirect(type: 'all' | 'accommodation' | 'activity') {
+    this.ui.setType(type);
+    this.ui.setActiveSurface('sidebar');
+  }
+
   onColorChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.ui.setMarkerColor(input.value);
