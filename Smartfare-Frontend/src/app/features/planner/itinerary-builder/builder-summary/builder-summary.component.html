@@ -145,10 +145,29 @@
                 <div class="drag-placeholder" *cdkDragPlaceholder></div>
               </article>
 
+              <div class="poi-planning-row">
+                <div class="planning-field">
+                  <label>{{ poi.type === 'accommodation' ? 'Check-in' : 'Inizio' }}</label>
+                  <input 
+                    type="datetime-local" 
+                    [ngModel]="formatDateForInput(poi.plannedStartAt)" 
+                    (ngModelChange)="onDateFieldChange(poi, 'plannedStartAt', $event)"
+                    class="planning-input">
+                </div>
+                <div class="planning-field">
+                  <label>{{ poi.type === 'accommodation' ? 'Check-out' : 'Fine' }}</label>
+                  <input 
+                    type="datetime-local" 
+                    [ngModel]="formatDateForInput(poi.plannedEndAt)" 
+                    (ngModelChange)="onDateFieldChange(poi, 'plannedEndAt', $event)"
+                    class="planning-input">
+                </div>
+              </div>
+
               <div class="poi-notes-container">
                 <textarea 
                   [ngModel]="poi.note" 
-                  (ngModelChange)="updateNotes(poi, $event)"
+                  (ngModelChange)="updateField(poi, 'note', $event)"
                   placeholder="Nota rapida..."
                   class="poi-note-input"
                   rows="1"></textarea>

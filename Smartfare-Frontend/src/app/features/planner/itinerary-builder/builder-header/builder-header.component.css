@@ -189,7 +189,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .bottom-toolbar::-webkit-scrollbar {

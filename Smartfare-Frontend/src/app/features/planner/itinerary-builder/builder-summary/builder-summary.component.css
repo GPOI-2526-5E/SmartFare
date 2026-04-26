@@ -389,6 +389,46 @@
   color: var(--accent-color);
 }
 
+.poi-planning-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.planning-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.planning-field label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-color-muted);
+  padding-left: 4px;
+}
+
+.planning-input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-color);
+  color: var(--text-color);
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.planning-input:focus {
+  outline: 0;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-color-glow);
+}
+
 .remove-btn {
   width: 32px;
   height: 32px;

@@ -15,6 +15,8 @@ export interface BuilderPoi {
     itemTypeCode: 'ACCOMMODATION' | 'ACTIVITY';
     dayNumber?: number;
     note?: string;
+    plannedStartAt?: string | null;
+    plannedEndAt?: string | null;
     imageUrl?: string;
     price?: number;
     rating?: number;

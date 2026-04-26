@@ -103,7 +103,9 @@ export class ItineraryBuilderComponent implements OnInit {
           return { 
             ...poi, 
             dayNumber: item.dayNumber,
-            note: item.note 
+            note: item.note,
+            plannedStartAt: item.plannedStartAt,
+            plannedEndAt: item.plannedEndAt
           } as BuilderPoi;
         }
         return null;

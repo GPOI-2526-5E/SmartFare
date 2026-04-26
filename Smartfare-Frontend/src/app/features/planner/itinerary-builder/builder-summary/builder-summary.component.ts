@@ -135,14 +135,14 @@ export class BuilderSummaryComponent {
     });
   }
 
-  updateNotes(poi: BuilderPoi, note: string) {
+  updateField(poi: BuilderPoi, field: 'note' | 'plannedStartAt' | 'plannedEndAt', value: string | null) {
     const current = this.itinerary();
     if (!current || !current.items) return;
 
     const updatedItems = current.items.map(item => {
       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
       if (key === poi.key) {
-        return { ...item, note };
+        return { ...item, [field]: value };
       }
       return item;
     });
@@ -151,6 +151,26 @@ export class BuilderSummaryComponent {
       ...current,
       items: updatedItems
     });
+  }
+
+  formatDateForInput(dateStr: string | null | undefined): string {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    
+    // Returns YYYY-MM-DDTHH:mm
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  onDateFieldChange(poi: BuilderPoi, field: 'plannedStartAt' | 'plannedEndAt', value: string) {
+    if (!value) {
+      this.updateField(poi, field, null);
+      return;
+    }
+    // Convert local datetime-local value to ISO string
+    const date = new Date(value);
+    this.updateField(poi, field, date.toISOString());
   }
 
   viewOnMap(poi: BuilderPoi) {
