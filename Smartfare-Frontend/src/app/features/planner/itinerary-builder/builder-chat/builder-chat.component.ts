@@ -8,62 +8,70 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="chat-container">
       <div class="chat-header">
-          <i class="bi bi-robot"></i>
-          AI Travel Assistant
+        <span>AI Assistant</span>
       </div>
-      <div class="chat-messages">
-          <div class="placeholder-text">Chat AI</div>
-      </div>
-      <div class="chat-input">
-          <div class="input-mock">Scrivi un messaggio...</div>
+      <div class="chat-body">
+        <div class="placeholder-wrap">
+          <i class="bi bi-stars"></i>
+          <p>Sezione in arrivo</p>
+          <small>La chat verrà integrata nel prossimo step.</small>
+        </div>
       </div>
     </div>
   `,
   styles: [`
     .chat-container {
+      height: 100%;
       display: flex;
       flex-direction: column;
-      height: 100%;
-      border-left: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(15, 23, 42, 0.5);
-      backdrop-filter: blur(15px);
-      color: #fff;
+      border-radius: inherit;
+      background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(240, 253, 250, 0.95));
+      color: #0f172a;
     }
+
     .chat-header {
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #fff;
-      font-size: 0.95rem;
-      background: rgba(255, 255, 255, 0.03);
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(15, 23, 42, 0.7);
     }
-    .chat-header i { color: #8b5cf6; }
-    .chat-messages {
-      flex-grow: 1;
+
+    .chat-body {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-    .placeholder-text {
-      color: rgba(255, 255, 255, 0.3);
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-    .chat-input {
       padding: 16px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .input-mock {
-      padding: 10px 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.9rem;
+
+    .placeholder-wrap {
+      width: 100%;
+      border: 1px dashed rgba(15, 23, 42, 0.22);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      padding: 24px 14px;
+    }
+
+    .placeholder-wrap i {
+      font-size: 1.8rem;
+      color: #0d9488;
+    }
+
+    .placeholder-wrap p {
+      margin: 8px 0 3px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .placeholder-wrap small {
+      color: rgba(15, 23, 42, 0.62);
+      font-size: 0.78rem;
     }
   `]
 })
-export class BuilderChatComponent {}
+export class BuilderChatComponent { }

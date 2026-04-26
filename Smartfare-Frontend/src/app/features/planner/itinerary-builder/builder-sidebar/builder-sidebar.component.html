@@ -1,26 +1,20 @@
 <div class="sidebar-container" (click)="focusSidebar.emit()">
 
-  <!-- Header -->
   <div class="sidebar-header">
+    <p class="sidebar-kicker">Esplora</p>
     <div class="sidebar-header-top">
-      <h3 class="sidebar-title">Esplora</h3>
+      <h3 class="sidebar-title">Punti di interesse</h3>
       <span class="sidebar-count">{{ filteredList().length }} risultati</span>
     </div>
 
-    <!-- Search Input -->
     <div class="search-box">
       <i class="bi bi-search search-icon"></i>
-      <input 
-        type="text" 
-        [ngModel]="searchTerm()" 
-        (ngModelChange)="searchTerm.set($event)"
-        placeholder="Cerca hotel o attività..." 
-        class="search-input"
-      >
+      <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
+        placeholder="Cerca hotel, attività o via..." class="search-input">
       @if (searchTerm()) {
-        <button class="clear-btn" (click)="searchTerm.set('')">
-          <i class="bi bi-x"></i>
-        </button>
+      <button class="clear-btn" (click)="searchTerm.set('')">
+        <i class="bi bi-x"></i>
+      </button>
       }
     </div>
 
@@ -28,35 +22,17 @@
     <div class="sidebar-location-pill">
       <i class="bi bi-geo-alt-fill"></i>
       {{ workspace?.location?.name }}
+      <span class="dot-separator">•</span>
+      <strong>{{ workspace?.location?.province }}</strong>
     </div>
     }
   </div>
 
-  <!-- Type Tabs -->
-  <div class="type-tabs">
-    <button type="button" class="type-tab" [class.active]="ui.selectedType() === 'all'"
-      (click)="setType('all')">
-      <i class="bi bi-grid-3x3-gap-fill"></i>
-      TUTTO
-    </button>
-    <button type="button" class="type-tab" [class.active]="ui.selectedType() === 'accommodation'"
-      (click)="setType('accommodation')">
-      <i class="bi bi-building"></i>
-      HOTEL
-    </button>
-    <button type="button" class="type-tab" [class.active]="ui.selectedType() === 'activity'"
-      (click)="setType('activity')">
-      <i class="bi bi-lightning-charge-fill"></i>
-      ATTIVITÀ
-    </button>
-  </div>
-
-  <!-- POI List -->
   <div class="sidebar-scroll-area">
-    
     <div class="poi-list">
       <div class="list-header">
-        <h4>{{ searchTerm() ? 'Risultati ricerca' : (ui.selectedType() === 'accommodation' ? 'Hotel' : (ui.selectedType() === 'activity' ? 'Attività' : 'Tutti i risultati')) }}</h4>
+        <h4>Risultati filtrati dalla toolbar</h4>
+        <p>In questa sezione trovi solo i contenuti, i filtri restano nella barra superiore.</p>
       </div>
 
       @if (filteredList().length === 0) {
@@ -70,13 +46,13 @@
 
       @for (poi of filteredList(); track poi.key) {
       <article class="poi-card" [class.saved]="isSaved(poi)" (click)="onPreview(poi)">
-        
+
         @if (poi.imageUrl) {
-          <div class="poi-card-image" [style.background-image]="'url(' + poi.imageUrl + ')'">
-            <div class="poi-card-badge" [class.accommodation]="poi.type === 'accommodation'">
-              <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
-            </div>
+        <div class="poi-card-image" [style.background-image]="'url(' + poi.imageUrl + ')'">
+          <div class="poi-card-badge" [class.accommodation]="poi.type === 'accommodation'">
+            <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
           </div>
+        </div>
         }
 
         <div class="poi-card-main">
@@ -85,21 +61,22 @@
               <div class="poi-header-row">
                 <h4 class="poi-title">{{ poi.title }}</h4>
                 @if (poi.rating) {
-                  <span class="poi-rating">
-                    <i class="bi bi-star-fill"></i>
-                    {{ poi.rating }}
-                  </span>
+                <span class="poi-rating">
+                  <i class="bi bi-star-fill"></i>
+                  {{ poi.rating }}
+                </span>
                 }
               </div>
               <p class="poi-subtitle">{{ poi.subtitle }}</p>
-              
+
               <div class="poi-details">
                 @if (poi.price) {
-                  <span class="poi-price-tag">
-                    {{ poi.price }}€
-                  </span>
+                <span class="poi-price-tag">
+                  {{ poi.price }}€
+                </span>
                 }
-                <span class="poi-badge" [class.accommodation-badge]="poi.type === 'accommodation'" [class.activity-badge]="poi.type === 'activity'">
+                <span class="poi-badge" [class.accommodation-badge]="poi.type === 'accommodation'"
+                  [class.activity-badge]="poi.type === 'activity'">
                   {{ poi.categoryName || (poi.type === 'accommodation' ? 'Hotel' : 'Attività') }}
                 </span>
               </div>
@@ -107,8 +84,7 @@
           </div>
 
           <div class="poi-card-footer">
-            <button type="button" class="btn-preview"
-              (click)="onPreview(poi); $event.stopPropagation()">
+            <button type="button" class="btn-preview" (click)="onPreview(poi); $event.stopPropagation()">
               <i class="bi bi-eye"></i>
               Mostra
             </button>
@@ -116,10 +92,10 @@
               (click)="onAdd(poi); $event.stopPropagation()">
               @if (isSaved(poi)) {
               <i class="bi bi-check-circle-fill"></i>
-              Aggiunto
+              Salvato
               } @else {
               <i class="bi bi-plus-circle"></i>
-              Aggiungi
+              Inserisci
               }
             </button>
           </div>

@@ -1,22 +1,24 @@
 <div class="builder-container">
-    <!-- Header with toolbars -->
+    <div class="builder-atmosphere" aria-hidden="true">
+        <span class="glow glow-a"></span>
+        <span class="glow glow-b"></span>
+        <span class="glow glow-c"></span>
+    </div>
+
     <app-builder-header [workspace]="workspace()" (navRequest)="handleNavigationIntercept($event)"
         (changeLocationRequest)="onChangeLocationRequest()" (saveRequest)="handleSaveRequest()">
     </app-builder-header>
 
-    <!-- Main Workspace divided in 3 horizontal sections -->
     <main class="builder-workspace">
-        <!-- Section 1: Hotel/Activity selection (Left) -->
         @if (ui.showSidebar()) {
-        <aside class="workspace-sidebar">
+        <aside class="workspace-sidebar workspace-panel" aria-label="Esplora punti di interesse">
             <app-builder-sidebar [workspace]="workspace()" [savedPoiKeys]="savedPoiKeys()"
                 (focusSidebar)="onSidebarFocused()" (previewPoi)="onPreviewPoi($event)" (addPoi)="onAddPoi($event)">
             </app-builder-sidebar>
         </aside>
         }
 
-        <!-- Section 2: Map visualization (Center) -->
-        <section class="workspace-map">
+        <section class="workspace-map workspace-panel" aria-label="Mappa itinerario">
             @if (!ui.showSummary()) {
             <app-builder-map [location]="workspace()?.location || null" [savedPois]="filteredSavedPois()"
                 [routePois]="savedPois()" [availablePois]="mapAvailablePois()" [previewPoi]="previewPoi()"
@@ -28,9 +30,8 @@
             }
         </section>
 
-        <!-- Section 3: AI Chat (Right) -->
         @if (ui.showChat()) {
-        <aside class="workspace-chat">
+        <aside class="workspace-chat workspace-panel" aria-label="Area assistente AI">
             <app-builder-chat></app-builder-chat>
         </aside>
         }

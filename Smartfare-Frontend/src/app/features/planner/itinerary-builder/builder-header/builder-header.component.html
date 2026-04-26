@@ -1,16 +1,18 @@
 <header class="builder-header">
-  <!-- Top Toolbar -->
   <div class="top-toolbar">
     <div class="toolbar-left">
       <a href="/home" (click)="onNavRequest('/home', $event)" class="brand anchor-reset">
         <img src="favicon.png" alt="logo" class="logo-small">
-        <span class="brand-name">SMARTFARE</span>
+        <div class="brand-copy">
+          <span class="brand-name">SMARTFARE</span>
+          <span class="brand-sub">Journey Studio</span>
+        </div>
       </a>
-      <div class="top-divider"></div>
+
       <div class="itinerary-name-container">
-        <i class="bi bi-pencil-simple name-edit-icon"></i>
+        <i class="bi bi-pencil-square name-edit-icon"></i>
         <input type="text" class="itinerary-name-input" [ngModel]="itinerary()?.name"
-          (ngModelChange)="updateName($event)" placeholder="Senza titolo">
+          (ngModelChange)="updateName($event)" placeholder="Dai un nome al viaggio">
         <span class="save-status" [ngClass]="{
           'is-saving': autosaveStatus() === 'saving',
           'is-error': autosaveStatus() === 'error'
@@ -21,20 +23,26 @@
     </div>
 
     <div class="toolbar-right">
+      <button type="button" class="save-cta" (click)="saveItinerary()">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <span>Salva</span>
+      </button>
+
       <div class="dropdown">
-        <div class="user-avatar pointer" data-bs-toggle="dropdown" aria-expanded="false">
+        <button type="button" class="user-avatar pointer" data-bs-toggle="dropdown" aria-expanded="false">
           @if (user()?.avatarUrl) {
           <img [src]="user()?.avatarUrl" [alt]="user()?.name" class="avatar-img" referrerpolicy="no-referrer">
           } @else {
           {{ user()?.name?.charAt(0) || 'U' }}{{ user()?.surname?.charAt(0) || '' }}
           }
-        </div>
+        </button>
+
         <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
           @if (isAuthenticated()) {
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
               <i class="bi bi-journal-bookmark"></i>
-              <span>I miei Itinerari</span>
+              <span>I miei itinerari</span>
             </a>
           </li>
           <li>
@@ -49,7 +57,9 @@
               <span>Impostazioni</span>
             </a>
           </li>
-          <li><hr class="dropdown-divider border-white-10"></li>
+          <li>
+            <hr class="dropdown-divider border-white-10">
+          </li>
           } @else {
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/login']">
@@ -63,33 +73,25 @@
               <span>Registrati</span>
             </a>
           </li>
-          <li><hr class="dropdown-divider border-white-10"></li>
+          <li>
+            <hr class="dropdown-divider border-white-10">
+          </li>
           }
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/home"
               (click)="onNavRequest('/home', $event)">
               <i class="bi bi-house"></i>
-              <span>Torna alla Home</span>
+              <span>Torna alla home</span>
             </a>
-          </li>
-          <li>
-            <button class="dropdown-item d-flex align-items-center gap-2 py-2 text-success-light"
-              (click)="saveItinerary()">
-              <i class="bi bi-cloud-arrow-up"></i>
-              <span>Salva nei miei itinerari</span>
-            </button>
           </li>
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Toolbar (Context-Aware) -->
   <div class="bottom-toolbar">
-
-    <!-- Always visible: Luogo -->
-    <div class="toolbar-section">
-      <span class="section-label">Luogo</span>
+    <section class="toolbar-section toolbar-section--base">
+      <span class="section-label">Destinazione</span>
       <div class="btn-group-pill">
         <button class="pill-btn" type="button" (click)="changeLocationRequest.emit()">
           <i class="bi bi-arrow-repeat"></i>
@@ -100,27 +102,15 @@
           <span>{{ workspace?.location?.name || 'Nessuna località' }}</span>
         </button>
       </div>
-    </div>
+    </section>
 
     <div class="v-divider"></div>
 
-    <!-- ════════════ SIDEBAR ACTIVE ════════════ -->
     @if (ui.activeSurface() === 'sidebar') {
-
-    <!-- Context Badge -->
-    <div class="context-badge context-badge--sidebar">
-      <i class="bi bi-layout-sidebar"></i>
-      <span>Sidebar</span>
-    </div>
-
-    <div class="v-divider"></div>
-
-    <!-- Type selector as pill buttons -->
-    <div class="toolbar-section">
-      <span class="section-label">Tipo contenuto</span>
+    <section class="toolbar-section">
+      <span class="section-label">Contenuto</span>
       <div class="segmented-group">
-        <button class="seg-btn" [class.active]="ui.selectedType() === 'all'"
-          (click)="onTypeChangeDirect('all')">
+        <button class="seg-btn" [class.active]="ui.selectedType() === 'all'" (click)="onTypeChangeDirect('all')">
           <i class="bi bi-grid-3x3-gap-fill"></i>
           <span>Tutto</span>
         </button>
@@ -135,13 +125,10 @@
           <span>Attività</span>
         </button>
       </div>
-    </div>
+    </section>
 
-    <div class="v-divider"></div>
-
-    <!-- Category selector -->
-    <div class="toolbar-section">
-      <span class="section-label">Categoria attività</span>
+    <section class="toolbar-section">
+      <span class="section-label">Categoria</span>
       <div class="select-wrapper">
         <i class="bi bi-tags select-icon"></i>
         <select id="category-select" class="toolbar-select" (change)="onCategoryChange($event)">
@@ -152,21 +139,9 @@
         </select>
         <i class="bi bi-chevron-down select-chevron"></i>
       </div>
-    </div>
-
-    <!-- ════════════ MAP ACTIVE ════════════ -->
+    </section>
     } @else {
-
-    <!-- Context Badge -->
-    <div class="context-badge context-badge--map">
-      <i class="bi bi-map-fill"></i>
-      <span>Mappa</span>
-    </div>
-
-    <div class="v-divider"></div>
-
-    <!-- Map view controls -->
-    <div class="toolbar-section">
+    <section class="toolbar-section">
       <span class="section-label">Vista mappa</span>
       <div class="btn-group-pill">
         <button class="pill-btn" (click)="showSelectedMarkers()" title="Mostra solo i marker salvati">
@@ -178,43 +153,36 @@
           <span>In zona</span>
         </button>
       </div>
-    </div>
+    </section>
 
-    <div class="v-divider"></div>
-
-    <!-- Marker color -->
-    <div class="toolbar-section">
+    <section class="toolbar-section">
       <span class="section-label">Colore marker</span>
       <label class="color-swatch-label" title="Cambia colore marker">
         <input type="color" [value]="ui.markerColor()" (input)="onColorChange($event)" class="hidden-color-input">
-        <div class="color-swatch" [style.background-color]="ui.markerColor()">
-          <i class="bi bi-eyedropper"></i>
-        </div>
+        <span class="color-swatch" [style.background-color]="ui.markerColor()"></span>
       </label>
-    </div>
-
+    </section>
     }
 
     <div class="spacer"></div>
 
-    <!-- Layout Toggles — always visible -->
-    <div class="toolbar-section">
+    <section class="toolbar-section toolbar-section--layout">
       <span class="section-label">Layout</span>
       <div class="toggle-group">
         <button class="toggle-btn" [class.active]="ui.showSidebar()" (click)="ui.toggleSidebar()" title="Sidebar">
           <i class="bi bi-layout-sidebar"></i>
           <span class="toggle-label">Sidebar</span>
         </button>
-        <button class="toggle-btn" [class.active]="ui.showChat()" (click)="ui.toggleChat()" title="AI Chat">
-          <i class="bi bi-stars"></i>
-          <span class="toggle-label">AI</span>
-        </button>
-        <button class="toggle-btn" [class.active]="ui.showSummary()" (click)="ui.toggleSummary()" title="Riepilogo Viaggio">
+        <button class="toggle-btn" [class.active]="ui.showSummary()" (click)="ui.toggleSummary()"
+          title="Riepilogo viaggio">
           <i class="bi bi-journal-text"></i>
           <span class="toggle-label">Riepilogo</span>
         </button>
+        <button class="toggle-btn" [class.active]="ui.showChat()" (click)="ui.toggleChat()" title="Area AI">
+          <i class="bi bi-stars"></i>
+          <span class="toggle-label">AI</span>
+        </button>
       </div>
-    </div>
-
+    </section>
   </div>
 </header>
