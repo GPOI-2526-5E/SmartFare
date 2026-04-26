@@ -2,18 +2,22 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid var(--glass-border);
+  color: var(--text-color);
+  font-family: 'Outfit', sans-serif;
   overflow: hidden;
-  color: #0f172a;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 249, 255, 0.95) 100%);
   border-radius: inherit;
 }
 
 .sidebar-header {
-  padding: 16px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--bg-color-alt);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .sidebar-kicker {
@@ -22,7 +26,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  color: #0d9488;
+  color: var(--accent-color);
 }
 
 .sidebar-header-top {
@@ -42,30 +46,41 @@
 .sidebar-count {
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(13, 148, 136, 0.1);
-  color: #115e59;
+  background: var(--accent-color-glow);
+  color: var(--accent-color);
   font-size: 0.72rem;
   font-weight: 700;
 }
 
 .search-box {
   position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  background: var(--bg-color);
+  border: 1px solid var(--glass-border);
+  transition: all 0.2s ease;
+}
+
+.search-box:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-color-glow);
 }
 
 .search-input {
-  width: 100%;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 12px;
-  background: #fff;
-  color: #0f172a;
-  padding: 10px 38px 10px 38px;
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 10px 12px 10px 38px;
   font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
 }
 
-.search-input:focus {
-  outline: 0;
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+.search-input::placeholder {
+  color: var(--text-color-muted);
+  opacity: 0.6;
 }
 
 .search-icon,
@@ -77,7 +92,7 @@
 
 .search-icon {
   left: 12px;
-  color: rgba(15, 23, 42, 0.4);
+  color: var(--text-color-muted);
 }
 
 .clear-btn {
@@ -88,8 +103,9 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: rgba(15, 23, 42, 0.08);
-  color: #0f172a;
+  background: var(--bg-color-alt);
+  color: var(--text-color);
+  cursor: pointer;
 }
 
 .sidebar-location-pill {
@@ -98,20 +114,16 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(3, 105, 161, 0.25);
-  background: rgba(3, 105, 161, 0.08);
-  color: #075985;
+  border: 1px solid var(--accent-color-glow);
+  background: var(--accent-color-glow);
+  color: var(--accent-color);
   font-size: 0.78rem;
   font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.dot-separator {
-  opacity: 0.55;
 }
 
 .sidebar-scroll-area {
@@ -120,185 +132,194 @@
 }
 
 .poi-list {
-  padding: 14px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .list-header h4 {
   margin: 0;
   font-size: 0.78rem;
-  color: rgba(15, 23, 42, 0.7);
+  color: var(--text-color-muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .list-header p {
   margin: 4px 0 0;
-  color: rgba(15, 23, 42, 0.55);
+  color: var(--text-color-muted);
+  opacity: 0.7;
   font-size: 0.77rem;
   line-height: 1.4;
 }
 
 .poi-card {
+  position: relative;
   display: flex;
+  flex-direction: column;
+  background: var(--bg-color-alt);
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
   overflow: hidden;
-  border-radius: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #fff;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .poi-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(2, 132, 199, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  border-color: var(--accent-color);
 }
 
 .poi-card.saved {
-  border-color: rgba(16, 185, 129, 0.45);
-  background: linear-gradient(150deg, #ffffff, #ecfdf5);
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
 }
 
 .poi-card-image {
-  width: 96px;
+  height: 140px;
   background-size: cover;
   background-position: center;
   position: relative;
-  flex-shrink: 0;
 }
 
 .poi-card-badge {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
+  top: 10px;
+  left: 10px;
+  width: 32px;
+  height: 32px;
+  background: var(--accent-color);
+  color: #fff;
+  border-radius: 8px;
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.9);
-  color: #d97706;
-}
-
-.poi-card-badge.accommodation {
-  color: #0284c7;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .poi-card-main {
-  flex: 1;
-  min-width: 0;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-}
-
-.poi-card-body {
-  padding: 10px 12px 8px;
-}
-
-.poi-header-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
 }
 
 .poi-title {
   margin: 0;
-  font-size: 0.95rem;
-  font-weight: 800;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-color);
+  line-height: 1.3;
 }
 
 .poi-rating {
-  color: #ca8a04;
-  font-size: 0.73rem;
+  color: #f59e0b;
+  font-size: 0.8rem;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .poi-subtitle {
-  margin: 3px 0 8px;
-  font-size: 0.77rem;
-  color: rgba(15, 23, 42, 0.6);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-color-muted);
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .poi-details {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .poi-price-tag {
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
-  font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 700;
+  color: var(--accent-color);
+  font-size: 0.95rem;
 }
 
 .poi-badge {
-  font-size: 0.67rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  font-weight: 800;
   text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.55);
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--bg-color);
+  color: var(--text-color-muted);
 }
 
 .poi-card-footer {
   display: flex;
   gap: 8px;
-  padding: 0 10px 10px;
+  border-top: 1px solid var(--glass-border);
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .btn-preview,
 .btn-add {
   flex: 1;
-  border-radius: 10px;
-  font-size: 0.75rem;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 4px;
+  font-size: 0.8rem;
   font-weight: 700;
-  padding: 7px;
-  border: 1px solid rgba(15, 23, 42, 0.14);
-  background: #fff;
-  color: #0f172a;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-preview {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.btn-preview:hover {
+  background: var(--bg-color-alt);
 }
 
 .btn-add {
-  background: #0f766e;
-  border-color: #115e59;
-  color: #ecfeff;
+  background: var(--accent-color);
+  color: #fff;
+}
+
+.btn-add:hover:not(:disabled) {
+  filter: brightness(1.15);
 }
 
 .btn-add:disabled {
-  opacity: 0.55;
+  background: #10b981;
+  color: #fff;
+  cursor: default;
 }
 
 .empty-state {
-  border: 1px dashed rgba(15, 23, 42, 0.2);
-  border-radius: 14px;
-  background: rgba(248, 250, 252, 0.8);
-  padding: 26px 16px;
+  padding: 40px 20px;
   text-align: center;
+  background: var(--bg-color-alt);
+  border-radius: 16px;
+  border: 2px dashed var(--glass-border);
 }
 
 .empty-state-icon {
-  font-size: 1.8rem;
-  color: rgba(15, 23, 42, 0.3);
-  margin-bottom: 8px;
+  font-size: 2.5rem;
+  color: var(--text-color-muted);
+  opacity: 0.3;
+  margin-bottom: 12px;
 }
 
 @media (max-width: 992px) {
   .sidebar-container {
-    border-radius: 16px;
+    border-radius: 20px 20px 0 0;
   }
 }

@@ -92,15 +92,58 @@
   <div class="bottom-toolbar">
     <section class="toolbar-section toolbar-section--base">
       <span class="section-label">Destinazione</span>
-      <div class="btn-group-pill">
-        <button class="pill-btn" type="button" (click)="changeLocationRequest.emit()">
-          <i class="bi bi-arrow-repeat"></i>
-          <span>Cambia</span>
-        </button>
-        <button class="pill-btn pill-btn--location" type="button" disabled>
-          <i class="bi bi-geo-alt-fill"></i>
-          <span>{{ workspace?.location?.name || 'Nessuna località' }}</span>
-        </button>
+      <div class="location-pill-container">
+        <div class="btn-group-pill">
+          <button class="pill-btn" type="button" (click)="toggleLocationSearch()">
+            <i class="bi bi-arrow-repeat"></i>
+            <span>Cambia</span>
+          </button>
+          <button class="pill-btn pill-btn--location" type="button" disabled>
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>{{ workspace?.location?.name || 'Nessuna località' }}</span>
+          </button>
+        </div>
+
+        @if (showLocationSearch()) {
+        <div class="location-search-overlay">
+          <div class="search-input-wrapper">
+            <i class="bi bi-search"></i>
+            <input 
+              id="location-search-input"
+              type="text" 
+              [ngModel]="locationSearchTerm()" 
+              (ngModelChange)="onLocationSearchChange($event)"
+              placeholder="Cerca una nuova città..."
+              class="location-search-input">
+            <button class="close-search" (click)="showLocationSearch.set(false)">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          @if (isSearchingLocations()) {
+          <div class="search-loading">
+            <div class="spinner-border spinner-border-sm text-primary"></div>
+            <span>Ricerca in corso...</span>
+          </div>
+          }
+
+          @if (locationResults().length > 0) {
+          <ul class="location-results-list">
+            @for (loc of locationResults(); track loc.id) {
+            <li (click)="selectNewLocation(loc)">
+              <i class="bi bi-geo-alt"></i>
+              <div class="loc-info">
+                <span class="loc-name">{{ loc.name }}</span>
+                <span class="loc-prov">{{ loc.province }}</span>
+              </div>
+            </li>
+            }
+          </ul>
+          } @else if (locationSearchTerm().length >= 2 && !isSearchingLocations()) {
+          <div class="no-results">Nessuna città trovata</div>
+          }
+        </div>
+        }
       </div>
     </section>
 

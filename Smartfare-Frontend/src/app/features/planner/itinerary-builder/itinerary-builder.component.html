@@ -5,9 +5,12 @@
         <span class="glow glow-c"></span>
     </div>
 
-    <app-builder-header [workspace]="workspace()" (navRequest)="handleNavigationIntercept($event)"
-        (changeLocationRequest)="onChangeLocationRequest()" (saveRequest)="handleSaveRequest()">
-    </app-builder-header>
+    <app-builder-header 
+    [workspace]="workspace()" 
+    (navRequest)="handleNavigationIntercept($event)"
+    (saveRequest)="handleSaveRequest()"
+    (locationSelected)="loadWorkspace($event)">
+  </app-builder-header>
 
     <main class="builder-workspace">
         @if (ui.showSidebar()) {

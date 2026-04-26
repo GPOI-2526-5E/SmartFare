@@ -49,56 +49,50 @@
 
         @if (poi.imageUrl) {
         <div class="poi-card-image" [style.background-image]="'url(' + poi.imageUrl + ')'">
-          <div class="poi-card-badge" [class.accommodation]="poi.type === 'accommodation'">
+          <div class="poi-card-badge">
             <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
           </div>
         </div>
         }
 
         <div class="poi-card-main">
-          <div class="poi-card-body">
-            <div class="poi-content">
-              <div class="poi-header-row">
-                <h4 class="poi-title">{{ poi.title }}</h4>
-                @if (poi.rating) {
-                <span class="poi-rating">
-                  <i class="bi bi-star-fill"></i>
-                  {{ poi.rating }}
-                </span>
-                }
-              </div>
-              <p class="poi-subtitle">{{ poi.subtitle }}</p>
-
-              <div class="poi-details">
-                @if (poi.price) {
-                <span class="poi-price-tag">
-                  {{ poi.price }}€
-                </span>
-                }
-                <span class="poi-badge" [class.accommodation-badge]="poi.type === 'accommodation'"
-                  [class.activity-badge]="poi.type === 'activity'">
-                  {{ poi.categoryName || (poi.type === 'accommodation' ? 'Hotel' : 'Attività') }}
-                </span>
-              </div>
-            </div>
+          <div class="poi-header-row">
+            <h4 class="poi-title">{{ poi.title }}</h4>
+            @if (poi.rating) {
+            <span class="poi-rating">
+              <i class="bi bi-star-fill"></i>
+              {{ poi.rating }}
+            </span>
+            }
           </div>
 
-          <div class="poi-card-footer">
-            <button type="button" class="btn-preview" (click)="onPreview(poi); $event.stopPropagation()">
-              <i class="bi bi-eye"></i>
-              Mostra
-            </button>
-            <button type="button" class="btn-add" [disabled]="isSaved(poi)"
-              (click)="onAdd(poi); $event.stopPropagation()">
-              @if (isSaved(poi)) {
-              <i class="bi bi-check-circle-fill"></i>
-              Salvato
-              } @else {
-              <i class="bi bi-plus-circle"></i>
-              Inserisci
-              }
-            </button>
+          <p class="poi-subtitle">{{ poi.subtitle }}</p>
+
+          <div class="poi-details">
+            @if (poi.price) {
+            <span class="poi-price-tag">{{ poi.price }}€</span>
+            }
+            <span class="poi-badge">
+              {{ poi.categoryName || (poi.type === 'accommodation' ? 'Hotel' : 'Attività') }}
+            </span>
           </div>
+        </div>
+
+        <div class="poi-card-footer">
+          <button type="button" class="btn-preview" (click)="onPreview(poi); $event.stopPropagation()">
+            <i class="bi bi-eye"></i>
+            Mostra
+          </button>
+          <button type="button" class="btn-add" [disabled]="isSaved(poi)"
+            (click)="onAdd(poi); $event.stopPropagation()">
+            @if (isSaved(poi)) {
+            <i class="bi bi-check-circle-fill"></i>
+            Salvato
+            } @else {
+            <i class="bi bi-plus-circle"></i>
+            Inserisci
+            }
+          </button>
         </div>
 
       </article>

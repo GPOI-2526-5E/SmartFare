@@ -5,20 +5,22 @@
   flex-direction: column;
   gap: 8px;
   padding: 10px 12px 0;
-  color: #0f172a;
+  color: var(--text-color);
   font-family: 'Manrope', 'Segoe UI', sans-serif;
 }
 
 .top-toolbar,
 .bottom-toolbar {
   border-radius: 18px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 .top-toolbar {
+  position: relative;
+  z-index: 10;
   min-height: 62px;
   padding: 10px 14px;
   display: flex;
@@ -69,7 +71,7 @@
 
 .brand-sub {
   font-size: 0.69rem;
-  color: rgba(15, 23, 42, 0.62);
+  color: var(--text-color-muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -81,8 +83,8 @@
   min-width: min(50vw, 500px);
   padding: 8px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  background: rgba(248, 250, 252, 0.85);
+  border: 1px solid var(--glass-border);
+  background: var(--bg-color-alt);
 }
 
 .itinerary-name-container:focus-within {
@@ -91,7 +93,7 @@
 }
 
 .name-edit-icon {
-  color: rgba(15, 23, 42, 0.45);
+  color: var(--text-color-muted);
 }
 
 .itinerary-name-input {
@@ -99,13 +101,14 @@
   border: 0;
   outline: 0;
   background: transparent;
-  color: #0f172a;
+  color: var(--text-color);
   font-size: 0.92rem;
   font-weight: 600;
 }
 
 .itinerary-name-input::placeholder {
-  color: rgba(15, 23, 42, 0.4);
+  color: var(--text-color-muted);
+  opacity: 0.5;
 }
 
 .save-status {
@@ -137,16 +140,19 @@
 }
 
 .user-avatar {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
-  border: 2px solid rgba(14, 165, 233, 0.35);
-  background: #083344;
-  color: #fff;
+  border: 2px solid var(--accent-color);
+  background: var(--bg-color-alt);
+  color: var(--text-color);
   font-weight: 800;
   display: grid;
   place-items: center;
   overflow: hidden;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .avatar-img {
@@ -156,21 +162,28 @@
 }
 
 .dropdown-menu {
+  z-index: 1000;
   min-width: 220px;
-  border: 1px solid rgba(15, 23, 42, 0.1) !important;
-  background: #ffffff !important;
+  border: 1px solid var(--glass-border) !important;
+  background: var(--bg-color-alt) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
 }
 
 .dropdown-item {
   border-radius: 8px;
-  color: #0f172a !important;
+  color: var(--text-color) !important;
+  transition: all 0.2s ease;
 }
 
 .dropdown-item:hover {
-  background: #f1f5f9 !important;
+  background: var(--accent-color-glow) !important;
+  transform: translateX(4px);
 }
 
 .bottom-toolbar {
+  position: relative;
+  z-index: 5;
   min-height: 70px;
   padding: 10px 12px;
   display: flex;
@@ -195,14 +208,121 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.55);
+  color: var(--text-color-muted);
 }
 
 .v-divider {
   width: 1px;
   height: 34px;
-  background: rgba(15, 23, 42, 0.1);
+  background: var(--glass-border);
   margin: 0 4px;
+}
+
+.location-pill-container {
+  position: relative;
+}
+
+.location-search-overlay {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  width: 320px;
+  background: var(--bg-color-alt);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  padding: 12px;
+  backdrop-filter: blur(20px);
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-color);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 0 10px;
+}
+
+.search-input-wrapper i {
+  color: var(--text-color-muted);
+}
+
+.location-search-input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 10px 8px;
+  color: var(--text-color);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.close-search {
+  background: transparent;
+  border: 0;
+  color: var(--text-color-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.location-results-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.location-results-list li {
+  padding: 10px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.location-results-list li:hover {
+  background: var(--accent-color-glow);
+}
+
+.location-results-list li i {
+  color: var(--accent-color);
+  font-size: 1.1rem;
+}
+
+.loc-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.loc-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.loc-prov {
+  font-size: 0.72rem;
+  color: var(--text-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.search-loading,
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-color-muted);
+  font-size: 0.85rem;
 }
 
 .btn-group-pill,
@@ -216,16 +336,17 @@
 .pill-btn,
 .seg-btn,
 .toggle-btn {
-  border: 1px solid rgba(15, 23, 42, 0.14);
+  border: 1px solid var(--glass-border);
   border-radius: 999px;
-  background: #fff;
-  color: #0f172a;
+  background: var(--bg-color-alt);
+  color: var(--text-color);
   padding: 7px 11px;
   font-size: 0.8rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  transition: all 0.2s ease;
 }
 
 .seg-btn.active,
@@ -236,9 +357,10 @@
 }
 
 .pill-btn--location {
-  border-color: rgba(3, 105, 161, 0.3);
-  background: rgba(3, 105, 161, 0.08);
-  color: #075985;
+  border-color: var(--accent-color-glow);
+  background: var(--accent-color-glow);
+  color: var(--accent-color);
+  opacity: 0.9;
 }
 
 .select-wrapper {
@@ -266,9 +388,9 @@
   appearance: none;
   min-width: 180px;
   border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.15);
-  background: #fff;
-  color: #0f172a;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-color-alt);
+  color: var(--text-color);
   padding: 7px 32px 7px 30px;
   font-size: 0.82rem;
   font-weight: 700;

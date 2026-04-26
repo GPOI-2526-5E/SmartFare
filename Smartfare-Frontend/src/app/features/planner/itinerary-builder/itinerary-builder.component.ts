@@ -176,11 +176,15 @@ export class ItineraryBuilderComponent implements OnInit {
       return;
     }
 
+    const start = query['in'] || new Date().toISOString().split('T')[0];
+    // Default to 1 day if 'out' is missing
+    const end = query['out'] || start;
+
     this.itineraryService.setCurrentItinerary(
       {
         name: query['dest'] ? `Viaggio a ${query['dest']}` : 'Il mio Viaggio',
-        startDate: query['in'],
-        endDate: query['out'],
+        startDate: start,
+        endDate: end,
         locationId,
         items: []
       },
@@ -206,7 +210,7 @@ export class ItineraryBuilderComponent implements OnInit {
     this.loadWorkspace(locationId);
   }
 
-  private loadWorkspace(locationId: number) {
+  loadWorkspace(locationId: number) {
     this.isLoadingWorkspace.set(true);
     this.workspaceError.set(null);
 
@@ -222,13 +226,19 @@ export class ItineraryBuilderComponent implements OnInit {
 
       const current = this.itineraryService.itinerary();
       if (current) {
+        // If we selected a new location, we might want to reset the itinerary items 
+        // because they belong to the previous location.
+        // For now, let's just update the location and keep the items, 
+        // but typically changing city should probably clear the items or warn the user.
         this.itineraryService.setCurrentItinerary(
           {
             ...current,
             locationId: ws.location.id,
-            location: ws.location
+            location: ws.location,
+            // If the user explicitly changed location from the header, we might want to reset
+            items: current.locationId === ws.location.id ? current.items : []
           },
-          { autosave: false }
+          { autosave: true }
         );
       }
     });

@@ -84,7 +84,7 @@
       } @else {
       <div class="days-container" cdkDropListGroup>
         @for (group of groupedDays(); track group.day) {
-        <section class="day-section surface-card">
+        <section class="day-section">
           <div class="day-header">
             <div class="day-title-wrap">
               <span class="day-kicker">Day</span>
@@ -103,9 +103,9 @@
               <div class="day-empty-icon">
                 <i class="bi bi-plus-circle-dotted"></i>
               </div>
-              <div>
-                <strong>Area libera</strong>
-                <span>Trascina qui un'attività per questo giorno.</span>
+              <div class="empty-info">
+                <strong>Giorno libero</strong>
+                <span>Trascina qui un'attività</span>
               </div>
             </div>
             }
@@ -115,9 +115,9 @@
               <article class="poi-card" [class.accommodation]="poi.type === 'accommodation'" [cdkDragData]="poi" cdkDrag>
                 <div class="poi-accent"></div>
 
-                <button class="drag-handle" cdkDragHandle type="button" aria-label="Trascina per riordinare">
+                <div class="drag-handle" cdkDragHandle>
                   <i class="bi bi-grip-vertical"></i>
-                </button>
+                </div>
 
                 <div class="poi-icon">
                   <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
@@ -126,20 +126,18 @@
                 <div class="poi-info">
                   <div class="poi-topline">
                     <h4>{{ poi.title }}</h4>
-                    <span class="poi-type-badge">
-                      {{ poi.type === 'accommodation' ? 'Hotel' : 'Attività' }}
-                    </span>
                   </div>
                   <p>{{ poi.subtitle }}</p>
                 </div>
 
                 <div class="poi-actions">
+                  <span class="poi-type-badge">
+                    {{ poi.type === 'accommodation' ? 'Hotel' : 'Attività' }}
+                  </span>
                   <button class="view-btn" (click)="viewOnMap(poi)" type="button" title="Mostra sulla mappa">
                     <i class="bi bi-eye"></i>
-                    <span>Mostra</span>
                   </button>
-
-                  <button class="remove-btn" (click)="removeItem(poi)" type="button" title="Rimuovi dall'itinerario">
+                  <button class="remove-btn" (click)="removeItem(poi)" type="button" title="Rimuovi">
                     <i class="bi bi-trash3"></i>
                   </button>
                 </div>
@@ -151,7 +149,7 @@
                 <textarea 
                   [ngModel]="poi.note" 
                   (ngModelChange)="updateNotes(poi, $event)"
-                  placeholder="Aggiungi una nota per questa attività..."
+                  placeholder="Nota rapida..."
                   class="poi-note-input"
                   rows="1"></textarea>
               </div>
@@ -163,7 +161,7 @@
 
         <button class="add-day-btn" (click)="addDay()">
           <i class="bi bi-plus-circle"></i>
-          <span>Aggiungi un giorno al viaggio</span>
+          <span>Estendi il viaggio di un giorno</span>
         </button>
       </div>
       }
@@ -172,12 +170,17 @@
     <!-- Right Column: Destination Info & Highlights -->
     <div class="summary-section info-section">
       <div class="section-header">
-        <i class="bi bi-info-circle"></i>
-        <h3>Dettagli Destinazione</h3>
+        <div class="section-icon">
+          <i class="bi bi-info-circle"></i>
+        </div>
+        <div>
+          <h3>Dettagli Destinazione</h3>
+          <p>Informazioni sulla città selezionata.</p>
+        </div>
       </div>
 
       <div class="destination-card">
-        <div class="dest-image">
+        <div class="dest-image" [style.background-image]="'url(https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80)'">
           <div class="dest-overlay"></div>
         </div>
         <div class="dest-content">
@@ -187,7 +190,7 @@
           </p>
 
           <div class="dest-tags">
-            @for (cat of workspace()?.categories?.slice(0, 5); track cat.id) {
+            @for (cat of workspace()?.categories?.slice(0, 8); track cat.id) {
             <span class="dest-tag">#{{ cat.name }}</span>
             }
           </div>
