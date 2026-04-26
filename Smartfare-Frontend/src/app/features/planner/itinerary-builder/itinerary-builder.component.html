@@ -19,12 +19,11 @@
         <section class="workspace-map">
             @if (!ui.showSummary()) {
             <app-builder-map [location]="workspace()?.location || null" [savedPois]="filteredSavedPois()"
-                [availablePois]="mapAvailablePois()" [previewPoi]="previewPoi()" [markerColor]="ui.markerColor()"
-                (mapFocused)="onMapFocused()">
+                [routePois]="savedPois()" [availablePois]="mapAvailablePois()" [previewPoi]="previewPoi()"
+                [markerColor]="ui.markerColor()" (mapFocused)="onMapFocused()">
             </app-builder-map>
             } @else {
-            <app-builder-summary [workspace]="workspace()" [savedPois]="savedPois()"
-                (showOnMap)="onPreviewPoi($event)">
+            <app-builder-summary [workspace]="workspace()" [savedPois]="savedPois()" (showOnMap)="onPreviewPoi($event)">
             </app-builder-summary>
             }
         </section>
