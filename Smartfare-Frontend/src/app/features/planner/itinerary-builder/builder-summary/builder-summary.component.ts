@@ -43,10 +43,11 @@ export class BuilderSummaryComponent {
       }
     });
 
-    // Return as array
+    // Return as array, filtering out empty days except for Day 1
     return Array.from(daysMap.entries())
       .sort(([a], [b]) => a - b)
-      .map(([day, items]) => ({ day, items }));
+      .map(([day, items]) => ({ day, items }))
+      .filter(group => group.items.length > 0 || group.day === 1);
   });
 
   getTotalItems() {

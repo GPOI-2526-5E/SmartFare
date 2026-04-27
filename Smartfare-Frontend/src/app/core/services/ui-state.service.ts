@@ -13,6 +13,10 @@ export class UIStateService {
   readonly markerColor = signal('#22c55e'); // Default green
   readonly showSummary = signal(false);
   readonly dayRouteColors = signal<Record<number, string>>({});
+  readonly visibleDayRoute = signal<number | 'all'>('all');
+  readonly selectedDay = signal<number>(1);
+
+  private readonly defaultDayPalette = ['#f97316', '#22c55e', '#3b82f6', '#eab308', '#ef4444', '#a855f7', '#14b8a6'];
 
   toggleSidebar() {
     this.showSidebar.update(v => !v);
@@ -44,6 +48,22 @@ export class UIStateService {
 
   setDayColor(day: number, color: string) {
     this.dayRouteColors.update(prev => ({ ...prev, [day]: color }));
+  }
+
+  setVisibleDayRoute(day: number | 'all') {
+    this.visibleDayRoute.set(day);
+    // If we select a specific day for the route, also update the active day for adding items
+    if (day !== 'all') {
+      this.selectedDay.set(day);
+    }
+  }
+
+  setSelectedDay(day: number) {
+    this.selectedDay.set(day);
+  }
+
+  getDefaultDayColor(day: number): string {
+    return this.defaultDayPalette[(day - 1) % this.defaultDayPalette.length];
   }
 
   toggleSummary() {

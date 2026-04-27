@@ -277,7 +277,7 @@ export class ItineraryBuilderComponent implements OnInit {
 
     const maxOrder = currentItems.reduce((acc, item) => Math.max(acc, item.orderInt || 0), 0);
     const newItem: ItineraryItem = {
-      dayNumber: 1,
+      dayNumber: this.ui.selectedDay(),
       orderInt: maxOrder + 1,
       itemTypeCode: poi.itemTypeCode,
       activityId: poi.type === 'activity' ? poi.entityId : undefined,

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, computed, inject } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -41,7 +41,10 @@ export class BuilderHeaderComponent {
   locationSearchTerm = signal('');
   locationResults = signal<Location[]>([]);
   isSearchingLocations = signal(false);
-  selectedDayForColor = signal<number>(1);
+  
+  // Custom dropdown states
+  showVisibleDayDropdown = signal(false);
+  showActiveDayDropdown = signal(false);
 
   private searchSubject = new Subject<string>();
 
@@ -167,7 +170,14 @@ export class BuilderHeaderComponent {
 
   onDayColorChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.ui.setDayColor(this.selectedDayForColor(), input.value);
+    this.ui.setDayColor(this.ui.selectedDay(), input.value);
+    this.ui.setActiveSurface('map');
+  }
+
+  onVisibleDayChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const val = select.value === 'all' ? 'all' : parseInt(select.value, 10);
+    this.ui.setVisibleDayRoute(val as number | 'all');
     this.ui.setActiveSurface('map');
   }
 
@@ -203,6 +213,39 @@ export class BuilderHeaderComponent {
         const input = document.getElementById('location-search-input');
         input?.focus();
       }, 100);
+    }
+  }
+
+  // Custom Dropdown Actions
+  toggleVisibleDayDropdown(event: Event) {
+    event.stopPropagation();
+    this.showVisibleDayDropdown.update(v => !v);
+    this.showActiveDayDropdown.set(false);
+  }
+
+  toggleActiveDayDropdown(event: Event) {
+    event.stopPropagation();
+    this.showActiveDayDropdown.update(v => !v);
+    this.showVisibleDayDropdown.set(false);
+  }
+
+  selectVisibleDay(day: number | 'all') {
+    this.ui.setVisibleDayRoute(day);
+    this.showVisibleDayDropdown.set(false);
+    this.ui.setActiveSurface('map');
+  }
+
+  selectActiveDay(day: number) {
+    this.ui.setSelectedDay(day);
+    this.showActiveDayDropdown.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.custom-dropdown')) {
+      this.showVisibleDayDropdown.set(false);
+      this.showActiveDayDropdown.set(false);
     }
   }
 }

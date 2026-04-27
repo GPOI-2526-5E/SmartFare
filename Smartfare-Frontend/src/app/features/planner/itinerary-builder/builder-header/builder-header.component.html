@@ -187,17 +187,37 @@
 
     <section class="toolbar-section">
       <span class="section-label">Vista mappa</span>
-      <div class="btn-group-pill">
-        <button class="pill-btn" [class.active]="ui.mapView() === 'selected'" (click)="showSelectedMarkers()"
-          title="Mostra solo i marker salvati">
-          <i class="bi bi-pin-map-fill"></i>
-          <span>Salvati</span>
-        </button>
-        <button class="pill-btn" [class.active]="ui.mapView() === 'all'" (click)="showAreaMarkers()"
-          title="Mostra tutti i punti in zona">
-          <i class="bi bi-geo-alt-fill"></i>
-          <span>In zona</span>
-        </button>
+      <div class="toolbar-row">
+        <div class="btn-group-pill">
+          <button class="pill-btn" [class.active]="ui.mapView() === 'selected'" (click)="showSelectedMarkers()"
+            title="Mostra solo i marker salvati">
+            <i class="bi bi-pin-map-fill"></i>
+            <span>Salvati</span>
+          </button>
+          <button class="pill-btn" [class.active]="ui.mapView() === 'all'" (click)="showAreaMarkers()"
+            title="Mostra tutti i punti in zona">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>In zona</span>
+          </button>
+        </div>
+        <div class="custom-dropdown" [class.open]="showVisibleDayDropdown()">
+          <div class="dropdown-trigger" (click)="toggleVisibleDayDropdown($event)">
+            <span>{{ ui.visibleDayRoute() === 'all' ? 'Tutti i giorni' : 'Percorso G' + ui.visibleDayRoute() }}</span>
+            <i class="bi bi-chevron-down"></i>
+          </div>
+          @if (showVisibleDayDropdown()) {
+          <div class="dropdown-menu-custom glass-effect">
+            <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === 'all'" (click)="selectVisibleDay('all')">
+              Tutti i giorni
+            </div>
+            @for (day of availableDays(); track day) {
+            <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === day" (click)="selectVisibleDay(day)">
+              Percorso G{{ day }}
+            </div>
+            }
+          </div>
+          }
+        </div>
       </div>
     </section>
 
@@ -205,18 +225,27 @@
 
     <section class="toolbar-section">
       <span class="section-label">Percorso Giorno</span>
-      <div class="d-flex align-items-center gap-2">
-        <div class="select-wrapper select-wrapper--small">
-          <select class="toolbar-select" [ngModel]="selectedDayForColor()" (ngModelChange)="selectedDayForColor.set($event)">
+      <div class="toolbar-row">
+        <div class="custom-dropdown" [class.open]="showActiveDayDropdown()">
+          <div class="dropdown-trigger" (click)="toggleActiveDayDropdown($event)">
+            <span>Giorno {{ ui.selectedDay() }}</span>
+            <i class="bi bi-chevron-down"></i>
+          </div>
+          @if (showActiveDayDropdown()) {
+          <div class="dropdown-menu-custom glass-effect">
             @for (day of availableDays(); track day) {
-              <option [value]="day">Giorno {{ day }}</option>
+            <div class="dropdown-item-custom" [class.active]="ui.selectedDay() === day" (click)="selectActiveDay(day)">
+              Giorno {{ day }}
+            </div>
             }
-          </select>
-          <i class="bi bi-chevron-down select-chevron"></i>
+          </div>
+          }
         </div>
         <label class="color-swatch-label" title="Cambia colore percorso del giorno">
-          <input type="color" [value]="ui.dayRouteColors()[selectedDayForColor()] || '#3b82f6'" (input)="onDayColorChange($event)" class="hidden-color-input">
-          <span class="color-swatch" [style.background-color]="ui.dayRouteColors()[selectedDayForColor()] || '#3b82f6'"></span>
+          <input type="color" [value]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())"
+            (input)="onDayColorChange($event)" class="hidden-color-input">
+          <span class="color-swatch"
+            [style.background-color]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())"></span>
         </label>
       </div>
     </section>

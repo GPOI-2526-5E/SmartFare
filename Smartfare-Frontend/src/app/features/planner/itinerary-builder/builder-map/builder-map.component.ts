@@ -65,6 +65,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       // Subscribe to relevant UI signals
       this.ui.dayRouteColors();
       this.ui.markerColor();
+      this.ui.visibleDayRoute();
       
       // Trigger refresh when they change
       if (this.map) {
@@ -161,8 +162,13 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     const routeOrder = new Map(this.displayRoutePois.map((poi, index) => [poi.key, index + 1]));
 
     const customColors = this.ui.dayRouteColors();
+    const visibleDay = this.ui.visibleDayRoute();
 
     for (const poi of this.savedPois) {
+      const day = poi.dayNumber || 1;
+      // Filter by visible day if not 'all'
+      if (visibleDay !== 'all' && day !== visibleDay) continue;
+
       const orderNumber = routeOrder.get(poi.key);
 
       if (orderNumber) {
@@ -250,6 +256,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     try {
       const customColors = this.ui.dayRouteColors();
+      const visibleDay = this.ui.visibleDayRoute();
       const dayBuckets = new Map<number, Array<{ lat: number; lng: number; title: string }>>();
 
       for (const point of points) {
@@ -268,6 +275,10 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
         const day = sortedDays[index];
         const dayPoints = dayBuckets.get(day) || [];
+
+        // Skip if not the visible day
+        if (visibleDay !== 'all' && day !== visibleDay) continue;
+
         const dayColor = customColors[day] || this.defaultDayPalette[index % this.defaultDayPalette.length];
 
         if (dayPoints.length < 2) {
