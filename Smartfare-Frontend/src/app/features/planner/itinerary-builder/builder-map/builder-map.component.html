@@ -3,7 +3,7 @@
 
   @if (routePois.length > 0) {
   <div class="route-panel">
-    <h4>Percorso itinerario</h4>
+    <h4>{{ routePanelTitle }}</h4>
     <div class="route-mode-switch" (click)="$event.stopPropagation()">
       <button type="button" [class.active]="routeOrderMode === 'original'" (click)="setRouteOrderMode('original')">
         Ordine originale

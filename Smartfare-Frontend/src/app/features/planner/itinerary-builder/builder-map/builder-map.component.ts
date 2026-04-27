@@ -46,6 +46,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private routeLayer = L.layerGroup();
   private endpointLayer = L.layerGroup();
   private routeRequestId = 0;
+  private resizeObserver?: ResizeObserver;
   private readonly ui = inject(UIStateService);
   private readonly defaultDayPalette = ['#f97316', '#22c55e', '#3b82f6', '#eab308', '#ef4444', '#a855f7', '#14b8a6'];
   private displayRoutePois: BuilderPoi[] = [];
@@ -60,13 +61,18 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   googleMapsUrl: string | null = null;
   routeOrderMode: 'original' | 'optimized' = 'optimized';
 
+  get routePanelTitle(): string {
+    const visibleDay = this.ui.visibleDayRoute();
+    return visibleDay === 'all' ? 'Percorso itinerario' : `Percorso Giorno ${visibleDay}`;
+  }
+
   constructor() {
     effect(() => {
       // Subscribe to relevant UI signals
       this.ui.dayRouteColors();
       this.ui.markerColor();
       this.ui.visibleDayRoute();
-      
+
       // Trigger refresh when they change
       if (this.map) {
         this.refreshLayers(false);
@@ -94,6 +100,13 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     this.map.on('click', () => this.mapFocused.emit());
     this.refreshLayers(true);
+
+    this.resizeObserver = new ResizeObserver(() => {
+      if (!this.map) return;
+      requestAnimationFrame(() => this.map?.invalidateSize({ animate: false }));
+    });
+
+    this.resizeObserver.observe(this.mapRoot.nativeElement);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -104,6 +117,9 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
+
     if (this.map) {
       this.map.remove();
       this.map = undefined;
@@ -159,7 +175,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
 
     this.displayRoutePois = this.getDisplayRoutePois();
-    const routeOrder = new Map(this.displayRoutePois.map((poi, index) => [poi.key, index + 1]));
+    const routeOrder = this.buildRouteOrderByDay(this.displayRoutePois);
 
     const customColors = this.ui.dayRouteColors();
     const visibleDay = this.ui.visibleDayRoute();
@@ -174,9 +190,12 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       if (orderNumber) {
         const day = poi.dayNumber || 1;
         const dayColor = customColors[day] || this.defaultDayPalette[(day - 1) % this.defaultDayPalette.length];
+        const stopLabel = visibleDay === 'all'
+          ? `Giorno ${day} - Tappa ${orderNumber}`
+          : `Tappa ${orderNumber}`;
         const icon = this.createStopIcon(orderNumber, dayColor, poi.type === 'accommodation');
         const marker = L.marker([poi.latitude, poi.longitude], { icon }).bindPopup(
-          this.createPopupHtml(poi, `Tappa ${orderNumber}`)
+          this.createPopupHtml(poi, stopLabel)
         );
         this.savedLayer.addLayer(marker);
         continue;
@@ -184,7 +203,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
       let marker: L.Layer;
       const mColor = this.ui.markerColor();
-      
+
       if (poi.type === 'accommodation') {
         const icon = this.createTypeIcon('accommodation', mColor);
         marker = L.marker([poi.latitude, poi.longitude], { icon });
@@ -221,8 +240,11 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private async refreshRoute() {
     if (!this.map) return;
 
+    const visibleDay = this.ui.visibleDayRoute();
+
     const points = this.displayRoutePois
       .filter((poi) => Number.isFinite(poi.latitude) && Number.isFinite(poi.longitude))
+      .filter((poi) => visibleDay === 'all' || (poi.dayNumber || 1) === visibleDay)
       .map((poi) => ({
         lat: poi.latitude,
         lng: poi.longitude,
@@ -256,7 +278,6 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     try {
       const customColors = this.ui.dayRouteColors();
-      const visibleDay = this.ui.visibleDayRoute();
       const dayBuckets = new Map<number, Array<{ lat: number; lng: number; title: string }>>();
 
       for (const point of points) {
@@ -402,9 +423,14 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     if (!pois.length) return;
 
+    const visibleDay = this.ui.visibleDayRoute();
+    const visiblePois = pois.filter((poi) => visibleDay === 'all' || (poi.dayNumber || 1) === visibleDay);
+
+    if (!visiblePois.length) return;
+
     // Group by day
     const dayGroups = new Map<number, BuilderPoi[]>();
-    for (const poi of pois) {
+    for (const poi of visiblePois) {
       const day = poi.dayNumber || 1;
       const group = dayGroups.get(day) || [];
       group.push(poi);
@@ -413,36 +439,52 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     const sortedDays = Array.from(dayGroups.keys()).sort((a, b) => a - b);
     const customColors = this.ui.dayRouteColors();
-    const hasMultipleDays = sortedDays.length > 1;
-
     for (let i = 0; i < sortedDays.length; i++) {
       const day = sortedDays[i];
       const dayPois = dayGroups.get(day)!;
       if (dayPois.length < 1) continue;
 
       const dayColor = customColors[day] || this.defaultDayPalette[i % this.defaultDayPalette.length];
-      
+
       const start = dayPois[0];
       const end = dayPois[dayPois.length - 1];
 
       // Labels
-      const startLabel = hasMultipleDays ? `START D${day}` : 'START';
-      const endLabel = hasMultipleDays ? `END D${day}` : 'END';
+      const startLabel = 'START';
+      const endLabel = 'END';
 
       // Start marker
       const startIcon = this.createEndpointIcon(startLabel, dayColor);
-      const startMarker = L.marker([start.latitude, start.longitude], { icon: startIcon })
-        .bindPopup(`<strong>Partenza ${hasMultipleDays ? 'Giorno ' + day : ''}</strong><br>${start.title}`);
+      const startMarker = L.marker([start.latitude, start.longitude], {
+        icon: startIcon,
+        title: `Partenza Giorno ${day}: ${start.title}`
+      }).bindPopup(this.createPopupHtml(start, `GIORNO ${day} - PARTENZA`));
       this.endpointLayer.addLayer(startMarker);
 
       // End marker (only if different from start)
       if (dayPois.length > 1) {
         const endIcon = this.createEndpointIcon(endLabel, dayColor);
-        const endMarker = L.marker([end.latitude, end.longitude], { icon: endIcon })
-          .bindPopup(`<strong>Arrivo ${hasMultipleDays ? 'Giorno ' + day : ''}</strong><br>${end.title}`);
+        const endMarker = L.marker([end.latitude, end.longitude], {
+          icon: endIcon,
+          title: `Arrivo Giorno ${day}: ${end.title}`
+        }).bindPopup(this.createPopupHtml(end, `GIORNO ${day} - ARRIVO`));
         this.endpointLayer.addLayer(endMarker);
       }
     }
+  }
+
+  private buildRouteOrderByDay(pois: BuilderPoi[]): Map<string, number> {
+    const orderMap = new Map<string, number>();
+    const dayCounters = new Map<number, number>();
+
+    for (const poi of pois) {
+      const day = poi.dayNumber || 1;
+      const nextOrder = (dayCounters.get(day) || 0) + 1;
+      dayCounters.set(day, nextOrder);
+      orderMap.set(poi.key, nextOrder);
+    }
+
+    return orderMap;
   }
 
   private createPopupHtml(poi: BuilderPoi, label?: string): string {
@@ -454,11 +496,11 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       if (!dateStr) return null;
       const d = new Date(dateStr);
       if (isNaN(d.getTime())) return null;
-      return d.toLocaleString('it-IT', { 
-        day: '2-digit', 
-        month: 'short', 
-        hour: '2-digit', 
-        minute: '2-digit' 
+      return d.toLocaleString('it-IT', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
       });
     };
 
@@ -474,7 +516,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         <div class="popup-content">
           <h5 class="popup-title">${poi.title}</h5>
           ${poi.subtitle ? `<div class="popup-subtitle"><i class="bi bi-geo-alt"></i> ${poi.subtitle}</div>` : ''}
-          
+
           ${(formattedStart || formattedEnd) ? `
             <div class="popup-planning">
               ${formattedStart ? `
@@ -497,7 +539,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   private createStopIcon(orderNumber: number, color: string, isAccommodation = false): L.DivIcon {
-    const iconHtml = isAccommodation 
+    const iconHtml = isAccommodation
       ? `<i class="bi bi-building" style="font-size: 8px; margin-right: 2px;"></i>${orderNumber}`
       : orderNumber;
 

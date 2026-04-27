@@ -108,12 +108,8 @@
         <div class="location-search-overlay">
           <div class="search-input-wrapper">
             <i class="bi bi-search"></i>
-            <input 
-              id="location-search-input"
-              type="text" 
-              [ngModel]="locationSearchTerm()" 
-              (ngModelChange)="onLocationSearchChange($event)"
-              placeholder="Cerca una nuova città..."
+            <input id="location-search-input" type="text" [ngModel]="locationSearchTerm()"
+              (ngModelChange)="onLocationSearchChange($event)" placeholder="Cerca una nuova città..."
               class="location-search-input">
             <button class="close-search" (click)="showLocationSearch.set(false)">
               <i class="bi bi-x-lg"></i>
@@ -171,15 +167,25 @@
 
     <section class="toolbar-section">
       <span class="section-label">Categoria</span>
-      <div class="select-wrapper">
-        <i class="bi bi-tags select-icon"></i>
-        <select id="category-select" class="toolbar-select" (change)="onCategoryChange($event)">
-          <option value="all">Tutte le categorie</option>
+      <div class="custom-dropdown" [class.open]="showCategoryDropdown()">
+        <div class="dropdown-trigger" (click)="toggleCategoryDropdown($event)">
+          <span>{{ selectedCategoryLabel() }}</span>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+        @if (showCategoryDropdown()) {
+        <div class="dropdown-menu-custom glass-effect">
+          <div class="dropdown-item-custom" [class.active]="ui.selectedCategory() === 'all'"
+            (click)="selectCategory('all')">
+            Tutte le categorie
+          </div>
           @for (cat of workspace?.categories || []; track cat.id) {
-          <option [value]="cat.id">{{ cat.name }}</option>
+          <div class="dropdown-item-custom" [class.active]="ui.selectedCategory() === cat.id"
+            (click)="selectCategory(cat.id)">
+            {{ cat.name }}
+          </div>
           }
-        </select>
-        <i class="bi bi-chevron-down select-chevron"></i>
+        </div>
+        }
       </div>
     </section>
 
@@ -207,11 +213,13 @@
           </div>
           @if (showVisibleDayDropdown()) {
           <div class="dropdown-menu-custom glass-effect">
-            <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === 'all'" (click)="selectVisibleDay('all')">
+            <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === 'all'"
+              (click)="selectVisibleDay('all')">
               Tutti i giorni
             </div>
             @for (day of availableDays(); track day) {
-            <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === day" (click)="selectVisibleDay(day)">
+            <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === day"
+              (click)="selectVisibleDay(day)">
               Percorso G{{ day }}
             </div>
             }

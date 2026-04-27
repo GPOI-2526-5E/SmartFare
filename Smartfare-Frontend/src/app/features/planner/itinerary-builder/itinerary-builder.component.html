@@ -5,14 +5,12 @@
         <span class="glow glow-c"></span>
     </div>
 
-    <app-builder-header 
-    [workspace]="workspace()" 
-    (navRequest)="handleNavigationIntercept($event)"
-    (saveRequest)="handleSaveRequest()"
-    (locationSelected)="loadWorkspace($event)">
-  </app-builder-header>
+    <app-builder-header [workspace]="workspace()" (navRequest)="handleNavigationIntercept($event)"
+        (saveRequest)="handleSaveRequest()" (locationSelected)="loadWorkspace($event)">
+    </app-builder-header>
 
-    <main class="builder-workspace">
+    <main class="builder-workspace" [class.builder-workspace--sidebar]="ui.showSidebar()"
+        [class.builder-workspace--chat]="ui.showChat()">
         @if (ui.showSidebar()) {
         <aside class="workspace-sidebar workspace-panel" aria-label="Esplora punti di interesse">
             <app-builder-sidebar [workspace]="workspace()" [savedPoiKeys]="savedPoiKeys()"

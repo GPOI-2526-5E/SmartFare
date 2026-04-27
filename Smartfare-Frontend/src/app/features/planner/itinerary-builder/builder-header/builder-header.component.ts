@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output, computed, inject } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, computed, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -41,8 +41,9 @@ export class BuilderHeaderComponent {
   locationSearchTerm = signal('');
   locationResults = signal<Location[]>([]);
   isSearchingLocations = signal(false);
-  
+
   // Custom dropdown states
+  showCategoryDropdown = signal(false);
   showVisibleDayDropdown = signal(false);
   showActiveDayDropdown = signal(false);
 
@@ -69,6 +70,20 @@ export class BuilderHeaderComponent {
       },
       error: () => this.isSearchingLocations.set(false)
     });
+
+    effect(() => {
+      const days = this.availableDays();
+      const lastDay = days[days.length - 1] ?? 1;
+
+      if (this.ui.selectedDay() > lastDay) {
+        this.ui.setSelectedDay(lastDay);
+      }
+
+      const visibleDay = this.ui.visibleDayRoute();
+      if (visibleDay !== 'all' && visibleDay > lastDay) {
+        this.ui.setVisibleDayRoute('all');
+      }
+    });
   }
 
   isAuthenticated = computed(() => this.authService.IsAuthenticated());
@@ -80,14 +95,24 @@ export class BuilderHeaderComponent {
 
   availableDays = computed(() => {
     const it = this.itinerary();
-    if (!it || !it.startDate || !it.endDate) return [1];
-    
-    const start = new Date(it.startDate);
-    const end = new Date(it.endDate);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    
-    return Array.from({ length: Math.max(1, diffDays) }, (_, i) => i + 1);
+    if (!it) return [1, 2];
+
+    const usedDays = (it.items || [])
+      .map((item) => item.dayNumber || 1)
+      .filter((day) => Number.isFinite(day) && day > 0);
+
+    const maxUsedDay = usedDays.length ? Math.max(...usedDays) : 1;
+    const progressiveDays = Math.max(2, maxUsedDay + 1);
+
+    return Array.from({ length: progressiveDays }, (_, i) => i + 1);
+  });
+
+  selectedCategoryLabel = computed(() => {
+    const selected = this.ui.selectedCategory();
+    if (selected === 'all') return 'Tutte le categorie';
+
+    const category = (this.workspace?.categories || []).find((cat) => cat.id === selected);
+    return category?.name || 'Categoria';
   });
 
   get saveStatusIcon(): string {
@@ -217,15 +242,30 @@ export class BuilderHeaderComponent {
   }
 
   // Custom Dropdown Actions
+  toggleCategoryDropdown(event: Event) {
+    event.stopPropagation();
+    this.showCategoryDropdown.update(v => !v);
+    this.showVisibleDayDropdown.set(false);
+    this.showActiveDayDropdown.set(false);
+  }
+
+  selectCategory(category: number | 'all') {
+    this.ui.setCategory(category);
+    this.showCategoryDropdown.set(false);
+    this.ui.setActiveSurface('sidebar');
+  }
+
   toggleVisibleDayDropdown(event: Event) {
     event.stopPropagation();
     this.showVisibleDayDropdown.update(v => !v);
+    this.showCategoryDropdown.set(false);
     this.showActiveDayDropdown.set(false);
   }
 
   toggleActiveDayDropdown(event: Event) {
     event.stopPropagation();
     this.showActiveDayDropdown.update(v => !v);
+    this.showCategoryDropdown.set(false);
     this.showVisibleDayDropdown.set(false);
   }
 
@@ -244,6 +284,7 @@ export class BuilderHeaderComponent {
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (!target.closest('.custom-dropdown')) {
+      this.showCategoryDropdown.set(false);
       this.showVisibleDayDropdown.set(false);
       this.showActiveDayDropdown.set(false);
     }
