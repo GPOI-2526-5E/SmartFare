@@ -391,20 +391,46 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     if (!pois.length) return;
 
-    const startIcon = this.createEndpointIcon('START', '#16a34a');
-    const endIcon = this.createEndpointIcon('END', '#dc2626');
+    // Group by day
+    const dayGroups = new Map<number, BuilderPoi[]>();
+    for (const poi of pois) {
+      const day = poi.dayNumber || 1;
+      const group = dayGroups.get(day) || [];
+      group.push(poi);
+      dayGroups.set(day, group);
+    }
 
-    const start = pois[0];
-    const end = pois[pois.length - 1];
+    const sortedDays = Array.from(dayGroups.keys()).sort((a, b) => a - b);
+    const customColors = this.ui.dayRouteColors();
+    const hasMultipleDays = sortedDays.length > 1;
 
-    const startMarker = L.marker([start.latitude, start.longitude], { icon: startIcon })
-      .bindPopup(this.createPopupHtml(start, 'Partenza'));
-    this.endpointLayer.addLayer(startMarker);
+    for (let i = 0; i < sortedDays.length; i++) {
+      const day = sortedDays[i];
+      const dayPois = dayGroups.get(day)!;
+      if (dayPois.length < 1) continue;
 
-    if (pois.length > 1) {
-      const endMarker = L.marker([end.latitude, end.longitude], { icon: endIcon })
-        .bindPopup(this.createPopupHtml(end, 'Arrivo'));
-      this.endpointLayer.addLayer(endMarker);
+      const dayColor = customColors[day] || this.defaultDayPalette[i % this.defaultDayPalette.length];
+      
+      const start = dayPois[0];
+      const end = dayPois[dayPois.length - 1];
+
+      // Labels
+      const startLabel = hasMultipleDays ? `START D${day}` : 'START';
+      const endLabel = hasMultipleDays ? `END D${day}` : 'END';
+
+      // Start marker
+      const startIcon = this.createEndpointIcon(startLabel, dayColor);
+      const startMarker = L.marker([start.latitude, start.longitude], { icon: startIcon })
+        .bindPopup(`<strong>Partenza ${hasMultipleDays ? 'Giorno ' + day : ''}</strong><br>${start.title}`);
+      this.endpointLayer.addLayer(startMarker);
+
+      // End marker (only if different from start)
+      if (dayPois.length > 1) {
+        const endIcon = this.createEndpointIcon(endLabel, dayColor);
+        const endMarker = L.marker([end.latitude, end.longitude], { icon: endIcon })
+          .bindPopup(`<strong>Arrivo ${hasMultipleDays ? 'Giorno ' + day : ''}</strong><br>${end.title}`);
+        this.endpointLayer.addLayer(endMarker);
+      }
     }
   }
 
@@ -483,11 +509,12 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   private createEndpointIcon(label: string, color: string): L.DivIcon {
+    const width = Math.max(52, label.length * 8 + 20);
     return L.divIcon({
       className: 'route-endpoint-icon',
-      html: `<div style="padding:0 10px;height:26px;border-radius:999px;background:${color};border:2px solid #f8fafc;box-shadow:0 6px 14px rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;color:#ffffff;font-weight:800;font-size:10px;letter-spacing:0.03em;">${label}</div>`,
-      iconSize: [52, 26],
-      iconAnchor: [26, 13]
+      html: `<div style="padding:0 10px;height:26px;border-radius:999px;background:${color};border:2px solid #f8fafc;box-shadow:0 6px 14px rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;color:#ffffff;font-weight:800;font-size:10px;letter-spacing:0.03em;white-space:nowrap;">${label}</div>`,
+      iconSize: [width, 26],
+      iconAnchor: [width / 2, 13]
     });
   }
 

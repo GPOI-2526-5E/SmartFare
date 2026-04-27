@@ -165,12 +165,6 @@ export class BuilderHeaderComponent {
     this.ui.setActiveSurface('sidebar');
   }
 
-  onColorChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.ui.setMarkerColor(input.value);
-    this.ui.setActiveSurface('map');
-  }
-
   onDayColorChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.ui.setDayColor(this.selectedDayForColor(), input.value);
