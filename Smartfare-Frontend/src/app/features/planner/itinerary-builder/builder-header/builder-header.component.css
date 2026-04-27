@@ -435,3 +435,12 @@
     display: none;
   }
 }
+
+.select-wrapper--small {
+  min-width: 110px;
+}
+
+.select-wrapper--small .toolbar-select {
+  padding: 6px 30px 6px 12px;
+  font-size: 0.8rem;
+}

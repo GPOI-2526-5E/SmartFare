@@ -41,6 +41,7 @@ export class BuilderHeaderComponent {
   locationSearchTerm = signal('');
   locationResults = signal<Location[]>([]);
   isSearchingLocations = signal(false);
+  selectedDayForColor = signal<number>(1);
 
   private searchSubject = new Subject<string>();
 
@@ -73,6 +74,18 @@ export class BuilderHeaderComponent {
   user = computed(() => this.authService.getUserData());
   itinerary = this.itineraryService.itinerary;
   autosaveStatus = this.itineraryService.autosaveStatus;
+
+  availableDays = computed(() => {
+    const it = this.itinerary();
+    if (!it || !it.startDate || !it.endDate) return [1];
+    
+    const start = new Date(it.startDate);
+    const end = new Date(it.endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    
+    return Array.from({ length: Math.max(1, diffDays) }, (_, i) => i + 1);
+  });
 
   get saveStatusIcon(): string {
     const status = this.autosaveStatus();
@@ -155,6 +168,12 @@ export class BuilderHeaderComponent {
   onColorChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.ui.setMarkerColor(input.value);
+    this.ui.setActiveSurface('map');
+  }
+
+  onDayColorChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.ui.setDayColor(this.selectedDayForColor(), input.value);
     this.ui.setActiveSurface('map');
   }
 

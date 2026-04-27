@@ -201,12 +201,24 @@
       </div>
     </section>
 
+    <div class="v-divider"></div>
+
     <section class="toolbar-section">
-      <span class="section-label">Colore marker</span>
-      <label class="color-swatch-label" title="Cambia colore marker">
-        <input type="color" [value]="ui.markerColor()" (input)="onColorChange($event)" class="hidden-color-input">
-        <span class="color-swatch" [style.background-color]="ui.markerColor()"></span>
-      </label>
+      <span class="section-label">Percorso Giorno</span>
+      <div class="d-flex align-items-center gap-2">
+        <div class="select-wrapper select-wrapper--small">
+          <select class="toolbar-select" [ngModel]="selectedDayForColor()" (ngModelChange)="selectedDayForColor.set($event)">
+            @for (day of availableDays(); track day) {
+              <option [value]="day">Giorno {{ day }}</option>
+            }
+          </select>
+          <i class="bi bi-chevron-down select-chevron"></i>
+        </div>
+        <label class="color-swatch-label" title="Cambia colore percorso del giorno">
+          <input type="color" [value]="ui.dayRouteColors()[selectedDayForColor()] || '#3b82f6'" (input)="onDayColorChange($event)" class="hidden-color-input">
+          <span class="color-swatch" [style.background-color]="ui.dayRouteColors()[selectedDayForColor()] || '#3b82f6'"></span>
+        </label>
+      </div>
     </section>
 
     <div class="spacer"></div>

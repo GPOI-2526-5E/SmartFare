@@ -8,12 +8,15 @@ import {
   OnDestroy,
   Output,
   SimpleChanges,
-  ViewChild
+  ViewChild,
+  inject,
+  effect
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 import Location from '../../../../core/models/location.model';
 import { BuilderPoi } from '../builder.types';
+import { UIStateService } from '../../../../core/services/ui-state.service';
 
 @Component({
   selector: 'app-builder-map',
@@ -43,8 +46,12 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private routeLayer = L.layerGroup();
   private endpointLayer = L.layerGroup();
   private routeRequestId = 0;
-  private readonly dayPalette = ['#f97316', '#22c55e', '#3b82f6', '#eab308', '#ef4444', '#a855f7', '#14b8a6'];
+  private readonly ui = inject(UIStateService);
+  private readonly defaultDayPalette = ['#f97316', '#22c55e', '#3b82f6', '#eab308', '#ef4444', '#a855f7', '#14b8a6'];
   private displayRoutePois: BuilderPoi[] = [];
+  private lastRouteFingerprint = '';
+  private geometryCache = new Map<number, L.LatLng[]>();
+  private metadataCache = new Map<number, { distanceKm: number; durationMin: number }>();
 
   routeInfo: { distanceKm: number; durationMin: number; steps: number } | null = null;
   dayRouteInfo: Array<{ day: number; distanceKm: number; durationMin: number; color: string }> = [];
@@ -52,6 +59,19 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   isRouteLoading = false;
   googleMapsUrl: string | null = null;
   routeOrderMode: 'original' | 'optimized' = 'optimized';
+
+  constructor() {
+    effect(() => {
+      // Subscribe to relevant UI signals
+      this.ui.dayRouteColors();
+      this.ui.markerColor();
+      
+      // Trigger refresh when they change
+      if (this.map) {
+        this.refreshLayers(false);
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     this.map = L.map(this.mapRoot.nativeElement, {
@@ -140,11 +160,15 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.displayRoutePois = this.getDisplayRoutePois();
     const routeOrder = new Map(this.displayRoutePois.map((poi, index) => [poi.key, index + 1]));
 
+    const customColors = this.ui.dayRouteColors();
+
     for (const poi of this.savedPois) {
       const orderNumber = routeOrder.get(poi.key);
 
       if (orderNumber) {
-        const icon = this.createStopIcon(orderNumber, poi.type === 'accommodation');
+        const day = poi.dayNumber || 1;
+        const dayColor = customColors[day] || this.defaultDayPalette[(day - 1) % this.defaultDayPalette.length];
+        const icon = this.createStopIcon(orderNumber, dayColor, poi.type === 'accommodation');
         const marker = L.marker([poi.latitude, poi.longitude], { icon }).bindPopup(
           this.createPopupHtml(poi, `Tappa ${orderNumber}`)
         );
@@ -153,14 +177,16 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       }
 
       let marker: L.Layer;
+      const mColor = this.ui.markerColor();
+      
       if (poi.type === 'accommodation') {
-        const icon = this.createTypeIcon('accommodation', this.markerColor);
+        const icon = this.createTypeIcon('accommodation', mColor);
         marker = L.marker([poi.latitude, poi.longitude], { icon });
       } else {
         marker = L.circleMarker([poi.latitude, poi.longitude], {
           radius: 7,
-          color: this.markerColor,
-          fillColor: this.markerColor,
+          color: mColor,
+          fillColor: mColor,
           fillOpacity: 0.82,
           weight: 2
         });
@@ -209,11 +235,21 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       return;
     }
 
+    const currentFingerprint = points.map(p => `${p.lat},${p.lng},${p.dayNumber}`).join('|');
+    const onlyColorsChanged = currentFingerprint === this.lastRouteFingerprint;
+    this.lastRouteFingerprint = currentFingerprint;
+
+    if (!onlyColorsChanged) {
+      this.geometryCache.clear();
+      this.metadataCache.clear();
+    }
+
     const requestId = ++this.routeRequestId;
-    this.isRouteLoading = true;
+    this.isRouteLoading = !onlyColorsChanged;
     this.routeError = null;
 
     try {
+      const customColors = this.ui.dayRouteColors();
       const dayBuckets = new Map<number, Array<{ lat: number; lng: number; title: string }>>();
 
       for (const point of points) {
@@ -232,7 +268,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
         const day = sortedDays[index];
         const dayPoints = dayBuckets.get(day) || [];
-        const dayColor = this.dayPalette[index % this.dayPalette.length];
+        const dayColor = customColors[day] || this.defaultDayPalette[index % this.defaultDayPalette.length];
 
         if (dayPoints.length < 2) {
           this.dayRouteInfo.push({
@@ -244,23 +280,40 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           continue;
         }
 
-        const coordinateString = dayPoints.map((p) => `${p.lng},${p.lat}`).join(';');
-        const response = await fetch(
-          `https://router.project-osrm.org/route/v1/driving/${coordinateString}?overview=full&geometries=geojson&steps=false`
-        );
-        const payload = await response.json();
+        let latLngs: L.LatLng[] = [];
+        let dayDistanceKm = 0;
+        let dayDurationMin = 0;
 
-        if (requestId !== this.routeRequestId) return;
+        if (onlyColorsChanged && this.geometryCache.has(day)) {
+          latLngs = this.geometryCache.get(day)!;
+          const meta = this.metadataCache.get(day)!;
+          dayDistanceKm = meta.distanceKm;
+          dayDurationMin = meta.durationMin;
+        } else {
+          const coordinateString = dayPoints.map((p) => `${p.lng},${p.lat}`).join(';');
+          const response = await fetch(
+            `https://router.project-osrm.org/route/v1/driving/${coordinateString}?overview=full&geometries=geojson&steps=false`
+          );
+          const payload = await response.json();
 
-        if (!response.ok || payload?.code !== 'Ok' || !Array.isArray(payload?.routes) || !payload.routes[0]) {
-          throw new Error('Percorso non disponibile');
-        }
+          if (requestId !== this.routeRequestId) return;
 
-        const route = payload.routes[0];
-        const latLngs = (route.geometry?.coordinates || []).map((coord: number[]) => L.latLng(coord[1], coord[0]));
+          if (!response.ok || payload?.code !== 'Ok' || !Array.isArray(payload?.routes) || !payload.routes[0]) {
+            throw new Error('Percorso non disponibile');
+          }
 
-        if (latLngs.length < 2) {
-          throw new Error('Geometria percorso non valida');
+          const route = payload.routes[0];
+          latLngs = (route.geometry?.coordinates || []).map((coord: number[]) => L.latLng(coord[1], coord[0]));
+
+          if (latLngs.length < 2) {
+            throw new Error('Geometria percorso non valida');
+          }
+
+          dayDistanceKm = Number((route.distance / 1000).toFixed(1));
+          dayDurationMin = Math.max(1, Math.round(route.duration / 60));
+
+          this.geometryCache.set(day, latLngs);
+          this.metadataCache.set(day, { distanceKm: dayDistanceKm, durationMin: dayDurationMin });
         }
 
         allDrawnPoints.push(...latLngs);
@@ -284,9 +337,6 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
             lineJoin: 'round'
           })
         );
-
-        const dayDistanceKm = Number((route.distance / 1000).toFixed(1));
-        const dayDurationMin = Math.max(1, Math.round(route.duration / 60));
 
         totalDistance += dayDistanceKm;
         totalDuration += dayDurationMin;
@@ -409,14 +459,14 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     `;
   }
 
-  private createStopIcon(orderNumber: number, isAccommodation = false): L.DivIcon {
+  private createStopIcon(orderNumber: number, color: string, isAccommodation = false): L.DivIcon {
     const iconHtml = isAccommodation 
       ? `<i class="bi bi-building" style="font-size: 8px; margin-right: 2px;"></i>${orderNumber}`
       : orderNumber;
 
     return L.divIcon({
       className: 'route-stop-icon',
-      html: `<div style="width:28px;height:28px;border-radius:999px;background:#1d4ed8;border:2px solid #f8fafc;box-shadow:0 4px 10px rgba(2,6,23,0.35);display:flex;align-items:center;justify-content:center;color:#ffffff;font-weight:800;font-size:12px;">${iconHtml}</div>`,
+      html: `<div style="width:28px;height:28px;border-radius:999px;background:${color};border:2px solid #f8fafc;box-shadow:0 4px 10px rgba(2,6,23,0.35);display:flex;align-items:center;justify-content:center;color:#ffffff;font-weight:800;font-size:12px;">${iconHtml}</div>`,
       iconSize: [28, 28],
       iconAnchor: [14, 14]
     });

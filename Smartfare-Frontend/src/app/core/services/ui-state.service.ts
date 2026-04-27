@@ -12,6 +12,7 @@ export class UIStateService {
   readonly activeSurface = signal<'sidebar' | 'map'>('sidebar');
   readonly markerColor = signal('#22c55e'); // Default green
   readonly showSummary = signal(false);
+  readonly dayRouteColors = signal<Record<number, string>>({});
 
   toggleSidebar() {
     this.showSidebar.update(v => !v);
@@ -39,6 +40,10 @@ export class UIStateService {
 
   setMarkerColor(color: string) {
     this.markerColor.set(color);
+  }
+
+  setDayColor(day: number, color: string) {
+    this.dayRouteColors.update(prev => ({ ...prev, [day]: color }));
   }
 
   toggleSummary() {
