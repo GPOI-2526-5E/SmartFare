@@ -31,7 +31,6 @@ import { BuilderPoi } from './builder.types';
 })
 export class ItineraryBuilderComponent implements OnInit {
   showLoginPrompt = signal(false);
-  isLoadingWorkspace = signal(false);
   workspaceError = signal<string | null>(null);
   workspace = signal<ItineraryWorkspace | null>(null);
   previewPoi = signal<BuilderPoi | null>(null);
@@ -127,6 +126,7 @@ export class ItineraryBuilderComponent implements OnInit {
   });
 
   readonly filteredSavedPois = computed(() => {
+    if (this.ui.mapView() === 'selected') return this.savedPois();
     const allowedKeys = new Set(this.filteredPois().map((poi) => poi.key));
     return this.savedPois().filter((poi) => allowedKeys.has(poi.key));
   });
@@ -213,11 +213,9 @@ export class ItineraryBuilderComponent implements OnInit {
   }
 
   loadWorkspace(locationId: number) {
-    this.isLoadingWorkspace.set(true);
     this.workspaceError.set(null);
 
     this.itineraryService.getWorkspace(locationId).subscribe((ws) => {
-      this.isLoadingWorkspace.set(false);
 
       if (!ws || !ws.location) {
         this.workspaceError.set('Non siamo riusciti a caricare i dati della destinazione selezionata.');
@@ -295,6 +293,32 @@ export class ItineraryBuilderComponent implements OnInit {
 
     this.previewPoi.set(poi);
     this.alertService.success('Punto aggiunto e salvato automaticamente.');
+  }
+
+  applyOptimizedOrder(optimizedPois: BuilderPoi[]) {
+    const current = this.itineraryService.itinerary();
+    if (!current || !current.items) return;
+
+    // Create a map of key -> new positions
+    const orderMap = new Map<string, { day: number, order: number }>();
+    optimizedPois.forEach((poi, index) => {
+      // getDisplayRoutePois optimizes within each day, so dayNumber is preserved or assigned
+      orderMap.set(poi.key, { day: poi.dayNumber || 1, order: index + 1 });
+    });
+
+    const updatedItems = current.items.map(item => {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      const newPos = orderMap.get(key);
+      if (newPos) {
+        return { ...item, dayNumber: newPos.day, orderInt: newPos.order };
+      }
+      return item;
+    });
+
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      items: updatedItems
+    }, { autosave: true });
   }
 
   onChangeLocationRequest() {

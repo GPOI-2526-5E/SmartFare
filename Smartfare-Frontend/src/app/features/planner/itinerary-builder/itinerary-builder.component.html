@@ -25,7 +25,8 @@
             @if (!ui.showSummary()) {
             <app-builder-map [location]="workspace()?.location || null" [savedPois]="filteredSavedPois()"
                 [routePois]="savedPois()" [availablePois]="mapAvailablePois()" [previewPoi]="previewPoi()"
-                [markerColor]="ui.markerColor()" (mapFocused)="onMapFocused()">
+                [markerColor]="ui.markerColor()" (mapFocused)="onMapFocused()"
+                (orderChanged)="applyOptimizedOrder($event)">
             </app-builder-map>
             } @else {
             <app-builder-summary [workspace]="workspace()" [savedPois]="savedPois()" (showOnMap)="onPreviewPoi($event)">
@@ -39,10 +40,6 @@
         </aside>
         }
     </main>
-
-    @if (isLoadingWorkspace()) {
-    <div class="builder-overlay">Caricamento destinazione...</div>
-    }
 
     @if (workspaceError()) {
     <div class="builder-overlay builder-overlay-error">

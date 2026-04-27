@@ -350,7 +350,8 @@
 }
 
 .seg-btn.active,
-.toggle-btn.active {
+.toggle-btn.active,
+.pill-btn.active {
   background: #0f766e;
   color: #ecfeff;
   border-color: #115e59;

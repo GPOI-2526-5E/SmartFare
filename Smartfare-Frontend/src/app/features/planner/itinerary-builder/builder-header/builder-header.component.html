@@ -188,11 +188,13 @@
     <section class="toolbar-section">
       <span class="section-label">Vista mappa</span>
       <div class="btn-group-pill">
-        <button class="pill-btn" (click)="showSelectedMarkers()" title="Mostra solo i marker salvati">
+        <button class="pill-btn" [class.active]="ui.mapView() === 'selected'" (click)="showSelectedMarkers()"
+          title="Mostra solo i marker salvati">
           <i class="bi bi-pin-map-fill"></i>
           <span>Salvati</span>
         </button>
-        <button class="pill-btn" (click)="showAreaMarkers()" title="Mostra tutti i punti in zona">
+        <button class="pill-btn" [class.active]="ui.mapView() === 'all'" (click)="showAreaMarkers()"
+          title="Mostra tutti i punti in zona">
           <i class="bi bi-geo-alt-fill"></i>
           <span>In zona</span>
         </button>

@@ -33,6 +33,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   @Input() markerColor = '#22c55e';
 
   @Output() mapFocused = new EventEmitter<void>();
+  @Output() orderChanged = new EventEmitter<BuilderPoi[]>();
 
   private map?: L.Map;
   private locationLayer = L.layerGroup();
@@ -94,6 +95,11 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.routeOrderMode = mode;
     if (!this.map) return;
 
+    if (mode === 'optimized') {
+      const optimized = this.getDisplayRoutePois();
+      this.orderChanged.emit(optimized);
+    }
+
     this.refreshLayers(false);
   }
 
@@ -107,31 +113,27 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.routeLayer.clearLayers();
     this.endpointLayer.clearLayers();
 
-    if (this.location) {
-      const locationMarker = L.circleMarker([this.location.latitude, this.location.longitude], {
-        radius: 8,
-        color: '#38bdf8',
-        fillColor: '#0ea5e9',
-        fillOpacity: 0.9,
-        weight: 2
-      }).bindPopup(`<strong>${this.location.name}</strong><br/>Destinazione selezionata`);
-
-      this.locationLayer.addLayer(locationMarker);
-
-      if (recenterForLocation) {
-        this.map.setView([this.location.latitude, this.location.longitude], 12);
-      }
+    if (this.location && recenterForLocation) {
+      this.map.setView([this.location.latitude, this.location.longitude], 12);
     }
 
     for (const poi of this.availablePois) {
-      const marker = L.circleMarker([poi.latitude, poi.longitude], {
-        radius: 6,
-        color: '#f8fafc',
-        fillColor: '#94a3b8',
-        fillOpacity: 0.25,
-        weight: 1
-      }).bindPopup(`<strong>${poi.title}</strong><br/>${poi.subtitle || ''}`);
+      let marker: L.Layer;
 
+      if (poi.type === 'accommodation') {
+        const icon = this.createTypeIcon('accommodation', 'var(--text-color-muted)');
+        marker = L.marker([poi.latitude, poi.longitude], { icon });
+      } else {
+        marker = L.circleMarker([poi.latitude, poi.longitude], {
+          radius: 8,
+          color: 'var(--glass-border)',
+          fillColor: 'var(--text-color-muted)',
+          fillOpacity: 0.65,
+          weight: 1.5
+        });
+      }
+
+      marker.bindPopup(this.createPopupHtml(poi));
       this.availableLayer.addLayer(marker);
     }
 
@@ -142,22 +144,29 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       const orderNumber = routeOrder.get(poi.key);
 
       if (orderNumber) {
-        const icon = this.createStopIcon(orderNumber);
+        const icon = this.createStopIcon(orderNumber, poi.type === 'accommodation');
         const marker = L.marker([poi.latitude, poi.longitude], { icon }).bindPopup(
-          `<strong>${poi.title}</strong><br/>Tappa ${orderNumber}`
+          this.createPopupHtml(poi, `Tappa ${orderNumber}`)
         );
         this.savedLayer.addLayer(marker);
         continue;
       }
 
-      const marker = L.circleMarker([poi.latitude, poi.longitude], {
-        radius: 7,
-        color: this.markerColor,
-        fillColor: this.markerColor,
-        fillOpacity: 0.82,
-        weight: 2
-      }).bindPopup(`<strong>${poi.title}</strong><br/>Salvato nell'itinerario`);
+      let marker: L.Layer;
+      if (poi.type === 'accommodation') {
+        const icon = this.createTypeIcon('accommodation', this.markerColor);
+        marker = L.marker([poi.latitude, poi.longitude], { icon });
+      } else {
+        marker = L.circleMarker([poi.latitude, poi.longitude], {
+          radius: 7,
+          color: this.markerColor,
+          fillColor: this.markerColor,
+          fillOpacity: 0.82,
+          weight: 2
+        });
+      }
 
+      marker.bindPopup(this.createPopupHtml(poi, "Salvato nell'itinerario"));
       this.savedLayer.addLayer(marker);
     }
 
@@ -168,7 +177,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         fillColor: '#fbbf24',
         fillOpacity: 0.95,
         weight: 2
-      }).bindPopup(`<strong>${this.previewPoi.title}</strong><br/>Anteprima`);
+      }).bindPopup(this.createPopupHtml(this.previewPoi, 'Anteprima'));
 
       this.previewLayer.addLayer(previewMarker);
       this.map.panTo([this.previewPoi.latitude, this.previewPoi.longitude]);
@@ -196,7 +205,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.routeInfo = null;
       this.routeError = null;
       this.isRouteLoading = false;
-      this.drawEndpointMarkers(points);
+      this.drawEndpointMarkers(this.displayRoutePois);
       return;
     }
 
@@ -295,7 +304,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         steps: points.length
       };
 
-      this.drawEndpointMarkers(points);
+      this.drawEndpointMarkers(this.displayRoutePois);
 
       if (!this.previewPoi && allDrawnPoints.length > 1) {
         const bounds = L.latLngBounds(allDrawnPoints);
@@ -319,7 +328,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.routeInfo = null;
       this.dayRouteInfo = [];
       this.routeError = 'Percorso stradale non disponibile: mostrata una linea indicativa tra le tappe.';
-      this.drawEndpointMarkers(points);
+      this.drawEndpointMarkers(this.displayRoutePois);
     } finally {
       if (requestId === this.routeRequestId) {
         this.isRouteLoading = false;
@@ -327,32 +336,99 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
 
-  private drawEndpointMarkers(points: Array<{ lat: number; lng: number }>) {
+  private drawEndpointMarkers(pois: BuilderPoi[]) {
     this.endpointLayer.clearLayers();
 
-    if (!points.length) return;
+    if (!pois.length) return;
 
     const startIcon = this.createEndpointIcon('START', '#16a34a');
     const endIcon = this.createEndpointIcon('END', '#dc2626');
 
-    const start = points[0];
-    const end = points[points.length - 1];
+    const start = pois[0];
+    const end = pois[pois.length - 1];
 
-    const startMarker = L.marker([start.lat, start.lng], { icon: startIcon }).bindPopup('Partenza');
+    const startMarker = L.marker([start.latitude, start.longitude], { icon: startIcon })
+      .bindPopup(this.createPopupHtml(start, 'Partenza'));
     this.endpointLayer.addLayer(startMarker);
 
-    if (points.length > 1) {
-      const endMarker = L.marker([end.lat, end.lng], { icon: endIcon }).bindPopup('Arrivo');
+    if (pois.length > 1) {
+      const endMarker = L.marker([end.latitude, end.longitude], { icon: endIcon })
+        .bindPopup(this.createPopupHtml(end, 'Arrivo'));
       this.endpointLayer.addLayer(endMarker);
     }
   }
 
-  private createStopIcon(orderNumber: number): L.DivIcon {
+  private createPopupHtml(poi: BuilderPoi, label?: string): string {
+    const isHotel = poi.itemTypeCode === 'ACCOMMODATION';
+    const startLabel = isHotel ? 'Check-in' : 'Inizio';
+    const endLabel = isHotel ? 'Check-out' : 'Fine';
+
+    const formatDate = (dateStr?: string | null) => {
+      if (!dateStr) return null;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      return d.toLocaleString('it-IT', { 
+        day: '2-digit', 
+        month: 'short', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    };
+
+    const formattedStart = formatDate(poi.plannedStartAt);
+    const formattedEnd = formatDate(poi.plannedEndAt);
+
+    return `
+      <div class="map-popup-card">
+        ${label ? `<div class="popup-label">${label}</div>` : ''}
+        ${poi.imageUrl ? `
+          <div class="popup-image" style="background-image: url('${poi.imageUrl}')"></div>
+        ` : ''}
+        <div class="popup-content">
+          <h5 class="popup-title">${poi.title}</h5>
+          ${poi.subtitle ? `<div class="popup-subtitle"><i class="bi bi-geo-alt"></i> ${poi.subtitle}</div>` : ''}
+          
+          ${(formattedStart || formattedEnd) ? `
+            <div class="popup-planning">
+              ${formattedStart ? `
+                <div class="planning-item">
+                  <span class="p-label">${startLabel}:</span>
+                  <span class="p-value">${formattedStart}</span>
+                </div>
+              ` : ''}
+              ${formattedEnd ? `
+                <div class="planning-item">
+                  <span class="p-label">${endLabel}:</span>
+                  <span class="p-value">${formattedEnd}</span>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  private createStopIcon(orderNumber: number, isAccommodation = false): L.DivIcon {
+    const iconHtml = isAccommodation 
+      ? `<i class="bi bi-building" style="font-size: 8px; margin-right: 2px;"></i>${orderNumber}`
+      : orderNumber;
+
     return L.divIcon({
       className: 'route-stop-icon',
-      html: `<div style="width:28px;height:28px;border-radius:999px;background:#1d4ed8;border:2px solid #f8fafc;box-shadow:0 4px 10px rgba(2,6,23,0.35);display:flex;align-items:center;justify-content:center;color:#ffffff;font-weight:800;font-size:12px;">${orderNumber}</div>`,
+      html: `<div style="width:28px;height:28px;border-radius:999px;background:#1d4ed8;border:2px solid #f8fafc;box-shadow:0 4px 10px rgba(2,6,23,0.35);display:flex;align-items:center;justify-content:center;color:#ffffff;font-weight:800;font-size:12px;">${iconHtml}</div>`,
       iconSize: [28, 28],
       iconAnchor: [14, 14]
+    });
+  }
+
+  private createTypeIcon(type: 'accommodation' | 'activity', color: string): L.DivIcon {
+    const icon = type === 'accommodation' ? 'bi-building' : 'bi-geo-alt-fill';
+    return L.divIcon({
+      className: 'poi-type-icon',
+      html: `<div style="width:24px;height:24px;border-radius:50%;background:${color};border:2px solid #f8fafc;box-shadow:0 2px 6px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:12px;"><i class="bi ${icon}"></i></div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
     });
   }
 

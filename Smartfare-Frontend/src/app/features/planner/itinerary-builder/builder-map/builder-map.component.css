@@ -81,9 +81,96 @@
 }
 
 .day-route-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
+}
+
+/* Custom Map Popups */
+:host ::ng-deep .leaflet-popup-content-wrapper {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--glass-border);
+}
+
+:host ::ng-deep .leaflet-popup-content {
+  margin: 0;
+  width: 240px !important;
+}
+
+:host ::ng-deep .leaflet-popup-tip {
+  background: var(--bg-color);
+  border: 1px solid var(--glass-border);
+}
+
+:host ::ng-deep .map-popup-card {
+  display: flex;
+  flex-direction: column;
+}
+
+:host ::ng-deep .popup-label {
+  background: var(--accent-color);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  letter-spacing: 0.05em;
+}
+
+:host ::ng-deep .popup-image {
+  width: 100%;
+  height: 120px;
+  background-size: cover;
+  background-position: center;
+}
+
+:host ::ng-deep .popup-content {
+  padding: 12px;
+}
+
+:host ::ng-deep .popup-title {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+:host ::ng-deep .popup-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-color-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+:host ::ng-deep .popup-planning {
+  border-top: 1px solid var(--glass-border);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+:host ::ng-deep .planning-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+:host ::ng-deep .p-label {
+  color: var(--text-color-muted);
+  font-weight: 600;
+}
+
+:host ::ng-deep .p-value {
+  color: var(--accent-color);
+  font-weight: 700;
 }
 
 .route-link {
