@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, computed, inject, input } from '@angular/core';
+import { Component, EventEmitter, Output, computed, inject, input, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -49,7 +49,7 @@ interface DaySection {
   templateUrl: './builder-summary.component.html',
   styleUrls: ['./builder-summary.component.css']
 })
-export class BuilderSummaryComponent {
+export class BuilderSummaryComponent implements OnInit, OnDestroy {
   workspace = input<ItineraryWorkspace | null>(null);
   savedPois = input<BuilderPoi[]>([]);
 
@@ -60,6 +60,10 @@ export class BuilderSummaryComponent {
 
   itinerary = this.itineraryService.itinerary;
 
+  // Carosello banner
+  private autoScrollInterval: ReturnType<typeof setInterval> | null = null;
+  currentBannerIndex = signal<number>(0);
+
   readonly selectedHotels = computed(() => this.savedPois().filter((poi) => poi.type === 'accommodation'));
   readonly selectedActivities = computed(() => this.savedPois().filter((poi) => poi.type === 'activity'));
   readonly occupiedDaysCount = computed(() => this.daySections().filter((day) => day.items.length > 0).length);
@@ -68,6 +72,31 @@ export class BuilderSummaryComponent {
     const totalDays = this.daySections().length;
     if (!totalDays) return 0;
     return Math.round((this.occupiedDaysCount() / totalDays) * 100);
+  });
+
+  readonly bannerImages = computed<string[]>(() => {
+    const images: string[] = [];
+
+    // Raccogli immagini dagli hotel
+    for (const hotel of this.selectedHotels()) {
+      if (hotel.imageUrl) {
+        images.push(hotel.imageUrl);
+      }
+    }
+
+    // Raccogli immagini dalle attività
+    for (const activity of this.selectedActivities()) {
+      if (activity.imageUrl) {
+        images.push(activity.imageUrl);
+      }
+    }
+
+    // Se non ci sono immagini, usa il placeholder
+    if (images.length === 0) {
+      images.push('/assets/home-section.avif');
+    }
+
+    return images;
   });
 
   readonly categoryClusters = computed<CategoryCluster[]>(() => {
@@ -592,5 +621,23 @@ export class BuilderSummaryComponent {
     return poi.type === 'accommodation'
       ? `${poi.rating} stelle`
       : `${poi.rating.toFixed(1)} / 5`;
+  }
+
+  ngOnInit(): void {
+    // Auto-scroll carosello immagini ogni 4 secondi
+    this.autoScrollInterval = setInterval(() => {
+      const images = this.bannerImages();
+      if (images.length > 1) {
+        const nextIndex = (this.currentBannerIndex() + 1) % images.length;
+        this.currentBannerIndex.set(nextIndex);
+      }
+    }, 4000);
+  }
+
+  ngOnDestroy(): void {
+    // Pulisci l'intervallo
+    if (this.autoScrollInterval) {
+      clearInterval(this.autoScrollInterval);
+    }
   }
 }

@@ -5,6 +5,10 @@
 }
 
 .navbar-shell {
+  --navbar-bg: rgba(15, 23, 42, 0.65);
+  --navbar-border: rgba(255, 255, 255, 0.12);
+  --navbar-text: #f8fafc;
+  --navbar-hover: rgba(59, 130, 246, 0.15);
   font-family: 'Inter', sans-serif;
   color: var(--text-color);
   position: relative;
@@ -39,7 +43,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: var(--glass-bg);
+  background: var(--navbar-bg);
   backdrop-filter: blur(12px);
   transition:
     background 0.28s ease,
@@ -52,7 +56,7 @@
 
 .navbar-shell.is-pinned .main-bar {
   background: var(--bg-color);
-  border-bottom: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--navbar-border);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -92,9 +96,13 @@
 /* --- NAV LINKS --- */
 .nav-links .nav-item {
   text-decoration: none;
-  color: var(--text-color);
+  color: var(--navbar-text);
   font-weight: 500;
   transition: color 0.2s;
+}
+
+.nav-links .nav-item:hover {
+  color: var(--accent-color);
 }
 
 .nav-brand,
@@ -155,8 +163,7 @@
   inset: 0;
   width: 100vw;
   min-height: 100dvh;
-  background:
-    linear-gradient(180deg, rgba(8, 12, 20, 0.98) 0%, rgba(10, 15, 26, 1) 100%);
+  background: linear-gradient(180deg, rgba(8, 12, 20, 0.98) 0%, rgba(10, 15, 26, 1) 100%);
   display: flex;
   flex-direction: column;
   padding: 2rem 1.5rem;
@@ -295,8 +302,6 @@
   min-width: 220px;
 }
 
-/* Removed redundant data-theme light block as variables handle it */
-
 @keyframes dropdownFadeIn {
   from {
     opacity: 0;
@@ -317,32 +322,21 @@
   width: calc(100% - 8px);
 }
 
-/* Removed redundant data-theme light block */
-
 .dropdown-item:hover {
   background: var(--accent-color-glow);
   color: #60a5fa;
   transform: translateX(4px);
 }
 
-/* Removed redundant data-theme light block */
-
 .dropdown-item.text-danger:hover {
   background: rgba(239, 68, 68, 0.15) !important;
   color: #fca5a5 !important;
-}
-
-[data-theme="light"] .dropdown-item.text-danger:hover {
-  background: rgba(239, 68, 68, 0.1) !important;
-  color: #dc2626 !important;
 }
 
 .dropdown-divider {
   border-top-color: var(--card-border);
   margin: 8px 0;
 }
-
-/* Removed redundant data-theme light block */
 
 .pointer {
   cursor: pointer;

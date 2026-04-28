@@ -1,15 +1,11 @@
 <div class="summary-shell">
   <section class="summary-hero">
     <div class="summary-hero__banner">
-      <img [src]="heroBannerImage()" [alt]="workspace()?.location?.name || 'Panoramica itinerario'">
-      <div class="summary-hero__banner-overlay">
-        <span>
-          <i class="bi bi-image-alt"></i>
-          Preview del viaggio
-        </span>
-        <strong>{{ workspace()?.location?.name || 'Il tuo viaggio' }}</strong>
-        <p>{{ getSummaryDescription() }}</p>
+      @for (image of bannerImages(); track image) {
+      <div class="banner-slide" [class.active]="image === bannerImages()[currentBannerIndex()]">
+        <img [src]="image" [alt]="workspace()?.location?.name || 'Immagine itinerario'">
       </div>
+      }
     </div>
 
     <div class="summary-hero__content">
@@ -65,37 +61,6 @@
         </article>
         }
       </div>
-    </div>
-  </section>
-
-  <section class="summary-extras">
-    <div class="summary-categories surface-card">
-      <div class="section-header">
-        <div>
-          <span class="section-kicker">Categorie</span>
-          <h3>Colori e tono del viaggio</h3>
-          <p>Le attivita reali selezionate costruiscono la palette del summary.</p>
-        </div>
-      </div>
-
-      @if (categoryClusters().length) {
-      <div class="category-list">
-        @for (category of categoryClusters(); track category.id) {
-        <article class="category-chip" [style.--category-color]="category.color">
-          <span class="category-chip__dot"></span>
-          <div class="category-chip__copy">
-            <strong>{{ category.name }}</strong>
-            <small>{{ category.count }} attivita</small>
-          </div>
-        </article>
-        }
-      </div>
-      } @else {
-      <div class="category-empty">
-        <i class="bi bi-palette2"></i>
-        <p>Nessuna categoria attiva: aggiungi attivita per far emergere temi, colori e priorita.</p>
-      </div>
-      }
     </div>
   </section>
 

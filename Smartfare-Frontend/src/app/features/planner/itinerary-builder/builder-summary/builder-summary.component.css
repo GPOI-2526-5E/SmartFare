@@ -27,22 +27,6 @@
     linear-gradient(180deg, var(--summary-glow-c), rgba(15, 23, 42, 0));
 }
 
-:host-context(body.light-theme) .summary-shell {
-  --summary-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.96));
-  --summary-panel: rgba(255, 255, 255, 0.82);
-  --summary-panel-strong: rgba(255, 255, 255, 0.9);
-  --summary-border-soft: rgba(148, 163, 184, 0.24);
-  --summary-title: #0f172a;
-  --summary-copy: rgba(51, 65, 85, 0.84);
-  --summary-copy-soft: rgba(71, 85, 105, 0.82);
-  --summary-chip: #1e293b;
-  --summary-empty: rgba(255, 255, 255, 0.76);
-  --summary-input-bg: rgba(255, 255, 255, 0.92);
-  --summary-glow-a: rgba(56, 189, 248, 0.16);
-  --summary-glow-b: rgba(251, 146, 60, 0.14);
-  --summary-glow-c: rgba(148, 163, 184, 0.08);
-}
-
 .surface-card,
 .summary-hero {
   border-radius: 30px;
@@ -60,14 +44,27 @@
 
 .summary-hero__banner {
   position: relative;
-  min-height: 240px;
+  min-height: 160px;
   overflow: hidden;
   border-radius: 26px;
   border: 1px solid var(--summary-border-soft);
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(2, 6, 23, 0.75));
 }
 
-.summary-hero__banner img {
+.banner-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.banner-slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.banner-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -78,7 +75,8 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 18%, rgba(2, 6, 23, 0.78));
+  background: linear-gradient(180deg, transparent 10%, rgba(2, 6, 23, 0.88));
+  z-index: 1;
 }
 
 .summary-hero__banner-overlay {
@@ -921,7 +919,7 @@
   }
 
   .summary-hero__banner {
-    min-height: 220px;
+    min-height: 180px;
   }
 
   .day-panel {
@@ -969,11 +967,19 @@
   }
 
   .summary-hero__banner {
-    min-height: 180px;
+    min-height: 120px;
   }
 
   .summary-hero__banner-overlay {
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .summary-hero__banner-overlay strong {
+    font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+  }
+
+  .summary-hero__banner-overlay p {
+    font-size: 0.82rem;
   }
 
   .hero-card__media {
