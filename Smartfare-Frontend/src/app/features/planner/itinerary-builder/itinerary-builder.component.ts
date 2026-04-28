@@ -303,12 +303,14 @@ export class ItineraryBuilderComponent implements OnInit {
       accommodationId: poi.type === 'accommodation' ? poi.entityId : undefined
     };
 
-    this.itineraryService.setCurrentItinerary({
+    const nextItinerary = this.withExtendedEndDateIfNeeded({
       ...current,
       locationId: current.locationId || this.workspace()?.location?.id,
       location: current.location || this.workspace()?.location || undefined,
       items: [...currentItems, newItem]
-    });
+    }, safeTargetDay);
+
+    this.itineraryService.setCurrentItinerary(nextItinerary);
 
     this.previewPoi.set(poi);
     this.alertService.success('Punto aggiunto e salvato automaticamente.');
@@ -510,5 +512,37 @@ export class ItineraryBuilderComponent implements OnInit {
       pdfWindow.focus();
       pdfWindow.print();
     }, 400);
+  }
+
+  private withExtendedEndDateIfNeeded(itinerary: Itinerary, targetDay: number): Itinerary {
+    if (!itinerary.startDate || targetDay <= 1) {
+      return itinerary;
+    }
+
+    const startDate = new Date(itinerary.startDate);
+    if (Number.isNaN(startDate.getTime())) {
+      return itinerary;
+    }
+
+    const requiredEndDate = new Date(startDate);
+    requiredEndDate.setDate(requiredEndDate.getDate() + Math.max(0, targetDay - 1));
+    const requiredEndDateString = requiredEndDate.toISOString().split('T')[0];
+
+    if (!itinerary.endDate) {
+      return {
+        ...itinerary,
+        endDate: requiredEndDateString
+      };
+    }
+
+    const currentEndDate = new Date(itinerary.endDate);
+    if (Number.isNaN(currentEndDate.getTime()) || currentEndDate < requiredEndDate) {
+      return {
+        ...itinerary,
+        endDate: requiredEndDateString
+      };
+    }
+
+    return itinerary;
   }
 }

@@ -103,7 +103,15 @@ export class BuilderHeaderComponent {
 
   availableDays = computed(() => {
     const it = this.itinerary();
-    if (!it) return [1, 2];
+    if (!it) return [1];
+
+    const usedDays = (it.items || [])
+      .map((item) => item.dayNumber || 1)
+      .filter((day) => Number.isFinite(day) && day > 0);
+
+    const highestUsedDay = usedDays.length ? Math.max(...usedDays) : 1;
+    const progressiveDays = highestUsedDay + 1;
+    let totalDaysFromDates = 1;
 
     if (it.startDate && it.endDate) {
       const start = new Date(it.startDate);
@@ -111,12 +119,12 @@ export class BuilderHeaderComponent {
 
       if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
         const diffTime = Math.abs(end.getTime() - start.getTime());
-        const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-        return Array.from({ length: Math.max(1, totalDays) }, (_, i) => i + 1);
+        totalDaysFromDates = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
       }
     }
 
-    return [1];
+    const totalDays = Math.max(1, totalDaysFromDates, progressiveDays);
+    return Array.from({ length: totalDays }, (_, i) => i + 1);
   });
 
   selectedCategoryLabel = computed(() => {

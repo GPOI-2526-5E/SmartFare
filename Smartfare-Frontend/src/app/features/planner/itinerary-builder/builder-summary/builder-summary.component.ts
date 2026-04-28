@@ -130,6 +130,14 @@ export class BuilderSummaryComponent {
     ];
   });
 
+  readonly heroBannerImage = computed(() => {
+    const featuredHotel = this.getFeaturedHotel();
+    const featuredActivity = this.selectedActivities()[0] || null;
+    const busiest = this.getBusiestDay();
+
+    return featuredHotel?.imageUrl || featuredActivity?.imageUrl || this.getDayCoverImage(busiest) || '/assets/home-section.avif';
+  });
+
   readonly heroCards = computed<HighlightCard[]>(() => {
     const featuredHotel = this.getFeaturedHotel();
     const featuredActivity = this.selectedActivities()[0] || null;
@@ -231,6 +239,22 @@ export class BuilderSummaryComponent {
     }
 
     return `${destination} prende forma con ${hotels} hotel e ${activities} attivita: ora puoi rifinire orari, note e distribuzione giorno per giorno.`;
+  }
+
+  getProgressTitle(): string {
+    return 'Avanzamento itinerario';
+  }
+
+  getProgressCaption(): string {
+    if (!this.savedPois().length) {
+      return 'Inizia ad aggiungere tappe per costruire il viaggio.';
+    }
+
+    if (this.freeDaysCount() > 0) {
+      return `${this.freeDaysCount()} giornate ancora libere da rifinire`;
+    }
+
+    return 'Ogni giornata visibile contiene gia almeno una tappa.';
   }
 
   getTotalItems(): number {
