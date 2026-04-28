@@ -23,6 +23,13 @@
     </div>
 
     <div class="toolbar-right">
+      <div class="custom-dropdown export-dropdown">
+        <button type="button" class="save-cta save-cta--export" (click)="requestExport()" title="Esporta PDF - A4 stampabile">
+          <i class="bi bi-filetype-pdf"></i>
+          <span>Esporta PDF</span>
+        </button>
+      </div>
+
       <button type="button" class="save-cta" (click)="saveItinerary()">
         <i class="bi bi-cloud-arrow-up"></i>
         <span>Salva</span>

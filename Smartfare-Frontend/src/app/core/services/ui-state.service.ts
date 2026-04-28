@@ -50,6 +50,17 @@ export class UIStateService {
     this.dayRouteColors.update(prev => ({ ...prev, [day]: color }));
   }
 
+  ensureDayColor(day: number): string {
+    const current = this.dayRouteColors()[day];
+    if (current) {
+      return current;
+    }
+
+    const randomColor = this.generateRandomDayColor();
+    this.setDayColor(day, randomColor);
+    return randomColor;
+  }
+
   setVisibleDayRoute(day: number | 'all') {
     this.visibleDayRoute.set(day);
     // If we select a specific day for the route, also update the active day for adding items
@@ -63,7 +74,47 @@ export class UIStateService {
   }
 
   getDefaultDayColor(day: number): string {
-    return this.defaultDayPalette[(day - 1) % this.defaultDayPalette.length];
+    return this.dayRouteColors()[day] || this.defaultDayPalette[(day - 1) % this.defaultDayPalette.length];
+  }
+
+  private generateRandomDayColor(): string {
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = 65 + Math.floor(Math.random() * 20);
+    const lightness = 48 + Math.floor(Math.random() * 10);
+
+    return this.hslToHex(hue, saturation, lightness);
+  }
+
+  private hslToHex(h: number, s: number, l: number): string {
+    const normalizedS = s / 100;
+    const normalizedL = l / 100;
+
+    const c = (1 - Math.abs(2 * normalizedL - 1)) * normalizedS;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = normalizedL - c / 2;
+
+    let r = 0;
+    let g = 0;
+    let b = 0;
+
+    if (h < 60) {
+      r = c; g = x; b = 0;
+    } else if (h < 120) {
+      r = x; g = c; b = 0;
+    } else if (h < 180) {
+      r = 0; g = c; b = x;
+    } else if (h < 240) {
+      r = 0; g = x; b = c;
+    } else if (h < 300) {
+      r = x; g = 0; b = c;
+    } else {
+      r = c; g = 0; b = x;
+    }
+
+    const toHex = (value: number) =>
+      Math.round((value + m) * 255).toString(16).padStart(2, '0');
+
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   }
 
   toggleSummary() {

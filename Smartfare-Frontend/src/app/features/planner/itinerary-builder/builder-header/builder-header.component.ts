@@ -26,6 +26,7 @@ export class BuilderHeaderComponent {
 
   @Output() navRequest = new EventEmitter<string>();
   @Output() saveRequest = new EventEmitter<void>();
+  @Output() exportRequest = new EventEmitter<'pdf'>();
   @Output() locationSelected = new EventEmitter<number>();
 
   private locationService = inject(LocationService);
@@ -46,6 +47,11 @@ export class BuilderHeaderComponent {
   showCategoryDropdown = signal(false);
   showVisibleDayDropdown = signal(false);
   showActiveDayDropdown = signal(false);
+  showExportDropdown = signal(false);
+  selectedExportFormat = signal<'pdf'>('pdf');
+
+  readonly selectedExportLabel = computed(() => 'PDF');
+  readonly selectedExportHint = computed(() => 'A4 stampabile');
 
   private searchSubject = new Subject<string>();
 
@@ -75,6 +81,8 @@ export class BuilderHeaderComponent {
       const days = this.availableDays();
       const lastDay = days[days.length - 1] ?? 1;
 
+      days.forEach((day) => this.ui.ensureDayColor(day));
+
       if (this.ui.selectedDay() > lastDay) {
         this.ui.setSelectedDay(lastDay);
       }
@@ -97,14 +105,18 @@ export class BuilderHeaderComponent {
     const it = this.itinerary();
     if (!it) return [1, 2];
 
-    const usedDays = (it.items || [])
-      .map((item) => item.dayNumber || 1)
-      .filter((day) => Number.isFinite(day) && day > 0);
+    if (it.startDate && it.endDate) {
+      const start = new Date(it.startDate);
+      const end = new Date(it.endDate);
 
-    const maxUsedDay = usedDays.length ? Math.max(...usedDays) : 1;
-    const progressiveDays = Math.max(2, maxUsedDay + 1);
+      if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return Array.from({ length: Math.max(1, totalDays) }, (_, i) => i + 1);
+      }
+    }
 
-    return Array.from({ length: progressiveDays }, (_, i) => i + 1);
+    return [1];
   });
 
   selectedCategoryLabel = computed(() => {
@@ -163,16 +175,22 @@ export class BuilderHeaderComponent {
     }
   }
 
-  async logout() {
-    try {
-      await this.socialAuthService.signOut(true);
-    } catch {
-      // Ignore
-    }
-    this.authService.Logout();
-    this.itineraryService.clearDraft();
-    this.alertService.success('Logout effettuato con successo!');
-    this.router.navigate(['/']);
+  requestExport() {
+    this.exportRequest.emit(this.selectedExportFormat());
+  }
+
+  toggleExportDropdown(event: Event) {
+    event.stopPropagation();
+    this.showExportDropdown.update(v => !v);
+    this.showCategoryDropdown.set(false);
+    this.showVisibleDayDropdown.set(false);
+    this.showActiveDayDropdown.set(false);
+  }
+
+  selectExportFormat(format: 'pdf') {
+    this.selectedExportFormat.set(format);
+    this.showExportDropdown.set(false);
+    this.requestExport();
   }
 
   onCategoryChange(event: Event) {
@@ -287,6 +305,7 @@ export class BuilderHeaderComponent {
       this.showCategoryDropdown.set(false);
       this.showVisibleDayDropdown.set(false);
       this.showActiveDayDropdown.set(false);
+      this.showExportDropdown.set(false);
     }
   }
 }

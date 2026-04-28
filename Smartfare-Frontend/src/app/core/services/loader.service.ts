@@ -19,7 +19,6 @@ export class LoaderService {
         this.activeRequests.update((count) => count + 1);
     }
 
-  
     hide(): void {
         const nextCount = Math.max(0, this.activeRequests() - 1);
         this.activeRequests.set(nextCount);

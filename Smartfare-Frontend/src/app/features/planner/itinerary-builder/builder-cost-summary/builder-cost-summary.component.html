@@ -1,0 +1,125 @@
+<div class="cost-summary">
+    <!-- Header Stats -->
+    <div class="cost-header">
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+                <div class="stat-label">Costo Totale</div>
+                <div class="stat-value">€{{ costs().grandTotal.toFixed(2) }}</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+                <div class="stat-label">Costo al Giorno</div>
+                <div class="stat-value">€{{ getCostPerDay().toFixed(2) }}</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🗺️</div>
+            <div class="stat-content">
+                <div class="stat-label">Giorni</div>
+                <div class="stat-value">{{ getDaysCount() }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breakdown Sections -->
+    <div class="cost-breakdown">
+        <!-- Accommodations -->
+        @if (accommodationSummary(); as acc) {
+        <div class="breakdown-section">
+            <div class="section-header" (click)="toggleDetails()" [attr.aria-expanded]="showDetails()" role="button"
+                tabindex="0">
+                <div class="header-content">
+                    <span class="section-icon">🏨</span>
+                    <h3>Alloggi</h3>
+                    <span class="count-badge">{{ acc.count }}</span>
+                </div>
+                <span class="total-amount">€{{ acc.total.toFixed(2) }}</span>
+            </div>
+
+            @if (showDetails()) {
+            <div class="section-details">
+                @for (acc of costs().accommodations; track acc.title) {
+                <div class="detail-row">
+                    <div class="detail-info">
+                        <span class="detail-title">{{ acc.title }}</span>
+                        <span class="detail-meta">{{ acc.days }} notte/i × €{{ acc.price.toFixed(2) }}</span>
+                    </div>
+                    <span class="detail-price">€{{ acc.subtotal.toFixed(2) }}</span>
+                </div>
+                }
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Activities -->
+        @if (activitySummary(); as act) {
+        <div class="breakdown-section">
+            <div class="section-header" (click)="toggleDetails()" [attr.aria-expanded]="showDetails()" role="button"
+                tabindex="0">
+                <div class="header-content">
+                    <span class="section-icon">⭐</span>
+                    <h3>Attività</h3>
+                    <span class="count-badge">{{ act.count }}</span>
+                </div>
+                <span class="total-amount">€{{ act.total.toFixed(2) }}</span>
+            </div>
+
+            @if (showDetails()) {
+            <div class="section-details">
+                @for (act of costs().activities; track act.title) {
+                <div class="detail-row">
+                    <div class="detail-info">
+                        <span class="detail-title">{{ act.title }}</span>
+                        <span class="detail-meta">{{ act.quantity }} × €{{ act.price.toFixed(2) }}</span>
+                    </div>
+                    <span class="detail-price">€{{ (act.price * act.quantity).toFixed(2) }}</span>
+                </div>
+                }
+            </div>
+            }
+        </div>
+        }
+    </div>
+
+    <!-- Export Actions -->
+    <div class="export-actions">
+        <h3>Esporta Itinerario</h3>
+        <div class="action-buttons">
+            <button class="action-btn action-btn-primary" (click)="onExport('json')" title="Esporta come file JSON">
+                <span class="btn-icon">📋</span>
+                <span>JSON</span>
+            </button>
+            <button class="action-btn action-btn-secondary" (click)="onExport('html')"
+                title="Esporta come file HTML (stampabile)">
+                <span class="btn-icon">📄</span>
+                <span>HTML</span>
+            </button>
+            <button class="action-btn action-btn-tertiary" (click)="onExport('pdf')" title="Esporta come file PDF">
+                <span class="btn-icon">📑</span>
+                <span>PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Info -->
+    <div class="summary-info">
+        <div class="info-item">
+            <span class="info-label">📍 Destinazione</span>
+            <span class="info-value">{{ location }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">📅 Date</span>
+            <span class="info-value">{{ startDate }} → {{ endDate }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">✍️ Titolo</span>
+            <span class="info-value">{{ itineraryName }}</span>
+        </div>
+    </div>
+</div>

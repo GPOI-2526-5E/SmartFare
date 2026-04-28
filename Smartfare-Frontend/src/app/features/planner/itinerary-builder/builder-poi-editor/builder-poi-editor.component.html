@@ -1,0 +1,87 @@
+<div class="editor-overlay" [class.editor-overlay--open]="isOpen" (click)="onClose()" role="dialog"
+    [attr.aria-modal]="true" [attr.aria-label]="'Editor dettagli ' + poiTitle">
+    <div class="editor-modal" (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="editor-header">
+            <div class="editor-title-group">
+                <h3 class="editor-title">{{ poiTitle }}</h3>
+                <span class="editor-type-badge">{{ poiType }}</span>
+            </div>
+            <button class="editor-close-btn" (click)="onClose()" aria-label="Chiudi editor">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="editor-body">
+            <!-- POI Info -->
+            @if (poi) {
+            <div class="poi-info">
+                @if (poi.imageUrl) {
+                <img [src]="poi.imageUrl" [alt]="poi.title" class="poi-image">
+                }
+                <div class="poi-meta">
+                    @if (poi.subtitle) {
+                    <p class="poi-subtitle">{{ poi.subtitle }}</p>
+                    }
+                    <div class="poi-details">
+                        @if (poi.price) {
+                        <span class="detail-badge">💰 {{ poi.price }}€</span>
+                        }
+                        @if (poi.rating) {
+                        <span class="detail-badge">⭐ {{ poi.rating }}/5</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Form Fields -->
+            <form class="editor-form">
+                <!-- Day Selection -->
+                <div class="form-group">
+                    <label for="dayNumber">Giorno</label>
+                    <select id="dayNumber" [(ngModel)]="formData().dayNumber" name="dayNumber" class="form-control">
+                        @for (day of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track day) {
+                        <option [value]="day">Giorno {{ day }}</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Start Time -->
+                <div class="form-group">
+                    <label for="startTime">Ora di inizio</label>
+                    <input id="startTime" type="time" [(ngModel)]="formData().plannedStartAt" name="plannedStartAt"
+                        class="form-control" [disabled]="poi?.type === 'accommodation'"
+                        [title]="poi?.type === 'accommodation' ? 'Non applicabile agli alloggi' : ''">
+                </div>
+
+                <!-- End Time -->
+                <div class="form-group">
+                    <label for="endTime">Ora di fine</label>
+                    <input id="endTime" type="time" [(ngModel)]="formData().plannedEndAt" name="plannedEndAt"
+                        class="form-control" [disabled]="poi?.type === 'accommodation'"
+                        [title]="poi?.type === 'accommodation' ? 'Non applicabile agli alloggi' : ''">
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group">
+                    <label for="notes">Note personali</label>
+                    <textarea id="notes" [(ngModel)]="formData().note" name="note" class="form-control form-textarea"
+                        placeholder="Aggiungi note, consigli o reminder..." rows="4"></textarea>
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="editor-footer">
+            <button class="btn btn-danger" (click)="onDelete()" aria-label="Rimuovi elemento">
+                <span aria-hidden="true">🗑️</span> Rimuovi
+            </button>
+            <div class="button-group">
+                <button class="btn btn-secondary" (click)="onClose()">Annulla</button>
+                <button class="btn btn-primary" (click)="onSave()">Salva modifiche</button>
+            </div>
+        </div>
+    </div>
+</div>

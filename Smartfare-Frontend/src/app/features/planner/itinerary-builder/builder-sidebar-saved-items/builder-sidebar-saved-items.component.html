@@ -1,0 +1,96 @@
+<div class="saved-items-container">
+    <!-- Header -->
+    <div class="saved-items-header">
+        <h3>
+            <span class="header-icon">✅</span>
+            Elementi Salvati
+        </h3>
+        <span class="count-badge">{{ getTotalSaved() }}</span>
+    </div>
+
+    <!-- Empty State -->
+    @if (getTotalSaved() === 0) {
+    <div class="empty-state">
+        <div class="empty-icon">📍</div>
+        <p class="empty-text">Nessun elemento aggiunto ancora</p>
+        <small>Aggiungi punti di interesse dalla sidebar</small>
+    </div>
+    }
+
+    <!-- Days Accordion -->
+    @if (getTotalSaved() > 0) {
+    <div class="days-accordion">
+        @for (dayGroup of savedByDay(); track dayGroup.day) {
+        <div class="day-item">
+            <button class="day-header" (click)="toggleDay(dayGroup.day)"
+                [class.day-header--expanded]="expandedDay() === dayGroup.day"
+                [attr.aria-expanded]="expandedDay() === dayGroup.day" aria-controls="day-content-{{ dayGroup.day }}">
+                <div class="day-info">
+                    <span class="day-label">Giorno {{ dayGroup.day }}</span>
+                    <span class="item-count">{{ dayGroup.items.length }}</span>
+                </div>
+                <span class="expand-icon" aria-hidden="true">▶</span>
+            </button>
+
+            @if (expandedDay() === dayGroup.day) {
+            <div class="day-content" [id]="'day-content-' + dayGroup.day">
+                <div class="items-list">
+                    @for (poi of dayGroup.items; track poi.key) {
+                    <div class="poi-card">
+                        <div class="poi-card-header" (click)="onPreviewClick(poi)">
+                            <div class="poi-type-icon">
+                                {{ poi.type === 'accommodation' ? '🏨' : '⭐' }}
+                            </div>
+                            <div class="poi-info">
+                                <h4 class="poi-title">{{ poi.title }}</h4>
+                                <small class="poi-subtitle">{{ poi.subtitle }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Time Info -->
+                        @if (poi.plannedStartAt && poi.plannedEndAt) {
+                        <div class="poi-time">
+                            <span class="time-icon">⏰</span>
+                            <span>{{ poi.plannedStartAt }} - {{ poi.plannedEndAt }}</span>
+                        </div>
+                        }
+
+                        <!-- Notes -->
+                        @if (poi.note) {
+                        <div class="poi-note">
+                            <span class="note-icon">📝</span>
+                            <span>{{ poi.note }}</span>
+                        </div>
+                        }
+
+                        <!-- Price & Rating -->
+                        <div class="poi-meta">
+                            @if (poi.price) {
+                            <span class="meta-badge price-badge">💰 €{{ poi.price }}</span>
+                            }
+                            @if (poi.rating) {
+                            <span class="meta-badge rating-badge">⭐ {{ poi.rating }}/5</span>
+                            }
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="poi-actions">
+                            <button class="action-btn action-btn-edit" (click)="onEditClick(poi, $event)"
+                                title="Modifica elemento" aria-label="Modifica {{ poi.title }}">
+                                ✏️ Modifica
+                            </button>
+                            <button class="action-btn action-btn-delete" (click)="onDeleteClick(poi, $event)"
+                                title="Rimuovi elemento" aria-label="Rimuovi {{ poi.title }}">
+                                🗑️ Rimuovi
+                            </button>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </div>
+    }
+</div>

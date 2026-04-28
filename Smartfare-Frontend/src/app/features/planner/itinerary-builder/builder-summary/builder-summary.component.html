@@ -1,220 +1,312 @@
-<div class="summary-container">
-  <section class="hero-card">
-    <div class="hero-copy">
-      <div class="eyebrow">
-        <i class="bi bi-compass"></i>
-        <span>Itinerary studio</span>
+<div class="summary-shell">
+  <section class="summary-hero">
+    <div class="summary-hero__copy">
+      <div class="summary-hero__eyebrow">
+        <i class="bi bi-postcard-heart-fill"></i>
+        <span>Itinerary summary</span>
       </div>
 
-      <h2 class="destination-name">{{ workspace()?.location?.name || 'Il tuo Viaggio' }}</h2>
+      <div class="summary-hero__heading">
+        <h2>{{ workspace()?.location?.name || 'Il tuo viaggio' }}</h2>
+        <p>{{ getSummaryDescription() }}</p>
+      </div>
 
-      <p class="hero-description">
-        Organizza hotel e attività come una timeline premium: trascina, riordina e lascia che il salvataggio automatico
-        tenga tutto allineato.
-      </p>
+      <div class="summary-hero__facts">
+        <span class="fact-pill">
+          <i class="bi bi-calendar-range"></i>
+          @if (itinerary()?.startDate && itinerary()?.endDate) {
+            {{ itinerary()?.startDate | date:'dd MMM' }} - {{ itinerary()?.endDate | date:'dd MMM yyyy' }}
+          } @else {
+            Date da definire
+          }
+        </span>
+        <span class="fact-pill">
+          <i class="bi bi-compass"></i>
+          {{ workspace()?.location?.province || 'Destinazione da scegliere' }}
+        </span>
+        <span class="fact-pill">
+          <i class="bi bi-hourglass-split"></i>
+          {{ getDaysCount() || 0 }} giorni
+        </span>
+      </div>
 
-      <div class="trip-meta">
-        <span class="meta-pill">
-          <i class="bi bi-calendar3"></i>
-          {{ itinerary()?.startDate | date:'dd MMM' }} - {{ itinerary()?.endDate | date:'dd MMM yyyy' }}
-        </span>
-        <span class="meta-pill">
-          <i class="bi bi-clock"></i>
-          {{ getDaysCount() }} giorni
-        </span>
-        <span class="meta-pill">
-          <i class="bi bi-geo-alt"></i>
-          {{ workspace()?.location?.province || 'Destinazione' }}
-        </span>
+      <div class="progress-card">
+        <div class="progress-card__head">
+          <div>
+            <strong>{{ occupiedDaysCount() }} giorni strutturati</strong>
+            <p>{{ freeDaysCount() }} giornate ancora libere da rifinire</p>
+          </div>
+          <b>{{ planningProgress() }}%</b>
+        </div>
+
+        <div class="progress-card__track" aria-hidden="true">
+          <span [style.width.%]="planningProgress()"></span>
+        </div>
       </div>
     </div>
 
-    <div class="hero-aside">
-      <div class="hero-stat-grid">
-        <div class="stat-card stat-card--hotel">
-          <span class="stat-value">{{ accommodations().length }}</span>
-          <span class="stat-label">Hotel</span>
-        </div>
-        <div class="stat-card stat-card--activity">
-          <span class="stat-value">{{ activities().length }}</span>
-          <span class="stat-label">Attività</span>
-        </div>
-        <div class="stat-card stat-card--total">
-          <span class="stat-value">{{ getTotalItems() }}</span>
-          <span class="stat-label">Elementi</span>
-        </div>
-      </div>
+    <div class="summary-hero__cards">
+      @for (card of heroCards(); track card.title) {
+        <article class="hero-card" [style.--accent]="card.color">
+          <div class="hero-card__media" [class.hero-card__media--placeholder]="!card.imageUrl">
+            @if (card.imageUrl) {
+              <img [src]="card.imageUrl" [alt]="card.title">
+            } @else {
+              <div class="hero-card__fallback">
+                <i class="bi bi-image"></i>
+              </div>
+            }
+          </div>
 
-      <div class="hero-note">
-        <i class="bi bi-arrow-down-up"></i>
-        <div>
-          <strong>Drag & drop attivo</strong>
-          <span>Ogni spostamento aggiorna ordine e giorno in tempo reale.</span>
-        </div>
-      </div>
+          <div class="hero-card__body">
+            <span>{{ card.eyebrow }}</span>
+            <h3>{{ card.title }}</h3>
+            <p>{{ card.detail }}</p>
+          </div>
+        </article>
+      }
     </div>
   </section>
 
-  <div class="summary-grid">
-    <!-- Left Column: Itinerary Timeline/List -->
-    <div class="summary-section items-section surface-card">
-      <div class="section-header section-header--accent">
-        <div class="section-icon">
-          <i class="bi bi-list-check"></i>
-        </div>
+  <section class="summary-grid">
+    <div class="summary-stats surface-card">
+      <div class="section-header">
         <div>
-          <h3>Programma del Viaggio</h3>
-          <p>Riordina gli elementi e il backend aggiorna automaticamente `orderInt`.</p>
+          <span class="section-kicker">Analisi</span>
+          <h3>Snapshot del piano</h3>
         </div>
       </div>
 
-      <div class="section-intro">
-        Trascina le schede tra i giorni per costruire il ritmo del viaggio. Gli spazi vuoti restano attivi come drop
-        target.
-      </div>
-
-      @if (savedPois().length === 0) {
-      <div class="empty-state">
-        <div class="empty-icon-wrap">
-          <i class="bi bi-map"></i>
-        </div>
-        <h4>Nessun elemento ancora</h4>
-        <p>Aggiungi hotel e attività dalla mappa per trasformare questo spazio in una timeline viva.</p>
-      </div>
-      } @else {
-      <div class="days-container" cdkDropListGroup>
-        @for (group of groupedDays(); track group.day) {
-        <section class="day-section">
-          <div class="day-header">
-            <div class="day-title-wrap">
-              <span class="day-kicker">Day</span>
-              <span class="day-number">{{ group.day }}</span>
+      <div class="stats-grid">
+        @for (stat of summaryStats(); track stat.label) {
+          <article class="stat-card">
+            <div class="stat-card__icon">
+              <i [ngClass]="['bi', stat.icon]"></i>
             </div>
-            <div class="day-summary">
-              <span>{{ group.items.length }} elementi</span>
+            <div class="stat-card__copy">
+              <span>{{ stat.label }}</span>
+              <strong>{{ stat.value }}</strong>
+              <p>{{ stat.detail }}</p>
             </div>
-          </div>
-
-          <div class="poi-list" cdkDropList [cdkDropListData]="group.items"
-            (cdkDropListDropped)="drop($event, group.day)">
-
-            @if (group.items.length === 0) {
-            <div class="day-empty-state">
-              <div class="day-empty-icon">
-                <i class="bi bi-plus-circle-dotted"></i>
-              </div>
-              <div class="empty-info">
-                <strong>Giorno libero</strong>
-                <span>Trascina qui un'attività</span>
-              </div>
-            </div>
-            }
-
-            @for (poi of group.items; track poi.key) {
-            <div class="poi-wrapper">
-              <article class="poi-card" [class.accommodation]="poi.type === 'accommodation'" [cdkDragData]="poi" cdkDrag>
-                <div class="poi-accent"></div>
-
-                <div class="drag-handle" cdkDragHandle>
-                  <i class="bi bi-grip-vertical"></i>
-                </div>
-
-                <div class="poi-icon">
-                  <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
-                </div>
-
-                <div class="poi-info">
-                  <div class="poi-topline">
-                    <h4>{{ poi.title }}</h4>
-                  </div>
-                  <p>{{ poi.subtitle }}</p>
-                </div>
-
-                <div class="poi-actions">
-                  <span class="poi-type-badge">
-                    {{ poi.type === 'accommodation' ? 'Hotel' : 'Attività' }}
-                  </span>
-                  <button class="view-btn" (click)="viewOnMap(poi)" type="button" title="Mostra sulla mappa">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button class="remove-btn" (click)="removeItem(poi)" type="button" title="Rimuovi">
-                    <i class="bi bi-trash3"></i>
-                  </button>
-                </div>
-
-                <div class="drag-placeholder" *cdkDragPlaceholder></div>
-              </article>
-
-              <div class="poi-planning-row">
-                <div class="planning-field">
-                  <label>{{ poi.type === 'accommodation' ? 'Check-in' : 'Inizio' }}</label>
-                  <input 
-                    type="datetime-local" 
-                    [ngModel]="formatDateForInput(poi.plannedStartAt)" 
-                    (ngModelChange)="onDateFieldChange(poi, 'plannedStartAt', $event)"
-                    class="planning-input">
-                </div>
-                <div class="planning-field">
-                  <label>{{ poi.type === 'accommodation' ? 'Check-out' : 'Fine' }}</label>
-                  <input 
-                    type="datetime-local" 
-                    [ngModel]="formatDateForInput(poi.plannedEndAt)" 
-                    (ngModelChange)="onDateFieldChange(poi, 'plannedEndAt', $event)"
-                    class="planning-input">
-                </div>
-              </div>
-
-              <div class="poi-notes-container">
-                <textarea 
-                  [ngModel]="poi.note" 
-                  (ngModelChange)="updateField(poi, 'note', $event)"
-                  placeholder="Nota rapida..."
-                  class="poi-note-input"
-                  rows="1"></textarea>
-              </div>
-            </div>
-            }
-          </div>
-        </section>
+          </article>
         }
-
-        <button class="add-day-btn" (click)="addDay()">
-          <i class="bi bi-plus-circle"></i>
-          <span>Estendi il viaggio di un giorno</span>
-        </button>
       </div>
+    </div>
+
+    <div class="summary-categories surface-card">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">Categorie</span>
+          <h3>Colori e tono del viaggio</h3>
+          <p>Le attivita reali selezionate costruiscono la palette del summary.</p>
+        </div>
+      </div>
+
+      @if (categoryClusters().length) {
+        <div class="category-list">
+          @for (category of categoryClusters(); track category.id) {
+            <article class="category-chip" [style.--category-color]="category.color">
+              <span class="category-chip__dot"></span>
+              <div class="category-chip__copy">
+                <strong>{{ category.name }}</strong>
+                <small>{{ category.count }} attivita</small>
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="category-empty">
+          <i class="bi bi-palette2"></i>
+          <p>Nessuna categoria attiva: aggiungi attivita per far emergere temi, colori e priorita.</p>
+        </div>
       }
     </div>
+  </section>
 
-    <!-- Right Column: Destination Info & Highlights -->
-    <div class="summary-section info-section">
-      <div class="section-header">
-        <div class="section-icon">
-          <i class="bi bi-info-circle"></i>
-        </div>
-        <div>
-          <h3>Dettagli Destinazione</h3>
-          <p>Informazioni sulla città selezionata.</p>
-        </div>
+  <section class="timeline-card surface-card">
+    <div class="section-header section-header--timeline">
+      <div>
+        <span class="section-kicker">Timeline</span>
+        <h3>Viaggio giorno per giorno</h3>
+        <p>Ogni card nasce dai dati reali di hotel e attivita: immagini, categoria, orari, prezzo e note.</p>
       </div>
 
-      <div class="destination-card">
-        <div class="dest-image" [style.background-image]="'url(https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80)'">
-          <div class="dest-overlay"></div>
-        </div>
-        <div class="dest-content">
-          <p class="dest-description">
-            {{ 'Esplora le meraviglie di ' + (workspace()?.location?.name || 'questa destinazione') + '. Una città tutta
-            da scoprire con hotel accoglienti e attività entusiasmanti per rendere il tuo viaggio indimenticabile.' }}
-          </p>
-
-          <div class="dest-tags">
-            @for (cat of workspace()?.categories?.slice(0, 8); track cat.id) {
-            <span class="dest-tag">#{{ cat.name }}</span>
-            }
-          </div>
-        </div>
-      </div>
+      <button class="add-day-btn" (click)="addDay()" type="button">
+        <i class="bi bi-plus-circle"></i>
+        <span>Aggiungi un giorno</span>
+      </button>
     </div>
-  </div>
+
+    @if (!savedPois().length) {
+      <div class="empty-state">
+        <div class="empty-state__icon">
+          <i class="bi bi-map"></i>
+        </div>
+        <div class="empty-state__copy">
+          <h4>Il nuovo summary e pronto</h4>
+          <p>Appena aggiungi hotel o attivita, compariranno qui con immagini, contenuti e distribuzione per giornata.</p>
+        </div>
+      </div>
+    } @else {
+      <div class="day-stack" cdkDropListGroup>
+        @for (day of daySections(); track day.day) {
+          <section class="day-panel" [style.--day-color]="day.color">
+            <div class="day-panel__cover" [class.day-panel__cover--empty]="!getDayCoverImage(day)">
+              @if (getDayCoverImage(day); as cover) {
+                <img [src]="cover" [alt]="day.label">
+              } @else {
+                <div class="day-panel__cover-fallback">
+                  <i class="bi bi-calendar-heart"></i>
+                </div>
+              }
+
+              <div class="day-panel__cover-overlay">
+                <span>Giorno {{ day.day }}</span>
+                <strong>{{ day.label }}</strong>
+                <small>{{ day.vibe }}</small>
+              </div>
+            </div>
+
+            <div class="day-panel__body">
+              <div class="day-panel__head">
+                <div class="day-panel__title">
+                  <h4>
+                    @if (day.date) {
+                      {{ day.date | date:'EEEE dd MMMM' }}
+                    } @else {
+                      Data da definire
+                    }
+                  </h4>
+                  <p>{{ day.items.length ? day.items.length + ' tappe distribuite nella giornata' : 'Giornata ancora libera' }}</p>
+                </div>
+
+                <div class="day-panel__badges">
+                  <span class="day-badge">{{ day.hotels.length }} hotel</span>
+                  <span class="day-badge">{{ day.activities.length }} attivita</span>
+                  <span class="day-badge">{{ day.scheduledCount }} con orario</span>
+                </div>
+              </div>
+
+              <div class="day-panel__progress">
+                <div class="day-panel__progress-bar" aria-hidden="true">
+                  <span [style.width.%]="day.coverage"></span>
+                </div>
+                <small>Carico relativo della giornata</small>
+              </div>
+
+              <div class="poi-list" cdkDropList [cdkDropListData]="day.items" (cdkDropListDropped)="drop($event, day.day)">
+                @if (!day.items.length) {
+                  <div class="day-empty-state">
+                    <i class="bi bi-plus-circle-dotted"></i>
+                    <div>
+                      <strong>Giornata libera</strong>
+                      <span>Trascina qui un hotel o una attivita per iniziare a costruirla.</span>
+                    </div>
+                  </div>
+                }
+
+                @for (poi of day.items; track poi.key) {
+                  <article class="poi-card" [class.poi-card--hotel]="poi.type === 'accommodation'" [cdkDragData]="poi" cdkDrag>
+                    <div class="poi-card__media" [class.poi-card__media--placeholder]="!getPoiCover(poi)">
+                      @if (getPoiCover(poi); as cover) {
+                        <img [src]="cover" [alt]="poi.title">
+                      } @else {
+                        <div class="poi-card__fallback">
+                          <i [class]="poi.type === 'accommodation' ? 'bi bi-buildings-fill' : 'bi bi-stars'"></i>
+                        </div>
+                      }
+                    </div>
+
+                    <div class="poi-card__content">
+                      <div class="poi-card__top">
+                        <div class="poi-card__identity">
+                          <button class="drag-handle" cdkDragHandle type="button" title="Trascina">
+                            <i class="bi bi-grip-vertical"></i>
+                          </button>
+
+                          <div class="poi-card__heading">
+                            <div class="poi-card__heading-row">
+                              <span class="poi-type" [style.background]="getPoiBadgeColor(poi)">{{ poi.type === 'accommodation' ? 'Hotel' : 'Attivita' }}</span>
+                              <h5>{{ poi.title }}</h5>
+                            </div>
+                            <p>{{ getPoiMetaLabel(poi) }}</p>
+                          </div>
+                        </div>
+
+                        <div class="poi-card__actions">
+                          <button class="icon-btn" (click)="viewOnMap(poi)" type="button" title="Mostra sulla mappa">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                          <button class="icon-btn icon-btn--danger" (click)="removeItem(poi)" type="button" title="Rimuovi">
+                            <i class="bi bi-trash3"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="poi-card__meta">
+                        <span class="meta-chip">
+                          <i class="bi bi-bookmark-heart"></i>
+                          {{ getPoiMetaLabel(poi) }}
+                        </span>
+                        @if (getPoiRatingLabel(poi); as ratingLabel) {
+                          <span class="meta-chip">
+                            <i class="bi bi-star-fill"></i>
+                            {{ ratingLabel }}
+                          </span>
+                        }
+                        @if (getPoiPriceLabel(poi); as priceLabel) {
+                          <span class="meta-chip">
+                            <i class="bi bi-cash-stack"></i>
+                            {{ priceLabel }}
+                          </span>
+                        }
+                        @if (formatPoiSchedule(poi); as schedule) {
+                          <span class="meta-chip meta-chip--accent">
+                            <i class="bi bi-clock"></i>
+                            {{ schedule }}
+                          </span>
+                        }
+                      </div>
+
+                      <div class="poi-card__edit-grid">
+                        <label class="planning-field">
+                          <span>{{ poi.type === 'accommodation' ? 'Check-in' : 'Inizio' }}</span>
+                          <input
+                            type="datetime-local"
+                            [ngModel]="formatDateForInput(poi.plannedStartAt)"
+                            (ngModelChange)="onDateFieldChange(poi, 'plannedStartAt', $event)"
+                            class="planning-input">
+                        </label>
+
+                        <label class="planning-field">
+                          <span>{{ poi.type === 'accommodation' ? 'Check-out' : 'Fine' }}</span>
+                          <input
+                            type="datetime-local"
+                            [ngModel]="formatDateForInput(poi.plannedEndAt)"
+                            (ngModelChange)="onDateFieldChange(poi, 'plannedEndAt', $event)"
+                            class="planning-input">
+                        </label>
+                      </div>
+
+                      <label class="note-field">
+                        <span>Nota rapida</span>
+                        <textarea
+                          [ngModel]="poi.note"
+                          (ngModelChange)="updateField(poi, 'note', $event)"
+                          placeholder="Aggiungi dettagli utili per questa tappa..."
+                          class="poi-note-input"
+                          rows="2"></textarea>
+                      </label>
+                    </div>
+
+                    <div class="drag-placeholder" *cdkDragPlaceholder></div>
+                  </article>
+                }
+              </div>
+            </div>
+          </section>
+        }
+      </div>
+    }
+  </section>
 </div>

@@ -6,12 +6,14 @@ import { BuilderSidebarComponent } from './builder-sidebar/builder-sidebar.compo
 import { BuilderMapComponent } from './builder-map/builder-map.component';
 import { BuilderSummaryComponent } from './builder-summary/builder-summary.component';
 import { BuilderChatComponent } from './builder-chat/builder-chat.component';
+import { BuilderPoiEditorComponent } from './builder-poi-editor/builder-poi-editor.component';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { Itinerary, ItineraryItem, ItineraryWorkspace } from '../../../core/models/itinerary.model';
 import { AuthService } from '../../../core/auth/auth.service';
 import { LoginPromptModalComponent } from '../../ui/modals/login-prompt-modal/login-prompt-modal.component';
 import { UIStateService } from '../../../core/services/ui-state.service';
 import { AlertService } from '../../../core/services/alert.service';
+import { ItineraryExportService } from '../../../core/services/itinerary-export.service';
 import { BuilderPoi } from './builder.types';
 
 @Component({
@@ -24,6 +26,7 @@ import { BuilderPoi } from './builder.types';
     BuilderMapComponent,
     BuilderSummaryComponent,
     BuilderChatComponent,
+    BuilderPoiEditorComponent,
     LoginPromptModalComponent
   ],
   templateUrl: './itinerary-builder.component.html',
@@ -35,16 +38,26 @@ export class ItineraryBuilderComponent implements OnInit {
   workspace = signal<ItineraryWorkspace | null>(null);
   previewPoi = signal<BuilderPoi | null>(null);
 
+  // New POI editor state
+  editingPoi = signal<BuilderPoi | null>(null);
+  editingItem = signal<ItineraryItem | null>(null);
+  showPoiEditor = signal(false);
+
   ui = inject(UIStateService);
+  private exportService = inject(ItineraryExportService);
   private targetUrl: string | null = null;
 
   constructor(
-    private itineraryService: ItineraryService,
+    itineraryService: ItineraryService,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private alertService: AlertService
-  ) { }
+  ) {
+    this.itineraryService = itineraryService;
+  }
+
+  itineraryService: ItineraryService;
 
   readonly allPois = computed(() => {
     const ws = this.workspace();
@@ -99,8 +112,8 @@ export class ItineraryBuilderComponent implements OnInit {
           : index.get(`activity-${item.activityId}`);
 
         if (poi) {
-          return { 
-            ...poi, 
+          return {
+            ...poi,
             dayNumber: item.dayNumber,
             note: item.note,
             plannedStartAt: item.plannedStartAt,
@@ -179,8 +192,9 @@ export class ItineraryBuilderComponent implements OnInit {
     }
 
     const start = query['in'] || new Date().toISOString().split('T')[0];
-    // Default to 1 day if 'out' is missing
-    const end = query['out'] || start;
+    // A new itinerary starts with only day 1 visible.
+    // Extra days are added progressively from the summary/header controls.
+    const end = start;
 
     this.itineraryService.setCurrentItinerary(
       {
@@ -226,9 +240,9 @@ export class ItineraryBuilderComponent implements OnInit {
 
       const current = this.itineraryService.itinerary();
       if (current) {
-        // If we selected a new location, we might want to reset the itinerary items 
+        // If we selected a new location, we might want to reset the itinerary items
         // because they belong to the previous location.
-        // For now, let's just update the location and keep the items, 
+        // For now, let's just update the location and keep the items,
         // but typically changing city should probably clear the items or warn the user.
         this.itineraryService.setCurrentItinerary(
           {
@@ -275,9 +289,14 @@ export class ItineraryBuilderComponent implements OnInit {
       return;
     }
 
+    const targetDay = this.ui.visibleDayRoute() === 'all'
+      ? this.ui.selectedDay()
+      : this.ui.visibleDayRoute();
+    const safeTargetDay = typeof targetDay === 'number' && targetDay > 0 ? targetDay : 1;
+
     const maxOrder = currentItems.reduce((acc, item) => Math.max(acc, item.orderInt || 0), 0);
     const newItem: ItineraryItem = {
-      dayNumber: this.ui.selectedDay(),
+      dayNumber: safeTargetDay,
       orderInt: maxOrder + 1,
       itemTypeCode: poi.itemTypeCode,
       activityId: poi.type === 'activity' ? poi.entityId : undefined,
@@ -380,5 +399,116 @@ export class ItineraryBuilderComponent implements OnInit {
 
   closeModal() {
     this.showLoginPrompt.set(false);
+  }
+
+  // ============ NEW POI EDITOR METHODS ============
+
+  onEditPoi(poi: BuilderPoi) {
+    const current = this.itineraryService.itinerary();
+    if (!current || !current.items) return;
+
+    const item = current.items.find(i =>
+      (poi.type === 'accommodation' && i.accommodationId === poi.entityId) ||
+      (poi.type === 'activity' && i.activityId === poi.entityId)
+    );
+
+    if (item) {
+      this.editingPoi.set(poi);
+      this.editingItem.set(item);
+      this.showPoiEditor.set(true);
+    }
+  }
+
+  onPoiEditorSave(updatedItem: ItineraryItem) {
+    const current = this.itineraryService.itinerary();
+    if (!current || !current.items) return;
+
+    const updatedItems = current.items.map(item => {
+      if (item === this.editingItem() ||
+        (this.editingItem() &&
+          ((this.editingItem()?.accommodationId && item.accommodationId === this.editingItem()?.accommodationId) ||
+            (this.editingItem()?.activityId && item.activityId === this.editingItem()?.activityId)))) {
+        return updatedItem;
+      }
+      return item;
+    });
+
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      items: updatedItems
+    }, { autosave: true });
+
+    this.alertService.success('Elemento modificato e salvato.');
+  }
+
+  onPoiEditorDelete() {
+    const current = this.itineraryService.itinerary();
+    if (!current || !current.items) return;
+
+    const editingItem = this.editingItem();
+    if (!editingItem) return;
+
+    const updatedItems = current.items.filter(item => {
+      return !((editingItem.accommodationId && item.accommodationId === editingItem.accommodationId) ||
+        (editingItem.activityId && item.activityId === editingItem.activityId));
+    });
+
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      items: updatedItems
+    }, { autosave: true });
+
+    this.alertService.success('Elemento rimosso dall\'itinerario.');
+  }
+
+  onPoiEditorClose() {
+    this.showPoiEditor.set(false);
+    this.editingPoi.set(null);
+    this.editingItem.set(null);
+  }
+
+  // ============ EXPORT METHODS ============
+
+  onExportItinerary(format: 'pdf') {
+    const current = this.itineraryService.itinerary();
+    const ws = this.workspace();
+
+    if (!current || !ws) {
+      this.alertService.error('Errore durante l\'esportazione.');
+      return;
+    }
+
+    const poiMap = new Map<string, BuilderPoi>();
+    for (const poi of this.allPois()) {
+      poiMap.set(poi.key, poi);
+    }
+
+    const exportData = this.exportService.generateExport(
+      current,
+      current.items || [],
+      poiMap,
+      ws.location || undefined
+    );
+
+    const fileName = `${current.name || 'itinerary'}-${new Date().toISOString().split('T')[0]}`;
+    const printableHtml = this.exportService.exportToHTML(exportData);
+    this.openPrintableWindow(printableHtml);
+  }
+
+  private openPrintableWindow(content: string) {
+    const pdfWindow = window.open('', '_blank', 'width=1280,height=900');
+    if (!pdfWindow) {
+      this.alertService.error('Impossibile aprire la finestra di stampa.');
+      return;
+    }
+
+    pdfWindow.document.open();
+    pdfWindow.document.write(content);
+    pdfWindow.document.close();
+
+    setTimeout(() => {
+      pdfWindow.focus();
+      pdfWindow.print();
+    }, 400);
   }
 }

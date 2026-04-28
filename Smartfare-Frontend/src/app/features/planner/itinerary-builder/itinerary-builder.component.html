@@ -1,57 +1,65 @@
 <div class="builder-container">
-    <div class="builder-atmosphere" aria-hidden="true">
-        <span class="glow glow-a"></span>
-        <span class="glow glow-b"></span>
-        <span class="glow glow-c"></span>
-    </div>
+  <div class="builder-atmosphere" aria-hidden="true">
+    <span class="glow glow-a"></span>
+    <span class="glow glow-b"></span>
+    <span class="glow glow-c"></span>
+  </div>
 
-    <app-builder-header [workspace]="workspace()" (navRequest)="handleNavigationIntercept($event)"
-        (saveRequest)="handleSaveRequest()" (locationSelected)="loadWorkspace($event)">
-    </app-builder-header>
+  <app-builder-header [workspace]="workspace()" (navRequest)="handleNavigationIntercept($event)"
+    (saveRequest)="handleSaveRequest()" (exportRequest)="onExportItinerary($event)"
+    (locationSelected)="loadWorkspace($event)">
+  </app-builder-header>
 
-    <main class="builder-workspace" [class.builder-workspace--sidebar]="ui.showSidebar()"
-        [class.builder-workspace--chat]="ui.showChat()">
-        @if (ui.showSidebar()) {
-        <aside class="workspace-sidebar workspace-panel" aria-label="Esplora punti di interesse">
-            <app-builder-sidebar [workspace]="workspace()" [savedPoiKeys]="savedPoiKeys()"
-                (focusSidebar)="onSidebarFocused()" (previewPoi)="onPreviewPoi($event)" (addPoi)="onAddPoi($event)">
-            </app-builder-sidebar>
-        </aside>
-        }
-
-        <section class="workspace-map workspace-panel" aria-label="Mappa itinerario">
-            @if (!ui.showSummary()) {
-            <app-builder-map [location]="workspace()?.location || null" [savedPois]="filteredSavedPois()"
-                [routePois]="savedPois()" [availablePois]="mapAvailablePois()" [previewPoi]="previewPoi()"
-                [markerColor]="ui.markerColor()" (mapFocused)="onMapFocused()"
-                (orderChanged)="applyOptimizedOrder($event)">
-            </app-builder-map>
-            } @else {
-            <app-builder-summary [workspace]="workspace()" [savedPois]="savedPois()" (showOnMap)="onPreviewPoi($event)">
-            </app-builder-summary>
-            }
-        </section>
-
-        @if (ui.showChat()) {
-        <aside class="workspace-chat workspace-panel" aria-label="Area assistente AI">
-            <app-builder-chat></app-builder-chat>
-        </aside>
-        }
-    </main>
-
-    @if (workspaceError()) {
-    <div class="builder-overlay builder-overlay-error">
-        <div>
-            <p>{{ workspaceError() }}</p>
-            <button class="btn btn-light" (click)="onChangeLocationRequest()">Scegli destinazione</button>
-        </div>
-    </div>
+  <main class="builder-workspace" [class.builder-workspace--sidebar]="ui.showSidebar()"
+    [class.builder-workspace--chat]="ui.showChat()">
+    @if (ui.showSidebar()) {
+    <aside class="workspace-sidebar workspace-panel" aria-label="Esplora punti di interesse">
+      <app-builder-sidebar [workspace]="workspace()" [savedPoiKeys]="savedPoiKeys()" (focusSidebar)="onSidebarFocused()"
+        (previewPoi)="onPreviewPoi($event)" (addPoi)="onAddPoi($event)">
+      </app-builder-sidebar>
+    </aside>
     }
 
-    <!-- Modals -->
-    @if (showLoginPrompt()) {
-    <app-login-prompt-modal (login)="onLoginRedirect()" (continueWithoutSaving)="onContinueExit()"
-        (close)="closeModal()">
-    </app-login-prompt-modal>
+    <section class="workspace-map workspace-panel" aria-label="Mappa itinerario">
+      @if (!ui.showSummary()) {
+      <app-builder-map [location]="workspace()?.location || null" [savedPois]="filteredSavedPois()"
+        [routePois]="savedPois()" [availablePois]="mapAvailablePois()" [previewPoi]="previewPoi()"
+        [markerColor]="ui.markerColor()" (mapFocused)="onMapFocused()" (orderChanged)="applyOptimizedOrder($event)">
+      </app-builder-map>
+      } @else {
+      <div class="summary-container">
+        <app-builder-summary [workspace]="workspace()" [savedPois]="savedPois()" (showOnMap)="onPreviewPoi($event)">
+        </app-builder-summary>
+      </div>
+      }
+    </section>
+
+    @if (ui.showChat()) {
+    <aside class="workspace-chat workspace-panel" aria-label="Area assistente AI">
+      <app-builder-chat></app-builder-chat>
+    </aside>
     }
+  </main>
+
+  @if (workspaceError()) {
+  <div class="builder-overlay builder-overlay-error">
+    <div>
+      <p>{{ workspaceError() }}</p>
+      <button class="btn btn-light" (click)="onChangeLocationRequest()">Scegli destinazione</button>
+    </div>
+  </div>
+  }
+
+  <!-- POI Editor Modal -->
+  @if (editingPoi() && editingItem()) {
+  <app-builder-poi-editor [poi]="editingPoi()" [item]="editingItem()" [isOpen]="showPoiEditor()"
+    (close)="onPoiEditorClose()" (save)="onPoiEditorSave($event)" (delete)="onPoiEditorDelete()">
+  </app-builder-poi-editor>
+  }
+
+  <!-- Modals -->
+  @if (showLoginPrompt()) {
+  <app-login-prompt-modal (login)="onLoginRedirect()" (continueWithoutSaving)="onContinueExit()" (close)="closeModal()">
+  </app-login-prompt-modal>
+  }
 </div>
