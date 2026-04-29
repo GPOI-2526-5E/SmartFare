@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, computed, inject, input, signal, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -47,7 +47,8 @@ interface DaySection {
   standalone: true,
   imports: [CommonModule, DragDropModule, FormsModule],
   templateUrl: './builder-summary.component.html',
-  styleUrls: ['./builder-summary.component.css']
+  styleUrls: ['./builder-summary.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BuilderSummaryComponent implements OnInit, OnDestroy {
   workspace = input<ItineraryWorkspace | null>(null);
@@ -397,6 +398,7 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
   updateField(poi: BuilderPoi, field: 'note' | 'plannedStartAt' | 'plannedEndAt', value: string | null): void {
     const current = this.itinerary();
     if (!current?.items) return;
+    if ((poi[field] ?? null) === (value ?? null)) return;
 
     const updatedItems = current.items.map((item) => {
       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
@@ -429,6 +431,7 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
     }
 
     const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return;
     this.updateField(poi, field, date.toISOString());
   }
 

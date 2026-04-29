@@ -216,19 +216,22 @@
                   <label class="planning-field">
                     <span>{{ poi.type === 'accommodation' ? 'Check-in' : 'Inizio' }}</span>
                     <input type="datetime-local" [ngModel]="formatDateForInput(poi.plannedStartAt)"
+                      [ngModelOptions]="{ updateOn: 'blur' }"
                       (ngModelChange)="onDateFieldChange(poi, 'plannedStartAt', $event)" class="planning-input">
                   </label>
 
                   <label class="planning-field">
                     <span>{{ poi.type === 'accommodation' ? 'Check-out' : 'Fine' }}</span>
                     <input type="datetime-local" [ngModel]="formatDateForInput(poi.plannedEndAt)"
+                      [ngModelOptions]="{ updateOn: 'blur' }"
                       (ngModelChange)="onDateFieldChange(poi, 'plannedEndAt', $event)" class="planning-input">
                   </label>
                 </div>
 
                 <label class="note-field">
                   <span>Nota rapida</span>
-                  <textarea [ngModel]="poi.note" (ngModelChange)="updateField(poi, 'note', $event)"
+                  <textarea [ngModel]="poi.note" [ngModelOptions]="{ updateOn: 'blur' }"
+                    (ngModelChange)="updateField(poi, 'note', $event)"
                     placeholder="Aggiungi dettagli utili per questa tappa..." class="poi-note-input"
                     rows="2"></textarea>
                 </label>

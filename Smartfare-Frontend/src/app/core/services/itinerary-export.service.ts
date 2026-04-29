@@ -480,7 +480,6 @@ export class ItineraryExportService {
             `).join('')}
 
             <div class="footer">
-                <span>Esportazione senza prezzi per una lettura piu pulita.</span>
                 <span>SmartFare</span>
             </div>
         </section>
