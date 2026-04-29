@@ -9,7 +9,9 @@ type DraftItemPayload = {
     plannedEndAt: Date | null;
     activityId: number | null;
     accommodationId: number | null;
-    routeSegmentId: number | null;
+    trainsStationId: number | null;
+    metroStationId: number | null;
+    airportId: number | null;
 };
 
 export class ItineraryService {
@@ -20,7 +22,9 @@ export class ItineraryService {
                 include: {
                     activity: true,
                     accommodation: true,
-                    routeSegment: true,
+                    trainsStation: true,
+                    metroStation: true,
+                    airport: true,
                     itemType: true
                 },
                 orderBy: [
@@ -41,7 +45,9 @@ export class ItineraryService {
             plannedEndAt: item.plannedEndAt ? new Date(item.plannedEndAt) : null,
             activityId: item.activityId ? Number(item.activityId) : null,
             accommodationId: item.accommodationId ? Number(item.accommodationId) : null,
-            routeSegmentId: item.routeSegmentId ? Number(item.routeSegmentId) : null
+            trainsStationId: item.TrainsStationId ? Number(item.TrainsStationId) : (item.trainsStationId ? Number(item.trainsStationId) : null),
+            metroStationId: item.MetroStationId ? Number(item.MetroStationId) : (item.metroStationId ? Number(item.metroStationId) : null),
+            airportId: item.AirportId ? Number(item.AirportId) : (item.airportId ? Number(item.airportId) : null)
         }));
     }
 

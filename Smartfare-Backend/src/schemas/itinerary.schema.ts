@@ -11,7 +11,9 @@ const itineraryItemSchema = z.object({
     plannedEndAt: z.string().datetime({ offset: true }).optional().nullable(),
     activityId: z.coerce.number().int().positive().optional().nullable(),
     accommodationId: z.coerce.number().int().positive().optional().nullable(),
-    routeSegmentId: z.coerce.number().int().positive().optional().nullable(),
+    trainsStationId: z.coerce.number().int().positive().optional().nullable(),
+    metroStationId: z.coerce.number().int().positive().optional().nullable(),
+    airportId: z.coerce.number().int().positive().optional().nullable(),
 });
 
 export const itinerarySchema = z.object({

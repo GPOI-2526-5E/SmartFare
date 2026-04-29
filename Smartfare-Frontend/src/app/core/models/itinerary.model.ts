@@ -23,6 +23,9 @@ export interface ItineraryItem {
     itemTypeCode: string;
     activityId?: number;
     accommodationId?: number;
+    trainsStationId?: number;
+    metroStationId?: number;
+    airportId?: number;
     plannedStartAt?: string | null;
     plannedEndAt?: string | null;
     activity?: Activity;
