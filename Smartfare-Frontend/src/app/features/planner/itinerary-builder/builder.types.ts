@@ -17,6 +17,9 @@ export interface BuilderPoi {
     note?: string;
     plannedStartAt?: string | null;
     plannedEndAt?: string | null;
+    groupName?: string | null;
+    groupStartAt?: string | null;
+    groupEndAt?: string | null;
     imageUrl?: string;
     price?: number;
     rating?: number;

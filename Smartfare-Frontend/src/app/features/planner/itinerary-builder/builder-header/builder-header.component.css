@@ -435,7 +435,6 @@
 }
 
 .btn-group-pill,
-.segmented-group,
 .toggle-group {
   display: flex;
   align-items: center;
@@ -443,7 +442,6 @@
 }
 
 .pill-btn,
-.seg-btn,
 .toggle-btn {
   border: 1px solid var(--glass-border);
   border-radius: 999px;
@@ -458,7 +456,6 @@
   transition: all 0.2s ease;
 }
 
-.seg-btn.active,
 .toggle-btn.active,
 .pill-btn.active {
   background: #0f766e;

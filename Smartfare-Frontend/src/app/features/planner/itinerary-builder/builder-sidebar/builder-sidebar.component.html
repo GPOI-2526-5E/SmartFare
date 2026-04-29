@@ -1,103 +1,127 @@
 <div class="sidebar-container" (click)="focusSidebar.emit()">
-
-  <div class="sidebar-header">
-    <p class="sidebar-kicker">Esplora</p>
-    <div class="sidebar-header-top">
-      <h3 class="sidebar-title">Punti di interesse</h3>
-      <span class="sidebar-count">{{ filteredList().length }} risultati</span>
-    </div>
-
-    <div class="search-box">
-      <i class="bi bi-search search-icon"></i>
-      <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
-        placeholder="Cerca hotel, attività o via..." class="search-input">
-      @if (searchTerm()) {
-      <button class="clear-btn" (click)="searchTerm.set('')">
-        <i class="bi bi-x"></i>
-      </button>
-      }
-    </div>
-
-    @if (workspace?.location) {
-    <div class="sidebar-location-pill">
-      <i class="bi bi-geo-alt-fill"></i>
-      {{ workspace?.location?.name }}
-      <span class="dot-separator">•</span>
-      <strong>{{ workspace?.location?.province }}</strong>
-    </div>
+  <div class="sidebar-rail" aria-label="Categorie itinerario">
+    @for (item of railItems(); track item.key) {
+    <button
+      type="button"
+      class="rail-item"
+      [class.active]="activeRailItem() === item.key"
+      [title]="item.label"
+      (click)="selectRailItem(item); $event.stopPropagation()">
+      <span class="rail-icon">
+        @if (item.iconValue && !isBootstrapIcon(item.iconValue)) {
+        <img [src]="item.iconValue" [alt]="item.label">
+        } @else {
+        <i [class]="resolveIconClass(item)"></i>
+        }
+      </span>
+      <span class="rail-label">{{ item.label }}</span>
+    </button>
     }
   </div>
 
-  <div class="sidebar-scroll-area">
-    <div class="poi-list">
-      <div class="list-header">
-        <h4>Risultati filtrati dalla toolbar</h4>
-        <p>In questa sezione trovi solo i contenuti, i filtri restano nella barra superiore.</p>
+  <div class="sidebar-content">
+    <div class="sidebar-header">
+      <p class="sidebar-kicker">Esplora</p>
+      <div class="sidebar-header-top">
+        <div>
+          <h3 class="sidebar-title">{{ activeFilterLabel() }}</h3>
+          <p class="sidebar-subtitle">Sfoglia e inserisci i punti che vuoi nel percorso.</p>
+        </div>
+        <span class="sidebar-count">{{ filteredList().length }} risultati</span>
       </div>
 
-      @if (filteredList().length === 0) {
-      <div class="empty-state">
-        <div class="empty-state-icon">
-          <i class="bi bi-search"></i>
-        </div>
-        <p>Nessun risultato per i filtri selezionati.</p>
+      <div class="search-box">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          placeholder="Cerca hotel, attività o via..."
+          class="search-input">
+        @if (searchTerm()) {
+        <button class="clear-btn" (click)="searchTerm.set('')">
+          <i class="bi bi-x"></i>
+        </button>
+        }
+      </div>
+
+      @if (workspace?.location) {
+      <div class="sidebar-location-pill">
+        <i class="bi bi-geo-alt-fill"></i>
+        {{ workspace?.location?.name }}
+        <span class="dot-separator">•</span>
+        <strong>{{ workspace?.location?.province }}</strong>
       </div>
       }
+    </div>
 
-      @for (poi of filteredList(); track poi.key) {
-      <article class="poi-card" [class.saved]="isSaved(poi)" (click)="onPreview(poi)">
+    <div class="sidebar-scroll-area">
+      <div class="poi-list">
+        <div class="list-header">
+          <h4>Contenuti disponibili</h4>
+          <p>La colonna laterale gestisce direttamente hotel e categorie del builder.</p>
+        </div>
 
-        @if (poi.imageUrl) {
-        <div class="poi-card-image" [style.background-image]="'url(' + poi.imageUrl + ')'">
-          <div class="poi-card-badge">
-            <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
+        @if (filteredList().length === 0) {
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="bi bi-search"></i>
           </div>
+          <p>Nessun risultato per il filtro selezionato.</p>
         </div>
         }
 
-        <div class="poi-card-main">
-          <div class="poi-header-row">
-            <h4 class="poi-title">{{ poi.title }}</h4>
-            @if (poi.rating) {
-            <span class="poi-rating">
-              <i class="bi bi-star-fill"></i>
-              {{ poi.rating }}
-            </span>
-            }
+        @for (poi of filteredList(); track poi.key) {
+        <article class="poi-card" [class.saved]="isSaved(poi)" (click)="onPreview(poi)">
+          @if (poi.imageUrl) {
+          <div class="poi-card-image" [style.background-image]="'url(' + poi.imageUrl + ')'">
+            <div class="poi-card-badge">
+              <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
+            </div>
+          </div>
+          }
+
+          <div class="poi-card-main">
+            <div class="poi-header-row">
+              <h4 class="poi-title">{{ poi.title }}</h4>
+              @if (poi.rating) {
+              <span class="poi-rating">
+                <i class="bi bi-star-fill"></i>
+                {{ poi.rating }}
+              </span>
+              }
+            </div>
+
+            <p class="poi-subtitle">{{ poi.subtitle }}</p>
+
+            <div class="poi-details">
+              @if (poi.price) {
+              <span class="poi-price-tag">{{ poi.price }}€</span>
+              }
+              <span class="poi-badge">
+                {{ poi.categoryName || (poi.type === 'accommodation' ? 'Hotel' : 'Attività') }}
+              </span>
+            </div>
           </div>
 
-          <p class="poi-subtitle">{{ poi.subtitle }}</p>
-
-          <div class="poi-details">
-            @if (poi.price) {
-            <span class="poi-price-tag">{{ poi.price }}€</span>
-            }
-            <span class="poi-badge">
-              {{ poi.categoryName || (poi.type === 'accommodation' ? 'Hotel' : 'Attività') }}
-            </span>
+          <div class="poi-card-footer">
+            <button type="button" class="btn-preview" (click)="onPreview(poi); $event.stopPropagation()">
+              <i class="bi bi-eye"></i>
+              Mostra
+            </button>
+            <button type="button" class="btn-add" [disabled]="isSaved(poi)" (click)="onAdd(poi); $event.stopPropagation()">
+              @if (isSaved(poi)) {
+              <i class="bi bi-check-circle-fill"></i>
+              Salvato
+              } @else {
+              <i class="bi bi-plus-circle"></i>
+              Inserisci
+              }
+            </button>
           </div>
-        </div>
-
-        <div class="poi-card-footer">
-          <button type="button" class="btn-preview" (click)="onPreview(poi); $event.stopPropagation()">
-            <i class="bi bi-eye"></i>
-            Mostra
-          </button>
-          <button type="button" class="btn-add" [disabled]="isSaved(poi)"
-            (click)="onAdd(poi); $event.stopPropagation()">
-            @if (isSaved(poi)) {
-            <i class="bi bi-check-circle-fill"></i>
-            Salvato
-            } @else {
-            <i class="bi bi-plus-circle"></i>
-            Inserisci
-            }
-          </button>
-        </div>
-
-      </article>
-      }
+        </article>
+        }
+      </div>
     </div>
   </div>
-
 </div>

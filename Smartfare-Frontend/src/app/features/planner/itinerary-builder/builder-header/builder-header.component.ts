@@ -44,7 +44,6 @@ export class BuilderHeaderComponent {
   isSearchingLocations = signal(false);
 
   // Custom dropdown states
-  showCategoryDropdown = signal(false);
   showVisibleDayDropdown = signal(false);
   showActiveDayDropdown = signal(false);
   showExportDropdown = signal(false);
@@ -127,14 +126,6 @@ export class BuilderHeaderComponent {
     return Array.from({ length: totalDays }, (_, i) => i + 1);
   });
 
-  selectedCategoryLabel = computed(() => {
-    const selected = this.ui.selectedCategory();
-    if (selected === 'all') return 'Tutte le categorie';
-
-    const category = (this.workspace?.categories || []).find((cat) => cat.id === selected);
-    return category?.name || 'Categoria';
-  });
-
   get saveStatusIcon(): string {
     const status = this.autosaveStatus();
 
@@ -190,7 +181,6 @@ export class BuilderHeaderComponent {
   toggleExportDropdown(event: Event) {
     event.stopPropagation();
     this.showExportDropdown.update(v => !v);
-    this.showCategoryDropdown.set(false);
     this.showVisibleDayDropdown.set(false);
     this.showActiveDayDropdown.set(false);
   }
@@ -199,24 +189,6 @@ export class BuilderHeaderComponent {
     this.selectedExportFormat.set(format);
     this.showExportDropdown.set(false);
     this.requestExport();
-  }
-
-  onCategoryChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const val = select.value === 'all' ? 'all' : parseInt(select.value, 10);
-    this.ui.setCategory(val as number | 'all');
-    this.ui.setActiveSurface('sidebar');
-  }
-
-  onTypeChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    this.ui.setType(select.value as 'all' | 'accommodation' | 'activity');
-    this.ui.setActiveSurface('sidebar');
-  }
-
-  onTypeChangeDirect(type: 'all' | 'accommodation' | 'activity') {
-    this.ui.setType(type);
-    this.ui.setActiveSurface('sidebar');
   }
 
   onDayColorChange(event: Event) {
@@ -267,31 +239,15 @@ export class BuilderHeaderComponent {
     }
   }
 
-  // Custom Dropdown Actions
-  toggleCategoryDropdown(event: Event) {
-    event.stopPropagation();
-    this.showCategoryDropdown.update(v => !v);
-    this.showVisibleDayDropdown.set(false);
-    this.showActiveDayDropdown.set(false);
-  }
-
-  selectCategory(category: number | 'all') {
-    this.ui.setCategory(category);
-    this.showCategoryDropdown.set(false);
-    this.ui.setActiveSurface('sidebar');
-  }
-
   toggleVisibleDayDropdown(event: Event) {
     event.stopPropagation();
     this.showVisibleDayDropdown.update(v => !v);
-    this.showCategoryDropdown.set(false);
     this.showActiveDayDropdown.set(false);
   }
 
   toggleActiveDayDropdown(event: Event) {
     event.stopPropagation();
     this.showActiveDayDropdown.update(v => !v);
-    this.showCategoryDropdown.set(false);
     this.showVisibleDayDropdown.set(false);
   }
 
@@ -310,7 +266,6 @@ export class BuilderHeaderComponent {
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (!target.closest('.custom-dropdown')) {
-      this.showCategoryDropdown.set(false);
       this.showVisibleDayDropdown.set(false);
       this.showActiveDayDropdown.set(false);
       this.showExportDropdown.set(false);

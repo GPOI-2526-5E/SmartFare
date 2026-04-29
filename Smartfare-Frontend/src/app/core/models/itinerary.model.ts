@@ -28,6 +28,9 @@ export interface ItineraryItem {
     airportId?: number;
     plannedStartAt?: string | null;
     plannedEndAt?: string | null;
+    groupName?: string | null;
+    groupStartAt?: string | null;
+    groupEndAt?: string | null;
     activity?: Activity;
     accommodation?: Accommodation;
 }

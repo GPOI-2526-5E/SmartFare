@@ -113,7 +113,7 @@ model Activity {
   street      String?
   latitude    Float
   longitude   Float
-  imageUrl    String?
+  imageUrl    String   @default("https://rpcgfwithmoyezrdeahj.supabase.co/storage/v1/object/public/hotels/hotel.avif")
   locationId  Int
   categoryId  Int
   createdAt   DateTime @default(now())
@@ -216,6 +216,9 @@ model ItineraryItem {
   note            String?
   plannedStartAt  DateTime?
   plannedEndAt    DateTime?
+  groupName       String?
+  groupStartAt    DateTime?
+  groupEndAt      DateTime?
   activityId      Int?
   accommodationId Int?
   trainsStationId Int?      @map("TrainsStationId")

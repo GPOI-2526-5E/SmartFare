@@ -153,52 +153,6 @@
     <div class="v-divider"></div>
 
     <section class="toolbar-section">
-      <span class="section-label">Contenuto</span>
-      <div class="segmented-group">
-        <button class="seg-btn" [class.active]="ui.selectedType() === 'all'" (click)="onTypeChangeDirect('all')">
-          <i class="bi bi-grid-3x3-gap-fill"></i>
-          <span>Tutto</span>
-        </button>
-        <button class="seg-btn" [class.active]="ui.selectedType() === 'accommodation'"
-          (click)="onTypeChangeDirect('accommodation')">
-          <i class="bi bi-building"></i>
-          <span>Hotel</span>
-        </button>
-        <button class="seg-btn" [class.active]="ui.selectedType() === 'activity'"
-          (click)="onTypeChangeDirect('activity')">
-          <i class="bi bi-lightning-charge-fill"></i>
-          <span>Attività</span>
-        </button>
-      </div>
-    </section>
-
-    <section class="toolbar-section">
-      <span class="section-label">Categoria</span>
-      <div class="custom-dropdown" [class.open]="showCategoryDropdown()">
-        <div class="dropdown-trigger" (click)="toggleCategoryDropdown($event)">
-          <span>{{ selectedCategoryLabel() }}</span>
-          <i class="bi bi-chevron-down"></i>
-        </div>
-        @if (showCategoryDropdown()) {
-        <div class="dropdown-menu-custom glass-effect">
-          <div class="dropdown-item-custom" [class.active]="ui.selectedCategory() === 'all'"
-            (click)="selectCategory('all')">
-            Tutte le categorie
-          </div>
-          @for (cat of workspace?.categories || []; track cat.id) {
-          <div class="dropdown-item-custom" [class.active]="ui.selectedCategory() === cat.id"
-            (click)="selectCategory(cat.id)">
-            {{ cat.name }}
-          </div>
-          }
-        </div>
-        }
-      </div>
-    </section>
-
-    <div class="v-divider"></div>
-
-    <section class="toolbar-section">
       <span class="section-label">Vista mappa</span>
       <div class="toolbar-row">
         <div class="btn-group-pill">

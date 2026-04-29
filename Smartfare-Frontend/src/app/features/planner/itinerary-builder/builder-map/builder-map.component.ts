@@ -506,6 +506,8 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     const formattedStart = formatDate(poi.plannedStartAt);
     const formattedEnd = formatDate(poi.plannedEndAt);
+    const formattedGroupStart = formatDate(poi.groupStartAt);
+    const formattedGroupEnd = formatDate(poi.groupEndAt);
 
     return `
       <div class="map-popup-card">
@@ -516,6 +518,30 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         <div class="popup-content">
           <h5 class="popup-title">${poi.title}</h5>
           ${poi.subtitle ? `<div class="popup-subtitle"><i class="bi bi-geo-alt"></i> ${poi.subtitle}</div>` : ''}
+          ${poi.groupName ? `
+            <div class="popup-group">
+              <div class="popup-subtitle popup-subtitle--group">
+                <i class="bi bi-collection"></i>
+                <span>${poi.groupName}</span>
+              </div>
+              ${(formattedGroupStart || formattedGroupEnd) ? `
+                <div class="popup-planning popup-planning--group">
+                  ${formattedGroupStart ? `
+                    <div class="planning-item">
+                      <span class="p-label">Inizio gruppo:</span>
+                      <span class="p-value">${formattedGroupStart}</span>
+                    </div>
+                  ` : ''}
+                  ${formattedGroupEnd ? `
+                    <div class="planning-item">
+                      <span class="p-label">Fine gruppo:</span>
+                      <span class="p-value">${formattedGroupEnd}</span>
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
 
           ${(formattedStart || formattedEnd) ? `
             <div class="popup-planning">

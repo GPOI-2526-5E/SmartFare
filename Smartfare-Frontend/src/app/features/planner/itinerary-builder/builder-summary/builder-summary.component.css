@@ -610,6 +610,14 @@
   align-items: flex-start;
 }
 
+.day-panel__head-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .day-panel__title h4 {
   margin: 0;
   color: var(--summary-title);
@@ -629,6 +637,81 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.day-group-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.24), rgba(15, 23, 42, 0.7));
+  color: #e0f2fe;
+  font-size: 0.76rem;
+  font-weight: 800;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.day-group-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(125, 211, 252, 0.6);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.34), rgba(15, 23, 42, 0.82));
+}
+
+.day-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.day-group-card {
+  border-radius: 18px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(2, 6, 23, 0.66));
+  padding: 14px;
+}
+
+.day-group-card__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.day-group-card__head strong {
+  display: block;
+  color: #f8fafc;
+  font-size: 0.92rem;
+}
+
+.day-group-card__head p,
+.day-group-card__head span {
+  margin: 4px 0 0;
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.78rem;
+}
+
+.day-group-card__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.day-group-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(14, 165, 233, 0.12);
+  color: #cbd5e1;
+  font-size: 0.76rem;
+  font-weight: 700;
 }
 
 .day-badge {
@@ -805,6 +888,18 @@
   min-width: 0;
 }
 
+.poi-group-label {
+  margin: 4px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #7dd3fc;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .poi-card__heading h5 {
   margin: 0;
   color: var(--summary-title);
@@ -913,6 +1008,20 @@
   min-height: 78px;
 }
 
+.grouped-poi-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  color: #dbeafe;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 @media (max-width: 1360px) {
   .summary-hero__cards {
     grid-template-columns: 1fr;
@@ -952,6 +1061,10 @@
   }
 
   .day-panel__badges {
+    justify-content: flex-start;
+  }
+
+  .day-panel__head-actions {
     justify-content: flex-start;
   }
 

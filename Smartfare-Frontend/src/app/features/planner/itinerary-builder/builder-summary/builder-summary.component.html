@@ -122,10 +122,17 @@
                 }}</p>
             </div>
 
-            <div class="day-panel__badges">
-              <span class="day-badge">{{ day.hotels.length }} hotel</span>
-              <span class="day-badge">{{ day.activities.length }} attivita</span>
-              <span class="day-badge">{{ day.scheduledCount }} con orario</span>
+            <div class="day-panel__head-actions">
+              <div class="day-panel__badges">
+                <span class="day-badge">{{ day.hotels.length }} hotel</span>
+                <span class="day-badge">{{ day.activities.length }} attivita</span>
+                <span class="day-badge">{{ day.scheduledCount }} con orario</span>
+              </div>
+
+              <button class="day-group-btn" type="button" (click)="createGroupForDay(day)">
+                <i class="bi bi-collection"></i>
+                <span>Crea gruppo</span>
+              </button>
             </div>
           </div>
 
@@ -135,6 +142,33 @@
             </div>
             <small>Carico relativo della giornata</small>
           </div>
+
+          @if (day.groups.length) {
+          <div class="day-group-list">
+            @for (group of day.groups; track group.key) {
+            @if (group.name || group.items.length > 1) {
+            <div class="day-group-card">
+              <div class="day-group-card__head">
+                <div>
+                  <strong>{{ group.name || 'Gruppo attività' }}</strong>
+                  <p>{{ group.items.length }} tappe incluse</p>
+                </div>
+                <span>{{ formatGroupSchedule(group.startAt, group.endAt) || 'Orario da definire' }}</span>
+              </div>
+
+              <div class="day-group-card__items">
+                @for (groupPoi of group.items; track groupPoi.key) {
+                <span class="day-group-item">
+                  <i [class]="groupPoi.type === 'accommodation' ? 'bi bi-buildings-fill' : 'bi bi-stars'"></i>
+                  {{ groupPoi.title }}
+                </span>
+                }
+              </div>
+            </div>
+            }
+            }
+          </div>
+          }
 
           <div class="poi-list" cdkDropList [cdkDropListData]="day.items" (cdkDropListDropped)="drop($event, day.day)">
             @if (!day.items.length) {
@@ -173,6 +207,12 @@
                           'accommodation' ? 'Hotel' : 'Attivita' }}</span>
                         <h5>{{ poi.title }}</h5>
                       </div>
+                      @if (poi.groupName) {
+                      <p class="poi-group-label">
+                        <i class="bi bi-collection"></i>
+                        {{ poi.groupName }}
+                      </p>
+                      }
                       <p>{{ getPoiMetaLabel(poi) }}</p>
                     </div>
                   </div>
@@ -212,6 +252,7 @@
                   }
                 </div>
 
+                @if (!poi.groupName) {
                 <div class="poi-card__edit-grid">
                   <label class="planning-field">
                     <span>{{ poi.type === 'accommodation' ? 'Check-in' : 'Inizio' }}</span>
@@ -227,6 +268,13 @@
                       (ngModelChange)="onDateFieldChange(poi, 'plannedEndAt', $event)" class="planning-input">
                   </label>
                 </div>
+                } @else {
+                <div class="grouped-poi-note">
+                  <i class="bi bi-collection"></i>
+                  <span>Fa parte del gruppo {{ poi.groupName }}{{ formatGroupSchedule(poi.groupStartAt,
+                    poi.groupEndAt) ? ' · ' + formatGroupSchedule(poi.groupStartAt, poi.groupEndAt) : '' }}</span>
+                </div>
+                }
 
                 <label class="note-field">
                   <span>Nota rapida</span>

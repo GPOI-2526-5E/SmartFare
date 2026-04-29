@@ -7,6 +7,9 @@ type DraftItemPayload = {
     note: string | null;
     plannedStartAt: Date | null;
     plannedEndAt: Date | null;
+    groupName: string | null;
+    groupStartAt: Date | null;
+    groupEndAt: Date | null;
     activityId: number | null;
     accommodationId: number | null;
     trainsStationId: number | null;
@@ -19,18 +22,31 @@ export class ItineraryService {
     private getItineraryInclude() {
         return {
             items: {
-                include: {
-                    activity: true,
-                    accommodation: true,
-                    trainsStation: true,
-                    metroStation: true,
-                    airport: true,
-                    itemType: true
-                },
                 orderBy: [
                     { dayNumber: 'asc' as const },
                     { orderInt: 'asc' as const }
-                ]
+                ],
+                select: {
+                    id: true,
+                    itineraryId: true,
+                    itemTypeCode: true,
+                    dayNumber: true,
+                    orderInt: true,
+                    note: true,
+                    plannedStartAt: true,
+                    plannedEndAt: true,
+                    activityId: true,
+                    accommodationId: true,
+                    trainsStationId: true,
+                    metroStationId: true,
+                    airportId: true,
+                    activity: { select: { id: true, name: true, categoryId: true } },
+                    accommodation: { select: { id: true, name: true } },
+                    trainsStation: { select: { id: true, name: true } },
+                    metroStation: { select: { id: true, name: true } },
+                    airport: { select: { id: true, name: true } },
+                    itemType: { select: { code: true, label: true } }
+                }
             }
         };
     }
@@ -43,6 +59,9 @@ export class ItineraryService {
             note: item.note || null,
             plannedStartAt: item.plannedStartAt ? new Date(item.plannedStartAt) : null,
             plannedEndAt: item.plannedEndAt ? new Date(item.plannedEndAt) : null,
+            groupName: item.groupName || null,
+            groupStartAt: item.groupStartAt ? new Date(item.groupStartAt) : null,
+            groupEndAt: item.groupEndAt ? new Date(item.groupEndAt) : null,
             activityId: item.activityId ? Number(item.activityId) : null,
             accommodationId: item.accommodationId ? Number(item.accommodationId) : null,
             trainsStationId: item.TrainsStationId ? Number(item.TrainsStationId) : (item.trainsStationId ? Number(item.trainsStationId) : null),
@@ -172,8 +191,46 @@ export class ItineraryService {
             });
 
             return this.withLocation(latest);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Errore recupero bozza:", error);
+            if (error?.code === 'P2022') {
+                try {
+                    const latestBasic = await prisma.itinerary.findFirst({
+                        where: { userId, isPublished: false },
+                        orderBy: { updatedAt: 'desc' }
+                    });
+                    if (!latestBasic) return this.withLocation(null);
+
+                    const items = await prisma.itineraryItem.findMany({
+                        where: { itineraryId: latestBasic.id },
+                        orderBy: [
+                            { dayNumber: 'asc' as const },
+                            { orderInt: 'asc' as const }
+                        ],
+                        select: {
+                            id: true,
+                            itineraryId: true,
+                            itemTypeCode: true,
+                            dayNumber: true,
+                            orderInt: true,
+                            note: true,
+                            plannedStartAt: true,
+                            plannedEndAt: true,
+                            activityId: true,
+                            accommodationId: true,
+                            trainsStationId: true,
+                            metroStationId: true,
+                            airportId: true
+                        }
+                    });
+
+                    const latestWithItems = { ...latestBasic, items };
+                    return this.withLocation(latestWithItems);
+                } catch (e2) {
+                    console.error("Fallback fetch failed:", e2);
+                    throw error;
+                }
+            }
             throw error;
         }
     }

@@ -6,6 +6,7 @@ import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary
 import { BuilderPoi } from '../builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { UIStateService } from '../../../../core/services/ui-state.service';
+import { AlertService } from '../../../../core/services/alert.service';
 
 interface SummaryStat {
   label: string;
@@ -35,11 +36,20 @@ interface DaySection {
   label: string;
   date: Date | null;
   items: BuilderPoi[];
+  groups: DayGroupBlock[];
   hotels: BuilderPoi[];
   activities: BuilderPoi[];
   scheduledCount: number;
   coverage: number;
   vibe: string;
+}
+
+interface DayGroupBlock {
+  key: string;
+  name: string | null;
+  startAt: string | null;
+  endAt: string | null;
+  items: BuilderPoi[];
 }
 
 @Component({
@@ -58,6 +68,7 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
 
   private itineraryService = inject(ItineraryService);
   private ui = inject(UIStateService);
+  private alertService = inject(AlertService);
 
   itinerary = this.itineraryService.itinerary;
 
@@ -235,6 +246,7 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
 
         const hotels = sortedItems.filter((item) => item.type === 'accommodation');
         const activities = sortedItems.filter((item) => item.type === 'activity');
+        const groups = this.buildDayGroups(sortedItems);
 
         return {
           day,
@@ -242,6 +254,7 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
           label: this.getDayLabel(day, hotels.length, activities.length),
           date: this.getDayDate(day),
           items: sortedItems,
+          groups,
           hotels,
           activities,
           scheduledCount: sortedItems.filter((item) => !!item.plannedStartAt || !!item.plannedEndAt).length,
@@ -313,6 +326,11 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
   }
 
   formatPoiSchedule(poi: BuilderPoi): string | null {
+    if (poi.groupName) {
+      const groupRange = this.formatGroupSchedule(poi.groupStartAt, poi.groupEndAt);
+      return groupRange ? `${poi.groupName} · ${groupRange}` : poi.groupName;
+    }
+
     const start = this.formatTime(poi.plannedStartAt);
     const end = this.formatTime(poi.plannedEndAt);
 
@@ -324,6 +342,10 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
   }
 
   getPoiMetaLabel(poi: BuilderPoi): string {
+    if (poi.groupName) {
+      return poi.groupName;
+    }
+
     if (poi.type === 'accommodation') {
       return poi.subtitle || 'Pernottamento';
     }
@@ -435,6 +457,79 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
     this.updateField(poi, field, date.toISOString());
   }
 
+  createGroupForDay(day: DaySection): void {
+    const current = this.itinerary();
+    if (!current?.items?.length) return;
+
+    const groupName = window.prompt(`Nome del gruppo per il Giorno ${day.day}`)?.trim();
+    if (!groupName) return;
+
+    const itemNames = window.prompt('Inserisci i titoli da raggruppare, separati da virgola')?.trim();
+    if (!itemNames) return;
+
+    const startTime = window.prompt('Ora inizio gruppo (opzionale, formato HH:MM)')?.trim() || null;
+    const endTime = window.prompt('Ora fine gruppo (opzionale, formato HH:MM)')?.trim() || null;
+
+    const targetTitles = new Set(
+      itemNames
+        .split(',')
+        .map((value) => value.trim().toLowerCase())
+        .filter(Boolean)
+    );
+
+    const groupStartAt = this.buildDateTimeForDay(day.day, startTime);
+    const groupEndAt = this.buildDateTimeForDay(day.day, endTime);
+
+    let matchedCount = 0;
+    const updatedItems = (current.items || []).map((item) => {
+      if (item.dayNumber !== day.day) return item;
+
+      const displayTitle = this.getItemDisplayTitleFromItineraryItem(item).trim().toLowerCase();
+      if (!targetTitles.has(displayTitle)) return item;
+
+      matchedCount += 1;
+      return {
+        ...item,
+        groupName,
+        groupStartAt,
+        groupEndAt
+      };
+    });
+
+    if (!matchedCount) {
+      this.alertService.info('Nessuna attività corrisponde ai titoli inseriti.');
+      return;
+    }
+
+    this.itineraryService.setCurrentItinerary({
+      ...this.withNormalizedEndDate(current, updatedItems),
+      items: updatedItems
+    });
+
+    this.alertService.success(`Gruppo "${groupName}" creato con ${matchedCount} elementi.`);
+  }
+
+  private getItemDisplayTitleFromItineraryItem(item: any): string {
+    // Try to resolve title from savedPois first (BuilderPoi), then fall back to related models
+    try {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      const poi = this.savedPois()?.find((p) => p.key === key);
+      if (poi && poi.title) return poi.title;
+
+      if (item.activity && (item.activity.name || (item.activity.title && typeof item.activity.title === 'string'))) {
+        return item.activity.name || item.activity.title;
+      }
+
+      if (item.accommodation && (item.accommodation.title || item.accommodation.name)) {
+        return item.accommodation.title || item.accommodation.name;
+      }
+
+      return key;
+    } catch (e) {
+      return '';
+    }
+  }
+
   viewOnMap(poi: BuilderPoi): void {
     this.showOnMap.emit(poi);
   }
@@ -496,6 +591,63 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
     if (activities >= 2) return 'Dinamico';
     if (hotels > 0 && activities > 0) return 'Bilanciato';
     return 'Leggero';
+  }
+
+  private buildDayGroups(items: BuilderPoi[]): DayGroupBlock[] {
+    const groups = new Map<string, DayGroupBlock>();
+
+    for (const item of items) {
+      const key = item.groupName
+        ? `group:${item.groupName.toLowerCase()}:${item.groupStartAt || ''}:${item.groupEndAt || ''}`
+        : `item:${item.key}`;
+
+      if (!groups.has(key)) {
+        groups.set(key, {
+          key,
+          name: item.groupName || null,
+          startAt: item.groupStartAt || null,
+          endAt: item.groupEndAt || null,
+          items: []
+        });
+      }
+
+      groups.get(key)!.items.push(item);
+    }
+
+    return Array.from(groups.values()).sort((a, b) => {
+      const firstA = a.items[0];
+      const firstB = b.items[0];
+      const timeA = firstA?.groupStartAt || firstA?.plannedStartAt || '';
+      const timeB = firstB?.groupStartAt || firstB?.plannedStartAt || '';
+      return timeA.localeCompare(timeB) || (firstA?.title || '').localeCompare(firstB?.title || '');
+    });
+  }
+
+  private buildDateTimeForDay(dayNumber: number, time: string | null): string | null {
+    if (!time) return null;
+
+    const baseDate = this.getDayDate(dayNumber);
+    if (!baseDate) return null;
+
+    const [hoursText, minutesText] = time.split(':');
+    const hours = Number(hoursText);
+    const minutes = Number(minutesText);
+
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+
+    const result = new Date(baseDate);
+    result.setHours(hours, minutes, 0, 0);
+    return result.toISOString();
+  }
+
+  formatGroupSchedule(startAt: string | null | undefined, endAt: string | null | undefined): string | null {
+    const start = this.formatTime(startAt);
+    const end = this.formatTime(endAt);
+
+    if (start && end) return `${start} - ${end}`;
+    if (start) return `Dalle ${start}`;
+    if (end) return `Fino alle ${end}`;
+    return null;
   }
 
   private updateItineraryOrder(dayMap: Map<number, string[]>): void {

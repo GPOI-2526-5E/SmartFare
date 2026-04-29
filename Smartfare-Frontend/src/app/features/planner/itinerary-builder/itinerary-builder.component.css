@@ -60,11 +60,11 @@
 }
 
 .builder-workspace--sidebar.builder-workspace--chat {
-  grid-template-columns: clamp(300px, 28vw, 430px) minmax(0, 1fr) clamp(280px, 23vw, 360px);
+  grid-template-columns: clamp(540px, 40vw, 700px) minmax(0, 1fr) clamp(280px, 23vw, 360px);
 }
 
 .builder-workspace--sidebar:not(.builder-workspace--chat) {
-  grid-template-columns: clamp(300px, 28vw, 430px) minmax(0, 1fr);
+  grid-template-columns: clamp(540px, 40vw, 700px) minmax(0, 1fr);
 }
 
 .builder-workspace--chat:not(.builder-workspace--sidebar) {
@@ -85,7 +85,7 @@
 }
 
 .workspace-sidebar {
-  width: clamp(300px, 28vw, 430px);
+  width: clamp(540px, 40vw, 700px);
 }
 
 .workspace-map {
@@ -129,11 +129,11 @@
   }
 
   .builder-workspace--sidebar.builder-workspace--chat {
-    grid-template-columns: clamp(280px, 32vw, 360px) minmax(0, 1fr) clamp(250px, 26vw, 320px);
+    grid-template-columns: clamp(500px, 48vw, 600px) minmax(0, 1fr) clamp(250px, 26vw, 320px);
   }
 
   .builder-workspace--sidebar:not(.builder-workspace--chat) {
-    grid-template-columns: clamp(280px, 32vw, 360px) minmax(0, 1fr);
+    grid-template-columns: clamp(500px, 48vw, 600px) minmax(0, 1fr);
   }
 
   .builder-workspace--chat:not(.builder-workspace--sidebar) {
@@ -141,7 +141,7 @@
   }
 
   .workspace-sidebar {
-    width: clamp(280px, 32vw, 360px);
+    width: clamp(500px, 48vw, 600px);
   }
 
   .workspace-chat {

@@ -1,18 +1,112 @@
 .sidebar-container {
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
-  border-right: 1px solid var(--glass-border);
   color: var(--text-color);
   font-family: 'Outfit', sans-serif;
   overflow: hidden;
   border-radius: inherit;
 }
 
+.sidebar-rail {
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+  height: 100%;
+  min-height: 0;
+  padding: 18px 12px;
+  border-right: 1px solid var(--glass-border);
+  background:
+    linear-gradient(180deg, rgba(14, 165, 233, 0.12), transparent 22%),
+    rgba(7, 12, 24, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.rail-item {
+  border: 1px solid transparent;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-color-muted);
+  padding: 12px 10px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  text-align: left;
+  transition: all 0.22s ease;
+  overflow: hidden;
+  width: 100%;
+  min-height: 64px;
+}
+
+.rail-item:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-color);
+}
+
+.rail-item.active {
+  border-color: rgba(14, 165, 233, 0.32);
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.24), rgba(15, 118, 110, 0.16));
+  color: #ecfeff;
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.18);
+}
+
+.rail-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 1rem;
+}
+
+.rail-item.active .rail-icon {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.rail-icon img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.rail-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  text-align: left;
+  line-height: 1.2;
+  white-space: normal;
+  overflow: hidden;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.sidebar-content {
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .sidebar-header {
-  padding: 16px 18px;
+  padding: 20px 22px 16px;
   border-bottom: 1px solid var(--glass-border);
   background: var(--bg-color-alt);
   display: flex;
@@ -32,7 +126,7 @@
 .sidebar-header-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
 }
 
@@ -41,6 +135,13 @@
   font-size: 1.14rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+}
+
+.sidebar-subtitle {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-color-muted);
 }
 
 .sidebar-count {
@@ -128,14 +229,16 @@
 
 .sidebar-scroll-area {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .poi-list {
-  padding: 18px;
+  padding: 20px 22px 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .list-header h4 {
@@ -205,6 +308,13 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.poi-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .poi-title {
@@ -321,5 +431,32 @@
 @media (max-width: 992px) {
   .sidebar-container {
     border-radius: 20px 20px 0 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-rail {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--glass-border);
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .rail-item {
+    min-width: 128px;
+    width: auto;
+    min-height: 56px;
+  }
+
+  .rail-label {
+    white-space: nowrap;
+    display: block;
+    text-overflow: ellipsis;
   }
 }
