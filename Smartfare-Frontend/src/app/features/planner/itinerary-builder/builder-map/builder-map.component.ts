@@ -222,12 +222,9 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
 
     if (this.previewPoi) {
-      const previewMarker = L.circleMarker([this.previewPoi.latitude, this.previewPoi.longitude], {
-        radius: 9,
-        color: '#f59e0b',
-        fillColor: '#fbbf24',
-        fillOpacity: 0.95,
-        weight: 2
+      const previewMarker = L.marker([this.previewPoi.latitude, this.previewPoi.longitude], {
+        icon: this.createPreviewPinIcon(),
+        title: `Anteprima: ${this.previewPoi.title}`
       }).bindPopup(this.createPopupHtml(this.previewPoi, 'Anteprima'));
 
       this.previewLayer.addLayer(previewMarker);
@@ -594,6 +591,21 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       html: `<div style="padding:0 10px;height:26px;border-radius:999px;background:${color};border:2px solid #f8fafc;box-shadow:0 6px 14px rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;color:#ffffff;font-weight:800;font-size:10px;letter-spacing:0.03em;white-space:nowrap;">${label}</div>`,
       iconSize: [width, 26],
       iconAnchor: [width / 2, 13]
+    });
+  }
+
+  private createPreviewPinIcon(): L.DivIcon {
+    return L.divIcon({
+      className: 'preview-pin-icon',
+      html: `
+        <div style="position:relative;width:24px;height:34px;">
+          <div style="position:absolute;left:0;top:0;width:24px;height:24px;background:#ef4444;border:2px solid #fee2e2;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 6px 14px rgba(127,29,29,0.45);"></div>
+          <div style="position:absolute;left:7px;top:7px;width:8px;height:8px;background:#ffffff;border-radius:50%;box-shadow:0 0 0 1px rgba(185,28,28,0.25);"></div>
+        </div>
+      `,
+      iconSize: [24, 34],
+      iconAnchor: [12, 34],
+      popupAnchor: [0, -30]
     });
   }
 

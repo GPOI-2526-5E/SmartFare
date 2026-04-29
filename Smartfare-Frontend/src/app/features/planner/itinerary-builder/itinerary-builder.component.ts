@@ -287,7 +287,7 @@ export class ItineraryBuilderComponent implements OnInit {
     );
 
     if (alreadyAdded) {
-      this.previewPoi.set(poi);
+      this.previewPoi.set(null);
       this.alertService.info('Elemento già presente nell’itinerario.');
       return;
     }
@@ -315,7 +315,7 @@ export class ItineraryBuilderComponent implements OnInit {
 
     this.itineraryService.setCurrentItinerary(nextItinerary);
 
-    this.previewPoi.set(poi);
+    this.previewPoi.set(null);
     this.alertService.success('Punto aggiunto e salvato automaticamente.');
   }
 
