@@ -10,15 +10,13 @@
     (locationSelected)="loadWorkspace($event)">
   </app-builder-header>
 
-  <main class="builder-workspace" [class.builder-workspace--sidebar]="ui.showSidebar()"
-    [class.builder-workspace--chat]="ui.showChat()">
-    @if (ui.showSidebar()) {
+  <main class="builder-workspace" [class.builder-workspace--chat]="ui.showChat()"
+    [class.builder-workspace--rail-hidden]="!ui.showSidebarRail()">
     <aside class="workspace-sidebar workspace-panel" aria-label="Esplora punti di interesse">
       <app-builder-sidebar [workspace]="workspace()" [savedPoiKeys]="savedPoiKeys()" (focusSidebar)="onSidebarFocused()"
         (previewPoi)="onPreviewPoi($event)" (addPoi)="onAddPoi($event)">
       </app-builder-sidebar>
     </aside>
-    }
 
     <section class="workspace-map workspace-panel" aria-label="Mappa itinerario">
       @if (!ui.showSummary()) {
