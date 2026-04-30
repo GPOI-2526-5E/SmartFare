@@ -35,6 +35,9 @@ export class ItineraryService {
                     note: true,
                     plannedStartAt: true,
                     plannedEndAt: true,
+                    groupName: true,
+                    groupStartAt: true,
+                    groupEndAt: true,
                     activityId: true,
                     accommodationId: true,
                     trainsStationId: true,
@@ -100,30 +103,32 @@ export class ItineraryService {
                     throw new Error("Itinerario non trovato o non autorizzato");
                 }
 
-                await prisma.itinerary.update({
-                    where: { id: Number(id) },
-                    data: {
-                        ...draftPayload,
-                        ...(locationId ? { locationId: Number(locationId) } : { locationId: null })
-                    }
-                });
-
-                await prisma.itineraryItem.deleteMany({
-                    where: { itineraryId: Number(id) }
-                });
-
-                if (items.length > 0) {
-                    await prisma.itineraryItem.createMany({
-                        data: items.map((item: DraftItemPayload) => ({
-                            ...item,
-                            itineraryId: Number(id)
-                        }))
+                const updated = await prisma.$transaction(async (tx) => {
+                    await tx.itinerary.update({
+                        where: { id: Number(id) },
+                        data: {
+                            ...draftPayload,
+                            ...(locationId ? { locationId: Number(locationId) } : { locationId: null })
+                        }
                     });
-                }
 
-                const updated = await prisma.itinerary.findUnique({
-                    where: { id: Number(id) },
-                    include: this.getItineraryInclude()
+                    await tx.itineraryItem.deleteMany({
+                        where: { itineraryId: Number(id) }
+                    });
+
+                    if (items.length > 0) {
+                        await tx.itineraryItem.createMany({
+                            data: items.map((item: DraftItemPayload) => ({
+                                ...item,
+                                itineraryId: Number(id)
+                            }))
+                        });
+                    }
+
+                    return tx.itinerary.findUnique({
+                        where: { id: Number(id) },
+                        include: this.getItineraryInclude()
+                    });
                 });
 
                 return this.withLocation(updated);
@@ -156,23 +161,24 @@ export class ItineraryService {
                 };
             }
 
-            const created = await prisma.itinerary.create({
-                data: createData,
-                include: this.getItineraryInclude()
-            });
-
-            if (items.length > 0) {
-                await prisma.itineraryItem.createMany({
-                    data: items.map((item: DraftItemPayload) => ({
-                        ...item,
-                        itineraryId: created.id
-                    }))
+            const createdWithItems = await prisma.$transaction(async (tx) => {
+                const created = await tx.itinerary.create({
+                    data: createData
                 });
-            }
 
-            const createdWithItems = await prisma.itinerary.findUnique({
-                where: { id: created.id },
-                include: this.getItineraryInclude()
+                if (items.length > 0) {
+                    await tx.itineraryItem.createMany({
+                        data: items.map((item: DraftItemPayload) => ({
+                            ...item,
+                            itineraryId: created.id
+                        }))
+                    });
+                }
+
+                return tx.itinerary.findUnique({
+                    where: { id: created.id },
+                    include: this.getItineraryInclude()
+                });
             });
 
             return this.withLocation(createdWithItems);
@@ -216,6 +222,9 @@ export class ItineraryService {
                             note: true,
                             plannedStartAt: true,
                             plannedEndAt: true,
+                            groupName: true,
+                            groupStartAt: true,
+                            groupEndAt: true,
                             activityId: true,
                             accommodationId: true,
                             trainsStationId: true,

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, CdkDragEnd, CdkDragMove, CdkDragStart, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
@@ -12,6 +12,7 @@ interface DaySection {
   day: number;
   label: string;
   date: Date | null;
+  carouselImages: string[];
   items: BuilderPoi[];
 }
 
@@ -50,7 +51,7 @@ export class BuilderSummaryComponent {
   activeTimePopupPoiKey = signal<string | null>(null);
   popupStartTime = signal<string>('');
   popupEndTime = signal<string>('');
-  
+
   // Opzioni orari (es. 08:00, 08:30...)
   timeOptions = computed(() => {
     const options = [];
@@ -176,7 +177,7 @@ export class BuilderSummaryComponent {
   // --- Time Popup ---
   openTimePopup(poi: BuilderPoi, event: Event): void {
     event.stopPropagation();
-    
+
     // Parse existing time
     let start = '';
     let end = '';
@@ -218,19 +219,19 @@ export class BuilderSummaryComponent {
   saveTime(poi: BuilderPoi): void {
     const startStr = this.popupStartTime();
     const endStr = this.popupEndTime();
-    
+
     let startIso = null;
     let endIso = null;
-    
+
     const dayDate = this.getDayDate(poi.dayNumber || 1) || new Date();
-    
+
     if (startStr && dayDate) {
       const [h, m] = startStr.split(':').map(Number);
       const d = new Date(dayDate);
       d.setHours(h, m, 0, 0);
       startIso = d.toISOString();
     }
-    
+
     if (endStr && dayDate) {
       const [h, m] = endStr.split(':').map(Number);
       const d = new Date(dayDate);
@@ -256,7 +257,7 @@ export class BuilderSummaryComponent {
       ...current,
       items: updatedItems
     });
-    
+
     this.closeTimePopup();
   }
 
@@ -283,7 +284,7 @@ export class BuilderSummaryComponent {
   private updateField(poi: BuilderPoi, field: string, value: any): void {
     const current = this.itinerary();
     if (!current?.items) return;
-    
+
     if ((poi as any)[field] === value) return;
 
     const updatedItems = current.items.map((item) => {
@@ -303,7 +304,7 @@ export class BuilderSummaryComponent {
   formatTimeDisplay(poi: BuilderPoi): string {
     const start = this.formatTimeString(poi.plannedStartAt);
     const end = this.formatTimeString(poi.plannedEndAt);
-    
+
     if (start && end) return `${start} - ${end}`;
     if (start) return start;
     if (end) return end;
@@ -320,7 +321,7 @@ export class BuilderSummaryComponent {
   getPoiCover(poi: BuilderPoi): string | null {
     return poi.imageUrl || null;
   }
-  
+
   getPoiPrice(poi: BuilderPoi): string | null {
     if (typeof poi.price !== 'number' || Number.isNaN(poi.price)) return null;
     return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(poi.price);
@@ -363,6 +364,59 @@ export class BuilderSummaryComponent {
     }
 
     this.updateItineraryOrder(dayMap);
+  }
+
+  onPoiDragStarted(poi: BuilderPoi): void {
+    this.draggingPoiKey.set(poi.key);
+    this.dragTargetPoiKey.set(null);
+  }
+
+  onPoiDragMoved(event: CdkDragMove<BuilderPoi>, sourcePoi: BuilderPoi): void {
+    const point = event.pointerPosition;
+    if (!point) {
+      this.dragTargetPoiKey.set(null);
+      return;
+    }
+
+    const targetElement = document.elementFromPoint(point.x, point.y) as HTMLElement | null;
+    const targetCard = targetElement?.closest<HTMLElement>('[data-poi-key]');
+    const targetKey = targetCard?.dataset['poiKey'] || null;
+
+    if (!targetKey || targetKey === sourcePoi.key) {
+      this.dragTargetPoiKey.set(null);
+      return;
+    }
+
+    this.dragTargetPoiKey.set(targetKey);
+  }
+
+  onPoiDragEnded(event: CdkDragEnd<BuilderPoi>, sourcePoi: BuilderPoi, sourceDay: number): void {
+    const pointerEvent = event.event as MouseEvent | TouchEvent | undefined;
+    const point = this.getPointerPoint(pointerEvent);
+    const targetKeyFromState = this.dragTargetPoiKey();
+    const targetKeyFromPoint = point
+      ? (document.elementFromPoint(point.x, point.y) as HTMLElement | null)?.closest<HTMLElement>('[data-poi-key]')?.dataset['poiKey'] || null
+      : null;
+    const targetKey = targetKeyFromState || targetKeyFromPoint;
+
+    if (!targetKey) {
+      this.draggingPoiKey.set(null);
+      this.dragTargetPoiKey.set(null);
+      return;
+    }
+
+    const targetCard = document.querySelector<HTMLElement>(`[data-poi-key="${targetKey}"]`);
+    const targetDayValue = Number(targetCard?.dataset['dayNumber']);
+
+    if (!targetKey || targetKey === sourcePoi.key) return;
+    if (!Number.isFinite(targetDayValue) || targetDayValue < 1) return;
+
+    const targetPoi = this.savedPois().find((poi) => poi.key === targetKey);
+    if (!targetPoi) return;
+
+    this.groupPoisByDrop(sourcePoi, targetPoi, targetDayValue || sourceDay);
+    this.draggingPoiKey.set(null);
+    this.dragTargetPoiKey.set(null);
   }
 
   private buildDayMap(items: Itinerary['items'] = []): Map<number, string[]> {

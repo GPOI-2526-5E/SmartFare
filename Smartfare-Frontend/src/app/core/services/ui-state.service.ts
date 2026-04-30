@@ -5,6 +5,7 @@ import { Injectable, signal } from '@angular/core';
 })
 export class UIStateService {
   readonly showSidebar = signal(true);
+  readonly showSidebarRail = signal(true);
   readonly showChat = signal(true);
   readonly selectedCategory = signal<number | 'all'>('all');
   readonly selectedType = signal<'all' | 'accommodation' | 'activity'>('all');
@@ -20,6 +21,10 @@ export class UIStateService {
 
   toggleSidebar() {
     this.showSidebar.update(v => !v);
+  }
+
+  toggleSidebarRail() {
+    this.showSidebarRail.update(v => !v);
   }
 
   toggleChat() {
