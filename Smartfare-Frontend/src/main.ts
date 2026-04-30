@@ -7,8 +7,16 @@ import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { loaderInterceptor } from './app/core/interceptors/loader.interceptor';
 import { GoogleLoginProvider, SOCIAL_AUTH_CONFIG, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 
+// Locale registration
+import { registerLocaleData } from '@angular/common';
+import localeIt from '@angular/common/locales/it';
+import { LOCALE_ID } from '@angular/core';
+
+registerLocaleData(localeIt);
+
 bootstrapApplication(AppComponent, {
   providers: [
+    { provide: LOCALE_ID, useValue: 'it-IT' },
     provideRouter(APP_ROUTES),
     provideHttpClient(withInterceptors([authInterceptor, loaderInterceptor])),
     {

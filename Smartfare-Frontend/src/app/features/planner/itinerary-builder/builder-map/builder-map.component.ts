@@ -10,7 +10,8 @@ import {
   SimpleChanges,
   ViewChild,
   inject,
-  effect
+  effect,
+  ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
@@ -48,6 +49,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private routeRequestId = 0;
   private resizeObserver?: ResizeObserver;
   private readonly ui = inject(UIStateService);
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly defaultDayPalette = ['#f97316', '#22c55e', '#3b82f6', '#eab308', '#ef4444', '#a855f7', '#14b8a6'];
   private displayRoutePois: BuilderPoi[] = [];
   private lastRouteFingerprint = '';
@@ -411,6 +413,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     } finally {
       if (requestId === this.routeRequestId) {
         this.isRouteLoading = false;
+        this.cdr.detectChanges();
       }
     }
   }

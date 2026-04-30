@@ -33,7 +33,6 @@ interface ExploreCard {
 })
 export class BuilderSummaryComponent {
   workspace = input<ItineraryWorkspace | null>(null);
-  savedPois = input<BuilderPoi[]>([]);
 
   @Output() showOnMap = new EventEmitter<BuilderPoi>();
 
@@ -47,10 +46,77 @@ export class BuilderSummaryComponent {
   isEditingTitle = signal<boolean>(false);
   editTitleValue = signal<string>('');
 
+  // Drag and Drop State
+  draggingPoiKey = signal<string | null>(null);
+  dragTargetPoiKey = signal<string | null>(null);
+
   // Stato per il popup dell'orario
   activeTimePopupPoiKey = signal<string | null>(null);
   popupStartTime = signal<string>('');
   popupEndTime = signal<string>('');
+
+  // Segnale unito: Itinerario + Dati del Workspace (POI)
+  joinedPois = computed(() => {
+    const itin = this.itinerary();
+    const ws = this.workspace();
+    if (!itin || !ws) return [];
+
+    // Crea un indice di tutti i POI disponibili nel workspace per un accesso rapido
+    const poiIndex = new Map<string, any>();
+    ws.accommodations.forEach(a => poiIndex.set(`accommodation-${a.id}`, { ...a, type: 'accommodation', itemTypeCode: 'ACCOMMODATION' }));
+    ws.activities.forEach(a => poiIndex.set(`activity-${a.id}`, { ...a, type: 'activity', itemTypeCode: 'ACTIVITY' }));
+
+    return (itin.items || []).map(item => {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      const basePoi = poiIndex.get(key);
+
+      if (!basePoi) return null;
+
+      // Unisce i dati statici del POI con i dati dinamici dell'itinerario (note, orari, ecc.)
+      return {
+        key,
+        type: basePoi.type,
+        entityId: basePoi.id,
+        title: basePoi.name || basePoi.title || 'Senza nome',
+        subtitle: basePoi.street || (basePoi.type === 'accommodation' ? 'Hotel' : basePoi.category?.name || 'Attività'),
+        imageUrl: basePoi.imageUrl || '/assets/home-section.avif',
+        price: basePoi.price || basePoi.pricePerNight,
+        rating: basePoi.stars || basePoi.rating,
+        categoryName: basePoi.category?.name,
+        // Dati itinerario
+        dayNumber: item.dayNumber || 1,
+        note: item.note,
+        plannedStartAt: item.plannedStartAt,
+        plannedEndAt: item.plannedEndAt,
+        groupName: item.groupName,
+        groupStartAt: item.groupStartAt,
+        groupEndAt: item.groupEndAt
+      } as BuilderPoi;
+    }).filter((p): p is BuilderPoi => p !== null);
+  });
+
+  // Calcolo automatico della data/durata
+  itineraryDateSummary = computed(() => {
+    const itin = this.itinerary();
+    if (!itin?.startDate || !itin?.endDate) {
+      const days = this.getDaysCount();
+      return `${days} ${days === 1 ? 'giorno' : 'giorni'}`;
+    }
+
+    const start = new Date(itin.startDate);
+    const end = new Date(itin.endDate);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      const days = this.getDaysCount();
+      return `${days} ${days === 1 ? 'giorno' : 'giorni'}`;
+    }
+
+    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
+    const startStr = start.toLocaleDateString('it-IT', options);
+    const endStr = end.toLocaleDateString('it-IT', options);
+
+    return `${startStr} - ${endStr}`;
+  });
 
   // Opzioni orari (es. 08:00, 08:30...)
   timeOptions = computed(() => {
@@ -95,9 +161,27 @@ export class BuilderSummaryComponent {
       grouped.set(day, []);
     }
 
-    for (const poi of this.savedPois()) {
-      const safeDay = Math.min(Math.max(poi.dayNumber || 1, 1), totalDays);
-      grouped.get(safeDay)?.push(poi);
+    // Determiniamo quali giorni hanno tappe
+    const daysWithItems = new Set<number>();
+    const pois = this.joinedPois();
+    for (const poi of pois) {
+      if (poi.dayNumber) daysWithItems.add(poi.dayNumber);
+    }
+
+    // Mostriamo i giorni con tappe + sempre il Giorno 1
+    const visibleDays = Array.from(daysWithItems);
+    if (!visibleDays.includes(1)) visibleDays.push(1);
+    visibleDays.sort((a, b) => a - b);
+
+    for (const day of visibleDays) {
+      grouped.set(day, []);
+    }
+
+    for (const poi of pois) {
+      const day = poi.dayNumber || 1;
+      if (grouped.has(day)) {
+        grouped.get(day)?.push(poi);
+      }
     }
 
     return Array.from(grouped.entries())
@@ -114,11 +198,21 @@ export class BuilderSummaryComponent {
           return 0;
         });
 
+        // Genera carosello immagini per il giorno
+        const carouselImages = sortedItems
+          .map(item => item.imageUrl)
+          .filter((url): url is string => !!url);
+
+        if (carouselImages.length === 0) {
+          carouselImages.push('/assets/home-section.avif');
+        }
+
         return {
           day,
           label: `Giorno ${day}`,
           date: this.getDayDate(day),
-          items: sortedItems
+          items: sortedItems,
+          carouselImages: carouselImages.slice(0, 5)
         };
       });
   });
@@ -327,6 +421,10 @@ export class BuilderSummaryComponent {
     return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(poi.price);
   }
 
+  getDayColor(day: number): string {
+    return this.ui.getDefaultDayColor(day);
+  }
+
   removeItem(poi: BuilderPoi): void {
     const current = this.itinerary();
     if (!current?.items) return;
@@ -411,7 +509,7 @@ export class BuilderSummaryComponent {
     if (!targetKey || targetKey === sourcePoi.key) return;
     if (!Number.isFinite(targetDayValue) || targetDayValue < 1) return;
 
-    const targetPoi = this.savedPois().find((poi) => poi.key === targetKey);
+    const targetPoi = this.joinedPois().find((poi) => poi.key === targetKey);
     if (!targetPoi) return;
 
     this.groupPoisByDrop(sourcePoi, targetPoi, targetDayValue || sourceDay);
@@ -452,14 +550,7 @@ export class BuilderSummaryComponent {
     const current = this.itinerary();
     if (!current) return;
 
-    const orderMap = new Map<string, { day: number; order: number }>();
-    Array.from(dayMap.entries())
-      .sort(([a], [b]) => a - b)
-      .forEach(([day, keys]) => {
-        keys.forEach((key, index) => {
-          orderMap.set(key, { day, order: index + 1 });
-        });
-      });
+    const orderMap = this.buildOrderMap(dayMap);
 
     const updatedItems = [...(current.items || [])].map((item) => {
       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
@@ -472,8 +563,150 @@ export class BuilderSummaryComponent {
     });
 
     this.itineraryService.setCurrentItinerary({
-      ...current,
+      ...this.withNormalizedEndDate(current, updatedItems),
       items: updatedItems
     });
+  }
+
+  private buildOrderMap(dayMap: Map<number, string[]>): Map<string, { day: number; order: number }> {
+    const orderMap = new Map<string, { day: number; order: number }>();
+    Array.from(dayMap.entries())
+      .sort(([a], [b]) => a - b)
+      .forEach(([day, keys]) => {
+        keys.forEach((key, index) => {
+          orderMap.set(key, { day, order: index + 1 });
+        });
+      });
+    return orderMap;
+  }
+
+  private groupPoisByDrop(movedPoi: BuilderPoi, targetPoi: BuilderPoi, targetDay: number): void {
+    const current = this.itinerary();
+    if (!current?.items?.length) return;
+
+    const movedKey = movedPoi.key;
+    const targetKey = targetPoi.key;
+
+    const dayMap = this.buildDayMap(current.items);
+    const sourceDay = this.findDayByKey(dayMap, movedKey) ?? movedPoi.dayNumber ?? targetDay;
+
+    const sourceList = [...(dayMap.get(sourceDay) || [])];
+    const targetList = sourceDay === targetDay ? sourceList : [...(dayMap.get(targetDay) || [])];
+
+    const removeAt = sourceList.indexOf(movedKey);
+    if (removeAt >= 0) {
+      sourceList.splice(removeAt, 1);
+    }
+
+    const insertAfter = targetList.indexOf(targetKey);
+    const insertIndex = insertAfter >= 0 ? insertAfter + 1 : targetList.length;
+
+    if (!targetList.includes(movedKey)) {
+      targetList.splice(insertIndex, 0, movedKey);
+    }
+
+    if (sourceDay === targetDay) {
+      dayMap.set(targetDay, targetList);
+    } else {
+      dayMap.set(sourceDay, sourceList);
+      dayMap.set(targetDay, targetList);
+    }
+
+    const orderMap = this.buildOrderMap(dayMap);
+    const existingGroupName = targetPoi.groupName || movedPoi.groupName;
+    const groupName = existingGroupName || `Gruppo Giorno ${targetDay}`;
+    const groupStartAt = targetPoi.groupStartAt || movedPoi.groupStartAt || null;
+    const groupEndAt = targetPoi.groupEndAt || movedPoi.groupEndAt || null;
+
+    const updatedItems = current.items.map((item) => {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      const position = orderMap.get(key);
+      const shouldGroup = key === movedKey || key === targetKey;
+
+      return {
+        ...item,
+        ...(position ? { dayNumber: position.day, orderInt: position.order } : {}),
+        ...(shouldGroup
+          ? {
+            groupName,
+            groupStartAt,
+            groupEndAt
+          }
+          : {})
+      };
+    });
+
+    this.itineraryService.setCurrentItinerary({
+      ...this.withNormalizedEndDate(current, updatedItems),
+      items: updatedItems
+    });
+
+    this.alertService.success(`Gruppo "${groupName}" creato. Ora puoi modificarne nome e orari.`);
+  }
+
+  private getPointerPoint(event: MouseEvent | TouchEvent | undefined): { x: number; y: number } | null {
+    if (!event) return null;
+
+    if ('clientX' in event && Number.isFinite(event.clientX) && Number.isFinite(event.clientY)) {
+      return { x: event.clientX, y: event.clientY };
+    }
+
+    if ('changedTouches' in event && event.changedTouches.length > 0) {
+      const touch = event.changedTouches[0];
+      return { x: touch.clientX, y: touch.clientY };
+    }
+
+    return null;
+  }
+
+  private withNormalizedEndDate(itin: Itinerary, items: Itinerary['items']): Itinerary {
+    const safeItems = items || [];
+    const maxDay = safeItems.reduce((max, item) => Math.max(max, item.dayNumber || 1), 1);
+    const start = itin.startDate ? new Date(itin.startDate) : new Date();
+    const end = new Date(start);
+    end.setDate(end.getDate() + maxDay - 1);
+
+    return {
+      ...itin,
+      endDate: end.toISOString().split('T')[0]
+    };
+  }
+
+  addDay(): void {
+    const current = this.itinerary();
+    if (!current) return;
+
+    const maxDay = this.getDaysCount();
+    const startDate = current.startDate ? new Date(current.startDate) : new Date();
+    const newEndDate = new Date(startDate);
+    newEndDate.setDate(startDate.getDate() + maxDay);
+
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      endDate: newEndDate.toISOString().split('T')[0]
+    });
+
+    this.alertService.success(`Giorno ${maxDay + 1} aggiunto.`);
+  }
+
+  removeDay(): void {
+    const current = this.itinerary();
+    if (!current || !current.endDate) return;
+
+    const maxDay = this.getDaysCount();
+    if (maxDay <= 1) {
+      this.alertService.warning('Non puoi rimuovere l\'unico giorno rimasto.');
+      return;
+    }
+
+    const endDate = new Date(current.endDate);
+    endDate.setDate(endDate.getDate() - 1);
+
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      endDate: endDate.toISOString().split('T')[0]
+    });
+
+    this.alertService.success(`Giorno ${maxDay} rimosso.`);
   }
 }

@@ -26,7 +26,7 @@
       </app-builder-map>
       } @else {
       <div class="summary-container">
-        <app-builder-summary [workspace]="workspace()" [savedPois]="savedPois()" (showOnMap)="onPreviewPoi($event)">
+        <app-builder-summary [workspace]="workspace()" (showOnMap)="onPreviewPoi($event)">
         </app-builder-summary>
       </div>
       }

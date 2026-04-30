@@ -22,16 +22,9 @@
         }
       </div>
 
-      <div class="wl-header-actions">
-        <button class="wl-btn-dates">
-          <i class="bi bi-calendar3"></i> Aggiungi date del viaggio
-        </button>
-
-        <div class="wl-avatars">
-          <div class="wl-avatar placeholder-avatar">
-            <i class="bi bi-person-fill"></i>
-          </div>
-          <button class="wl-add-user-btn"><i class="bi bi-person-plus-fill"></i></button>
+      <div class="wl-header-info">
+        <div class="wl-duration-badge">
+          <i class="bi bi-calendar3"></i> {{ itineraryDateSummary() }}
         </div>
       </div>
     </div>
@@ -69,12 +62,14 @@
     <section class="wl-section wl-day-section">
       <div class="wl-section-header">
         <h2><i class="bi bi-calendar3"></i> Giornata {{ day.day }}</h2>
-        <div class="wl-day-info">
+        <div class="wl-day-header-actions">
           @if (day.date) {
-          <span>{{ day.date | date:'EEEE d MMMM' }}</span>
+          <span class="wl-day-date">{{ day.date | date:'EEEE d MMMM':'':'it' }}</span>
           }
+          <button class="wl-btn-remove-day" (click)="removeDay()" title="Rimuovi ultimo giorno">
+            <i class="bi bi-trash3"></i>
+          </button>
         </div>
-        <button class="wl-btn-icon"><i class="bi bi-three-dots"></i></button>
       </div>
 
       <div class="wl-day-items" cdkDropList [cdkDropListData]="day.items" (cdkDropListDropped)="drop($event, day.day)">
@@ -92,42 +87,50 @@
             <div class="wl-poi-pin">
               <svg viewBox="0 0 24 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 0C5.37258 0 0 5.37258 0 12C0 21 12 34 12 34C12 34 24 21 24 12C24 5.37258 18.6274 0 12 0Z"
-                  fill="#3b82f6" />
+                  [style.fill]="getDayColor(day.day)" />
               </svg>
               <span>{{ idx + 1 }}</span>
             </div>
             <!-- Linea verticale che connette i pin -->
-            <div class="wl-vertical-line" *ngIf="idx < day.items.length - 1"></div>
+            <div class="wl-vertical-line" *ngIf="idx < day.items.length - 1" [style.background-color]="getDayColor(day.day)"></div>
           </div>
 
           <div class="wl-poi-card-container">
             <div class="wl-poi-card">
               <div class="wl-poi-card-content">
-                <div class="wl-poi-header">
-                  <h4>{{ poi.title }}</h4>
-                  <button class="wl-delete-btn" (click)="removeItem(poi)" title="Elimina"><i
-                      class="bi bi-trash3"></i></button>
+                <div class="wl-poi-main-info">
+                  <div class="wl-poi-icon-box" [style.border-color]="getDayColor(day.day)">
+                    <i class="bi" [class.bi-building]="poi.type === 'accommodation'" [class.bi-geo-alt-fill]="poi.type === 'activity'"></i>
+                  </div>
+                  
+                  <div class="wl-poi-text-group">
+                    <div class="wl-poi-header">
+                      <h4 class="wl-poi-title">{{ poi.title }}</h4>
+                      <button class="wl-delete-btn" (click)="removeItem(poi)" title="Elimina">
+                        <i class="bi bi-trash3"></i>
+                      </button>
+                    </div>
+                    <div class="wl-poi-subtitle">
+                      <i class="bi bi-geo-alt"></i>
+                      <span>{{ poi.subtitle || 'Indirizzo non disponibile' }}</span>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Note -->
-                <div class="wl-poi-note">
-                  <input type="text" placeholder="Aggiungi qui note, link, ecc." [ngModel]="poi.note"
+                <div class="wl-poi-notes-box">
+                  <input type="text" placeholder="Aggiungi note per questa tappa..." [ngModel]="poi.note"
                     (ngModelChange)="updateNote(poi, $event)" [ngModelOptions]="{updateOn: 'blur'}" />
                 </div>
 
-                <!-- Description Mockup -->
-                <p class="wl-poi-desc"><i>Dal web: {{ poi.categoryName || 'Informazioni sulla struttura o attività
-                    selezionata.' }}</i></p>
 
                 <!-- Actions -->
                 <div class="wl-poi-actions-row">
-                  <button class="wl-action-btn wl-visited"><i class="bi bi-check2"></i> Mark as visited</button>
 
-                  <!-- Time Popup trigger -->
                   <div class="wl-time-wrapper">
-                    <button class="wl-action-btn" (click)="openTimePopup(poi, $event)">
+                    <button class="wl-action-btn wl-btn-pill" (click)="openTimePopup(poi, $event)">
                       <i class="bi bi-clock"></i>
-                      {{ formatTimeDisplay(poi) }}
+                      <span>{{ formatTimeDisplay(poi) }}</span>
                     </button>
 
                     @if (activeTimePopupPoiKey() === poi.key) {
@@ -160,32 +163,14 @@
                     </div>
                     }
                   </div>
-
-                  <button class="wl-action-btn"><i class="bi bi-paperclip"></i> Allega <span
-                      class="wl-pro-badge">PRO</span></button>
                 </div>
 
-                <div class="wl-poi-actions-row wl-cost-row">
-                  <button class="wl-action-btn"><i class="bi bi-currency-dollar"></i> {{ getPoiPrice(poi) || 'Aggiungi
-                    costo' }}</button>
-                  <i class="bi bi-info-circle-fill wl-info-icon"></i>
-                </div>
-
-                <!-- Reactions -->
-                <div class="wl-poi-reactions">
-                  <button>👍</button>
-                  <button>👎</button>
-                  <button>❤️</button>
-                  <button>😊</button>
-                </div>
 
               </div>
 
-              @if (getPoiCover(poi)) {
               <div class="wl-poi-image">
-                <img [src]="getPoiCover(poi)" [alt]="poi.title" />
+                <img [src]="poi.imageUrl || '/assets/home-section.avif'" [alt]="poi.title">
               </div>
-              }
             </div>
           </div>
         </div>
@@ -201,6 +186,14 @@
   }
   </section>
   }
+
+  <!-- AGGIUNGI GIORNO -->
+  <div class="wl-add-day-container">
+    <button class="wl-add-day-btn" (click)="addDay()">
+      <i class="bi bi-plus-circle-fill"></i>
+      Aggiungi giorno
+    </button>
+  </div>
 </div>
 
 </div>
