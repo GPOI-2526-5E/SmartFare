@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, CdkDragEnd, CdkDragMove, CdkDragStart, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
@@ -75,6 +75,8 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
   // Carosello banner
   private autoScrollInterval: ReturnType<typeof setInterval> | null = null;
   currentBannerIndex = signal<number>(0);
+  draggingPoiKey = signal<string | null>(null);
+  dragTargetPoiKey = signal<string | null>(null);
 
   readonly selectedHotels = computed(() => this.savedPois().filter((poi) => poi.type === 'accommodation'));
   readonly selectedActivities = computed(() => this.savedPois().filter((poi) => poi.type === 'activity'));
@@ -402,6 +404,59 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
     this.updateItineraryOrder(dayMap);
   }
 
+  onPoiDragStarted(poi: BuilderPoi): void {
+    this.draggingPoiKey.set(poi.key);
+    this.dragTargetPoiKey.set(null);
+  }
+
+  onPoiDragMoved(event: CdkDragMove<BuilderPoi>, sourcePoi: BuilderPoi): void {
+    const point = event.pointerPosition;
+    if (!point) {
+      this.dragTargetPoiKey.set(null);
+      return;
+    }
+
+    const targetElement = document.elementFromPoint(point.x, point.y) as HTMLElement | null;
+    const targetCard = targetElement?.closest<HTMLElement>('[data-poi-key]');
+    const targetKey = targetCard?.dataset['poiKey'] || null;
+
+    if (!targetKey || targetKey === sourcePoi.key) {
+      this.dragTargetPoiKey.set(null);
+      return;
+    }
+
+    this.dragTargetPoiKey.set(targetKey);
+  }
+
+  onPoiDragEnded(event: CdkDragEnd<BuilderPoi>, sourcePoi: BuilderPoi, sourceDay: number): void {
+    const pointerEvent = event.event as MouseEvent | TouchEvent | undefined;
+    const point = this.getPointerPoint(pointerEvent);
+    const targetKeyFromState = this.dragTargetPoiKey();
+    const targetKeyFromPoint = point
+      ? (document.elementFromPoint(point.x, point.y) as HTMLElement | null)?.closest<HTMLElement>('[data-poi-key]')?.dataset['poiKey'] || null
+      : null;
+    const targetKey = targetKeyFromState || targetKeyFromPoint;
+
+    if (!targetKey) {
+      this.draggingPoiKey.set(null);
+      this.dragTargetPoiKey.set(null);
+      return;
+    }
+
+    const targetCard = document.querySelector<HTMLElement>(`[data-poi-key="${targetKey}"]`);
+    const targetDayValue = Number(targetCard?.dataset['dayNumber']);
+
+    if (!targetKey || targetKey === sourcePoi.key) return;
+    if (!Number.isFinite(targetDayValue) || targetDayValue < 1) return;
+
+    const targetPoi = this.savedPois().find((poi) => poi.key === targetKey);
+    if (!targetPoi) return;
+
+    this.groupPoisByDrop(sourcePoi, targetPoi, targetDayValue || sourceDay);
+    this.draggingPoiKey.set(null);
+    this.dragTargetPoiKey.set(null);
+  }
+
   removeItem(poi: BuilderPoi): void {
     const current = this.itinerary();
     if (!current?.items) return;
@@ -458,76 +513,156 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
   }
 
   createGroupForDay(day: DaySection): void {
+    // Legacy flow intentionally disabled: grouping is now drag-and-drop only.
+    this.alertService.info(`Trascina una tappa sopra un'altra card nel Giorno ${day.day} per creare un gruppo.`);
+  }
+
+  updateGroupName(day: DaySection, group: DayGroupBlock, value: string): void {
+    const nextName = value.trim();
+    if (!nextName) {
+      this.alertService.info('Il nome del gruppo non puo essere vuoto.');
+      return;
+    }
+
+    this.updateGroupFieldsByKeys(day, group, {
+      groupName: nextName
+    });
+  }
+
+  updateGroupDateField(
+    day: DaySection,
+    group: DayGroupBlock,
+    field: 'groupStartAt' | 'groupEndAt',
+    value: string
+  ): void {
+    if (!value) {
+      this.updateGroupFieldsByKeys(day, group, { [field]: null });
+      return;
+    }
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return;
+
+    this.updateGroupFieldsByKeys(day, group, {
+      [field]: parsed.toISOString()
+    });
+  }
+
+  clearGroup(day: DaySection, group: DayGroupBlock): void {
+    this.updateGroupFieldsByKeys(day, group, {
+      groupName: null,
+      groupStartAt: null,
+      groupEndAt: null
+    });
+  }
+
+  private groupPoisByDrop(movedPoi: BuilderPoi, targetPoi: BuilderPoi, targetDay: number): void {
     const current = this.itinerary();
     if (!current?.items?.length) return;
 
-    const groupName = window.prompt(`Nome del gruppo per il Giorno ${day.day}`)?.trim();
-    if (!groupName) return;
+    const movedKey = movedPoi.key;
+    const targetKey = targetPoi.key;
 
-    const itemNames = window.prompt('Inserisci i titoli da raggruppare, separati da virgola')?.trim();
-    if (!itemNames) return;
+    const dayMap = this.buildDayMap(current.items);
+    const sourceDay = this.findDayByKey(dayMap, movedKey) ?? movedPoi.dayNumber ?? targetDay;
 
-    const startTime = window.prompt('Ora inizio gruppo (opzionale, formato HH:MM)')?.trim() || null;
-    const endTime = window.prompt('Ora fine gruppo (opzionale, formato HH:MM)')?.trim() || null;
+    const sourceList = [...(dayMap.get(sourceDay) || [])];
+    const targetList = sourceDay === targetDay ? sourceList : [...(dayMap.get(targetDay) || [])];
 
-    const targetTitles = new Set(
-      itemNames
-        .split(',')
-        .map((value) => value.trim().toLowerCase())
-        .filter(Boolean)
-    );
+    const removeAt = sourceList.indexOf(movedKey);
+    if (removeAt >= 0) {
+      sourceList.splice(removeAt, 1);
+    }
 
-    const groupStartAt = this.buildDateTimeForDay(day.day, startTime);
-    const groupEndAt = this.buildDateTimeForDay(day.day, endTime);
+    const insertAfter = targetList.indexOf(targetKey);
+    const insertIndex = insertAfter >= 0 ? insertAfter + 1 : targetList.length;
 
-    let matchedCount = 0;
-    const updatedItems = (current.items || []).map((item) => {
-      if (item.dayNumber !== day.day) return item;
+    if (!targetList.includes(movedKey)) {
+      targetList.splice(insertIndex, 0, movedKey);
+    }
 
-      const displayTitle = this.getItemDisplayTitleFromItineraryItem(item).trim().toLowerCase();
-      if (!targetTitles.has(displayTitle)) return item;
+    if (sourceDay === targetDay) {
+      dayMap.set(targetDay, targetList);
+    } else {
+      dayMap.set(sourceDay, sourceList);
+      dayMap.set(targetDay, targetList);
+    }
 
-      matchedCount += 1;
+    const orderMap = this.buildOrderMap(dayMap);
+    const existingGroupName = targetPoi.groupName || movedPoi.groupName;
+    const groupName = existingGroupName || `Gruppo Giorno ${targetDay}`;
+    const groupStartAt = targetPoi.groupStartAt || movedPoi.groupStartAt || null;
+    const groupEndAt = targetPoi.groupEndAt || movedPoi.groupEndAt || null;
+
+    const updatedItems = current.items.map((item) => {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      const position = orderMap.get(key);
+      const shouldGroup = key === movedKey || key === targetKey;
+
       return {
         ...item,
-        groupName,
-        groupStartAt,
-        groupEndAt
+        ...(position ? { dayNumber: position.day, orderInt: position.order } : {}),
+        ...(shouldGroup
+          ? {
+            groupName,
+            groupStartAt,
+            groupEndAt
+          }
+          : {})
       };
     });
-
-    if (!matchedCount) {
-      this.alertService.info('Nessuna attività corrisponde ai titoli inseriti.');
-      return;
-    }
 
     this.itineraryService.setCurrentItinerary({
       ...this.withNormalizedEndDate(current, updatedItems),
       items: updatedItems
     });
 
-    this.alertService.success(`Gruppo "${groupName}" creato con ${matchedCount} elementi.`);
+    this.alertService.success(`Gruppo "${groupName}" creato. Ora puoi modificarne nome e orari.`);
   }
 
-  private getItemDisplayTitleFromItineraryItem(item: any): string {
-    // Try to resolve title from savedPois first (BuilderPoi), then fall back to related models
-    try {
-      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
-      const poi = this.savedPois()?.find((p) => p.key === key);
-      if (poi && poi.title) return poi.title;
+  private getPointerPoint(event: MouseEvent | TouchEvent | undefined): { x: number; y: number } | null {
+    if (!event) return null;
 
-      if (item.activity && (item.activity.name || (item.activity.title && typeof item.activity.title === 'string'))) {
-        return item.activity.name || item.activity.title;
-      }
-
-      if (item.accommodation && (item.accommodation.title || item.accommodation.name)) {
-        return item.accommodation.title || item.accommodation.name;
-      }
-
-      return key;
-    } catch (e) {
-      return '';
+    if ('clientX' in event && Number.isFinite(event.clientX) && Number.isFinite(event.clientY)) {
+      return { x: event.clientX, y: event.clientY };
     }
+
+    if ('changedTouches' in event && event.changedTouches.length > 0) {
+      const touch = event.changedTouches[0];
+      return { x: touch.clientX, y: touch.clientY };
+    }
+
+    return null;
+  }
+
+  private updateGroupFieldsByKeys(
+    day: DaySection,
+    group: DayGroupBlock,
+    fields: Partial<Pick<NonNullable<Itinerary['items']>[number], 'groupName' | 'groupStartAt' | 'groupEndAt'>>
+  ): void {
+    const current = this.itinerary();
+    if (!current?.items?.length) return;
+
+    const keys = new Set(group.items.map((item) => item.key));
+
+    const updatedItems = current.items.map((item) => {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      const safeDay = item.dayNumber || 1;
+
+      if (safeDay !== day.day || !keys.has(key)) {
+        return item;
+      }
+
+      return {
+        ...item,
+        ...fields
+      };
+    });
+
+    this.itineraryService.setCurrentItinerary({
+      ...this.withNormalizedEndDate(current, updatedItems),
+      items: updatedItems
+    });
   }
 
   viewOnMap(poi: BuilderPoi): void {
@@ -623,23 +758,6 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildDateTimeForDay(dayNumber: number, time: string | null): string | null {
-    if (!time) return null;
-
-    const baseDate = this.getDayDate(dayNumber);
-    if (!baseDate) return null;
-
-    const [hoursText, minutesText] = time.split(':');
-    const hours = Number(hoursText);
-    const minutes = Number(minutesText);
-
-    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
-
-    const result = new Date(baseDate);
-    result.setHours(hours, minutes, 0, 0);
-    return result.toISOString();
-  }
-
   formatGroupSchedule(startAt: string | null | undefined, endAt: string | null | undefined): string | null {
     const start = this.formatTime(startAt);
     const end = this.formatTime(endAt);
@@ -654,15 +772,7 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
     const current = this.itinerary();
     if (!current) return;
 
-    const orderMap = new Map<string, { day: number; order: number }>();
-
-    Array.from(dayMap.entries())
-      .sort(([a], [b]) => a - b)
-      .forEach(([day, keys]) => {
-        keys.forEach((key, index) => {
-          orderMap.set(key, { day, order: index + 1 });
-        });
-      });
+    const orderMap = this.buildOrderMap(dayMap);
 
     const updatedItems = [...(current.items || [])].map((item) => {
       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
@@ -727,6 +837,20 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
     });
 
     return map;
+  }
+
+  private buildOrderMap(dayMap: Map<number, string[]>): Map<string, { day: number; order: number }> {
+    const orderMap = new Map<string, { day: number; order: number }>();
+
+    Array.from(dayMap.entries())
+      .sort(([a], [b]) => a - b)
+      .forEach(([day, keys]) => {
+        keys.forEach((key, index) => {
+          orderMap.set(key, { day, order: index + 1 });
+        });
+      });
+
+    return orderMap;
   }
 
   private findDayByKey(dayMap: Map<number, string[]>, key: string): number | null {

@@ -128,11 +128,10 @@
                 <span class="day-badge">{{ day.activities.length }} attivita</span>
                 <span class="day-badge">{{ day.scheduledCount }} con orario</span>
               </div>
-
-              <button class="day-group-btn" type="button" (click)="createGroupForDay(day)">
-                <i class="bi bi-collection"></i>
-                <span>Crea gruppo</span>
-              </button>
+              <span class="day-group-hint">
+                <i class="bi bi-hand-index-thumb"></i>
+                Trascina una card sopra un'altra per creare un gruppo
+              </span>
             </div>
           </div>
 
@@ -154,6 +153,33 @@
                   <p>{{ group.items.length }} tappe incluse</p>
                 </div>
                 <span>{{ formatGroupSchedule(group.startAt, group.endAt) || 'Orario da definire' }}</span>
+              </div>
+
+              <div class="day-group-card__edit-grid">
+                <label class="planning-field">
+                  <span>Nome gruppo</span>
+                  <input type="text" class="planning-input" [ngModel]="group.name || ''"
+                    [ngModelOptions]="{ updateOn: 'blur' }" (ngModelChange)="updateGroupName(day, group, $event)">
+                </label>
+
+                <label class="planning-field">
+                  <span>Inizio gruppo</span>
+                  <input type="datetime-local" class="planning-input" [ngModel]="formatDateForInput(group.startAt)"
+                    [ngModelOptions]="{ updateOn: 'blur' }"
+                    (ngModelChange)="updateGroupDateField(day, group, 'groupStartAt', $event)">
+                </label>
+
+                <label class="planning-field">
+                  <span>Fine gruppo</span>
+                  <input type="datetime-local" class="planning-input" [ngModel]="formatDateForInput(group.endAt)"
+                    [ngModelOptions]="{ updateOn: 'blur' }"
+                    (ngModelChange)="updateGroupDateField(day, group, 'groupEndAt', $event)">
+                </label>
+
+                <button class="group-clear-btn" type="button" (click)="clearGroup(day, group)">
+                  <i class="bi bi-x-circle"></i>
+                  Sciogli gruppo
+                </button>
               </div>
 
               <div class="day-group-card__items">
@@ -183,6 +209,10 @@
 
             @for (poi of day.items; track poi.key) {
             <article class="poi-card" [class.poi-card--hotel]="poi.type === 'accommodation'" [cdkDragData]="poi"
+              [attr.data-poi-key]="poi.key" [attr.data-day-number]="day.day"
+              [class.poi-card--drag-source]="draggingPoiKey() === poi.key"
+              [class.poi-card--drag-target]="dragTargetPoiKey() === poi.key" (cdkDragStarted)="onPoiDragStarted(poi)"
+              (cdkDragMoved)="onPoiDragMoved($event, poi)" (cdkDragEnded)="onPoiDragEnded($event, poi, day.day)"
               cdkDrag>
               <div class="poi-card__media" [class.poi-card__media--placeholder]="!getPoiCover(poi)">
                 @if (getPoiCover(poi); as cover) {
@@ -283,6 +313,13 @@
                     placeholder="Aggiungi dettagli utili per questa tappa..." class="poi-note-input"
                     rows="2"></textarea>
                 </label>
+
+                @if (dragTargetPoiKey() === poi.key && draggingPoiKey() !== poi.key) {
+                <div class="group-drop-target">
+                  <i class="bi bi-collection"></i>
+                  Rilascia per creare il gruppo
+                </div>
+                }
               </div>
 
               <div class="drag-placeholder" *cdkDragPlaceholder></div>
