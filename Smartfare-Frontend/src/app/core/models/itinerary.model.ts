@@ -13,6 +13,15 @@ export interface Itinerary {
     userId?: number;
     items?: ItineraryItem[];
     updatedAt?: string;
+    isPublished?: boolean;
+    visibilityCode?: string;
+    user?: {
+        profile?: {
+            name?: string;
+            surname?: string;
+            avatarUrl?: string;
+        };
+    };
 }
 
 export interface ItineraryItem {

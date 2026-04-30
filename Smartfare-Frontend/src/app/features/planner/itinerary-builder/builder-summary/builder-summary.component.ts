@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, CdkDragEnd, CdkDragMove, CdkDragStart, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -56,6 +56,11 @@ export class BuilderSummaryComponent {
   popupEndTime = signal<string>('');
   popupStartDay = signal<number>(1);
   popupEndDay = signal<number>(1);
+
+  isPublic = computed(() => {
+    const itin = this.itinerary();
+    return itin?.visibilityCode === 'PUBLIC' || itin?.isPublished === true;
+  });
 
   // Segnale unito: Itinerario + Dati del Workspace (POI)
   joinedPois = computed(() => {
@@ -139,27 +144,63 @@ export class BuilderSummaryComponent {
     return options;
   });
 
-  // Dati mockup esplora
-  exploreCards: ExploreCard[] = [
-    {
-      title: 'Migliori attrazioni a Torino',
-      subtitle: 'I più visti sul web',
-      provider: 'Wanderlog',
-      imageUrl: '/assets/home-section.avif' // Placeholder
-    },
-    {
-      title: 'Migliori ristoranti a Torino',
-      subtitle: 'I più visti sul web',
-      provider: 'Wanderlog',
-      imageUrl: '/assets/home-section.avif'
-    },
-    {
-      title: 'Cerca hotel con tariffe trasparenti',
-      subtitle: 'Diversamente da altri siti, non classifichiamo in base alle commissioni',
-      provider: 'Wanderlog',
-      imageUrl: '/assets/home-section.avif'
-    }
-  ];
+  publicItineraries = signal<Itinerary[]>([]);
+
+  constructor() {
+    effect(() => {
+      const ws = this.workspace();
+      if (ws?.location?.id) {
+        this.itineraryService.getPublicItineraries(ws.location.id).subscribe(list => {
+          this.publicItineraries.set(list);
+        });
+      }
+    }, { allowSignalWrites: true });
+  }
+
+  applyItinerary(publicItin: Itinerary): void {
+    if (!confirm(`Vuoi davvero sovrascrivere il tuo itinerario corrente con "${publicItin.name}"? Questa operazione non può essere annullata.`)) return;
+
+    this.itineraryService.getPublicItineraryById(publicItin.id!).subscribe(fullItin => {
+      if (!fullItin) {
+        this.alertService.error("Impossibile recuperare i dettagli dell'itinerario selezionato.");
+        return;
+      }
+
+      const current = this.itinerary();
+      if (!current) return;
+
+      // Mappa gli elementi mantenendo la struttura ma rimuovendo gli ID esistenti per crearne di nuovi
+      const newItems = (fullItin.items || []).map(item => ({
+        ...item,
+        id: undefined,
+        itineraryId: current.id
+      }));
+
+      this.itineraryService.setCurrentItinerary({
+        ...current,
+        items: newItems
+      });
+
+      this.alertService.success(`Itinerario "${publicItin.name}" applicato con successo!`);
+    });
+  }
+
+  togglePublish(): void {
+    const current = this.itinerary();
+    if (!current) return;
+
+    const isCurrentlyPublic = current.visibilityCode === 'PUBLIC' || current.isPublished;
+    const newState = !isCurrentlyPublic;
+    
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      isPublished: newState,
+      visibilityCode: newState ? 'PUBLIC' : 'PRIVATE'
+    });
+
+    this.alertService.success(newState ? 'Itinerario pubblicato!' : 'Itinerario reso privato.');
+  }
+
 
   readonly daySections = computed<DaySection[]>(() => {
     const totalDays = Math.max(1, this.getDaysCount());
@@ -292,14 +333,14 @@ export class BuilderSummaryComponent {
 
     this.popupStartTime.set(start);
     this.popupEndTime.set(end);
-    
+
     // Day extraction
     const startD = poi.plannedStartAt ? new Date(poi.plannedStartAt) : null;
     const endD = poi.plannedEndAt ? new Date(poi.plannedEndAt) : null;
-    
+
     this.popupStartDay.set(startD ? this.getDayNumberFromDate(startD) : poi.dayNumber || 1);
     this.popupEndDay.set(endD ? this.getDayNumberFromDate(endD) : poi.dayNumber || 1);
-    
+
     this.activeTimePopupPoiKey.set(poi.key);
   }
 
@@ -375,7 +416,7 @@ export class BuilderSummaryComponent {
   }
 
   clearTime(poi: BuilderPoi): void {
-     const current = this.itinerary();
+    const current = this.itinerary();
     if (!current?.items) return;
 
     const updatedItems = current.items.map((item) => {

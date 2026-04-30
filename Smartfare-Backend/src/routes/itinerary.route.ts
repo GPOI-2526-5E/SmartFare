@@ -36,6 +36,29 @@ router.get("/latest", authenticateJWT, async (req: AuthRequest, res: Response, n
     }
 });
 
+// GET /api/itineraries/public - Get all public itineraries (optional filter by locationId)
+router.get("/public", optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const locationId = req.query.locationId ? Number(req.query.locationId) : undefined;
+        const itineraries = await itineraryService.getPublicItineraries(locationId);
+        res.status(200).json(itineraries);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// GET /api/itineraries/public/:id - Get a single public itinerary by ID
+router.get("/public/:id", optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const id = Number(req.params.id);
+        const itinerary = await itineraryService.getPublicItineraryById(id);
+        if (!itinerary) return res.status(404).json({ error: "Itinerario non trovato" });
+        res.status(200).json(itinerary);
+    } catch (error) {
+        next(error);
+    }
+});
+
 // POST /api/itineraries - Create or update an itinerary
 router.post("/", authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {

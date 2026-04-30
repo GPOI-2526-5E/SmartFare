@@ -144,4 +144,18 @@ export class ItineraryService {
       })
     );
   }
+  // Public itineraries for exploration
+  getPublicItineraries(locationId?: number): Observable<Itinerary[]> {
+    const params: any = {};
+    if (locationId) params.locationId = locationId.toString();
+    return this.http.get<Itinerary[]>(`${this.API_URL}/public`, { params }).pipe(
+      catchError(() => of([]))
+    );
+  }
+
+  getPublicItineraryById(id: number): Observable<Itinerary | null> {
+    return this.http.get<Itinerary>(`${this.API_URL}/public/${id}`).pipe(
+      catchError(() => of(null))
+    );
+  }
 }

@@ -275,4 +275,54 @@ export class ItineraryService {
             throw error;
         }
     }
+
+    async getPublicItineraries(locationId?: number) {
+        try {
+            return await prisma.itinerary.findMany({
+                where: { 
+                    OR: [
+                        { isPublished: true },
+                        { visibilityCode: 'PUBLIC' }
+                    ],
+                    ...(locationId ? { locationId } : {})
+                },
+                take: 12,
+                orderBy: { updatedAt: 'desc' },
+                include: {
+                    location: true,
+                    user: {
+                        include: { profile: true }
+                    },
+                    items: {
+                        take: 3,
+                        include: {
+                            activity: { select: { imageUrl: true } },
+                            accommodation: { select: { imageUrl: true } }
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error("Errore recupero itinerari pubblici:", error);
+            throw error;
+        }
+    }
+
+    async getPublicItineraryById(id: number) {
+        try {
+            return await prisma.itinerary.findUnique({
+                where: { 
+                    id,
+                    OR: [
+                        { isPublished: true },
+                        { visibilityCode: 'PUBLIC' }
+                    ]
+                },
+                include: this.getItineraryInclude()
+            });
+        } catch (error) {
+            console.error("Errore recupero itinerario pubblico per ID:", error);
+            throw error;
+        }
+    }
 }

@@ -16,6 +16,10 @@
         <h1 class="wl-title">
           {{ itinerary()?.name || workspace()?.location?.name || 'Viaggio' }}
         </h1>
+        <button class="wl-publish-toggle" [class.is-published]="isPublic()" (click)="togglePublish()">
+          <i class="bi" [class.bi-eye-fill]="isPublic()" [class.bi-eye-slash]="!isPublic()"></i>
+          {{ isPublic() ? 'Pubblico' : 'Privato' }}
+        </button>
         <button class="wl-edit-title-btn" (click)="startEditingTitle()">
           <i class="bi bi-pencil-fill"></i>
         </button>
@@ -33,24 +37,37 @@
   <!-- ESPLORA -->
   <section class="wl-section">
     <div class="wl-section-header">
-      <h2><i class="bi bi-chevron-down"></i> Esplora</h2>
+      <h2><i class="bi bi-chevron-down"></i> Esplora itinerari</h2>
       <button class="wl-btn-primary"><i class="bi bi-search"></i> Sfoglia tutto</button>
     </div>
 
     <div class="wl-explore-grid">
-      @for (card of exploreCards; track card.title) {
-      <div class="wl-explore-card">
+      @for (itin of publicItineraries(); track itin.id) {
+      <div class="wl-explore-card" (click)="applyItinerary(itin)">
         <div class="wl-explore-img">
-          <img [src]="card.imageUrl" [alt]="card.title" />
+          <img
+            [src]="itin.items?.[0]?.activity?.imageUrl || itin.items?.[0]?.accommodation?.imageUrl || '/assets/home-section.avif'"
+            alt="Preview">
+          <div class="wl-explore-badge">Itinerario</div>
         </div>
         <div class="wl-explore-info">
-          <h3>{{ card.title }}</h3>
-          <p>{{ card.subtitle }}</p>
-          <div class="wl-explore-provider">
-            <div class="wl-provider-icon"><i class="bi bi-boxes"></i></div>
-            <span>{{ card.provider }}</span>
+          <h3>{{ itin.name }}</h3>
+          <p>{{ itin.description || 'Scopri questo fantastico itinerario' }}</p>
+          <div class="wl-explore-footer">
+            <div class="wl-provider">
+              <div class="wl-provider-icon">
+                <img [src]="itin.user?.profile?.avatarUrl || '/assets/home-section.avif'" alt="User">
+              </div>
+              <span>{{ itin.user?.profile?.name || 'Utente' }}</span>
+            </div>
+            <button class="wl-apply-btn" (click)="$event.stopPropagation(); applyItinerary(itin)">Applica</button>
           </div>
         </div>
+      </div>
+      } @empty {
+      <div class="wl-no-explore">
+        <i class="bi bi-info-circle"></i>
+        <p>Nessun itinerario pubblico trovato per questa posizione.</p>
       </div>
       }
     </div>
@@ -92,7 +109,8 @@
               <span>{{ idx + 1 }}</span>
             </div>
             <!-- Linea verticale che connette i pin -->
-            <div class="wl-vertical-line" *ngIf="idx < day.items.length - 1" [style.background-color]="getDayColor(day.day)"></div>
+            <div class="wl-vertical-line" *ngIf="idx < day.items.length - 1"
+              [style.background-color]="getDayColor(day.day)"></div>
           </div>
 
           <div class="wl-poi-card-container">
@@ -100,9 +118,10 @@
               <div class="wl-poi-card-content">
                 <div class="wl-poi-main-info">
                   <div class="wl-poi-icon-box" [style.border-color]="getDayColor(day.day)">
-                    <i class="bi" [class.bi-building]="poi.type === 'accommodation'" [class.bi-geo-alt-fill]="poi.type === 'activity'"></i>
+                    <i class="bi" [class.bi-building]="poi.type === 'accommodation'"
+                      [class.bi-geo-alt-fill]="poi.type === 'activity'"></i>
                   </div>
-                  
+
                   <div class="wl-poi-text-group">
                     <div class="wl-poi-header">
                       <h4 class="wl-poi-title">{{ poi.title }}</h4>
@@ -128,15 +147,18 @@
                 <div class="wl-poi-actions-row">
 
                   <div class="wl-time-wrapper">
-                    <button class="wl-action-btn wl-btn-pill" [class.wl-hotel-pill]="poi.type === 'accommodation'" (click)="openTimePopup(poi, $event)">
+                    <button class="wl-action-btn wl-btn-pill" [class.wl-hotel-pill]="poi.type === 'accommodation'"
+                      (click)="openTimePopup(poi, $event)">
                       <i class="bi bi-clock"></i>
                       @if (poi.type === 'accommodation') {
-                        <div class="wl-hotel-times">
-                          <span class="wl-time-line"><b>Check-in:</b> {{ formatTimeString(poi.plannedStartAt, true) || '--' }}</span>
-                          <span class="wl-time-line"><b>Check-out:</b> {{ formatTimeString(poi.plannedEndAt, true) || '--' }}</span>
-                        </div>
+                      <div class="wl-hotel-times">
+                        <span class="wl-time-line"><b>Check-in:</b> {{ formatTimeString(poi.plannedStartAt, true) ||
+                          '--' }}</span>
+                        <span class="wl-time-line"><b>Check-out:</b> {{ formatTimeString(poi.plannedEndAt, true) || '--'
+                          }}</span>
+                      </div>
                       } @else {
-                        <span>{{ formatTimeDisplay(poi) }}</span>
+                      <span>{{ formatTimeDisplay(poi) }}</span>
                       }
                     </button>
 
@@ -147,9 +169,9 @@
                           <label>{{ poi.type === 'accommodation' ? 'Check-in' : 'Inizio' }}</label>
                           <div class="wl-datetime-inputs">
                             @if (poi.type === 'accommodation') {
-                              <select [ngModel]="popupStartDay()" (ngModelChange)="popupStartDay.set($event)">
-                                @for (d of dayOptions(); track d) { <option [value]="d">Giorno {{ d }}</option> }
-                              </select>
+                            <select [ngModel]="popupStartDay()" (ngModelChange)="popupStartDay.set($event)">
+                              @for (d of dayOptions(); track d) { <option [value]="d">Giorno {{ d }}</option> }
+                            </select>
                             }
                             <select [ngModel]="popupStartTime()" (ngModelChange)="popupStartTime.set($event)">
                               <option value="">--:--</option>
@@ -164,9 +186,9 @@
                           <label>{{ poi.type === 'accommodation' ? 'Check-out' : 'Fine' }}</label>
                           <div class="wl-datetime-inputs">
                             @if (poi.type === 'accommodation') {
-                              <select [ngModel]="popupEndDay()" (ngModelChange)="popupEndDay.set($event)">
-                                @for (d of dayOptions(); track d) { <option [value]="d">Giorno {{ d }}</option> }
-                              </select>
+                            <select [ngModel]="popupEndDay()" (ngModelChange)="popupEndDay.set($event)">
+                              @for (d of dayOptions(); track d) { <option [value]="d">Giorno {{ d }}</option> }
+                            </select>
                             }
                             <select [ngModel]="popupEndTime()" (ngModelChange)="popupEndTime.set($event)">
                               <option value="">--:--</option>
