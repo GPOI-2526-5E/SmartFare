@@ -3,8 +3,15 @@
   <!-- HEADER -->
   <section class="wl-header">
     <div class="wl-header-bg">
-      <img src="/assets/home-section.avif" alt="Cover" />
-      <button class="wl-edit-bg-btn"><i class="bi bi-pencil-fill"></i></button>
+      <img [src]="itinerary()?.imageUrl || '/assets/home-section.avif'" alt="Cover" />
+      <button class="wl-edit-bg-btn" (click)="coverInput.click()">
+        @if (isUploadingImage()) {
+          <span class="spinner-border spinner-border-sm"></span>
+        } @else {
+          <i class="bi bi-pencil-fill"></i>
+        }
+      </button>
+      <input type="file" #coverInput hidden accept="image/*" (change)="onCoverImageSelected($event)" />
     </div>
 
     <div class="wl-header-card">
@@ -59,7 +66,7 @@
       <div class="wl-explore-card" (click)="openPreview(itin)">
         <div class="wl-explore-img">
           <img
-            [src]="itin.items?.[0]?.activity?.imageUrl || itin.items?.[0]?.accommodation?.imageUrl || '/assets/home-section.avif'"
+            [src]="itin.imageUrl"
             alt="Preview">
           <div class="wl-explore-badge">Itinerario</div>
         </div>
@@ -88,7 +95,7 @@
 
   <!-- TIMELINE / GIORNATE -->
   <div class="wl-timeline-container" [class.is-preview]="isPreviewMode()" cdkDropListGroup>
-    
+
     @if (isPreviewMode()) {
     <div class="wl-preview-overlay">
       <div class="wl-preview-banner">
@@ -127,11 +134,78 @@
         }
 
         @for (poi of day.items; track poi.key; let idx = $index) {
-        <div class="wl-poi-row" cdkDrag [cdkDragData]="poi">
+        @if (isFirstInGroup(idx, day.items) && poi.groupName) {
+        <div class="wl-group-header-container">
+          <div class="wl-group-header">
+            <div class="wl-group-title">
+              @if (editingGroupNameKey() === poi.groupName) {
+                <input type="text" class="wl-group-name-input" [ngModel]="editGroupNameValue()" (ngModelChange)="editGroupNameValue.set($event)" (blur)="saveGroupName(poi.groupName)" (keyup.enter)="saveGroupName(poi.groupName)" autofocus>
+              } @else {
+                <h4 (click)="startEditingGroupName(poi.groupName, $event)">
+                  <i class="bi bi-collection-fill wl-group-icon"></i>
+                  <span>{{ poi.groupName }}</span>
+                  <i class="bi bi-pencil-fill wl-group-edit-icon"></i>
+                </h4>
+              }
+            </div>
+            <div class="wl-group-time-actions" style="display: flex; gap: 8px; align-items: center;">
+              <button class="wl-dissolve-btn" (click)="dissolveGroup(poi.groupName)" title="Sciogli gruppo">
+                <i class="bi bi-node-minus"></i>
+              </button>
+              <div class="wl-time-wrapper">
+                <button class="wl-btn-pill wl-group-time-btn" (click)="openGroupTimePopup(poi, $event)">
+                  <i class="bi bi-clock"></i>
+                  @if (poi.groupStartAt || poi.groupEndAt) {
+                    {{ formatTimeDisplay($any({ plannedStartAt: poi.groupStartAt, plannedEndAt: poi.groupEndAt, type: 'activity' })) }}
+                  } @else {
+                    Orario Gruppo
+                  }
+                </button>
+                @if (activeGroupTimePopup() === poi.groupName) {
+                <div class="wl-time-popup" (click)="onPopupClick($event)">
+                  <div class="wl-time-inputs">
+                    <div class="wl-time-field">
+                      <label>Inizio</label>
+                      <select [ngModel]="groupStartTime()" (ngModelChange)="groupStartTime.set($event)">
+                        <option value="">--:--</option>
+                        @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
+                      </select>
+                    </div>
+                    <span class="wl-time-sep">-</span>
+                    <div class="wl-time-field">
+                      <label>Fine</label>
+                      <select [ngModel]="groupEndTime()" (ngModelChange)="groupEndTime.set($event)">
+                        <option value="">--:--</option>
+                        @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
+                      </select>
+                    </div>
+                  </div>
+                  <div class="wl-time-popup-actions">
+                    <button class="wl-btn-cancel" (click)="clearGroupTime(poi.groupName)">Cancella</button>
+                    <button class="wl-btn-save" (click)="saveGroupTime(poi.groupName, day.date)">Salva</button>
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+
+        <div class="wl-poi-row" cdkDrag [cdkDragData]="poi"
+             (cdkDragStarted)="onPoiDragStarted(poi)"
+             (cdkDragMoved)="onPoiDragMoved($event, poi)"
+             (cdkDragEnded)="onPoiDragEnded($event, poi, day.day)"
+             [class.in-group]="poi.groupName"
+             [class.group-last]="isLastInGroup(idx, day.items)"
+             [attr.data-poi-key]="poi.key"
+             [attr.data-day-number]="day.day">
 
           <div class="wl-poi-left">
             <div class="wl-drag-handle" cdkDragHandle><i class="bi bi-grid-3x2-gap-fill"></i></div>
-            <div class="wl-poi-checkbox"></div>
+            <div class="wl-poi-checkbox" (click)="toggleSelection(poi)" [class.checked]="selectedPoiKeys().has(poi.key)">
+              <i class="bi" [class.bi-check-circle-fill]="selectedPoiKeys().has(poi.key)" [class.bi-circle]="!selectedPoiKeys().has(poi.key)"></i>
+            </div>
             <div class="wl-poi-pin">
               <svg viewBox="0 0 24 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 0C5.37258 0 0 5.37258 0 12C0 21 12 34 12 34C12 34 24 21 24 12C24 5.37258 18.6274 0 12 0Z"
@@ -156,9 +230,16 @@
                   <div class="wl-poi-text-group">
                     <div class="wl-poi-header">
                       <h4 class="wl-poi-title">{{ poi.title }}</h4>
-                      <button class="wl-delete-btn" (click)="removeItem(poi)" title="Elimina">
-                        <i class="bi bi-trash3"></i>
-                      </button>
+                      <div style="display: flex; gap: 8px;">
+                        @if (poi.groupName) {
+                        <button class="wl-delete-btn" (click)="removeFromGroup(poi)" title="Rimuovi dal gruppo">
+                          <i class="bi bi-box-arrow-up"></i>
+                        </button>
+                        }
+                        <button class="wl-delete-btn" (click)="removeItem(poi)" title="Elimina">
+                          <i class="bi bi-trash3"></i>
+                        </button>
+                      </div>
                     </div>
                     <div class="wl-poi-subtitle">
                       <i class="bi bi-geo-alt"></i>
@@ -170,7 +251,7 @@
                 <!-- Note -->
                 <div class="wl-poi-notes-box">
                   <input type="text" placeholder="Aggiungi note per questa tappa..." [ngModel]="poi.note"
-                    (ngModelChange)="updateNote(poi, $event)" [ngModelOptions]="{updateOn: 'blur'}" 
+                    (ngModelChange)="updateNote(poi, $event)" [ngModelOptions]="{updateOn: 'blur'}"
                     (focus)="activeEditingNotePoiKey.set(poi.key)" (blur)="activeEditingNotePoiKey.set(null)"
                     [class.is-editing]="activeEditingNotePoiKey() === poi.key" />
                 </div>
@@ -179,6 +260,7 @@
                 <!-- Actions -->
                 <div class="wl-poi-actions-row">
 
+                  @if (!poi.groupName) {
                   <div class="wl-time-wrapper">
                     <button class="wl-action-btn wl-btn-pill" [class.wl-hotel-pill]="poi.type === 'accommodation'"
                       (click)="openTimePopup(poi, $event)">
@@ -237,6 +319,7 @@
                     </div>
                     }
                   </div>
+                  }
                 </div>
 
 
@@ -268,6 +351,29 @@
       Aggiungi giorno
     </button>
   </div>
+
+  <!-- FLOATING ACTION BAR FOR SELECTION -->
+  @if (selectedPoiKeys().size > 0) {
+  <div class="wl-selection-action-bar">
+    <div class="wl-selection-info">
+      <span class="wl-selection-count">{{ selectedPoiKeys().size }}</span>
+      <span>attività selezionate</span>
+    </div>
+    <div class="wl-selection-actions">
+      @if (selectedPoiKeys().size > 1) {
+      <button class="wl-btn-group" (click)="createGroupFromSelection()">
+        <i class="bi bi-link-45deg"></i> Crea Gruppo
+      </button>
+      }
+      <button class="wl-btn-delete-selection" (click)="deleteSelected()">
+        <i class="bi bi-trash3"></i> Elimina
+      </button>
+      <button class="wl-btn-cancel-selection" (click)="clearSelection()" title="Annulla selezione">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+  }
 </div>
 
 </div>

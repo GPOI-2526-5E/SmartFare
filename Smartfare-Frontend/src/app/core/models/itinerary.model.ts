@@ -15,6 +15,7 @@ export interface Itinerary {
     items?: ItineraryItem[];
     updatedAt?: string;
     isPublished?: boolean;
+    imageUrl?: string | null;
     user?: {
         profile?: {
             name?: string;

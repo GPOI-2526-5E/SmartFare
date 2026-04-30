@@ -83,14 +83,15 @@ export class ItineraryService {
 
     async saveItinerary(userId: number, data: any) {
         try {
-            const { id, name, description, startDate, endDate, isPublished, visibilityCode, locationId } = data;
+            const { id, name, description, startDate, endDate, isPublished, visibilityCode, locationId, imageUrl } = data;
             const items = this.buildItemData(data);
             const draftPayload = {
                 name: name || "Il mio Viaggio",
                 description,
                 startDate: startDate ? new Date(startDate) : null,
                 endDate: endDate ? new Date(endDate) : null,
-                isPublished: isPublished === true ? true : false
+                isPublished: isPublished === true ? true : false,
+                ...(imageUrl ? { imageUrl } : {})
             };
 
             // If an ID is provided, we try to update
@@ -275,7 +276,7 @@ export class ItineraryService {
     async getPublicItineraries(locationId?: number) {
         try {
             return await prisma.itinerary.findMany({
-                where: { 
+                where: {
                     OR: [
                         { isPublished: true },
                         { visibilityCode: 'PUBLIC' }
@@ -307,7 +308,7 @@ export class ItineraryService {
     async getPublicItineraryById(id: number) {
         try {
             return await prisma.itinerary.findUnique({
-                where: { 
+                where: {
                     id,
                     OR: [
                         { isPublished: true },

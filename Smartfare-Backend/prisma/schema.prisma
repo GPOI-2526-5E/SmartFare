@@ -181,6 +181,7 @@ model Itinerary {
   updatedAt      DateTime  @updatedAt
   userId         Int?
   locationId     Int?
+  imageUrl       String @default("https://images.trvl-media.com/place/6046257/dfc1097b-fb0b-4d2f-96f5-15d86e72f134.jpg")
 
   user       User?               @relation(fields: [userId], references: [id])
   location   Location?           @relation(fields: [locationId], references: [id])

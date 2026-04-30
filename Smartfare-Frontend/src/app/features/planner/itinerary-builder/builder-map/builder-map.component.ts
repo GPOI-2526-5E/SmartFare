@@ -272,8 +272,16 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
 
     const requestId = ++this.routeRequestId;
-    this.isRouteLoading = !onlyColorsChanged;
-    this.routeError = null;
+
+    // Use a microtask to defer state changes and avoid ExpressionChangedAfterItHasBeenCheckedError
+    // when refreshRoute is called from ngAfterViewInit or ngOnChanges
+    Promise.resolve().then(() => {
+      if (requestId !== this.routeRequestId) return;
+      this.isRouteLoading = !onlyColorsChanged;
+      this.routeError = null;
+      this.dayRouteInfo = []; // Reset info while loading to avoid stale data
+      this.cdr.detectChanges();
+    });
 
     try {
       const customColors = this.ui.dayRouteColors();
@@ -322,14 +330,34 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           dayDurationMin = meta.durationMin;
         } else {
           const coordinateString = dayPoints.map((p) => `${p.lng},${p.lat}`).join(';');
-          const response = await fetch(
-            `https://router.project-osrm.org/route/v1/driving/${coordinateString}?overview=full&geometries=geojson&steps=false`
-          );
+          let response: Response;
+          try {
+            // Priority to routing.openstreetmap.de (FOSS server, often more stable for direct browser CORS)
+            response = await fetch(
+              `https://routing.openstreetmap.de/routed-car/route/v1/driving/${coordinateString}?overview=full&geometries=geojson&steps=false`
+            );
+
+            if (!response.ok || response.status === 502 || response.status === 429) {
+              throw new Error('Fallback needed');
+            }
+          } catch (e) {
+            // Fallback to project-osrm.org demo server
+            response = await fetch(
+              `https://router.project-osrm.org/route/v1/driving/${coordinateString}?overview=full&geometries=geojson&steps=false`
+            );
+          }
+
+          if (!response.ok) {
+            if (response.status === 502) throw new Error('Servitore di routing temporaneamente non disponibile (502)');
+            throw new Error(`Errore server: ${response.status}`);
+          }
+
           const payload = await response.json();
 
           if (requestId !== this.routeRequestId) return;
 
           if (!response.ok || payload?.code !== 'Ok' || !Array.isArray(payload?.routes) || !payload.routes[0]) {
+            console.error('OSRM API Error:', payload);
             throw new Error('Percorso non disponibile');
           }
 

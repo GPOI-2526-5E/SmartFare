@@ -6,6 +6,7 @@ import locationsRoutes from './routes/location.route';
 import itineraryRoutes from './routes/itinerary.route';
 import activityRoutes from './routes/activity.route';
 import accommodationRoutes from './routes/accommodation.route';
+import uploadRoutes from './routes/upload.route';
 import { errorHandler } from "./middleware/error.middleware";
 
 
@@ -57,6 +58,7 @@ export function createApp() {
   app.use("/api/itineraries", itineraryRoutes);
   app.use("/api/activity", activityRoutes);
   app.use("/api/accommodation", accommodationRoutes);
+  app.use("/api/upload", uploadRoutes);
   app.use("/auth", authRoutes);
 
   // Global Error handling

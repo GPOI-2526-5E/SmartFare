@@ -71,6 +71,12 @@
   z-index: 5;
 }
 
+.wl-edit-bg-btn .spinner-border {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-width: 0.15em;
+}
+
 .wl-edit-bg-btn:hover {
   background: #3b82f6;
   transform: scale(1.05) rotate(5deg);
@@ -355,6 +361,146 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.4s;
   cursor: pointer;
+}
+
+/* Floating Action Bar */
+.wl-selection-action-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  padding: 12px 24px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  z-index: 1000;
+  animation: slideUpFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.wl-selection-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.wl-selection-count {
+  background: #3b82f6;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.wl-selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wl-btn-group, .wl-btn-delete-selection {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.wl-btn-group {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.wl-btn-group:hover {
+  background: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+.wl-btn-delete-selection {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.wl-btn-delete-selection:hover {
+  background: rgba(239, 68, 68, 0.25);
+  transform: translateY(-2px);
+}
+
+.wl-btn-cancel-selection {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 4px;
+}
+
+.wl-btn-cancel-selection:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Checkbox Interattiva */
+.wl-poi-checkbox {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 22px;
+}
+
+.wl-poi-checkbox:hover {
+  color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.wl-poi-checkbox.checked {
+  color: #3b82f6;
+}
+
+.wl-poi-checkbox i {
+  pointer-events: none;
 }
 
 .wl-explore-card:hover {
@@ -756,6 +902,173 @@
   display: block;
 }
 
+/* Premium Grouping Styles */
+.wl-group-header-container {
+  margin-left: 50px;
+  margin-bottom: 12px;
+  padding: 0 16px 0 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.wl-group-header {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(147, 197, 253, 0.15);
+  border-top: 1px solid rgba(147, 197, 253, 0.3); /* Subtle top highlight for 3D effect */
+  border-radius: 16px;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Soft internal glow */
+.wl-group-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(to bottom, rgba(59, 130, 246, 0.15), transparent);
+  pointer-events: none;
+}
+
+.wl-group-header:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.wl-group-title h4 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+  position: relative;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.wl-group-title h4:hover {
+  color: #ffffff;
+}
+
+.wl-group-icon {
+  color: #3b82f6;
+  font-size: 18px;
+  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+}
+
+.wl-group-edit-icon {
+  font-size: 13px;
+  opacity: 0;
+  color: #94a3b8;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.wl-group-title h4:hover .wl-group-edit-icon {
+  opacity: 1;
+}
+
+.wl-group-edit-icon:hover {
+  color: #60a5fa;
+}
+
+.wl-group-name-input {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  color: white;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 700;
+  outline: none;
+  min-width: 250px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.wl-group-time-btn {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #93c5fd !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  backdrop-filter: blur(8px);
+  position: relative;
+}
+
+.wl-group-time-btn:hover {
+  background: rgba(59, 130, 246, 0.25) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.wl-dissolve-btn {
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wl-dissolve-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+
+/* In-Group visual cues - Premium Connector Line */
+.wl-poi-row.in-group {
+  position: relative;
+}
+
+.wl-poi-row.in-group .wl-poi-card {
+  border-left: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15), inset 2px 0 0 rgba(59, 130, 246, 0.8);
+  transform: translateX(12px);
+  width: calc(100% - 12px);
+  background: rgba(30, 41, 59, 0.4);
+}
+
+.wl-poi-row.in-group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 64px; /* Align precisely with the cards left edge */
+  width: 2px;
+  background: linear-gradient(to bottom, #3b82f6, rgba(59, 130, 246, 0.2));
+  z-index: 1;
+  border-radius: 2px;
+}
+
+.wl-poi-row.in-group.group-last::before {
+  bottom: 50%; /* Connector line stops exactly half-way down the last card */
+  background: linear-gradient(to bottom, #3b82f6, transparent);
+}
+
+/* Drop Target Highlight */
+.wl-poi-row.is-drop-target .wl-poi-card {
+  border: 2px dashed #3b82f6;
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.05);
+  transform: scale(1.02);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Time Popup */
 .wl-time-wrapper {
   position: relative;
@@ -763,15 +1076,31 @@
 
 .wl-time-popup {
   position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  background: #1e293b;
-  border-radius: 12px;
-  box-shadow: 0 8px 48px rgba(0,0,0,0.5);
-  padding: 16px;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+  padding: 20px;
   z-index: 999;
   min-width: 320px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  animation: popupIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transform-origin: top center;
+}
+
+@keyframes popupIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
 }
 
 .wl-time-inputs {

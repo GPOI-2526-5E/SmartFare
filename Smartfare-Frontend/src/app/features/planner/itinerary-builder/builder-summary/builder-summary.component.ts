@@ -1,5 +1,5 @@
-// Forced rebuild
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, HostListener, effect } from '@angular/core';
+// Forced rebuild      
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, HostListener, effect } from '@angular/core';  
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, CdkDragEnd, CdkDragMove, CdkDragStart, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -8,6 +8,8 @@ import { BuilderPoi } from '../builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { AlertService } from '../../../../core/services/alert.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 interface DaySection {
   day: number;
@@ -40,6 +42,7 @@ export class BuilderSummaryComponent {
   private itineraryService = inject(ItineraryService);
   private ui = inject(UIStateService);
   private alertService = inject(AlertService);
+  private http = inject(HttpClient);
 
   itinerary = this.itineraryService.itinerary;
 
@@ -57,9 +60,60 @@ export class BuilderSummaryComponent {
   previewItinerary = signal<Itinerary | null>(null);
   isPreviewMode = computed(() => !!this.previewItinerary());
 
+  // Stato upload immagine
+  isUploadingImage = signal<boolean>(false);
+
   // Drag and Drop State
   draggingPoiKey = signal<string | null>(null);
   dragTargetPoiKey = signal<string | null>(null);
+
+  // Stato per i Gruppi (Nome e Orario)
+  editingGroupNameKey = signal<string | null>(null);
+  editGroupNameValue = signal<string>('');
+  activeGroupTimePopup = signal<string | null>(null);
+  groupStartTime = signal<string>('');
+  groupEndTime = signal<string>('');
+
+  async onCoverImageSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Controllo dimensione (es. 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.alertService.error('L\'immagine è troppo grande. Massimo 5MB.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    this.isUploadingImage.set(true);
+
+    try {
+      // Usiamo l'endpoint del backend per caricare su Cloudinary
+      const response: any = await this.http.post(`${environment.apiUrl}/api/upload/image`, formData).toPromise();
+      
+      if (response && response.url) {
+        const current = this.itinerary();
+        if (current) {
+          // Aggiorniamo l'immagine dell'itinerario
+          this.itineraryService.setCurrentItinerary({
+            ...current,
+            imageUrl: response.url
+          });
+          
+          this.alertService.success('Copertina aggiornata con successo!');
+        }
+      }
+    } catch (error) {
+      console.error('Errore durante l\'upload:', error);
+      this.alertService.error('Errore durante il caricamento dell\'immagine.');
+    } finally {
+      this.isUploadingImage.set(false);
+      // Resettiamo l'input per permettere di selezionare lo stesso file
+      event.target.value = '';
+    }
+  }
 
   // Stato per il popup dell'orario
   activeTimePopupPoiKey = signal<string | null>(null);
@@ -165,7 +219,7 @@ export class BuilderSummaryComponent {
           this.publicItineraries.set(list);
         });
       }
-    }, { allowSignalWrites: true });
+    });
   }
 
   applyItinerary(publicItin: Itinerary): void {
@@ -511,6 +565,164 @@ export class BuilderSummaryComponent {
     });
   }
 
+  // --- Group Helpers ---
+  isFirstInGroup(index: number, items: BuilderPoi[]): boolean {
+    const current = items[index];
+    if (!current.groupName) return false;
+    if (index === 0) return true;
+    const prev = items[index - 1];
+    return prev.groupName !== current.groupName;
+  }
+
+  isLastInGroup(index: number, items: BuilderPoi[]): boolean {
+    const current = items[index];
+    if (!current.groupName) return false;
+    if (index === items.length - 1) return true;
+    const next = items[index + 1];
+    return next.groupName !== current.groupName;
+  }
+
+  startEditingGroupName(groupName: string, event: Event) {
+    event.stopPropagation();
+    this.editingGroupNameKey.set(groupName);
+    this.editGroupNameValue.set(groupName);
+  }
+
+  saveGroupName(oldName: string) {
+    const newName = this.editGroupNameValue().trim();
+    if (newName && newName !== oldName) {
+      const current = this.itinerary();
+      if (current?.items) {
+        const updatedItems = current.items.map(item => {
+          if (item.groupName === oldName) {
+            return { ...item, groupName: newName };
+          }
+          return item;
+        });
+        this.itineraryService.setCurrentItinerary({ ...current, items: updatedItems });
+      }
+    }
+    this.editingGroupNameKey.set(null);
+  }
+
+  cancelGroupNameEdit() {
+    this.editingGroupNameKey.set(null);
+  }
+
+  removeFromGroup(poi: BuilderPoi) {
+    const current = this.itinerary();
+    if (!current?.items) return;
+
+    const updatedItems = current.items.map((item) => {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      if (key === poi.key) {
+        return { ...item, groupName: null, groupStartAt: null, groupEndAt: null };
+      }
+      return item;
+    });
+
+    this.itineraryService.setCurrentItinerary({ ...current, items: updatedItems });
+  }
+
+  // --- Group Time Popup ---
+  openGroupTimePopup(poi: BuilderPoi, event: Event) {
+    event.stopPropagation();
+    if (!poi.groupName) return;
+    
+    let start = '';
+    let end = '';
+    if (poi.groupStartAt) {
+      const d = new Date(poi.groupStartAt);
+      if (!Number.isNaN(d.getTime())) {
+        start = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+      }
+    }
+    if (poi.groupEndAt) {
+      const d = new Date(poi.groupEndAt);
+      if (!Number.isNaN(d.getTime())) {
+        end = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+      }
+    }
+
+    this.groupStartTime.set(start);
+    this.groupEndTime.set(end);
+    this.activeGroupTimePopup.set(poi.groupName);
+  }
+
+  closeGroupTimePopup() {
+    this.activeGroupTimePopup.set(null);
+  }
+
+  saveGroupTime(groupName: string, dayDate: Date | null) {
+    const startStr = this.groupStartTime();
+    const endStr = this.groupEndTime();
+
+    let startIso = null;
+    let endIso = null;
+    const baseDate = dayDate || new Date();
+
+    if (startStr) {
+      const [h, m] = startStr.split(':').map(Number);
+      const d = new Date(baseDate);
+      d.setHours(h, m, 0, 0);
+      startIso = d.toISOString();
+    }
+
+    if (endStr) {
+      const [h, m] = endStr.split(':').map(Number);
+      const d = new Date(baseDate);
+      d.setHours(h, m, 0, 0);
+      endIso = d.toISOString();
+    }
+
+    const current = this.itinerary();
+    if (!current?.items) {
+      this.closeGroupTimePopup();
+      return;
+    }
+
+    const updatedItems = current.items.map((item) => {
+      if (item.groupName === groupName) {
+        return { ...item, groupStartAt: startIso, groupEndAt: endIso };
+      }
+      return item;
+    });
+
+    this.itineraryService.setCurrentItinerary({ ...current, items: updatedItems });
+    this.closeGroupTimePopup();
+  }
+
+  dissolveGroup(groupName: string) {
+    const current = this.itinerary();
+    if (!current?.items) return;
+
+    const updatedItems = current.items.map((item) => {
+      if (item.groupName === groupName) {
+        return { ...item, groupName: null, groupStartAt: null, groupEndAt: null };
+      }
+      return item;
+    });
+
+    this.itineraryService.setCurrentItinerary({ ...current, items: updatedItems });
+    this.alertService.success('Gruppo sciolto. Le attività sono di nuovo indipendenti.');
+  }
+
+  clearGroupTime(groupName: string) {
+    const current = this.itinerary();
+    if (!current?.items) return;
+
+    const updatedItems = current.items.map((item) => {
+      if (item.groupName === groupName) {
+        return { ...item, groupStartAt: null, groupEndAt: null };
+      }
+      return item;
+    });
+
+    this.itineraryService.setCurrentItinerary({ ...current, items: updatedItems });
+    this.closeGroupTimePopup();
+  }
+
+
   formatTimeDisplay(poi: BuilderPoi): string {
     const isHotel = poi.type === 'accommodation';
     const start = this.formatTimeString(poi.plannedStartAt, isHotel);
@@ -571,6 +783,11 @@ export class BuilderSummaryComponent {
   }
 
   drop(event: CdkDragDrop<BuilderPoi[]>, newDay: number): void {
+    // Se c'è un target valido per il gruppo, ignoriamo il riordinamento classico
+    if (this.dragTargetPoiKey() || this.skipDrop) {
+      return;
+    }
+
     const current = this.itinerary();
     if (!current?.items) return;
 
@@ -594,57 +811,121 @@ export class BuilderSummaryComponent {
     this.updateItineraryOrder(dayMap);
   }
 
+  private skipDrop = false;
+
   onPoiDragStarted(poi: BuilderPoi): void {
     this.draggingPoiKey.set(poi.key);
     this.dragTargetPoiKey.set(null);
+    this.skipDrop = false;
   }
 
   onPoiDragMoved(event: CdkDragMove<BuilderPoi>, sourcePoi: BuilderPoi): void {
-    const point = event.pointerPosition;
-    if (!point) {
-      this.dragTargetPoiKey.set(null);
-      return;
-    }
-
-    const targetElement = document.elementFromPoint(point.x, point.y) as HTMLElement | null;
-    const targetCard = targetElement?.closest<HTMLElement>('[data-poi-key]');
-    const targetKey = targetCard?.dataset['poiKey'] || null;
-
-    if (!targetKey || targetKey === sourcePoi.key) {
-      this.dragTargetPoiKey.set(null);
-      return;
-    }
-
-    this.dragTargetPoiKey.set(targetKey);
+    // La logica di rilevamento target per il raggruppamento tramite drag è stata rimossa
+    // in favore della selezione multipla tramite checkbox.
   }
 
   onPoiDragEnded(event: CdkDragEnd<BuilderPoi>, sourcePoi: BuilderPoi, sourceDay: number): void {
-    const pointerEvent = event.event as MouseEvent | TouchEvent | undefined;
-    const point = this.getPointerPoint(pointerEvent);
-    const targetKeyFromState = this.dragTargetPoiKey();
-    const targetKeyFromPoint = point
-      ? (document.elementFromPoint(point.x, point.y) as HTMLElement | null)?.closest<HTMLElement>('[data-poi-key]')?.dataset['poiKey'] || null
-      : null;
-    const targetKey = targetKeyFromState || targetKeyFromPoint;
+    this.draggingPoiKey.set(null);
+  }
 
-    if (!targetKey) {
-      this.draggingPoiKey.set(null);
-      this.dragTargetPoiKey.set(null);
-      return;
+  // --- Multi-Selection & Grouping ---
+  selectedPoiKeys = signal<Set<string>>(new Set<string>());
+
+  toggleSelection(poi: BuilderPoi) {
+    const current = new Set(this.selectedPoiKeys());
+    if (current.has(poi.key)) {
+      current.delete(poi.key);
+    } else {
+      current.add(poi.key);
+    }
+    this.selectedPoiKeys.set(current);
+  }
+
+  clearSelection() {
+    this.selectedPoiKeys.set(new Set<string>());
+  }
+
+  createGroupFromSelection() {
+    const current = this.itinerary();
+    const selectedKeys = Array.from(this.selectedPoiKeys());
+    if (!current?.items || selectedKeys.length < 2) return;
+
+    // Trova le attività selezionate
+    const allPois = this.joinedPois();
+    const selectedPois = allPois.filter(p => selectedKeys.includes(p.key));
+    
+    // Usa il giorno della prima attività selezionata come giorno di riferimento
+    const targetDay = selectedPois[0]?.dayNumber || 1;
+    const groupName = `Gruppo Giorno ${targetDay} - ${Math.floor(Math.random() * 1000)}`;
+
+    const dayMap = this.buildDayMap(current.items);
+    
+    // Rimuovi tutti gli elementi selezionati dalle loro posizioni attuali
+    for (const key of selectedKeys) {
+      for (const [day, list] of dayMap.entries()) {
+        const idx = list.indexOf(key);
+        if (idx !== -1) {
+          list.splice(idx, 1);
+        }
+      }
     }
 
-    const targetCard = document.querySelector<HTMLElement>(`[data-poi-key="${targetKey}"]`);
-    const targetDayValue = Number(targetCard?.dataset['dayNumber']);
+    // Aggiungi tutti gli elementi selezionati alla fine del giorno di riferimento
+    const targetList = dayMap.get(targetDay) || [];
+    targetList.push(...selectedKeys);
+    dayMap.set(targetDay, targetList);
 
-    if (!targetKey || targetKey === sourcePoi.key) return;
-    if (!Number.isFinite(targetDayValue) || targetDayValue < 1) return;
+    const orderMap = this.buildOrderMap(dayMap);
 
-    const targetPoi = this.joinedPois().find((poi) => poi.key === targetKey);
-    if (!targetPoi) return;
+    const updatedItems = current.items.map((item) => {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      const isSelected = selectedKeys.includes(key);
+      const position = orderMap.get(key);
 
-    this.groupPoisByDrop(sourcePoi, targetPoi, targetDayValue || sourceDay);
-    this.draggingPoiKey.set(null);
-    this.dragTargetPoiKey.set(null);
+      if (isSelected) {
+        return {
+          ...item,
+          dayNumber: position?.day || targetDay,
+          orderInt: position?.order || 0,
+          groupName: groupName,
+          groupStartAt: null,
+          groupEndAt: null
+        };
+      }
+      
+      if (position) {
+        return { ...item, dayNumber: position.day, orderInt: position.order };
+      }
+
+      return item;
+    });
+
+    this.itineraryService.setCurrentItinerary({
+      ...this.withNormalizedEndDate(current, updatedItems),
+      items: updatedItems
+    });
+
+    this.clearSelection();
+    this.alertService.success('Attività raggruppate con successo!');
+  }
+  
+  deleteSelected() {
+    const current = this.itinerary();
+    const selectedKeys = this.selectedPoiKeys();
+    if (!current?.items || selectedKeys.size === 0) return;
+
+    const updatedItems = current.items.filter((item) => {
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      return !selectedKeys.has(key);
+    });
+
+    this.itineraryService.setCurrentItinerary({
+      ...this.withNormalizedEndDate(current, updatedItems),
+      items: updatedItems
+    });
+
+    this.clearSelection();
+    this.alertService.success(`${selectedKeys.size} attività rimosse.`);
   }
 
   private buildDayMap(items: Itinerary['items'] = []): Map<number, string[]> {
