@@ -23,6 +23,7 @@ export interface BuilderPoi {
     imageUrl?: string;
     price?: number;
     rating?: number;
+    orderInt?: number;
 }
 
 export interface SidebarFilterState {

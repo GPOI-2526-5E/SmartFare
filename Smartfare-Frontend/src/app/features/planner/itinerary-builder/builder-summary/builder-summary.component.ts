@@ -54,6 +54,8 @@ export class BuilderSummaryComponent {
   activeTimePopupPoiKey = signal<string | null>(null);
   popupStartTime = signal<string>('');
   popupEndTime = signal<string>('');
+  popupStartDay = signal<number>(1);
+  popupEndDay = signal<number>(1);
 
   // Segnale unito: Itinerario + Dati del Workspace (POI)
   joinedPois = computed(() => {
@@ -90,7 +92,8 @@ export class BuilderSummaryComponent {
         plannedEndAt: item.plannedEndAt,
         groupName: item.groupName,
         groupStartAt: item.groupStartAt,
-        groupEndAt: item.groupEndAt
+        groupEndAt: item.groupEndAt,
+        orderInt: item.orderInt || 0
       } as BuilderPoi;
     }).filter((p): p is BuilderPoi => p !== null);
   });
@@ -116,6 +119,11 @@ export class BuilderSummaryComponent {
     const endStr = end.toLocaleDateString('it-IT', options);
 
     return `${startStr} - ${endStr}`;
+  });
+
+  dayOptions = computed(() => {
+    const count = this.getDaysCount();
+    return Array.from({ length: count }, (_, i) => i + 1);
   });
 
   // Opzioni orari (es. 08:00, 08:30...)
@@ -188,14 +196,8 @@ export class BuilderSummaryComponent {
       .sort(([a], [b]) => a - b)
       .map(([day, items]) => {
         const sortedItems = items.slice().sort((a, b) => {
-          const startA = a.plannedStartAt || '';
-          const startB = b.plannedStartAt || '';
-
-          if (startA !== startB) {
-            return startA.localeCompare(startB);
-          }
-
-          return 0;
+          if (a.orderInt !== b.orderInt) return (a.orderInt || 0) - (b.orderInt || 0);
+          return (a.plannedStartAt || '').localeCompare(b.plannedStartAt || '');
         });
 
         // Genera carosello immagini per il giorno
@@ -290,7 +292,23 @@ export class BuilderSummaryComponent {
 
     this.popupStartTime.set(start);
     this.popupEndTime.set(end);
+    
+    // Day extraction
+    const startD = poi.plannedStartAt ? new Date(poi.plannedStartAt) : null;
+    const endD = poi.plannedEndAt ? new Date(poi.plannedEndAt) : null;
+    
+    this.popupStartDay.set(startD ? this.getDayNumberFromDate(startD) : poi.dayNumber || 1);
+    this.popupEndDay.set(endD ? this.getDayNumberFromDate(endD) : poi.dayNumber || 1);
+    
     this.activeTimePopupPoiKey.set(poi.key);
+  }
+
+  private getDayNumberFromDate(date: Date): number {
+    const itinerary = this.itinerary();
+    if (!itinerary?.startDate) return 1;
+    const start = new Date(itinerary.startDate);
+    const diff = date.getTime() - start.getTime();
+    return Math.max(1, Math.floor(diff / (1000 * 60 * 60 * 24)) + 1);
   }
 
   closeTimePopup(): void {
@@ -317,18 +335,19 @@ export class BuilderSummaryComponent {
     let startIso = null;
     let endIso = null;
 
-    const dayDate = this.getDayDate(poi.dayNumber || 1) || new Date();
+    const startDayDate = this.getDayDate(this.popupStartDay()) || new Date();
+    const endDayDate = this.getDayDate(this.popupEndDay()) || new Date();
 
-    if (startStr && dayDate) {
+    if (startStr && startDayDate) {
       const [h, m] = startStr.split(':').map(Number);
-      const d = new Date(dayDate);
+      const d = new Date(startDayDate);
       d.setHours(h, m, 0, 0);
       startIso = d.toISOString();
     }
 
-    if (endStr && dayDate) {
+    if (endStr && endDayDate) {
       const [h, m] = endStr.split(':').map(Number);
-      const d = new Date(dayDate);
+      const d = new Date(endDayDate);
       d.setHours(h, m, 0, 0);
       endIso = d.toISOString();
     }
@@ -396,8 +415,16 @@ export class BuilderSummaryComponent {
   }
 
   formatTimeDisplay(poi: BuilderPoi): string {
-    const start = this.formatTimeString(poi.plannedStartAt);
-    const end = this.formatTimeString(poi.plannedEndAt);
+    const isHotel = poi.type === 'accommodation';
+    const start = this.formatTimeString(poi.plannedStartAt, isHotel);
+    const end = this.formatTimeString(poi.plannedEndAt, isHotel);
+
+    if (isHotel) {
+      if (start && end) return `In: ${start} - Out: ${end}`;
+      if (start) return `Check-in: ${start}`;
+      if (end) return `Check-out: ${end}`;
+      return 'Check-in / Out';
+    }
 
     if (start && end) return `${start} - ${end}`;
     if (start) return start;
@@ -405,11 +432,17 @@ export class BuilderSummaryComponent {
     return 'Orari';
   }
 
-  private formatTimeString(isoString?: string | null): string {
+  public formatTimeString(isoString: string | null | undefined, includeDate = false): string {
     if (!isoString) return '';
     const d = new Date(isoString);
     if (Number.isNaN(d.getTime())) return '';
-    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+
+    const time = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    if (includeDate) {
+      const date = d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
+      return `${date} ore ${time}`;
+    }
+    return time;
   }
 
   getPoiCover(poi: BuilderPoi): string | null {

@@ -6,7 +6,7 @@ import { Injectable, signal } from '@angular/core';
 export class UIStateService {
   readonly showSidebar = signal(true);
   readonly showSidebarRail = signal(true);
-  readonly showChat = signal(true);
+  readonly showChat = signal(false);
   readonly selectedCategory = signal<number | 'all'>('all');
   readonly selectedType = signal<'all' | 'accommodation' | 'activity'>('all');
   readonly mapView = signal<'selected' | 'all'>('selected');

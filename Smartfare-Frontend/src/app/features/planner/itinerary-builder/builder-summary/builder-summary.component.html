@@ -128,32 +128,51 @@
                 <div class="wl-poi-actions-row">
 
                   <div class="wl-time-wrapper">
-                    <button class="wl-action-btn wl-btn-pill" (click)="openTimePopup(poi, $event)">
+                    <button class="wl-action-btn wl-btn-pill" [class.wl-hotel-pill]="poi.type === 'accommodation'" (click)="openTimePopup(poi, $event)">
                       <i class="bi bi-clock"></i>
-                      <span>{{ formatTimeDisplay(poi) }}</span>
+                      @if (poi.type === 'accommodation') {
+                        <div class="wl-hotel-times">
+                          <span class="wl-time-line"><b>Check-in:</b> {{ formatTimeString(poi.plannedStartAt, true) || '--' }}</span>
+                          <span class="wl-time-line"><b>Check-out:</b> {{ formatTimeString(poi.plannedEndAt, true) || '--' }}</span>
+                        </div>
+                      } @else {
+                        <span>{{ formatTimeDisplay(poi) }}</span>
+                      }
                     </button>
 
                     @if (activeTimePopupPoiKey() === poi.key) {
                     <div class="wl-time-popup" (click)="onPopupClick($event)">
                       <div class="wl-time-inputs">
                         <div class="wl-time-field">
-                          <label>Orario di inizio</label>
-                          <select [ngModel]="popupStartTime()" (ngModelChange)="popupStartTime.set($event)">
-                            <option value="">--:--</option>
-                            @for (opt of timeOptions(); track opt) {
-                            <option [value]="opt">{{ opt }}</option>
+                          <label>{{ poi.type === 'accommodation' ? 'Check-in' : 'Inizio' }}</label>
+                          <div class="wl-datetime-inputs">
+                            @if (poi.type === 'accommodation') {
+                              <select [ngModel]="popupStartDay()" (ngModelChange)="popupStartDay.set($event)">
+                                @for (d of dayOptions(); track d) { <option [value]="d">Giorno {{ d }}</option> }
+                              </select>
                             }
-                          </select>
+                            <select [ngModel]="popupStartTime()" (ngModelChange)="popupStartTime.set($event)">
+                              <option value="">--:--</option>
+                              @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
+                            </select>
+                          </div>
                         </div>
+
                         <span class="wl-time-sep">-</span>
+
                         <div class="wl-time-field">
-                          <label>Orario di fine</label>
-                          <select [ngModel]="popupEndTime()" (ngModelChange)="popupEndTime.set($event)">
-                            <option value="">--:--</option>
-                            @for (opt of timeOptions(); track opt) {
-                            <option [value]="opt">{{ opt }}</option>
+                          <label>{{ poi.type === 'accommodation' ? 'Check-out' : 'Fine' }}</label>
+                          <div class="wl-datetime-inputs">
+                            @if (poi.type === 'accommodation') {
+                              <select [ngModel]="popupEndDay()" (ngModelChange)="popupEndDay.set($event)">
+                                @for (d of dayOptions(); track d) { <option [value]="d">Giorno {{ d }}</option> }
+                              </select>
                             }
-                          </select>
+                            <select [ngModel]="popupEndTime()" (ngModelChange)="popupEndTime.set($event)">
+                              <option value="">--:--</option>
+                              @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
+                            </select>
+                          </div>
                         </div>
                       </div>
                       <div class="wl-time-popup-actions">

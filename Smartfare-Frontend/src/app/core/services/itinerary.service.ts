@@ -40,8 +40,9 @@ export class ItineraryService {
       )
       .subscribe((saved) => {
         if (saved) {
-          // Keep latest backend shape (id, timestamps)
-          this.itinerarySignal.set(saved);
+          // Optimization: We don't overwrite the local signal with the backend response
+          // to avoid "jumping" UI if the user kept editing during the save.
+          // We only update the status.
           this.autosaveStatusSignal.set('saved');
           return;
         }
