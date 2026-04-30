@@ -83,7 +83,7 @@ export class ItineraryService {
 
     async saveItinerary(userId: number, data: any) {
         try {
-            const { id, name, description, startDate, endDate, isPublished, locationId } = data;
+            const { id, name, description, startDate, endDate, isPublished, visibilityCode, locationId } = data;
             const items = this.buildItemData(data);
             const draftPayload = {
                 name: name || "Il mio Viaggio",
@@ -108,7 +108,10 @@ export class ItineraryService {
                         where: { id: Number(id) },
                         data: {
                             ...draftPayload,
-                            ...(locationId ? { locationId: Number(locationId) } : { locationId: null })
+                            location: locationId ? { connect: { id: Number(locationId) } } : { disconnect: true },
+                            visibility: {
+                                connect: { code: visibilityCode || 'PRIVATE' }
+                            }
                         }
                     });
 
@@ -144,14 +147,7 @@ export class ItineraryService {
                     connect: { id: userId }
                 },
                 visibility: {
-                    connectOrCreate: {
-                        where: { code: 'PRIVATE' },
-                        create: {
-                            code: 'PRIVATE',
-                            name: 'Privato',
-                            description: 'Itinerario visibile solo al proprietario'
-                        }
-                    }
+                    connect: { code: visibilityCode || 'PRIVATE' }
                 }
             };
 

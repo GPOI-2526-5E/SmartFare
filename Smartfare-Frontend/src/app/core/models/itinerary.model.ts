@@ -5,16 +5,16 @@ import Location from './location.model';
 export interface Itinerary {
     id?: number;
     name: string;
-    description?: string;
-    startDate?: string;
-    endDate?: string;
+    description?: string | null;
+    startDate?: string | null;
+    endDate?: string | null;
+    visibilityCode?: string;
     locationId?: number | null;
     location?: Location | null;
     userId?: number;
     items?: ItineraryItem[];
     updatedAt?: string;
     isPublished?: boolean;
-    visibilityCode?: string;
     user?: {
         profile?: {
             name?: string;

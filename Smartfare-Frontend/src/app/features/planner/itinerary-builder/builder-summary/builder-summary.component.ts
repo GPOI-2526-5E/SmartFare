@@ -1,3 +1,4 @@
+// Forced rebuild
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -45,6 +46,16 @@ export class BuilderSummaryComponent {
   // Stato per l'editing del titolo dell'itinerario
   isEditingTitle = signal<boolean>(false);
   editTitleValue = signal<string>('');
+  
+  isEditingDescription = signal<boolean>(false);
+  editDescriptionValue = signal<string>('');
+  
+  // Stato per l'editing delle note dei POI
+  activeEditingNotePoiKey = signal<string | null>(null);
+
+  // Modalità Anteprima
+  previewItinerary = signal<Itinerary | null>(null);
+  isPreviewMode = computed(() => !!this.previewItinerary());
 
   // Drag and Drop State
   draggingPoiKey = signal<string | null>(null);
@@ -62,9 +73,9 @@ export class BuilderSummaryComponent {
     return itin?.visibilityCode === 'PUBLIC' || itin?.isPublished === true;
   });
 
-  // Segnale unito: Itinerario + Dati del Workspace (POI)
+  // Segnale unito: Itinerario (o Anteprima) + Dati del Workspace (POI)
   joinedPois = computed(() => {
-    const itin = this.itinerary();
+    const itin = this.previewItinerary() || this.itinerary();
     const ws = this.workspace();
     if (!itin || !ws) return [];
 
@@ -158,31 +169,53 @@ export class BuilderSummaryComponent {
   }
 
   applyItinerary(publicItin: Itinerary): void {
-    if (!confirm(`Vuoi davvero sovrascrivere il tuo itinerario corrente con "${publicItin.name}"? Questa operazione non può essere annullata.`)) return;
+    const target = this.previewItinerary() || publicItin;
+    if (!confirm(`Vuoi davvero sovrascrivere il tuo itinerario corrente con "${target.name}"?`)) return;
 
-    this.itineraryService.getPublicItineraryById(publicItin.id!).subscribe(fullItin => {
-      if (!fullItin) {
-        this.alertService.error("Impossibile recuperare i dettagli dell'itinerario selezionato.");
-        return;
-      }
-
-      const current = this.itinerary();
-      if (!current) return;
-
-      // Mappa gli elementi mantenendo la struttura ma rimuovendo gli ID esistenti per crearne di nuovi
-      const newItems = (fullItin.items || []).map(item => ({
-        ...item,
-        id: undefined,
-        itineraryId: current.id
-      }));
-
-      this.itineraryService.setCurrentItinerary({
-        ...current,
-        items: newItems
+    // Se siamo già in anteprima, abbiamo già i dati completi
+    if (this.isPreviewMode() && this.previewItinerary()?.id === publicItin.id) {
+      this.finalizeApply(this.previewItinerary()!);
+    } else {
+      this.itineraryService.getPublicItineraryById(publicItin.id!).subscribe(fullItin => {
+        if (!fullItin) {
+          this.alertService.error("Impossibile recuperare i dettagli dell'itinerario selezionato.");
+          return;
+        }
+        this.finalizeApply(fullItin);
       });
+    }
+  }
 
-      this.alertService.success(`Itinerario "${publicItin.name}" applicato con successo!`);
+  private finalizeApply(fullItin: Itinerary): void {
+    const current = this.itinerary();
+    if (!current) return;
+
+    const newItems = (fullItin.items || []).map(item => ({
+      ...item,
+      id: undefined,
+      itineraryId: current.id
+    }));
+
+    this.itineraryService.setCurrentItinerary(
+      this.withNormalizedEndDate(current, newItems)
+    );
+
+    this.closePreview();
+    this.alertService.success(`Itinerario "${fullItin.name}" applicato con successo!`);
+  }
+
+  openPreview(publicItin: Itinerary): void {
+    this.itineraryService.getPublicItineraryById(publicItin.id!).subscribe(fullItin => {
+      if (fullItin) {
+        this.previewItinerary.set(fullItin);
+        // Scroll to timeline
+        document.querySelector('.wl-timeline-container')?.scrollIntoView({ behavior: 'smooth' });
+      }
     });
+  }
+
+  closePreview(): void {
+    this.previewItinerary.set(null);
   }
 
   togglePublish(): void {
@@ -260,8 +293,8 @@ export class BuilderSummaryComponent {
       });
   });
 
-  getDaysCount(): number {
-    const itinerary = this.itinerary();
+  getDaysCount(customItin?: Itinerary | null): number {
+    const itinerary = customItin !== undefined ? customItin : (this.previewItinerary() || this.itinerary());
     if (!itinerary?.startDate || !itinerary?.endDate) return 1;
 
     const start = new Date(itinerary.startDate);
@@ -270,8 +303,8 @@ export class BuilderSummaryComponent {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   }
 
-  getDayDate(day: number): Date | null {
-    const itinerary = this.itinerary();
+  getDayDate(day: number, customItin?: Itinerary | null): Date | null {
+    const itinerary = customItin !== undefined ? customItin : (this.previewItinerary() || this.itinerary());
     if (!itinerary?.startDate) return null;
 
     const date = new Date(itinerary.startDate);
@@ -304,6 +337,29 @@ export class BuilderSummaryComponent {
 
   cancelTitleEdit(): void {
     this.isEditingTitle.set(false);
+  }
+
+  // --- Description Edit ---
+  startEditingDescription(): void {
+    const currentDesc = this.itinerary()?.description || '';
+    this.editDescriptionValue.set(currentDesc);
+    this.isEditingDescription.set(true);
+  }
+
+  saveDescription(): void {
+    const newDesc = this.editDescriptionValue().trim();
+    const current = this.itinerary();
+    if (current) {
+      this.itineraryService.setCurrentItinerary({
+        ...current,
+        description: newDesc || undefined
+      });
+    }
+    this.isEditingDescription.set(false);
+  }
+
+  cancelDescriptionEdit(): void {
+    this.isEditingDescription.set(false);
   }
 
   // --- Notes Edit ---
@@ -742,6 +798,7 @@ export class BuilderSummaryComponent {
 
     return {
       ...itin,
+      items: safeItems,
       endDate: end.toISOString().split('T')[0]
     };
   }

@@ -1,4 +1,4 @@
-<div class="summary-shell">
+<div class="summary-shell" [class.is-preview]="previewItinerary()">
 
   <!-- HEADER -->
   <section class="wl-header">
@@ -8,7 +8,17 @@
     </div>
 
     <div class="wl-header-card">
-      <div class="wl-title-row">
+      <div class="wl-meta-row">
+        <div class="wl-duration-badge">
+          <i class="bi bi-calendar3"></i> {{ itineraryDateSummary() }}
+        </div>
+        <button class="wl-publish-toggle" [class.is-published]="isPublic()" (click)="togglePublish()">
+          <i class="bi" [class.bi-eye-fill]="isPublic()" [class.bi-eye-slash]="!isPublic()"></i>
+          {{ isPublic() ? 'Pubblico' : 'Privato' }}
+        </button>
+      </div>
+
+      <div class="wl-title-container" [class.is-editing]="isEditingTitle()">
         @if (isEditingTitle()) {
         <input #titleInput class="wl-title-input" [ngModel]="editTitleValue()"
           (ngModelChange)="editTitleValue.set($event)" (keyup.enter)="saveTitle()" (blur)="saveTitle()" autofocus />
@@ -16,20 +26,23 @@
         <h1 class="wl-title">
           {{ itinerary()?.name || workspace()?.location?.name || 'Viaggio' }}
         </h1>
-        <button class="wl-publish-toggle" [class.is-published]="isPublic()" (click)="togglePublish()">
-          <i class="bi" [class.bi-eye-fill]="isPublic()" [class.bi-eye-slash]="!isPublic()"></i>
-          {{ isPublic() ? 'Pubblico' : 'Privato' }}
-        </button>
         <button class="wl-edit-title-btn" (click)="startEditingTitle()">
           <i class="bi bi-pencil-fill"></i>
         </button>
         }
       </div>
 
-      <div class="wl-header-info">
-        <div class="wl-duration-badge">
-          <i class="bi bi-calendar3"></i> {{ itineraryDateSummary() }}
-        </div>
+      <div class="wl-description-row" [class.is-editing]="isEditingDescription()">
+        @if (isEditingDescription()) {
+        <textarea #descInput class="wl-description-input" [ngModel]="editDescriptionValue()"
+          (ngModelChange)="editDescriptionValue.set($event)" (keyup.enter)="saveDescription()" (blur)="saveDescription()"
+          placeholder="Aggiungi una descrizione..." autofocus></textarea>
+        } @else {
+        <p class="wl-description" (click)="startEditingDescription()">
+          {{ itinerary()?.description || 'Aggiungi una descrizione al tuo viaggio...' }}
+          <span class="wl-edit-hint"><i class="bi bi-pencil"></i></span>
+        </p>
+        }
       </div>
     </div>
   </section>
@@ -43,7 +56,7 @@
 
     <div class="wl-explore-grid">
       @for (itin of publicItineraries(); track itin.id) {
-      <div class="wl-explore-card" (click)="applyItinerary(itin)">
+      <div class="wl-explore-card" (click)="openPreview(itin)">
         <div class="wl-explore-img">
           <img
             [src]="itin.items?.[0]?.activity?.imageUrl || itin.items?.[0]?.accommodation?.imageUrl || '/assets/home-section.avif'"
@@ -60,7 +73,7 @@
               </div>
               <span>{{ itin.user?.profile?.name || 'Utente' }}</span>
             </div>
-            <button class="wl-apply-btn" (click)="$event.stopPropagation(); applyItinerary(itin)">Applica</button>
+            <button class="wl-apply-btn" (click)="$event.stopPropagation(); openPreview(itin)">Vedi anteprima</button>
           </div>
         </div>
       </div>
@@ -74,7 +87,25 @@
   </section>
 
   <!-- TIMELINE / GIORNATE -->
-  <div class="wl-timeline-container" cdkDropListGroup>
+  <div class="wl-timeline-container" [class.is-preview]="isPreviewMode()" cdkDropListGroup>
+    
+    @if (isPreviewMode()) {
+    <div class="wl-preview-overlay">
+      <div class="wl-preview-banner">
+        <div class="wl-preview-info">
+          <i class="bi bi-eye-fill"></i>
+          <span>Modalità Anteprima: <strong>{{ previewItinerary()?.name }}</strong></span>
+        </div>
+        <div class="wl-preview-actions">
+          <button class="wl-btn-apply-preview" (click)="applyItinerary(previewItinerary()!)">Applica a questo viaggio</button>
+          <button class="wl-btn-close-preview" (click)="closePreview()" title="Chiudi anteprima">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
     @for (day of daySections(); track day.day) {
     <section class="wl-section wl-day-section">
       <div class="wl-section-header">
@@ -139,7 +170,9 @@
                 <!-- Note -->
                 <div class="wl-poi-notes-box">
                   <input type="text" placeholder="Aggiungi note per questa tappa..." [ngModel]="poi.note"
-                    (ngModelChange)="updateNote(poi, $event)" [ngModelOptions]="{updateOn: 'blur'}" />
+                    (ngModelChange)="updateNote(poi, $event)" [ngModelOptions]="{updateOn: 'blur'}" 
+                    (focus)="activeEditingNotePoiKey.set(poi.key)" (blur)="activeEditingNotePoiKey.set(null)"
+                    [class.is-editing]="activeEditingNotePoiKey() === poi.key" />
                 </div>
 
 

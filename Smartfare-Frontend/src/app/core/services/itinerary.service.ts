@@ -40,10 +40,14 @@ export class ItineraryService {
       )
       .subscribe((saved) => {
         if (saved) {
-          // Optimization: We don't overwrite the local signal with the backend response
-          // to avoid "jumping" UI if the user kept editing during the save.
-          // We only update the status.
           this.autosaveStatusSignal.set('saved');
+          
+          // CRITICAL: If the local itinerary didn't have an ID, we MUST update it
+          // with the ID assigned by the backend to prevent duplicate creations on next save.
+          const current = this.itinerarySignal();
+          if (current && !current.id && saved.id) {
+            this.itinerarySignal.set({ ...current, id: saved.id });
+          }
           return;
         }
 

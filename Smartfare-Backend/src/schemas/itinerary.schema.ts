@@ -26,6 +26,7 @@ export const itinerarySchema = z.object({
     startDate: z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).nullish(),
     endDate: z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).nullish(),
     isPublished: z.boolean().optional(),
+    visibilityCode: z.string().optional(),
     locationId: z.coerce.number().int().positive().optional().nullable(),
     items: z.array(itineraryItemSchema).optional(),
 });
