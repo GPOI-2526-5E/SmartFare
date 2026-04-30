@@ -26,7 +26,7 @@ export class BuilderHeaderComponent {
 
   @Output() navRequest = new EventEmitter<string>();
   @Output() saveRequest = new EventEmitter<void>();
-  @Output() exportRequest = new EventEmitter<'pdf'>();
+  @Output() exportRequest = new EventEmitter<'pdf' | 'html' | 'json'>();
   @Output() locationSelected = new EventEmitter<number>();
 
   private locationService = inject(LocationService);
@@ -47,10 +47,29 @@ export class BuilderHeaderComponent {
   showVisibleDayDropdown = signal(false);
   showActiveDayDropdown = signal(false);
   showExportDropdown = signal(false);
-  selectedExportFormat = signal<'pdf'>('pdf');
+  selectedExportFormat = signal<'pdf' | 'html' | 'json'>('pdf');
 
-  readonly selectedExportLabel = computed(() => 'PDF');
-  readonly selectedExportHint = computed(() => 'A4 stampabile');
+  readonly selectedExportLabel = computed(() => {
+    switch (this.selectedExportFormat()) {
+      case 'html':
+        return 'HTML';
+      case 'json':
+        return 'JSON';
+      default:
+        return 'PDF';
+    }
+  });
+
+  readonly selectedExportHint = computed(() => {
+    switch (this.selectedExportFormat()) {
+      case 'html':
+        return 'File stampabile e condivisibile';
+      case 'json':
+        return 'Dati strutturati con gruppi e orari';
+      default:
+        return 'A4 stampabile';
+    }
+  });
 
   private searchSubject = new Subject<string>();
 
@@ -185,7 +204,7 @@ export class BuilderHeaderComponent {
     this.showActiveDayDropdown.set(false);
   }
 
-  selectExportFormat(format: 'pdf') {
+  selectExportFormat(format: 'pdf' | 'html' | 'json') {
     this.selectedExportFormat.set(format);
     this.showExportDropdown.set(false);
     this.requestExport();

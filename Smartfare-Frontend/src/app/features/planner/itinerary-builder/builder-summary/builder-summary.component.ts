@@ -35,6 +35,7 @@ interface DaySection {
   color: string;
   label: string;
   date: Date | null;
+  carouselImages: string[];
   items: BuilderPoi[];
   groups: DayGroupBlock[];
   hotels: BuilderPoi[];
@@ -249,12 +250,14 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
         const hotels = sortedItems.filter((item) => item.type === 'accommodation');
         const activities = sortedItems.filter((item) => item.type === 'activity');
         const groups = this.buildDayGroups(sortedItems);
+        const carouselImages = this.buildDayCarouselImages(sortedItems);
 
         return {
           day,
           color: this.ui.getDefaultDayColor(day),
           label: this.getDayLabel(day, hotels.length, activities.length),
           date: this.getDayDate(day),
+          carouselImages,
           items: sortedItems,
           groups,
           hotels,
@@ -341,6 +344,10 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
     if (end) return `Fino alle ${end}`;
 
     return null;
+  }
+
+  getDayCarouselImages(day: DaySection): string[] {
+    return day.carouselImages.length ? day.carouselImages : ['/assets/home-section.avif'];
   }
 
   getPoiMetaLabel(poi: BuilderPoi): string {
@@ -756,6 +763,23 @@ export class BuilderSummaryComponent implements OnInit, OnDestroy {
       const timeB = firstB?.groupStartAt || firstB?.plannedStartAt || '';
       return timeA.localeCompare(timeB) || (firstA?.title || '').localeCompare(firstB?.title || '');
     });
+  }
+
+  private buildDayCarouselImages(items: BuilderPoi[]): string[] {
+    const images: string[] = [];
+
+    for (const item of items) {
+      if (!item.imageUrl) continue;
+      if (images.includes(item.imageUrl)) continue;
+      images.push(item.imageUrl);
+      if (images.length >= 5) break;
+    }
+
+    if (images.length === 0) {
+      images.push('/assets/home-section.avif');
+    }
+
+    return images;
   }
 
   formatGroupSchedule(startAt: string | null | undefined, endAt: string | null | undefined): string | null {

@@ -21,6 +21,15 @@ export interface ItineraryExport {
 
 export interface DayExport {
     day: number;
+    groups: DayExportGroup[];
+    items: DayExportItem[];
+}
+
+export interface DayExportGroup {
+    name: string;
+    startAt?: string | null;
+    endAt?: string | null;
+    imageUrl?: string | null;
     items: DayExportItem[];
 }
 
@@ -35,6 +44,9 @@ export interface DayExportItem {
     startAt?: string;
     endAt?: string;
     duration?: string;
+    groupName?: string | null;
+    groupStartAt?: string | null;
+    groupEndAt?: string | null;
 }
 
 @Injectable({
@@ -119,8 +131,12 @@ export class ItineraryExportService {
         const days: DayExport[] = [];
 
         for (const [dayNum, dayItems] of itemsByDay) {
+            const dayGroups = new Map<string, DayExportGroup>();
+            const standaloneItems: DayExportItem[] = [];
+
             const dayExport: DayExport = {
                 day: dayNum,
+                groups: [],
                 items: []
             };
 
@@ -139,11 +155,47 @@ export class ItineraryExportService {
                     checkOut: isHotel ? this.formatClock(item.plannedEndAt) : undefined,
                     startAt: !isHotel ? this.formatClock(item.plannedStartAt) : undefined,
                     endAt: !isHotel ? this.formatClock(item.plannedEndAt) : undefined,
-                    duration: this.calculateDuration(item.plannedStartAt, item.plannedEndAt)
+                    duration: this.calculateDuration(item.plannedStartAt, item.plannedEndAt),
+                    groupName: item.groupName || null,
+                    groupStartAt: item.groupStartAt || null,
+                    groupEndAt: item.groupEndAt || null
                 };
 
-                dayExport.items.push(itemExport);
+                if (itemExport.groupName) {
+                    const groupKey = this.buildGroupKey(itemExport.groupName, itemExport.groupStartAt, itemExport.groupEndAt);
+
+                    if (!dayGroups.has(groupKey)) {
+                        dayGroups.set(groupKey, {
+                            name: itemExport.groupName,
+                            startAt: itemExport.groupStartAt || null,
+                            endAt: itemExport.groupEndAt || null,
+                            imageUrl: itemExport.imageUrl || null,
+                            items: []
+                        });
+                    }
+
+                    const group = dayGroups.get(groupKey)!;
+                    if (!group.imageUrl && itemExport.imageUrl) {
+                        group.imageUrl = itemExport.imageUrl;
+                    }
+
+                    group.items.push(itemExport);
+                } else {
+                    standaloneItems.push(itemExport);
+                }
             }
+
+            dayExport.groups = Array.from(dayGroups.values()).sort((a, b) => {
+                const startA = a.startAt || '';
+                const startB = b.startAt || '';
+
+                if (startA !== startB) {
+                    return startA.localeCompare(startB);
+                }
+
+                return a.name.localeCompare(b.name);
+            });
+            dayExport.items = standaloneItems;
 
             days.push(dayExport);
         }
@@ -268,6 +320,88 @@ export class ItineraryExportService {
             font-weight: 800;
             letter-spacing: 0.08em;
             text-transform: uppercase;
+        }
+        .group-block {
+            margin-bottom: 16px;
+            padding: 14px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(16, 185, 129, 0.08));
+            border: 1px solid rgba(14, 116, 144, 0.14);
+            break-inside: avoid;
+        }
+        .group-block__head {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .group-block__title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .group-block__meta {
+            margin-top: 4px;
+            color: #0f766e;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .group-block__count {
+            color: #0369a1;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .group-item-list {
+            display: grid;
+            gap: 10px;
+        }
+        .group-item {
+            display: grid;
+            grid-template-columns: 180px minmax(0, 1fr);
+            gap: 14px;
+            padding: 14px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            break-inside: avoid;
+        }
+        .group-item-media {
+            min-height: 132px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+        }
+        .group-item-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .group-item-media--placeholder {
+            display: grid;
+            place-items: center;
+            color: #0f766e;
+            font-size: 24px;
+        }
+        .group-item__title {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .group-item__title strong {
+            font-size: 14px;
+            color: #0f172a;
+        }
+        .group-item__title span {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .group-item__schedule {
+            color: #0f766e;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
         }
         .item {
             display: grid;
@@ -410,8 +544,39 @@ export class ItineraryExportService {
             <div class="day">
                 <div class="day-header">
                     <h2>Giorno ${day.day}</h2>
-                    <span class="day-count">${day.items.length} elementi</span>
+                    <span class="day-count">${day.groups.reduce((count, group) => count + group.items.length, 0) + day.items.length} elementi</span>
                 </div>
+
+                ${day.groups.map(group => `
+                <section class="group-block">
+                    <div class="group-block__head">
+                        <div>
+                            <div class="group-block__title">${this.escapeHtml(group.name)}</div>
+                            <div class="group-block__meta">${this.escapeHtml(this.formatGroupSchedule(group.startAt, group.endAt) || 'Orario da definire')}</div>
+                        </div>
+                        <span class="group-block__count">${group.items.length} tappe</span>
+                    </div>
+
+                    <div class="group-item-list">
+                        ${group.items.map(item => `
+                        <article class="group-item">
+                            <div class="group-item-media ${item.imageUrl ? '' : 'group-item-media--placeholder'}">
+                                ${item.imageUrl ? `<img src="${this.escapeHtml(item.imageUrl)}" alt="${this.escapeHtml(item.title)}" crossorigin="anonymous">` : '<i class="bi bi-image"></i>'}
+                            </div>
+
+                            <div class="group-item__title">
+                                <span class="item-kicker">${item.type === 'accommodation' ? 'Hotel' : 'Attivita'}</span>
+                                <strong>${this.escapeHtml(item.title)}</strong>
+                                ${item.subtitle ? `<span>${this.escapeHtml(item.subtitle)}</span>` : ''}
+                                <div class="group-item__schedule">
+                                    ${this.escapeHtml(item.checkIn || item.startAt || item.checkOut || item.endAt || 'Programmazione libera')}
+                                </div>
+                            </div>
+                        </article>
+                        `).join('')}
+                    </div>
+                </section>
+                `).join('')}
 
                 ${day.items.map(item => `
                 <article class="item">
@@ -513,6 +678,20 @@ export class ItineraryExportService {
             grouped.get(day)!.push(item);
         }
         return grouped;
+    }
+
+    private buildGroupKey(name: string, startAt?: string | null, endAt?: string | null): string {
+        return `${name.toLowerCase()}:${startAt || ''}:${endAt || ''}`;
+    }
+
+    formatGroupSchedule(startAt?: string | null, endAt?: string | null): string | null {
+        const start = this.formatClock(startAt);
+        const end = this.formatClock(endAt);
+
+        if (start && end) return `${start} - ${end}`;
+        if (start) return `Dalle ${start}`;
+        if (end) return `Fino alle ${end}`;
+        return null;
     }
 
     private getPoiForItem(item: ItineraryItem, pois: Map<string, BuilderPoi>): BuilderPoi | undefined {

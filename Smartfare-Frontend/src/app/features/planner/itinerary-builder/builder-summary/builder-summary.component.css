@@ -543,22 +543,51 @@
 
 .day-panel {
   --day-color: #3b82f6;
-  display: grid;
-  grid-template-columns: minmax(240px, 0.36fr) minmax(0, 0.64fr);
+  display: flex;
+  flex-direction: column;
   border-radius: 28px;
   overflow: hidden;
   border: 1px solid var(--summary-border-soft);
   background: var(--summary-panel);
 }
 
-.day-panel__cover {
+.day-panel__carousel {
   position: relative;
-  min-height: 100%;
+  min-height: 260px;
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--day-color) 40%, transparent),
     rgba(15, 23, 42, 0.7)
   );
+}
+
+.day-panel__carousel--empty {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--day-color) 40%, transparent),
+      rgba(15, 23, 42, 0.7)
+    ),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.1), transparent 35%);
+}
+
+.day-panel__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: dayCarouselFade calc(var(--slide-count) * 4s) infinite;
+  animation-fill-mode: both;
+}
+
+.day-panel__slide--active {
+  opacity: 1;
+}
+
+.day-panel__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .day-panel__cover-overlay {
@@ -601,6 +630,32 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+@keyframes dayCarouselFade {
+  0% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+
+  6% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  38% {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 .day-panel__head {

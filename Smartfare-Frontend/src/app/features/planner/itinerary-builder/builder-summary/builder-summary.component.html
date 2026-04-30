@@ -91,13 +91,13 @@
     } @else {
     <div class="day-stack" cdkDropListGroup>
       @for (day of daySections(); track day.day) {
-      <section class="day-panel" [style.--day-color]="day.color">
-        <div class="day-panel__cover" [class.day-panel__cover--empty]="!getDayCoverImage(day)">
-          @if (getDayCoverImage(day); as cover) {
-          <img [src]="cover" [alt]="day.label">
-          } @else {
-          <div class="day-panel__cover-fallback">
-            <i class="bi bi-calendar-heart"></i>
+      <section class="day-panel" [style.--day-color]="day.color"
+        [style.--slide-count]="getDayCarouselImages(day).length">
+        <div class="day-panel__carousel" [class.day-panel__carousel--empty]="!getDayCarouselImages(day).length">
+          @for (image of getDayCarouselImages(day); track image; let i = $index) {
+          <div class="day-panel__slide" [class.day-panel__slide--active]="i === 0"
+            [style.animationDelay]="(i * 4) + 's'">
+            <img [src]="image" [alt]="day.label">
           </div>
           }
 

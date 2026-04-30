@@ -474,7 +474,7 @@ export class ItineraryBuilderComponent implements OnInit {
 
   // ============ EXPORT METHODS ============
 
-  onExportItinerary(format: 'pdf') {
+  onExportItinerary(format: 'pdf' | 'html' | 'json') {
     const current = this.itineraryService.itinerary();
     const ws = this.workspace();
 
@@ -495,9 +495,37 @@ export class ItineraryBuilderComponent implements OnInit {
       ws.location || undefined
     );
 
-    const fileName = `${current.name || 'itinerary'}-${new Date().toISOString().split('T')[0]}`;
+    const fileName = this.buildExportFileName(current.name || 'itinerary', format);
+
+    if (format === 'json') {
+      const json = this.exportService.exportToJSON(exportData);
+      this.exportService.downloadFile(json, fileName, 'application/json;charset=utf-8');
+      this.alertService.success('Export JSON scaricato con successo.');
+      return;
+    }
+
     const printableHtml = this.exportService.exportToHTML(exportData);
+
+    if (format === 'html') {
+      this.exportService.downloadFile(printableHtml, fileName, 'text/html;charset=utf-8');
+      this.alertService.success('Export HTML scaricato con successo.');
+      return;
+    }
+
     this.openPrintableWindow(printableHtml);
+  }
+
+  private buildExportFileName(baseName: string, format: 'pdf' | 'html' | 'json'): string {
+    const safeBaseName = baseName
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\-\s_]/g, '')
+      .replace(/\s+/g, '-');
+
+    const dateSuffix = new Date().toISOString().split('T')[0];
+    const extension = format === 'json' ? 'json' : format === 'html' ? 'html' : 'pdf';
+
+    return `${safeBaseName || 'itinerary'}-${dateSuffix}.${extension}`;
   }
 
   private openPrintableWindow(content: string) {
