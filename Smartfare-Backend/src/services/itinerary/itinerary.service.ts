@@ -273,7 +273,7 @@ export class ItineraryService {
         }
     }
 
-    async getPublicItineraries(locationId?: number) {
+    async getPublicItineraries(locationId?: number, excludeUserId?: number) {
         try {
             return await prisma.itinerary.findMany({
                 where: {
@@ -281,7 +281,8 @@ export class ItineraryService {
                         { isPublished: true },
                         { visibilityCode: 'PUBLIC' }
                     ],
-                    ...(locationId ? { locationId } : {})
+                    ...(locationId ? { locationId } : {}),
+                    ...(excludeUserId ? { userId: { not: excludeUserId } } : {})
                 },
                 take: 12,
                 orderBy: { updatedAt: 'desc' },

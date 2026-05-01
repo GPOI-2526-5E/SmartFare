@@ -63,6 +63,31 @@ export class BuilderSummaryComponent {
   // Stato upload immagine
   isUploadingImage = signal<boolean>(false);
 
+  // ---- Sezione percorso giorno selezionato ----
+  /** Giorno attualmente visibile nella mappa (number | 'all') */
+  visibleDayRoute = computed(() => this.ui.visibleDayRoute());
+
+  /** URL Google Maps per il giorno selezionato (null se 'all' o < 2 tappe) */
+  dayGoogleMapsUrl = computed<string | null>(() => {
+    const day = this.ui.visibleDayRoute();
+    if (day === 'all') return null;
+    const section = this.daySections().find(s => s.day === day);
+    if (!section) return null;
+    const pois = section.items.filter(
+      p => Number.isFinite(p.latitude) && Number.isFinite(p.longitude)
+    );
+    if (pois.length < 2) return null;
+    return this.buildDayGoogleMapsUrl(pois);
+  });
+
+  /** Numero di tappe nel giorno selezionato */
+  selectedDayStopsCount = computed<number>(() => {
+    const day = this.ui.visibleDayRoute();
+    if (day === 'all') return 0;
+    const section = this.daySections().find(s => s.day === day);
+    return section?.items.length ?? 0;
+  });
+
   // Drag and Drop State
   draggingPoiKey = signal<string | null>(null);
   dragTargetPoiKey = signal<string | null>(null);
@@ -84,8 +109,15 @@ export class BuilderSummaryComponent {
       return;
     }
 
+    const current = this.itinerary();
     const formData = new FormData();
     formData.append('image', file);
+
+    // Aggiungiamo l'ID dell'itinerario se esiste
+    if (current?.id) {
+      formData.append('itineraryId', current.id.toString());
+    }
+
 
     this.isUploadingImage.set(true);
 
@@ -1120,5 +1152,17 @@ export class BuilderSummaryComponent {
     });
 
     this.alertService.success(`Giorno ${maxDay} rimosso.`);
+  }
+
+  private buildDayGoogleMapsUrl(pois: BuilderPoi[]): string | null {
+    if (pois.length < 2) return null;
+    const maxWaypoints = 8;
+    const origin = `${pois[0].latitude},${pois[0].longitude}`;
+    const destination = `${pois[pois.length - 1].latitude},${pois[pois.length - 1].longitude}`;
+    const waypointPois = pois.slice(1, -1).slice(0, maxWaypoints);
+    const waypointParam = waypointPois.map(p => `${p.latitude},${p.longitude}`).join('|');
+    const params = new URLSearchParams({ api: '1', origin, destination, travelmode: 'driving' });
+    if (waypointParam) params.set('waypoints', waypointParam);
+    return `https://www.google.com/maps/dir/?${params.toString()}`;
   }
 }

@@ -804,6 +804,28 @@
   color: #ef4444;
 }
 
+.wl-poi-gmaps-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.wl-poi-gmaps-link:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  transform: scale(1.1);
+}
+
+.wl-poi-gmaps-link i {
+  font-size: 16px;
+}
+
 .wl-poi-notes-box {
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
@@ -1315,4 +1337,93 @@
   background: rgba(239, 68, 68, 0.2);
   color: #ef4444;
   border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* ── Day Route Bar ────────────────────────────────────────── */
+.wl-day-route-bar {
+  max-width: 1100px;
+  margin: -40px auto 20px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  animation: slideUpFade 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.wl-day-route-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 100px;
+  padding: 10px 20px;
+}
+
+.wl-day-route-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.wl-day-route-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: 0.01em;
+}
+
+.wl-day-route-sep {
+  color: #475569;
+  font-size: 14px;
+}
+
+.wl-day-route-stops {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* Google Maps button — dark themed like reference photo */
+.wl-gmaps-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: rgba(20, 30, 50, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+}
+
+.wl-gmaps-btn:hover {
+  background: rgba(30, 45, 75, 0.95);
+  border-color: rgba(66, 133, 244, 0.5);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 28px rgba(66, 133, 244, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.wl-gmaps-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 4px rgba(52, 168, 83, 0.5));
 }

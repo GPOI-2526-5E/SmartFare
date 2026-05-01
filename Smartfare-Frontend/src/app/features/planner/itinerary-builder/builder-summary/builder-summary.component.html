@@ -93,6 +93,30 @@
     </div>
   </section>
 
+  <!-- PERCORSO GIORNO SELEZIONATO (solo se giorno ≠ 'all') -->
+  @if (visibleDayRoute() !== 'all' && selectedDayStopsCount() > 0) {
+  <div class="wl-day-route-bar">
+    <div class="wl-day-route-info">
+      <span class="wl-day-route-dot" [style.background]="getDayColor(+visibleDayRoute())"></span>
+      <span class="wl-day-route-label">Giorno {{ visibleDayRoute() }}</span>
+      <span class="wl-day-route-sep">·</span>
+      <span class="wl-day-route-stops">{{ selectedDayStopsCount() }} {{ selectedDayStopsCount() === 1 ? 'tappa' : 'tappe' }}</span>
+    </div>
+    @if (dayGoogleMapsUrl()) {
+    <a class="wl-gmaps-btn" [href]="dayGoogleMapsUrl()!" target="_blank" rel="noopener noreferrer">
+      <!-- Google Maps logo icon (SVG) -->
+      <svg class="wl-gmaps-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5 14.5 7.62 14.5 9 13.38 11.5 12 11.5z"
+          fill="#34a853"/>
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+          fill="none" stroke="#4285f4" stroke-width="0.5"/>
+      </svg>
+      <span>Apri su Google Maps</span>
+    </a>
+    }
+  </div>
+  }
+
   <!-- TIMELINE / GIORNATE -->
   <div class="wl-timeline-container" [class.is-preview]="isPreviewMode()" cdkDropListGroup>
 
@@ -230,7 +254,11 @@
                   <div class="wl-poi-text-group">
                     <div class="wl-poi-header">
                       <h4 class="wl-poi-title">{{ poi.title }}</h4>
-                      <div style="display: flex; gap: 8px;">
+                      <div style="display: flex; gap: 8px; align-items: center;">
+                        <a [href]="'https://www.google.com/maps/search/?api=1&query=' + poi.latitude + ',' + poi.longitude" 
+                           target="_blank" class="wl-poi-gmaps-link" title="Vedi su Google Maps">
+                          <i class="bi bi-google"></i>
+                        </a>
                         @if (poi.groupName) {
                         <button class="wl-delete-btn" (click)="removeFromGroup(poi)" title="Rimuovi dal gruppo">
                           <i class="bi bi-box-arrow-up"></i>

@@ -16,6 +16,12 @@ export class UIStateService {
   readonly dayRouteColors = signal<Record<number, string>>({});
   readonly visibleDayRoute = signal<number | 'all'>('all');
   readonly selectedDay = signal<number>(1);
+  /** Modalità ordine percorso: fedele all'itinerario o ottimizzato geograficamente */
+  readonly routeOrderMode = signal<'original' | 'optimized'>('original');
+
+  setRouteOrderMode(mode: 'original' | 'optimized') {
+    this.routeOrderMode.set(mode);
+  }
 
   private readonly defaultDayPalette = ['#f97316', '#22c55e', '#3b82f6', '#eab308', '#ef4444', '#a855f7', '#14b8a6'];
 

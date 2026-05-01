@@ -266,9 +266,163 @@
 }
 
 @media (max-width: 768px) {
-  .route-panel {
+  .route-compact-bar {
     left: 10px;
     right: 10px;
-    max-width: none;
+    flex-direction: column;
+    gap: 8px;
   }
+}
+
+/* ── Compact Route Bar ─────────────────────────────────── */
+.route-compact-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 650;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(10, 18, 35, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  padding: 8px 14px 8px 18px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+  animation: barFadeIn 0.3s ease forwards;
+}
+
+@keyframes barFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.route-compact-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.route-compact-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.route-compact-chip i {
+  font-size: 11px;
+  color: #64a5ff;
+}
+
+.route-compact-chip strong {
+  font-weight: 800;
+  color: #fff;
+  font-size: 13px;
+}
+
+.route-compact-sep {
+  color: #475569;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.route-compact-stops {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.route-compact-loading,
+.route-compact-err,
+.route-compact-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.route-compact-err { color: #f87171; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+
+/* Google Maps button — dark pill */
+.route-compact-gmaps {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px 7px 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  letter-spacing: 0.01em;
+}
+
+.route-compact-gmaps:hover {
+  background: rgba(66, 133, 244, 0.2);
+  border-color: rgba(66, 133, 244, 0.5);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.25);
+}
+
+.route-compact-gmaps svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 3px rgba(52, 168, 83, 0.6));
+}
+:host ::ng-deep .popup-note {
+  margin-bottom: 12px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--text-color);
+  display: flex;
+  gap: 8px;
+}
+
+:host ::ng-deep .popup-note i {
+  color: #fbbf24;
+}
+
+:host ::ng-deep .popup-actions {
+  margin-bottom: 12px;
+}
+
+:host ::ng-deep .popup-gmaps-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+:host ::ng-deep .popup-gmaps-link:hover {
+  text-decoration: underline;
+  color: #60a5fa;
+}
+
+:host ::ng-deep .popup-gmaps-link i {
+  font-size: 0.85rem;
 }

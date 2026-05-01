@@ -61,11 +61,16 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   routeError: string | null = null;
   isRouteLoading = false;
   googleMapsUrl: string | null = null;
-  routeOrderMode: 'original' | 'optimized' = 'optimized';
+
 
   get routePanelTitle(): string {
     const visibleDay = this.ui.visibleDayRoute();
     return visibleDay === 'all' ? 'Percorso itinerario' : `Percorso Giorno ${visibleDay}`;
+  }
+
+  /** Mostra la barra compatta solo quando un giorno specifico è selezionato */
+  get routePanelVisible(): boolean {
+    return this.ui.visibleDayRoute() !== 'all';
   }
 
   constructor() {
@@ -128,20 +133,6 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
 
-  setRouteOrderMode(mode: 'original' | 'optimized') {
-    if (this.routeOrderMode === mode) return;
-
-    this.routeOrderMode = mode;
-    if (!this.map) return;
-
-    if (mode === 'optimized') {
-      const optimized = this.getDisplayRoutePois();
-      this.orderChanged.emit(optimized);
-    }
-
-    this.refreshLayers(false);
-  }
-
   private refreshLayers(recenterForLocation = false) {
     if (!this.map) return;
 
@@ -197,7 +188,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           : `Tappa ${orderNumber}`;
         const icon = this.createStopIcon(orderNumber, dayColor, poi.type === 'accommodation');
         const marker = L.marker([poi.latitude, poi.longitude], { icon }).bindPopup(
-          this.createPopupHtml(poi, stopLabel)
+          this.createPopupHtml(poi, stopLabel, dayColor)
         );
         this.savedLayer.addLayer(marker);
         continue;
@@ -486,7 +477,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       const startMarker = L.marker([start.latitude, start.longitude], {
         icon: startIcon,
         title: `Partenza Giorno ${day}: ${start.title}`
-      }).bindPopup(this.createPopupHtml(start, `GIORNO ${day} - PARTENZA`));
+      }).bindPopup(this.createPopupHtml(start, `GIORNO ${day} - PARTENZA`, dayColor));
       this.endpointLayer.addLayer(startMarker);
 
       // End marker (only if different from start)
@@ -495,7 +486,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         const endMarker = L.marker([end.latitude, end.longitude], {
           icon: endIcon,
           title: `Arrivo Giorno ${day}: ${end.title}`
-        }).bindPopup(this.createPopupHtml(end, `GIORNO ${day} - ARRIVO`));
+        }).bindPopup(this.createPopupHtml(end, `GIORNO ${day} - ARRIVO`, dayColor));
         this.endpointLayer.addLayer(endMarker);
       }
     }
@@ -515,7 +506,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     return orderMap;
   }
 
-  private createPopupHtml(poi: BuilderPoi, label?: string): string {
+  private createPopupHtml(poi: BuilderPoi, label?: string, labelColor?: string): string {
     const isHotel = poi.itemTypeCode === 'ACCOMMODATION';
     const startLabel = isHotel ? 'Check-in' : 'Inizio';
     const endLabel = isHotel ? 'Check-out' : 'Fine';
@@ -537,15 +528,43 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     const formattedGroupStart = formatDate(poi.groupStartAt);
     const formattedGroupEnd = formatDate(poi.groupEndAt);
 
+    const gMapsLink = `https://www.google.com/maps/search/?api=1&query=${poi.latitude},${poi.longitude}`;
+
     return `
       <div class="map-popup-card">
-        ${label ? `<div class="popup-label">${label}</div>` : ''}
+        ${label ? `<div class="popup-label" style="background: ${labelColor || 'var(--accent-color)'}">${label}</div>` : ''}
         ${poi.imageUrl ? `
           <div class="popup-image" style="background-image: url('${poi.imageUrl}')"></div>
         ` : ''}
         <div class="popup-content">
           <h5 class="popup-title">${poi.title}</h5>
           ${poi.subtitle ? `<div class="popup-subtitle"><i class="bi bi-geo-alt"></i> ${poi.subtitle}</div>` : ''}
+          
+          <div class="popup-meta" style="display: flex; gap: 12px; margin-bottom: 10px; font-size: 0.75rem; font-weight: 600;">
+            ${poi.rating ? `
+              <span class="popup-rating" style="color: #fbbf24; display: flex; align-items: center; gap: 4px;">
+                <i class="bi bi-star-fill"></i> ${poi.rating}
+              </span>
+            ` : ''}
+            ${poi.price ? `
+              <span class="popup-price" style="color: var(--accent-color);">
+                ${poi.price}€
+              </span>
+            ` : ''}
+          </div>
+
+          ${poi.note ? `
+            <div class="popup-note">
+              <i class="bi bi-sticky"></i>
+              <span>${poi.note}</span>
+            </div>
+          ` : ''}
+
+          <div class="popup-actions">
+             <a href="${gMapsLink}" target="_blank" class="popup-gmaps-link">
+               <i class="bi bi-google"></i> Vedi su Google Maps
+             </a>
+          </div>
           ${poi.groupName ? `
             <div class="popup-group">
               <div class="popup-subtitle popup-subtitle--group">
@@ -641,78 +660,9 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   private getDisplayRoutePois(): BuilderPoi[] {
-    const base = [...this.routePois].filter(
+    return [...this.routePois].filter(
       (poi) => Number.isFinite(poi.latitude) && Number.isFinite(poi.longitude)
     );
-
-    if (this.routeOrderMode === 'original') {
-      return base;
-    }
-
-    if (base.length < 3) return base;
-
-    const days = new Map<number, BuilderPoi[]>();
-    for (const poi of base) {
-      const day = poi.dayNumber || 1;
-      const bucket = days.get(day) || [];
-      bucket.push(poi);
-      days.set(day, bucket);
-    }
-
-    const orderedDays = Array.from(days.keys()).sort((a, b) => a - b);
-    const optimized: BuilderPoi[] = [];
-
-    for (const day of orderedDays) {
-      const dayPois = days.get(day) || [];
-      optimized.push(...this.optimizeDayStops(dayPois));
-    }
-
-    return optimized;
-  }
-
-  private optimizeDayStops(dayPois: BuilderPoi[]): BuilderPoi[] {
-    if (dayPois.length < 3) return dayPois;
-
-    const remaining = [...dayPois];
-    const route: BuilderPoi[] = [];
-    const start = remaining.shift();
-    if (!start) return dayPois;
-
-    route.push(start);
-    while (remaining.length) {
-      const last = route[route.length - 1];
-      let nearestIndex = 0;
-      let nearestDistance = Number.POSITIVE_INFINITY;
-
-      for (let i = 0; i < remaining.length; i += 1) {
-        const candidate = remaining[i];
-        const dist = this.haversineDistance(last.latitude, last.longitude, candidate.latitude, candidate.longitude);
-        if (dist < nearestDistance) {
-          nearestDistance = dist;
-          nearestIndex = i;
-        }
-      }
-
-      const [next] = remaining.splice(nearestIndex, 1);
-      route.push(next);
-    }
-
-    return route;
-  }
-
-  private haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371;
-    const dLat = this.toRad(lat2 - lat1);
-    const dLon = this.toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-
-  private toRad(value: number): number {
-    return (value * Math.PI) / 180;
   }
 
   private buildGoogleMapsUrl(points: Array<{ lat: number; lng: number }>): string | null {

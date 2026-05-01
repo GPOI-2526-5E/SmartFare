@@ -1,59 +1,42 @@
 <div class="map-container" (click)="mapFocused.emit()">
   <div #mapRoot class="map-root"></div>
 
-  @if (routePois.length > 0) {
-  <div class="route-panel">
-    <h4>{{ routePanelTitle }}</h4>
-    <div class="route-mode-switch" (click)="$event.stopPropagation()">
-      <button type="button" [class.active]="routeOrderMode === 'original'" (click)="setRouteOrderMode('original')">
-        Ordine originale
-      </button>
-      <button type="button" [class.active]="routeOrderMode === 'optimized'" (click)="setRouteOrderMode('optimized')">
-        Ordine ottimizzato
-      </button>
-    </div>
+  <!-- BARRA COMPATTA PERCORSO — visibile solo per un giorno specifico -->
+  @if (routePois.length > 0 && routePanelVisible) {
+  <div class="route-compact-bar" (click)="$event.stopPropagation()">
+    @if (isRouteLoading) {
+      <span class="route-compact-loading">
+        <i class="bi bi-arrow-repeat spin"></i> Calcolo percorso...
+      </span>
+    } @else if (routeInfo) {
+      <div class="route-compact-info">
+        <span class="route-compact-chip">
+          <i class="bi bi-signpost-2-fill"></i>
+          <strong>{{ routeInfo.distanceKm }} km</strong>
+        </span>
+        <span class="route-compact-sep">·</span>
+        <span class="route-compact-chip">
+          <i class="bi bi-car-front-fill"></i>
+          <strong>{{ routeInfo.durationMin }} min</strong>
+        </span>
+        <span class="route-compact-sep">·</span>
+        <span class="route-compact-stops">{{ routeInfo.steps }} tappe</span>
+      </div>
+    } @else if (routeError) {
+      <span class="route-compact-err"><i class="bi bi-exclamation-triangle"></i> Percorso non disponibile</span>
+    } @else if (routePois.length < 2) {
+      <span class="route-compact-hint"><i class="bi bi-info-circle"></i> Aggiungi almeno 2 tappe</span>
+    }
 
-    @if (routePois.length < 2) { <p>Aggiungi almeno due tappe per tracciare il percorso.</p>
-      } @else if (isRouteLoading) {
-      <p>Calcolo percorso in corso...</p>
-      } @else if (routeError) {
-      <p>{{ routeError }}</p>
-      } @else if (routeInfo) {
-      <p>
-        <strong>{{ routeInfo.distanceKm }} km</strong>
-        • circa
-        <strong>{{ routeInfo.durationMin }} min</strong>
-        • {{ routeInfo.steps }} tappe
-      </p>
-      <p>
-        @if (routeOrderMode === 'optimized') {
-        Ordine mappa ottimizzato per ridurre zig-zag.
-        } @else {
-        Ordine mappa fedele alla sequenza del tuo itinerario.
-        }
-      </p>
-
-      @if (dayRouteInfo.length > 0) {
-      <ul class="day-route-list">
-        @for (day of dayRouteInfo; track day.day) {
-        <li>
-          <span class="day-route-dot" [style.background]="day.color"></span>
-          <span>Giorno {{ day.day }}</span>
-          <span>{{ day.distanceKm }} km</span>
-          <span>{{ day.durationMin }} min</span>
-        </li>
-        }
-      </ul>
-      }
-      }
-
-      @if (googleMapsUrl) {
-      <a class="route-link" [href]="googleMapsUrl" target="_blank" rel="noopener noreferrer"
-        (click)="$event.stopPropagation()">
-        <i class="bi bi-map"></i>
-        <span>Apri su Google Maps</span>
-      </a>
-      }
+    @if (googleMapsUrl) {
+    <a class="route-compact-gmaps" [href]="googleMapsUrl" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5 14.5 7.62 14.5 9 13.38 11.5 12 11.5z" fill="#34a853"/>
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="none" stroke="#4285f4" stroke-width="0.5"/>
+      </svg>
+      <span>Apri su Google Maps</span>
+    </a>
+    }
   </div>
   }
 

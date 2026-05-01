@@ -1,23 +1,37 @@
 import { Router } from 'express';
 import { upload } from '../config/cloudinary';
 import { authenticateJWT, AuthRequest } from '../middleware/auth.middleware';
+import prisma from '../config/prisma'; // Importa prisma
 
 const router = Router();
 
-// POST /api/upload/image
-router.post('/image', authenticateJWT, upload.single('image'), (req: AuthRequest, res: any) => {
+router.post('/image', authenticateJWT, upload.single('image'), async (req: AuthRequest, res: any) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'Nessuna immagine fornita' });
         }
-        
-        // multer-storage-cloudinary populates req.file.path with the secure Cloudinary URL
+
         const imageUrl = req.file.path;
-        
-        return res.status(200).json({ url: imageUrl });
+        const itineraryId = req.body.itineraryId;
+
+        if (itineraryId && req.user) {
+            await prisma.itinerary.update({
+                where: {
+                    id: Number(itineraryId),
+                    userId: req.user.userId
+                },
+                data: { imageUrl: imageUrl }
+            });
+            console.log(`Database aggiornato: Itinerario ${itineraryId} -> ${imageUrl}`);
+        }
+
+        return res.status(200).json({
+            url: imageUrl,
+            saved: !!itineraryId
+        });
     } catch (error) {
         console.error('Errore upload immagine:', error);
-        return res.status(500).json({ error: 'Errore durante l\'upload dell\'immagine' });
+        return res.status(500).json({ error: 'Errore durante l\'upload o il salvataggio' });
     }
 });
 

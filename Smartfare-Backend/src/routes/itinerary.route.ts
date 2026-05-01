@@ -40,7 +40,8 @@ router.get("/latest", authenticateJWT, async (req: AuthRequest, res: Response, n
 router.get("/public", optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         const locationId = req.query.locationId ? Number(req.query.locationId) : undefined;
-        const itineraries = await itineraryService.getPublicItineraries(locationId);
+        const currentUserId = req.user?.userId ? Number(req.user.userId) : undefined;
+        const itineraries = await itineraryService.getPublicItineraries(locationId, currentUserId);
         res.status(200).json(itineraries);
     } catch (error) {
         next(error);
