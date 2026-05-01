@@ -319,6 +319,27 @@ export class ItineraryBuilderComponent implements OnInit {
     this.alertService.success('Punto aggiunto e salvato automaticamente.');
   }
 
+  onRemovePoi(poi: BuilderPoi) {
+    const current = this.itineraryService.itinerary();
+    if (!current || !current.items) return;
+
+    const updatedItems = current.items.filter(item => {
+      return !((poi.type === 'accommodation' && item.accommodationId === poi.entityId) ||
+               (poi.type === 'activity' && item.activityId === poi.entityId));
+    });
+
+    if (updatedItems.length === current.items.length) {
+      return;
+    }
+
+    this.itineraryService.setCurrentItinerary({
+      ...current,
+      items: updatedItems
+    }, { autosave: true });
+
+    this.alertService.success('Elemento rimosso dall\'itinerario.');
+  }
+
   applyOptimizedOrder(optimizedPois: BuilderPoi[]) {
     const current = this.itineraryService.itinerary();
     if (!current || !current.items) return;

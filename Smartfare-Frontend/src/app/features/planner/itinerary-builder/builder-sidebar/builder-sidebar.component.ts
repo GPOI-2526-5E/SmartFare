@@ -58,7 +58,23 @@ export class BuilderSidebarComponent implements OnDestroy {
     this.searchSubject.pipe(
       takeUntilDestroyed(),
       debounceTime(250)
-    ).subscribe(term => this.searchTerm.set(term));
+    ).subscribe(term => {
+      this.searchTerm.set(term);
+      this.currentPage.set(1);
+    });
+  }
+
+  readonly currentPage = signal(1);
+  readonly pageSize = signal(10);
+  readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize()));
+
+  setPage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+      // Scroll to top of sidebar content
+      const scrollEl = document.querySelector('.sb-scroll');
+      if (scrollEl) scrollEl.scrollTop = 0;
+    }
   }
 
   onSearchInput(event: Event) {
@@ -70,6 +86,7 @@ export class BuilderSidebarComponent implements OnDestroy {
   clearSearch() {
     this.searchInputValue = '';
     this.searchTerm.set('');
+    this.currentPage.set(1);
   }
 
   // ── All POIs flat list ───────────────────────────────────────────────────
@@ -131,7 +148,14 @@ export class BuilderSidebarComponent implements OnDestroy {
 
   // ── Grouped into collapsable sections ───────────────────────────────────
   readonly sections = computed((): PoiSection[] => {
-    const pois = this.filteredPois();
+    const allFiltered = this.filteredPois();
+    const page = this.currentPage();
+    const size = this.pageSize();
+    
+    // Pagination slicing
+    const startIndex = (page - 1) * size;
+    const pois = allFiltered.slice(startIndex, startIndex + size);
+
     const collapsed = this.collapsedSections();
     const result: PoiSection[] = [];
 

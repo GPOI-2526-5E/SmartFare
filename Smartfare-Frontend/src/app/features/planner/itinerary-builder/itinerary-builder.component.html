@@ -22,7 +22,8 @@
       @if (!ui.showSummary()) {
       <app-builder-map [location]="workspace()?.location || null" [savedPois]="filteredSavedPois()"
         [routePois]="savedPois()" [availablePois]="mapAvailablePois()" [previewPoi]="previewPoi()"
-        [markerColor]="ui.markerColor()" (mapFocused)="onMapFocused()" (orderChanged)="applyOptimizedOrder($event)">
+        [markerColor]="ui.markerColor()" (mapFocused)="onMapFocused()" (orderChanged)="applyOptimizedOrder($event)"
+        (addPoi)="onAddPoi($event)" (removePoi)="onRemovePoi($event)">
       </app-builder-map>
       } @else {
       <div class="summary-container">

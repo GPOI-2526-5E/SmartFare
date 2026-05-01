@@ -795,6 +795,10 @@ export class BuilderSummaryComponent {
     return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(poi.price);
   }
 
+  encode(str: string): string {
+    return encodeURIComponent(str);
+  }
+
   getDayColor(day: number): string {
     return this.ui.getDefaultDayColor(day);
   }

@@ -125,21 +125,26 @@
                   }
 
                   <!-- Actions -->
-                  <div class="sb-card-vertical-actions">
-                    <button class="sb-action-btn" (click)="onPreview(poi)">
-                      <i class="bi bi-info-circle"></i> Mostra
+                  <div class="sb-card-actions-grid">
+                    <button class="sb-btn-pill sb-btn-pill--info" (click)="onPreview(poi)">
+                      <i class="bi bi-info-circle"></i> Info
                     </button>
-                    <a class="sb-action-btn sb-action-btn--maps" href="https://www.google.com/maps/search/?api=1&query={{poi.latitude}},{{poi.longitude}}" target="_blank" (click)="$event.stopPropagation()">
+                    <a class="sb-btn-pill sb-btn-pill--google" href="https://www.google.com/search?q={{poi.title}} {{poi.subtitle}}" target="_blank" (click)="$event.stopPropagation()">
+                      <i class="bi bi-google"></i> Google
+                    </a>
+                    <a class="sb-btn-pill sb-btn-pill--maps" href="https://www.google.com/maps/search/?api=1&query={{poi.latitude}},{{poi.longitude}}" target="_blank" (click)="$event.stopPropagation()">
                       <i class="bi bi-geo-alt"></i> Maps
                     </a>
+                  </div>
+                  <div class="sb-card-actions-main">
                     <button
-                      class="sb-action-btn sb-action-btn--add"
-                      [class.sb-action-btn--saved]="isSaved(poi)"
+                      class="sb-btn-main"
+                      [class.sb-btn-main--saved]="isSaved(poi)"
                       [disabled]="isSaved(poi)"
                       (click)="onAdd(poi, $event)"
-                      [attr.title]="isSaved(poi) ? 'Già nel percorso' : 'Aggiungi al percorso'"
                     >
-                      <i class="bi" [class.bi-check2]="isSaved(poi)" [class.bi-plus-lg]="!isSaved(poi)"></i> {{ isSaved(poi) ? 'Aggiunto' : 'Aggiungi' }}
+                      <i class="bi" [class.bi-check2]="isSaved(poi)" [class.bi-plus-lg]="!isSaved(poi)"></i> 
+                      {{ isSaved(poi) ? 'Aggiunto' : 'Aggiungi al percorso' }}
                     </button>
                   </div>
                 </div>
@@ -148,6 +153,54 @@
           </div>
         }
 
+      </div>
+    }
+
+    <!-- Pagination Controls -->
+    @if (totalPages() > 1) {
+      <div class="sb-pagination">
+        <div class="sb-pagination-stats">
+          Pagina <strong>{{ currentPage() }}</strong> di {{ totalPages() }}
+        </div>
+        <div class="sb-pagination-btns">
+          <button 
+            class="sb-page-btn" 
+            [disabled]="currentPage() === 1" 
+            (click)="setPage(1)"
+            title="Prima pagina"
+          >
+            <i class="bi bi-chevron-double-left"></i>
+          </button>
+          <button 
+            class="sb-page-btn" 
+            [disabled]="currentPage() === 1" 
+            (click)="setPage(currentPage() - 1)"
+            title="Pagina precedente"
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          
+          <div class="sb-page-number">
+            {{ currentPage() }}
+          </div>
+
+          <button 
+            class="sb-page-btn" 
+            [disabled]="currentPage() === totalPages()" 
+            (click)="setPage(currentPage() + 1)"
+            title="Pagina successiva"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+          <button 
+            class="sb-page-btn" 
+            [disabled]="currentPage() === totalPages()" 
+            (click)="setPage(totalPages())"
+            title="Ultima pagina"
+          >
+            <i class="bi bi-chevron-double-right"></i>
+          </button>
+        </div>
       </div>
     }
 

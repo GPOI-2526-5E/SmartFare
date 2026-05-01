@@ -39,6 +39,8 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   @Output() mapFocused = new EventEmitter<void>();
   @Output() orderChanged = new EventEmitter<BuilderPoi[]>();
+  @Output() addPoi = new EventEmitter<BuilderPoi>();
+  @Output() removePoi = new EventEmitter<BuilderPoi>();
 
   private map?: L.Map;
   private locationLayer = L.layerGroup();
@@ -120,6 +122,8 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.endpointLayer.addTo(this.map);
 
     this.map.on('click', () => this.mapFocused.emit());
+    this.map.on('popupopen', (e: L.PopupEvent) => this.bindPopupActions(e.popup));
+
     this.refreshLayers(true);
 
     this.resizeObserver = new ResizeObserver(() => {
@@ -128,6 +132,50 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     });
 
     this.resizeObserver.observe(this.mapRoot.nativeElement);
+  }
+
+  private bindPopupActions(popup: L.Popup) {
+    // Wait for the next macro-task to ensure Leaflet has finished rendering the popup content
+    setTimeout(() => {
+      const container = popup.getElement();
+      if (!container) return;
+
+      const addBtn = container.querySelector('.popup-action-btn--add') as HTMLElement;
+      const removeBtn = container.querySelector('.popup-action-btn--remove') as HTMLElement;
+
+      if (addBtn) {
+        addBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const key = addBtn.getAttribute('data-poi-key');
+          const poi = this.findPoiByKey(key);
+          if (poi) {
+            this.addPoi.emit(poi);
+            this.map?.closePopup();
+          }
+        });
+      }
+
+      if (removeBtn) {
+        removeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const key = removeBtn.getAttribute('data-poi-key');
+          const poi = this.findPoiByKey(key);
+          if (poi) {
+            this.removePoi.emit(poi);
+            this.map?.closePopup();
+          }
+        });
+      }
+    }, 10);
+  }
+
+  private findPoiByKey(key: string | null): BuilderPoi | undefined {
+    if (!key) return undefined;
+    return this.availablePois.find(p => p.key === key) || 
+           this.savedPois.find(p => p.key === key) ||
+           (this.previewPoi?.key === key ? this.previewPoi : undefined);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -538,6 +586,9 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     const formattedGroupEnd = formatDate(poi.groupEndAt);
 
     const gMapsLink = `https://www.google.com/maps/search/?api=1&query=${poi.latitude},${poi.longitude}`;
+    const gSearchLink = `https://www.google.com/search?q=${encodeURIComponent(poi.title + ' ' + (poi.subtitle || ''))}`;
+    
+    const isSaved = this.savedPois.some(p => p.key === poi.key);
 
     return `
       <div class="map-popup-card">
@@ -569,13 +620,28 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
             </div>
           ` : ''}
 
-          <div class="popup-actions">
-             <a href="${gMapsLink}" target="_blank" class="popup-gmaps-link">
-               <i class="bi bi-google"></i> Vedi su Google Maps
-             </a>
+          <div class="popup-actions-stack">
+             <div class="popup-actions-row">
+               <a href="${gMapsLink}" target="_blank" class="popup-pill-link popup-pill-link--maps">
+                 <i class="bi bi-geo-alt"></i> Maps
+               </a>
+               <a href="${gSearchLink}" target="_blank" class="popup-pill-link popup-pill-link--google">
+                 <i class="bi bi-google"></i> Google
+               </a>
+             </div>
+
+             ${isSaved ? `
+               <button class="popup-action-btn popup-action-btn--remove" data-poi-key="${poi.key}">
+                 <i class="bi bi-dash-circle"></i> Rimuovi dal percorso
+               </button>
+             ` : `
+               <button class="popup-action-btn popup-action-btn--add" data-poi-key="${poi.key}">
+                 <i class="bi bi-plus-circle"></i> Aggiungi al percorso
+               </button>
+             `}
           </div>
           ${poi.groupName ? `
-            <div class="popup-group">
+            <div class="popup-group" style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
               <div class="popup-subtitle popup-subtitle--group">
                 <i class="bi bi-collection"></i>
                 <span>${poi.groupName}</span>
@@ -600,7 +666,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           ` : ''}
 
           ${(formattedStart || formattedEnd) ? `
-            <div class="popup-planning">
+            <div class="popup-planning" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
               ${formattedStart ? `
                 <div class="planning-item">
                   <span class="p-label">${startLabel}:</span>

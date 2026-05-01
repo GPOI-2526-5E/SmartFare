@@ -254,17 +254,18 @@
                   <div class="wl-poi-text-group">
                     <div class="wl-poi-header">
                       <h4 class="wl-poi-title">{{ poi.title }}</h4>
-                      <div style="display: flex; gap: 8px; align-items: center;">
-                        <a [href]="'https://www.google.com/maps/search/?api=1&query=' + poi.latitude + ',' + poi.longitude" 
-                           target="_blank" class="wl-poi-gmaps-link" title="Vedi su Google Maps">
+                      <div class="wl-poi-header-actions">
+                        <a [href]="'https://www.google.com/search?q=' + encode(poi.title + ' ' + (poi.subtitle || ''))" 
+                           target="_blank" class="wl-card-pill wl-card-pill--google" title="Cerca su Google">
                           <i class="bi bi-google"></i>
+                          <span>Google</span>
                         </a>
-                        @if (poi.groupName) {
-                        <button class="wl-delete-btn" (click)="removeFromGroup(poi)" title="Rimuovi dal gruppo">
-                          <i class="bi bi-box-arrow-up"></i>
-                        </button>
-                        }
-                        <button class="wl-delete-btn" (click)="removeItem(poi)" title="Elimina">
+                        <a [href]="'https://www.google.com/maps/search/?api=1&query=' + poi.latitude + ',' + poi.longitude" 
+                           target="_blank" class="wl-card-pill wl-card-pill--maps" title="Vedi su Google Maps">
+                          <i class="bi bi-geo-alt"></i>
+                          <span>Maps</span>
+                        </a>
+                        <button class="wl-card-btn-circle wl-card-btn-circle--delete" (click)="removeItem(poi)" title="Elimina">
                           <i class="bi bi-trash3"></i>
                         </button>
                       </div>
@@ -290,20 +291,20 @@
 
                   @if (!poi.groupName) {
                   <div class="wl-time-wrapper">
-                    <button class="wl-action-btn wl-btn-pill" [class.wl-hotel-pill]="poi.type === 'accommodation'"
-                      (click)="openTimePopup(poi, $event)">
-                      <i class="bi bi-clock"></i>
-                      @if (poi.type === 'accommodation') {
-                      <div class="wl-hotel-times">
-                        <span class="wl-time-line"><b>Check-in:</b> {{ formatTimeString(poi.plannedStartAt, true) ||
-                          '--' }}</span>
-                        <span class="wl-time-line"><b>Check-out:</b> {{ formatTimeString(poi.plannedEndAt, true) || '--'
-                          }}</span>
+                      <div class="wl-poi-time-row">
+                        <div class="wl-time-pill" (click)="openTimePopup(poi, $event)">
+                          <i class="bi bi-calendar-check"></i>
+                          <div class="wl-time-segment">
+                            <span class="wl-time-label">Check-in</span>
+                            <span class="wl-time-val">{{ formatTimeString(poi.plannedStartAt, true) || '--' }}</span>
+                          </div>
+                          <i class="bi bi-arrow-right wl-time-arrow"></i>
+                          <div class="wl-time-segment">
+                            <span class="wl-time-label">Check-out</span>
+                            <span class="wl-time-val">{{ formatTimeString(poi.plannedEndAt, true) || '--' }}</span>
+                          </div>
+                        </div>
                       </div>
-                      } @else {
-                      <span>{{ formatTimeDisplay(poi) }}</span>
-                      }
-                    </button>
 
                     @if (activeTimePopupPoiKey() === poi.key) {
                     <div class="wl-time-popup" (click)="onPopupClick($event)">

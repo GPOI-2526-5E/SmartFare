@@ -387,6 +387,93 @@
   flex-shrink: 0;
   filter: drop-shadow(0 0 3px rgba(52, 168, 83, 0.6));
 }
+/* Map Popup Actions Styling */
+:host ::ng-deep .popup-actions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+:host ::ng-deep .popup-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+:host ::ng-deep .popup-pill-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  color: #cbd5e1;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+}
+
+:host ::ng-deep .popup-pill-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+:host ::ng-deep .popup-pill-link--google {
+  color: #fbbf24;
+}
+
+:host ::ng-deep .popup-pill-link--maps {
+  color: #38bdf8;
+}
+
+:host ::ng-deep .popup-action-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+:host ::ng-deep .popup-action-btn--add {
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+}
+
+:host ::ng-deep .popup-action-btn--add:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+:host ::ng-deep .popup-action-btn--remove {
+  background: rgba(244, 63, 94, 0.1);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+:host ::ng-deep .popup-action-btn--remove:hover {
+  background: rgba(244, 63, 94, 0.2);
+  border-color: rgba(244, 63, 94, 0.5);
+  color: #fff;
+}
+
 :host ::ng-deep .popup-note {
   margin-bottom: 12px;
   padding: 8px;
@@ -403,26 +490,3 @@
   color: #fbbf24;
 }
 
-:host ::ng-deep .popup-actions {
-  margin-bottom: 12px;
-}
-
-:host ::ng-deep .popup-gmaps-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #3b82f6;
-  text-decoration: none;
-  font-size: 0.75rem;
-  font-weight: 700;
-  transition: all 0.2s ease;
-}
-
-:host ::ng-deep .popup-gmaps-link:hover {
-  text-decoration: underline;
-  color: #60a5fa;
-}
-
-:host ::ng-deep .popup-gmaps-link i {
-  font-size: 0.85rem;
-}
