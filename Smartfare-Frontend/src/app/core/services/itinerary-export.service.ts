@@ -232,310 +232,302 @@ export class ItineraryExportService {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${this.escapeHtml(data.title)}</title>
     <style>
+        /* CSS Reset & Print Settings */
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        @page { margin: 15mm; size: A4; }
+        
+        :root {
+            --bg-color: #0b1120;
+            --bg-color-alt: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #2dd4bf;
+            --accent-alt: #38bdf8;
+        }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            color: #0f172a;
+            font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             line-height: 1.5;
-            padding: 28px;
-            background:
-                radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 35%),
-                radial-gradient(circle at top right, rgba(16, 185, 129, 0.16), transparent 32%),
-                linear-gradient(180deg, #eef6fb 0%, #f8fafc 100%);
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
+
         .export-sheet {
-            max-width: 1040px;
+            max-width: 100%;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.88);
-            border: 1px solid rgba(148, 163, 184, 0.28);
-            border-radius: 28px;
-            overflow: hidden;
-            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
-            backdrop-filter: blur(16px);
+            background: var(--bg-color);
+            position: relative;
         }
+
+        /* Hero Section */
         .hero {
-            padding: 32px 34px 24px;
-            background: linear-gradient(135deg, #0f766e 0%, #0369a1 100%);
-            color: #fff;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4)), 
+                        radial-gradient(circle at top right, rgba(45, 212, 191, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(56, 189, 248, 0.15), transparent 40%);
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 24px;
+            margin-bottom: 30px;
+            page-break-after: avoid;
         }
+
         .eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            display: inline-block;
             padding: 6px 12px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.16);
-            font-size: 12px;
+            border-radius: 8px;
+            background: rgba(45, 212, 191, 0.1);
+            color: var(--accent);
+            font-size: 11px;
             font-weight: 800;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
+            margin-bottom: 16px;
         }
+
         h1 {
-            font-size: 36px;
-            line-height: 1.05;
-            margin: 16px 0 10px;
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
         .hero-subtitle {
-            max-width: 760px;
-            font-size: 15px;
-            opacity: 0.92;
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
         }
+
         .meta-row {
             display: flex;
-            flex-wrap: wrap;
             gap: 12px;
-            margin-top: 18px;
+            flex-wrap: wrap;
         }
+
         .meta-pill {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.16);
+            padding: 8px 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
             font-size: 13px;
             font-weight: 600;
+            color: #cbd5e1;
         }
+
+        .meta-pill strong { color: var(--text-main); }
+
+        /* Timeline & Days */
         .content {
-            padding: 28px 30px 34px;
+            padding: 0 10px;
         }
+
         .day {
-            margin-bottom: 24px;
+            margin-bottom: 40px;
             page-break-inside: avoid;
         }
+
         .day-header {
             display: flex;
             align-items: baseline;
-            justify-content: space-between;
             gap: 16px;
-            margin-bottom: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+
         .day-header h2 {
-            font-size: 20px;
-            color: #0f172a;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
         }
+
         .day-count {
-            color: #0f766e;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
         }
+
+        /* Group Blocks */
         .group-block {
-            margin-bottom: 16px;
-            padding: 14px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(16, 185, 129, 0.08));
-            border: 1px solid rgba(14, 116, 144, 0.14);
-            break-inside: avoid;
+            margin-bottom: 20px;
+            padding: 16px;
+            border-radius: 20px;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(45, 212, 191, 0.15);
+            page-break-inside: avoid;
         }
+
         .group-block__head {
             display: flex;
             justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 12px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
         }
+
         .group-block__title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 800;
-            color: #0f172a;
+            color: #fff;
         }
+
         .group-block__meta {
             margin-top: 4px;
-            color: #0f766e;
-            font-size: 12px;
-            font-weight: 700;
+            color: var(--accent-alt);
+            font-size: 13px;
+            font-weight: 600;
         }
-        .group-block__count {
-            color: #0369a1;
-            font-size: 12px;
-            font-weight: 800;
-            white-space: nowrap;
-        }
+
+        /* Items */
         .group-item-list {
-            display: grid;
-            gap: 10px;
-        }
-        .group-item {
-            display: grid;
-            grid-template-columns: 180px minmax(0, 1fr);
-            gap: 14px;
-            padding: 14px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.88);
-            border: 1px solid rgba(148, 163, 184, 0.18);
-            break-inside: avoid;
-        }
-        .group-item-media {
-            min-height: 132px;
-            border-radius: 16px;
-            overflow: hidden;
-            background: linear-gradient(135deg, #dbeafe, #e0f2fe);
-        }
-        .group-item-media img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .group-item-media--placeholder {
-            display: grid;
-            place-items: center;
-            color: #0f766e;
-            font-size: 24px;
-        }
-        .group-item__title {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 12px;
         }
-        .group-item__title strong {
-            font-size: 14px;
-            color: #0f172a;
-        }
-        .group-item__title span {
-            font-size: 12px;
-            color: #64748b;
-        }
-        .group-item__schedule {
-            color: #0f766e;
-            font-size: 12px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
+
         .item {
-            display: grid;
-            grid-template-columns: 180px minmax(0, 1fr);
-            gap: 18px;
-            margin-bottom: 14px;
-            padding: 14px;
-            border-radius: 20px;
-            background: #fff;
-            border: 1px solid rgba(148, 163, 184, 0.18);
-            break-inside: avoid;
-        }
-        .item-media {
-            min-height: 138px;
+            display: flex;
+            gap: 16px;
+            padding: 16px;
             border-radius: 16px;
-            overflow: hidden;
-            background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            page-break-inside: avoid;
+            margin-bottom: 12px;
         }
+        
+        /* Modifica specifica per le item dentro un gruppo per non avere il bottom margin extra */
+        .group-item-list .item {
+            margin-bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        .item-media {
+            flex-shrink: 0;
+            width: 140px;
+            height: 110px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #1e293b;
+            position: relative;
+        }
+
         .item-media img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
         }
+
         .item-body {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 12px;
         }
-        .item-head {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-        }
+
         .item-kicker {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 5px 10px;
-            border-radius: 999px;
-            background: #ecfeff;
-            color: #0f766e;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.08em;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
+            margin-bottom: 6px;
+            align-self: flex-start;
         }
+
         .item-title {
-            margin-top: 8px;
-            font-size: 19px;
-            line-height: 1.2;
-            color: #0f172a;
-        }
-        .item-subtitle {
-            margin-top: 5px;
-            color: #64748b;
-            font-size: 13px;
-        }
-        .item-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-        }
-        .detail-card {
-            padding: 10px 12px;
-            border-radius: 14px;
-            background: #f8fafc;
-            border: 1px solid rgba(148, 163, 184, 0.16);
-        }
-        .detail-label {
-            display: block;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: #0f766e;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
             margin-bottom: 4px;
         }
-        .detail-value {
-            font-size: 14px;
-            font-weight: 600;
-            color: #0f172a;
-        }
-        .item-notes {
-            padding: 12px 14px;
-            border-left: 4px solid #0f766e;
-            border-radius: 14px;
-            background: #f8fafc;
-            color: #334155;
+
+        .item-subtitle {
             font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .item-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .detail-card {
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .detail-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .item-notes {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-left: 3px solid var(--accent-alt);
+            background: rgba(56, 189, 248, 0.05);
+            border-radius: 0 8px 8px 0;
+            color: #cbd5e1;
+            font-size: 12px;
             white-space: pre-wrap;
         }
-        .item-note-label {
-            display: block;
-            margin-bottom: 4px;
-            color: #0f766e;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
+
         .footer {
-            margin-top: 26px;
-            padding-top: 18px;
-            border-top: 1px solid rgba(148, 163, 184, 0.24);
-            color: #64748b;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
             font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
+            text-align: center;
         }
+
+        /* Print Specific Adjustments */
         @media print {
-            body { background: #fff; padding: 0; }
-            .export-sheet { box-shadow: none; border-radius: 0; border: 0; }
-        }
-        @media (max-width: 760px) {
-            body { padding: 0; }
-            .hero, .content { padding-left: 18px; padding-right: 18px; }
-            .item { grid-template-columns: 1fr; }
-            .item-grid { grid-template-columns: 1fr; }
+            body { font-size: 12pt; }
+            .hero { margin-bottom: 20px; }
+            .day { margin-bottom: 20px; }
         }
     </style>
 </head>
 <body>
     <div class="export-sheet">
         <section class="hero">
-            <span class="eyebrow">SmartFare itinerary export</span>
+            <div class="eyebrow">SmartFare Journey Studio</div>
             <h1>${this.escapeHtml(data.title)}</h1>
-            <p class="hero-subtitle">${this.escapeHtml(data.location)} - ${this.escapeHtml(data.dates.start)} / ${this.escapeHtml(data.dates.end)}</p>
+            <p class="hero-subtitle">Il tuo itinerario dettagliato per ${this.escapeHtml(data.location)}</p>
             <div class="meta-row">
-                <div class="meta-pill">📍 ${this.escapeHtml(data.location)}</div>
-                <div class="meta-pill">📅 ${this.escapeHtml(data.dates.start)} - ${this.escapeHtml(data.dates.end)}</div>
-                <div class="meta-pill">🕒 Generato il ${new Date(data.generatedAt).toLocaleString('it-IT')}</div>
+                <div class="meta-pill">📍 <strong>${this.escapeHtml(data.location)}</strong></div>
+                <div class="meta-pill">📅 <strong>${this.escapeHtml(data.dates.start)}</strong> — <strong>${this.escapeHtml(data.dates.end)}</strong></div>
             </div>
         </section>
 
@@ -544,7 +536,7 @@ export class ItineraryExportService {
             <div class="day">
                 <div class="day-header">
                     <h2>Giorno ${day.day}</h2>
-                    <span class="day-count">${day.groups.reduce((count, group) => count + group.items.length, 0) + day.items.length} elementi</span>
+                    <span class="day-count">${day.groups.reduce((count, group) => count + group.items.length, 0) + day.items.length} tappe</span>
                 </div>
 
                 ${day.groups.map(group => `
@@ -554,23 +546,60 @@ export class ItineraryExportService {
                             <div class="group-block__title">${this.escapeHtml(group.name)}</div>
                             <div class="group-block__meta">${this.escapeHtml(this.formatGroupSchedule(group.startAt, group.endAt) || 'Orario da definire')}</div>
                         </div>
-                        <span class="group-block__count">${group.items.length} tappe</span>
                     </div>
 
                     <div class="group-item-list">
                         ${group.items.map(item => `
-                        <article class="group-item">
-                            <div class="group-item-media ${item.imageUrl ? '' : 'group-item-media--placeholder'}">
-                                ${item.imageUrl ? `<img src="${this.escapeHtml(item.imageUrl)}" alt="${this.escapeHtml(item.title)}" crossorigin="anonymous">` : '<i class="bi bi-image"></i>'}
+                        <article class="item">
+                            ${item.imageUrl ? `
+                            <div class="item-media">
+                                <img src="${this.escapeHtml(item.imageUrl)}" alt="${this.escapeHtml(item.title)}" crossorigin="anonymous">
                             </div>
+                            ` : ''}
 
-                            <div class="group-item__title">
-                                <span class="item-kicker">${item.type === 'accommodation' ? 'Hotel' : 'Attivita'}</span>
-                                <strong>${this.escapeHtml(item.title)}</strong>
-                                ${item.subtitle ? `<span>${this.escapeHtml(item.subtitle)}</span>` : ''}
-                                <div class="group-item__schedule">
-                                    ${this.escapeHtml(item.checkIn || item.startAt || item.checkOut || item.endAt || 'Programmazione libera')}
+                            <div class="item-body">
+                                <span class="item-kicker">${item.type === 'accommodation' ? 'Hotel / Alloggio' : 'Attività / Tappa'}</span>
+                                <div class="item-title">${this.escapeHtml(item.title)}</div>
+                                ${item.subtitle ? `<div class="item-subtitle">${this.escapeHtml(item.subtitle)}</div>` : ''}
+
+                                <div class="item-grid">
+                                    ${item.checkIn ? `
+                                    <div class="detail-card">
+                                        <span class="detail-label">Check-in:</span>
+                                        <span class="detail-value">${this.escapeHtml(item.checkIn)}</span>
+                                    </div>
+                                    ` : ''}
+                                    ${item.checkOut ? `
+                                    <div class="detail-card">
+                                        <span class="detail-label">Check-out:</span>
+                                        <span class="detail-value">${this.escapeHtml(item.checkOut)}</span>
+                                    </div>
+                                    ` : ''}
+                                    ${item.startAt ? `
+                                    <div class="detail-card">
+                                        <span class="detail-label">Arrivo:</span>
+                                        <span class="detail-value">${this.escapeHtml(item.startAt)}</span>
+                                    </div>
+                                    ` : ''}
+                                    ${item.endAt ? `
+                                    <div class="detail-card">
+                                        <span class="detail-label">Partenza:</span>
+                                        <span class="detail-value">${this.escapeHtml(item.endAt)}</span>
+                                    </div>
+                                    ` : ''}
+                                    ${item.duration ? `
+                                    <div class="detail-card">
+                                        <span class="detail-label">Durata:</span>
+                                        <span class="detail-value">${this.escapeHtml(item.duration)}</span>
+                                    </div>
+                                    ` : ''}
                                 </div>
+                                
+                                ${item.notes ? `
+                                <div class="item-notes">
+                                    ${this.escapeHtml(item.notes)}
+                                </div>
+                                ` : ''}
                             </div>
                         </article>
                         `).join('')}
@@ -587,46 +616,38 @@ export class ItineraryExportService {
                     ` : ''}
 
                     <div class="item-body">
-                        <div class="item-head">
-                            <div>
-                                <span class="item-kicker">${item.type === 'accommodation' ? 'Hotel' : 'Attivita'}</span>
-                                <h3 class="item-title">${this.escapeHtml(item.title)}</h3>
-                                ${item.subtitle ? `<div class="item-subtitle">${this.escapeHtml(item.subtitle)}</div>` : ''}
-                            </div>
-                        </div>
+                        <span class="item-kicker">${item.type === 'accommodation' ? 'Hotel / Alloggio' : 'Attività / Tappa'}</span>
+                        <div class="item-title">${this.escapeHtml(item.title)}</div>
+                        ${item.subtitle ? `<div class="item-subtitle">${this.escapeHtml(item.subtitle)}</div>` : ''}
 
                         <div class="item-grid">
                             ${item.checkIn ? `
                             <div class="detail-card">
-                                <span class="detail-label">Check-in</span>
+                                <span class="detail-label">Check-in:</span>
                                 <span class="detail-value">${this.escapeHtml(item.checkIn)}</span>
                             </div>
                             ` : ''}
-
                             ${item.checkOut ? `
                             <div class="detail-card">
-                                <span class="detail-label">Check-out</span>
+                                <span class="detail-label">Check-out:</span>
                                 <span class="detail-value">${this.escapeHtml(item.checkOut)}</span>
                             </div>
                             ` : ''}
-
                             ${item.startAt ? `
                             <div class="detail-card">
-                                <span class="detail-label">Inizio</span>
+                                <span class="detail-label">Arrivo:</span>
                                 <span class="detail-value">${this.escapeHtml(item.startAt)}</span>
                             </div>
                             ` : ''}
-
                             ${item.endAt ? `
                             <div class="detail-card">
-                                <span class="detail-label">Fine</span>
+                                <span class="detail-label">Partenza:</span>
                                 <span class="detail-value">${this.escapeHtml(item.endAt)}</span>
                             </div>
                             ` : ''}
-
                             ${item.duration ? `
                             <div class="detail-card">
-                                <span class="detail-label">Durata</span>
+                                <span class="detail-label">Durata:</span>
                                 <span class="detail-value">${this.escapeHtml(item.duration)}</span>
                             </div>
                             ` : ''}
@@ -634,7 +655,6 @@ export class ItineraryExportService {
 
                         ${item.notes ? `
                         <div class="item-notes">
-                            <span class="item-note-label">Note</span>
                             ${this.escapeHtml(item.notes)}
                         </div>
                         ` : ''}
@@ -645,13 +665,13 @@ export class ItineraryExportService {
             `).join('')}
 
             <div class="footer">
-                <span>SmartFare</span>
+                Generato da SmartFare Journey Studio il ${new Date(data.generatedAt).toLocaleString('it-IT')}
             </div>
         </section>
     </div>
 </body>
 </html>
-    `;
+        `;
         return html;
     }
 

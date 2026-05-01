@@ -1,31 +1,35 @@
-import { Component, EventEmitter, Input, Output, computed, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
-import { ActivityCategory } from '../../../../core/models/activity.model';
 import { BuilderPoi } from '../builder.types';
+import { Subject, debounceTime } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-type SidebarRailItem = {
+interface PoiSection {
   key: string;
   label: string;
   icon: string;
-  iconValue?: string;
-  type: 'all' | 'accommodation' | 'activity';
-  categoryId: number | 'all';
-};
+  items: BuilderPoi[];
+  collapsed: boolean;
+}
 
 @Component({
   selector: 'app-builder-sidebar',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './builder-sidebar.component.html',
   styleUrl: './builder-sidebar.component.css'
 })
-export class BuilderSidebarComponent {
+export class BuilderSidebarComponent implements OnDestroy {
   private workspaceSignal = signal<ItineraryWorkspace | null>(null);
   private savedPoiKeysSignal = signal<Set<string>>(new Set<string>());
-  searchTerm = signal('');
+
+  // Debounced search: raw input value (bound directly via DOM event)
+  // to avoid ngModel overhead, + debounce via Subject
+  searchInputValue = '';
+  private searchSubject = new Subject<string>();
+  readonly searchTerm = signal('');
 
   @Input({ required: true })
   set workspace(value: ItineraryWorkspace | null) {
@@ -47,62 +51,38 @@ export class BuilderSidebarComponent {
   @Output() previewPoi = new EventEmitter<BuilderPoi>();
   @Output() addPoi = new EventEmitter<BuilderPoi>();
 
-  ui = inject(UIStateService);
+  readonly ui = inject(UIStateService);
+  readonly collapsedSections = signal<Set<string>>(new Set());
 
-  readonly railItems = computed(() => {
-    const workspace = this.workspaceSignal();
-    const availableCategoryIds = new Set((workspace?.activities || []).map((activity) => activity.categoryId));
-    const items: SidebarRailItem[] = [
-      {
-        key: 'all',
-        label: 'Tutto',
-        icon: 'bi bi-grid-3x3-gap-fill',
-        type: 'all',
-        categoryId: 'all'
-      },
-      {
-        key: 'hotel',
-        label: 'Hotel',
-        icon: 'bi bi-building',
-        type: 'accommodation',
-        categoryId: 'all'
-      }
-    ];
+  constructor() {
+    this.searchSubject.pipe(
+      takeUntilDestroyed(),
+      debounceTime(250)
+    ).subscribe(term => this.searchTerm.set(term));
+  }
 
-    for (const category of workspace?.categories || []) {
-      if (availableCategoryIds.has(category.id)) {
-        items.push(this.toRailItem(category));
-      }
-    }
+  onSearchInput(event: Event) {
+    const val = (event.target as HTMLInputElement).value;
+    this.searchInputValue = val;
+    this.searchSubject.next(val);
+  }
 
-    return items;
-  });
+  clearSearch() {
+    this.searchInputValue = '';
+    this.searchTerm.set('');
+  }
 
-  readonly activeRailItem = computed(() => {
-    const selectedType = this.ui.selectedType();
-    const selectedCategory = this.ui.selectedCategory();
+  // ── All POIs flat list ───────────────────────────────────────────────────
+  readonly allPois = computed((): BuilderPoi[] => {
+    const ws = this.workspaceSignal();
+    if (!ws) return [];
 
-    if (selectedType === 'all') return 'all';
-    if (selectedType === 'accommodation') return 'hotel';
-    if (selectedType === 'activity' && selectedCategory !== 'all') return `category-${selectedCategory}`;
-    return 'all';
-  });
-
-  readonly activeFilterLabel = computed(() => {
-    const activeItem = this.railItems().find((item) => item.key === this.activeRailItem());
-    return activeItem?.label || 'Tutto';
-  });
-
-  readonly poiList = computed(() => {
-    const workspace = this.workspaceSignal();
-    if (!workspace) return [] as BuilderPoi[];
-
-    const accommodations: BuilderPoi[] = workspace.accommodations.map((acc) => ({
+    const accommodations: BuilderPoi[] = ws.accommodations.map(acc => ({
       key: `accommodation-${acc.id}`,
       type: 'accommodation' as const,
       entityId: acc.id,
       title: acc.name,
-      subtitle: acc.street || 'Hotel',
+      subtitle: acc.street || 'Alloggio',
       latitude: acc.latitude,
       longitude: acc.longitude,
       itemTypeCode: 'ACCOMMODATION' as const,
@@ -111,47 +91,79 @@ export class BuilderSidebarComponent {
       rating: acc.stars
     }));
 
-    const activities: BuilderPoi[] = workspace.activities.map((activity) => ({
-      key: `activity-${activity.id}`,
+    const activities: BuilderPoi[] = ws.activities.map(a => ({
+      key: `activity-${a.id}`,
       type: 'activity' as const,
-      entityId: activity.id,
-      title: activity.name,
-      subtitle: activity.category?.name || activity.street || 'Attività',
-      latitude: activity.latitude,
-      longitude: activity.longitude,
-      categoryId: activity.categoryId,
-      categoryName: activity.category?.name,
+      entityId: a.id,
+      title: a.name,
+      subtitle: a.category?.name || a.street || 'Attività',
+      latitude: a.latitude,
+      longitude: a.longitude,
+      categoryId: a.categoryId,
+      categoryName: a.category?.name,
       itemTypeCode: 'ACTIVITY' as const,
-      imageUrl: activity.imageUrl,
-      price: activity.price,
-      rating: activity.rating
+      imageUrl: a.imageUrl,
+      price: a.price,
+      rating: a.rating
     }));
 
     return [...accommodations, ...activities];
   });
 
-  readonly filteredList = computed(() => {
+  // ── Filtered by active category + search term ────────────────────────────
+  readonly filteredPois = computed(() => {
     const selectedType = this.ui.selectedType();
     const selectedCategory = this.ui.selectedCategory();
     const term = this.searchTerm().toLowerCase().trim();
 
-    return this.poiList().filter((poi) => {
+    return this.allPois().filter(poi => {
       if (selectedType !== 'all' && poi.type !== selectedType) return false;
       if (selectedCategory !== 'all' && poi.type === 'activity' && poi.categoryId !== selectedCategory) return false;
-
       if (term) {
         return poi.title.toLowerCase().includes(term) ||
-               (poi.subtitle && poi.subtitle.toLowerCase().includes(term));
+          (poi.subtitle?.toLowerCase().includes(term) ?? false);
       }
-
       return true;
     });
   });
 
-  selectRailItem(item: SidebarRailItem) {
-    this.ui.setType(item.type);
-    this.ui.setCategory(item.categoryId);
-    this.focusSidebar.emit();
+  readonly totalCount = computed(() => this.filteredPois().length);
+
+  // ── Grouped into collapsable sections ───────────────────────────────────
+  readonly sections = computed((): PoiSection[] => {
+    const pois = this.filteredPois();
+    const collapsed = this.collapsedSections();
+    const result: PoiSection[] = [];
+
+    const hotels = pois.filter(p => p.type === 'accommodation');
+    if (hotels.length > 0) {
+      result.push({ key: 'hotel', label: 'Hotel & Alloggi', icon: 'bi-building', items: hotels, collapsed: collapsed.has('hotel') });
+    }
+
+    const activities = pois.filter(p => p.type === 'activity');
+    const catMap = new Map<number, { name: string; items: BuilderPoi[] }>();
+    for (const poi of activities) {
+      const id = poi.categoryId ?? 0;
+      if (!catMap.has(id)) catMap.set(id, { name: poi.categoryName || 'Attività', items: [] });
+      catMap.get(id)!.items.push(poi);
+    }
+
+    Array.from(catMap.entries())
+      .sort((a, b) => a[1].name.localeCompare(b[1].name))
+      .forEach(([id, cat]) => {
+        const key = `cat-${id}`;
+        result.push({ key, label: cat.name, icon: this.getCategoryIcon(cat.name), items: cat.items, collapsed: collapsed.has(key) });
+      });
+
+    return result;
+  });
+
+  toggleSection(key: string) {
+    this.collapsedSections.update(set => {
+      const next = new Set(set);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
   }
 
   onPreview(poi: BuilderPoi) {
@@ -159,7 +171,8 @@ export class BuilderSidebarComponent {
     this.focusSidebar.emit();
   }
 
-  onAdd(poi: BuilderPoi) {
+  onAdd(poi: BuilderPoi, event: Event) {
+    event.stopPropagation();
     this.addPoi.emit(poi);
     this.focusSidebar.emit();
   }
@@ -168,65 +181,21 @@ export class BuilderSidebarComponent {
     return this.savedPoiKeysSignal().has(poi.key);
   }
 
-  starsArray(n: number): number[] {
-    return Array.from({ length: Math.max(0, Math.min(5, n)) });
-  }
-
-  emptyStarsArray(n: number): number[] {
-    return Array.from({ length: Math.max(0, 5 - Math.min(5, n)) });
-  }
-
-  private toRailItem(category: ActivityCategory): SidebarRailItem {
-    return {
-      key: `category-${category.id}`,
-      label: category.name,
-      icon: this.getCategoryIcon(category.name),
-      iconValue: category.iconUrl,
-      type: 'activity',
-      categoryId: category.id
-    };
-  }
-
-  isBootstrapIcon(value?: string | null): boolean {
-    if (!value) return false;
-    const normalized = value.trim();
-    return normalized.startsWith('bi-') || normalized.startsWith('bi ');
-  }
-
-  resolveIconClass(item: SidebarRailItem): string {
-    const iconValue = item.iconValue?.trim();
-    if (this.isBootstrapIcon(iconValue)) {
-      return iconValue!.startsWith('bi ') ? iconValue! : `bi ${iconValue}`;
-    }
-
-    return item.icon;
-  }
-
   private getCategoryIcon(name: string): string {
-    const normalized = name.toLowerCase();
-
-    if (normalized.includes('landmark') || normalized.includes('monument') || normalized.includes('muse')) {
-      return 'bi bi-bank';
-    }
-    if (normalized.includes('farm') || normalized.includes('pharma') || normalized.includes('salute')) {
-      return 'bi bi-hospital';
-    }
-    if (normalized.includes('risto') || normalized.includes('food') || normalized.includes('cibo')) {
-      return 'bi bi-cup-hot';
-    }
-    if (normalized.includes('night') || normalized.includes('bar') || normalized.includes('club')) {
-      return 'bi bi-moon-stars';
-    }
-    if (normalized.includes('park') || normalized.includes('nature') || normalized.includes('green')) {
-      return 'bi bi-tree';
-    }
-    if (normalized.includes('shop') || normalized.includes('store')) {
-      return 'bi bi-bag';
-    }
-    if (normalized.includes('transport') || normalized.includes('station')) {
-      return 'bi bi-signpost-split';
-    }
-
-    return 'bi bi-compass';
+    const n = name.toLowerCase();
+    if (n.includes('muse') || n.includes('monument') || n.includes('landmark') || n.includes('storico')) return 'bi-bank';
+    if (n.includes('food') || n.includes('risto') || n.includes('cucina') || n.includes('cibo')) return 'bi-cup-hot';
+    if (n.includes('night') || n.includes('club') || n.includes('vita notturna')) return 'bi-moon-stars';
+    if (n.includes('park') || n.includes('nature') || n.includes('parco') || n.includes('verde')) return 'bi-tree';
+    if (n.includes('shop') || n.includes('store') || n.includes('negozi') || n.includes('mercato')) return 'bi-bag';
+    if (n.includes('sport') || n.includes('fitness') || n.includes('swim') || n.includes('palestra')) return 'bi-trophy';
+    if (n.includes('spa') || n.includes('wellness') || n.includes('benessere') || n.includes('relax')) return 'bi-flower2';
+    if (n.includes('tour') || n.includes('escurs') || n.includes('avventura')) return 'bi-map';
+    if (n.includes('arte') || n.includes('art') || n.includes('galler') || n.includes('cultura')) return 'bi-palette';
+    if (n.includes('beach') || n.includes('spiaggia') || n.includes('mare')) return 'bi-water';
+    if (n.includes('religion') || n.includes('chiesa') || n.includes('tempio')) return 'bi-building-check';
+    return 'bi-compass';
   }
+
+  ngOnDestroy() {}
 }

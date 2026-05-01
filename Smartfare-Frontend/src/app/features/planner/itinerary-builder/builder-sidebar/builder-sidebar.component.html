@@ -1,130 +1,152 @@
-<div class="sidebar-container" [class.sidebar-container--rail-hidden]="!ui.showSidebarRail()"
-  (click)="focusSidebar.emit()">
-  @if (ui.showSidebarRail()) {
-  <div class="sidebar-rail" aria-label="Categorie itinerario">
-    @for (item of railItems(); track item.key) {
-    <button type="button" class="rail-item" [class.active]="activeRailItem() === item.key" [title]="item.label"
-      (click)="selectRailItem(item); $event.stopPropagation()">
-      <span class="rail-icon">
-        @if (item.iconValue && !isBootstrapIcon(item.iconValue)) {
-        <img [src]="item.iconValue" [alt]="item.label">
-        } @else {
-        <i [class]="resolveIconClass(item)"></i>
-        }
-      </span>
-      <span class="rail-label">{{ item.label }}</span>
-    </button>
-    }
-  </div>
-  }
+<div class="sb-wrap" (click)="focusSidebar.emit()">
 
-  <div class="sidebar-content">
-    <div class="sidebar-header">
-      <p class="sidebar-kicker">Esplora</p>
-      <div class="sidebar-header-top">
-        <div>
-          <h3 class="sidebar-title">{{ activeFilterLabel() }}</h3>
-          <p class="sidebar-subtitle">Sfoglia e inserisci i punti che vuoi nel percorso.</p>
-        </div>
-        <div class="sidebar-header-actions">
-          <span class="sidebar-count">{{ filteredList().length }} risultati</span>
-          <button type="button" class="sidebar-toggle-btn" (click)="ui.toggleSidebarRail(); $event.stopPropagation()"
-            [attr.aria-label]="ui.showSidebarRail() ? 'Nascondi categorie' : 'Mostra categorie'"
-            [title]="ui.showSidebarRail() ? 'Nascondi categorie' : 'Mostra categorie'">
-            <i [class]="ui.showSidebarRail() ? 'bi bi-layout-sidebar-inset-reverse' : 'bi bi-layout-sidebar' "></i>
-          </button>
-        </div>
-      </div>
+  <!-- ── Sticky Header ── -->
+  <div class="sb-head">
 
-      <div class="search-box">
-        <i class="bi bi-search search-icon"></i>
-        <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
-          placeholder="Cerca hotel, attività o via..." class="search-input">
-        @if (searchTerm()) {
-        <button class="clear-btn" (click)="searchTerm.set('')">
-          <i class="bi bi-x"></i>
+    <!-- Search Input -->
+    <div class="sb-search">
+      <i class="bi bi-search sb-search-icon"></i>
+      <input
+        type="text"
+        class="sb-search-input"
+        placeholder="Cerca hotel, attività..."
+        [value]="searchInputValue"
+        (input)="onSearchInput($event)"
+        (click)="$event.stopPropagation()"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      @if (searchInputValue) {
+        <button class="sb-search-clear" (click)="clearSearch(); $event.stopPropagation()" title="Cancella ricerca">
+          <i class="bi bi-x-circle-fill"></i>
         </button>
-        }
-      </div>
-
-      @if (workspace?.location) {
-      <div class="sidebar-location-pill">
-        <i class="bi bi-geo-alt-fill"></i>
-        {{ workspace?.location?.name }}
-        <span class="dot-separator">•</span>
-        <strong>{{ workspace?.location?.province }}</strong>
-      </div>
       }
     </div>
 
-    <div class="sidebar-scroll-area">
-      <div class="poi-list">
-        <div class="list-header">
-          <h4>Contenuti disponibili</h4>
-          <p>La colonna laterale gestisce direttamente hotel e categorie del builder.</p>
+    <!-- Meta row: location badge + count -->
+    <div class="sb-meta">
+      @if (workspace?.location) {
+        <div class="sb-location-badge">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>{{ workspace!.location!.name }}</span>
         </div>
-
-        @if (filteredList().length === 0) {
-        <div class="empty-state">
-          <div class="empty-state-icon">
-            <i class="bi bi-search"></i>
-          </div>
-          <p>Nessun risultato per il filtro selezionato.</p>
-        </div>
-        }
-
-        @for (poi of filteredList(); track poi.key) {
-        <article class="poi-card" [class.saved]="isSaved(poi)" (click)="onPreview(poi)">
-          @if (poi.imageUrl) {
-          <div class="poi-card-image" [style.background-image]="'url(' + poi.imageUrl + ')'">
-            <div class="poi-card-badge">
-              <i [class]="poi.type === 'accommodation' ? 'bi bi-building' : 'bi bi-lightning-charge-fill'"></i>
-            </div>
-          </div>
-          }
-
-          <div class="poi-card-main">
-            <div class="poi-header-row">
-              <h4 class="poi-title">{{ poi.title }}</h4>
-              @if (poi.rating) {
-              <span class="poi-rating">
-                <i class="bi bi-star-fill"></i>
-                {{ poi.rating }}
-              </span>
-              }
-            </div>
-
-            <p class="poi-subtitle">{{ poi.subtitle }}</p>
-
-            <div class="poi-details">
-              @if (poi.price) {
-              <span class="poi-price-tag">{{ poi.price }}€</span>
-              }
-              <span class="poi-badge">
-                {{ poi.categoryName || (poi.type === 'accommodation' ? 'Hotel' : 'Attività') }}
-              </span>
-            </div>
-          </div>
-
-          <div class="poi-card-footer">
-            <button type="button" class="btn-preview" (click)="onPreview(poi); $event.stopPropagation()">
-              <i class="bi bi-eye"></i>
-              Mostra
-            </button>
-            <button type="button" class="btn-add" [disabled]="isSaved(poi)"
-              (click)="onAdd(poi); $event.stopPropagation()">
-              @if (isSaved(poi)) {
-              <i class="bi bi-check-circle-fill"></i>
-              Salvato
-              } @else {
-              <i class="bi bi-plus-circle"></i>
-              Inserisci
-              }
-            </button>
-          </div>
-        </article>
-        }
-      </div>
+      }
+      <span class="sb-count-badge">
+        <i class="bi bi-layers"></i>
+        {{ totalCount() }}
+      </span>
     </div>
   </div>
+
+  <!-- ── Scrollable Content ── -->
+  <div class="sb-scroll">
+
+    <!-- Empty State -->
+    @if (totalCount() === 0) {
+      <div class="sb-empty">
+        <div class="sb-empty-icon">
+          @if (searchInputValue) {
+            <i class="bi bi-search"></i>
+          } @else {
+            <i class="bi bi-compass"></i>
+          }
+        </div>
+        <p class="sb-empty-title">
+          {{ searchInputValue ? 'Nessun risultato' : 'Nessuna voce in questa categoria' }}
+        </p>
+        <p class="sb-empty-sub">
+          {{ searchInputValue ? 'Prova un\'altra parola chiave.' : 'Seleziona una categoria diversa.' }}
+        </p>
+      </div>
+    }
+
+    <!-- Sections -->
+    @for (section of sections(); track section.key) {
+      <div class="sb-section" [class.sb-section--collapsed]="section.collapsed">
+
+        <!-- Section Header -->
+        <button
+          class="sb-section-hdr"
+          (click)="toggleSection(section.key); $event.stopPropagation()"
+          [attr.aria-expanded]="!section.collapsed"
+        >
+          <div class="sb-section-hdr-left">
+            <span class="sb-section-icon-wrap">
+              <i class="bi {{ section.icon }}"></i>
+            </span>
+            <span class="sb-section-label">{{ section.label }}</span>
+            <span class="sb-section-pill">{{ section.items.length }}</span>
+          </div>
+          <i class="bi sb-section-chevron"
+            [class.bi-chevron-up]="!section.collapsed"
+            [class.bi-chevron-down]="section.collapsed">
+          </i>
+        </button>
+
+        <!-- Section Items -->
+        @if (!section.collapsed) {
+          <div class="sb-items-list">
+            @for (poi of section.items; track poi.key) {
+              <article
+                class="sb-card"
+                [class.sb-card--saved]="isSaved(poi)"
+                (click)="onPreview(poi)"
+                [attr.title]="poi.title"
+              >
+                <!-- Thumbnail -->
+                <div class="sb-card-thumb">
+                  @if (poi.imageUrl) {
+                    <img [src]="poi.imageUrl" [alt]="poi.title" loading="lazy" decoding="async">
+                  } @else {
+                    <div class="sb-card-thumb-placeholder">
+                      <i class="bi" [class.bi-building]="poi.type === 'accommodation'" [class.bi-geo-alt-fill]="poi.type === 'activity'"></i>
+                    </div>
+                  }
+                  @if (isSaved(poi)) {
+                    <div class="sb-thumb-saved-badge">
+                      <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                  }
+                </div>
+
+                <!-- Body -->
+                <div class="sb-card-body">
+                  <div class="sb-card-row-top">
+                    <h4 class="sb-card-title">{{ poi.title }}</h4>
+                    @if (poi.rating) {
+                      <span class="sb-card-rating">
+                        <i class="bi bi-star-fill"></i>{{ poi.rating }}
+                      </span>
+                    }
+                  </div>
+                  <p class="sb-card-sub">{{ poi.subtitle }}</p>
+                  @if (poi.price) {
+                    <span class="sb-card-price">{{ poi.price }}€<span class="sb-card-price-unit">{{ poi.type === 'accommodation' ? '/notte' : '' }}</span></span>
+                  }
+                </div>
+
+                <!-- Add Button -->
+                <div class="sb-card-cta">
+                  <button
+                    class="sb-add-btn"
+                    [class.sb-add-btn--saved]="isSaved(poi)"
+                    [disabled]="isSaved(poi)"
+                    (click)="onAdd(poi, $event)"
+                    [attr.title]="isSaved(poi) ? 'Già nel percorso' : 'Aggiungi al percorso'"
+                  >
+                    <i class="bi" [class.bi-check2]="isSaved(poi)" [class.bi-plus-lg]="!isSaved(poi)"></i>
+                  </button>
+                </div>
+              </article>
+            }
+          </div>
+        }
+
+      </div>
+    }
+
+    <!-- Bottom padding -->
+    <div class="sb-bottom-pad"></div>
+  </div>
+
 </div>

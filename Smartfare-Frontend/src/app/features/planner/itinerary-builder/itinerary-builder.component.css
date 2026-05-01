@@ -54,21 +54,13 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: clamp(540px, 40vw, 700px) minmax(0, 1fr);
+  grid-template-columns: clamp(320px, 30vw, 440px) minmax(0, 1fr);
   gap: 12px;
   padding: 12px;
 }
 
 .builder-workspace--chat {
-  grid-template-columns: clamp(540px, 40vw, 700px) minmax(0, 1fr) clamp(280px, 23vw, 360px);
-}
-
-.builder-workspace--rail-hidden {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.builder-workspace--rail-hidden.builder-workspace--chat {
-  grid-template-columns: minmax(0, 1fr) clamp(280px, 23vw, 360px);
+  grid-template-columns: clamp(320px, 30vw, 440px) minmax(0, 1fr) clamp(280px, 23vw, 360px);
 }
 
 .workspace-panel {
@@ -81,7 +73,7 @@
 }
 
 .workspace-sidebar {
-  width: clamp(540px, 40vw, 700px);
+  width: clamp(320px, 30vw, 440px);
 }
 
 .workspace-map {

@@ -23,17 +23,34 @@
   z-index: 10;
   min-height: 62px;
   padding: 10px 14px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
-.toolbar-left,
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .toolbar-right {
   display: flex;
   align-items: center;
   gap: 10px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+/* Center column: auto width, stays centered by the 1fr/1fr sides */
+.toolbar-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .brand {
@@ -42,6 +59,7 @@
   gap: 10px;
   text-decoration: none !important;
   color: inherit !important;
+  flex-shrink: 0;
 }
 
 .anchor-reset {
@@ -80,11 +98,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: min(50vw, 500px);
+  min-width: 160px;
+  max-width: 320px;
   padding: 8px 12px;
   border-radius: 12px;
   border: 1px solid var(--glass-border);
   background: var(--bg-color-alt);
+  overflow: hidden;
 }
 
 .itinerary-name-container:focus-within {
@@ -98,12 +118,16 @@
 
 .itinerary-name-input {
   flex: 1;
+  min-width: 0;
   border: 0;
   outline: 0;
   background: transparent;
   color: var(--text-color);
   font-size: 0.92rem;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .itinerary-name-input::placeholder {
@@ -618,3 +642,233 @@
 }
 
 /* Removed small select wrapper styles in favor of custom-dropdown */
+
+/* ═══ CATEGORY BAR ══════════════════════════════════════════════════════════ */
+
+.category-bar-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.category-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex: 1;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.category-bar::-webkit-scrollbar { display: none; }
+
+.cat-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 52px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cat-fade--left {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-color) 0%, transparent 100%);
+  border-radius: 18px 0 0 18px;
+}
+
+.cat-fade--right {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-color) 0%, transparent 100%);
+  border-radius: 0 18px 18px 0;
+}
+
+.cat-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  white-space: nowrap;
+  position: relative;
+}
+
+.cat-pill:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.cat-pill--active {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.25) 0%, rgba(14, 165, 233, 0.18) 100%);
+  border-color: rgba(20, 184, 166, 0.5);
+  color: #e0fdf4;
+  box-shadow: 0 4px 16px rgba(20, 184, 166, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.cat-pill--active:hover {
+  box-shadow: 0 6px 22px rgba(20, 184, 166, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.cat-pill-icon { font-size: 0.82rem; }
+.cat-pill-label { line-height: 1; }
+
+.cat-pill-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #2dd4bf;
+  box-shadow: 0 0 6px rgba(45, 212, 191, 0.7);
+  flex-shrink: 0;
+}
+
+/* ═══ COMPACT MAP CONTROLS ═══════════════════════════════════════════════ */
+
+.map-ctrl-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+}
+
+.map-ctrl-separator {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.09);
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+.map-ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 9px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.77rem;
+  font-weight: 700;
+  font-family: 'Outfit', 'Manrope', sans-serif;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  white-space: nowrap;
+}
+
+.map-ctrl-btn i { font-size: 0.78rem; }
+
+.map-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+
+.map-ctrl-btn--day { gap: 6px; }
+
+/* Map view toggle */
+.map-ctrl-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.map-ctrl-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 9px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.77rem;
+  font-weight: 700;
+  font-family: 'Outfit', 'Manrope', sans-serif;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  white-space: nowrap;
+}
+
+.map-ctrl-toggle-btn i { font-size: 0.78rem; }
+
+.map-ctrl-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.map-ctrl-toggle-btn.is-active {
+  background: rgba(20, 184, 166, 0.14);
+  color: #2dd4bf;
+  border-color: rgba(20, 184, 166, 0.28);
+}
+
+/* Day color dot */
+.day-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+  display: inline-block;
+}
+
+/* Layout toggles */
+.layout-toggles {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.toggle-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.38);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.toggle-btn.active {
+  background: rgba(20, 184, 166, 0.14);
+  border-color: rgba(20, 184, 166, 0.28);
+  color: #2dd4bf;
+}
+
+/* Dropdown item with icon/dot prefix */
+.dropdown-item-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -1,5 +1,9 @@
 <header class="builder-header">
+
+  <!-- ═══ TOP TOOLBAR ═══════════════════════════════════════════════════════ -->
   <div class="top-toolbar">
+
+    <!-- Left: brand + itinerary name -->
     <div class="toolbar-left">
       <a href="/home" (click)="onNavRequest('/home', $event)" class="brand anchor-reset">
         <img src="favicon.png" alt="logo" class="logo-small">
@@ -22,135 +26,108 @@
       </div>
     </div>
 
-    <div class="toolbar-right">
-      <div class="custom-dropdown export-dropdown">
-        <div class="export-split-button" [class.is-open]="showExportDropdown()">
-          <button type="button" class="save-cta save-cta--export-main" (click)="requestExport()"
-            [title]="'Esporta ' + selectedExportLabel() + ' - ' + selectedExportHint()">
-            <i class="bi bi-file-earmark-arrow-down"></i>
-            <span class="export-cta-copy">
-              <strong>Esporta {{ selectedExportLabel() }}</strong>
-              <small>{{ selectedExportHint() }}</small>
-            </span>
-          </button>
+    <!-- Center: compact map controls (absolutely centered) -->
+    <div class="toolbar-center">
+      <div class="map-ctrl-group">
 
-          <button type="button" class="save-cta save-cta--export-toggle" (click)="toggleExportDropdown($event)"
-            [attr.aria-expanded]="showExportDropdown()" aria-label="Seleziona formato export">
-            <i class="bi bi-chevron-down"></i>
-          </button>
-        </div>
-
-        @if (showExportDropdown()) {
-        <div class="dropdown-menu-custom dropdown-menu-custom--export show">
-          <button type="button" class="dropdown-item export-option" (click)="selectExportFormat('pdf')">
-            <i class="bi bi-filetype-pdf"></i>
-            <div>
-              <span class="export-option__title">PDF</span>
-              <span class="export-option__desc">Apertura immediata della stampa.</span>
-            </div>
-          </button>
-
-          <button type="button" class="dropdown-item export-option" (click)="selectExportFormat('html')">
-            <i class="bi bi-filetype-html"></i>
-            <div>
-              <span class="export-option__title">HTML</span>
-              <span class="export-option__desc">File leggibile e condivisibile.</span>
-            </div>
-          </button>
-
-          <button type="button" class="dropdown-item export-option" (click)="selectExportFormat('json')">
-            <i class="bi bi-filetype-json"></i>
-            <div>
-              <span class="export-option__title">JSON</span>
-              <span class="export-option__desc">Dati completi con gruppi e orari.</span>
-            </div>
-          </button>
-        </div>
-        }
-      </div>
-
-      <button type="button" class="save-cta" (click)="saveItinerary()">
-        <i class="bi bi-cloud-arrow-up"></i>
-        <span>Salva</span>
-      </button>
-
-      <div class="dropdown">
-        <button type="button" class="user-avatar pointer" data-bs-toggle="dropdown" aria-expanded="false">
-          @if (user()?.avatarUrl) {
-          <img [src]="user()?.avatarUrl" [alt]="user()?.name" class="avatar-img" referrerpolicy="no-referrer">
-          } @else {
-          {{ user()?.name?.charAt(0) || 'U' }}{{ user()?.surname?.charAt(0) || '' }}
-          }
+        <!-- Cambia destinazione -->
+        <button type="button" class="map-ctrl-btn" (click)="toggleLocationSearch()" title="Cambia destinazione">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>{{ workspace?.location?.name || 'Destinazione' }}</span>
+          <i class="bi bi-chevron-down" style="font-size:0.6rem; opacity:0.45;"></i>
         </button>
 
-        <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
-          @if (isAuthenticated()) {
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
-              <i class="bi bi-journal-bookmark"></i>
-              <span>I miei itinerari</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
-              <i class="bi bi-heart"></i>
-              <span>Preferiti</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
-              <i class="bi bi-gear"></i>
-              <span>Impostazioni</span>
-            </a>
-          </li>
-          <li>
-            <hr class="dropdown-divider border-white-10">
-          </li>
-          } @else {
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/login']">
-              <i class="bi bi-person"></i>
-              <span>Accedi</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/register']">
-              <i class="bi bi-person-plus"></i>
-              <span>Registrati</span>
-            </a>
-          </li>
-          <li>
-            <hr class="dropdown-divider border-white-10">
-          </li>
-          }
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/home"
-              (click)="onNavRequest('/home', $event)">
-              <i class="bi bi-house"></i>
-              <span>Torna alla home</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
+        <div class="map-ctrl-separator"></div>
 
-  <div class="bottom-toolbar">
-    <section class="toolbar-section toolbar-section--base">
-      <span class="section-label">Destinazione</span>
-      <div class="location-pill-container">
-        <div class="btn-group-pill">
-          <button class="pill-btn" type="button" (click)="toggleLocationSearch()">
-            <i class="bi bi-arrow-repeat"></i>
-            <span>Cambia</span>
+        <!-- Map view toggle: Salvati / In zona -->
+        <div class="map-ctrl-toggle">
+          <button class="map-ctrl-toggle-btn" [class.is-active]="ui.mapView() === 'selected'"
+            (click)="showSelectedMarkers()" title="Solo marker salvati">
+            <i class="bi bi-pin-map-fill"></i>
+            <span>Salvati</span>
           </button>
-          <button class="pill-btn pill-btn--location" type="button" disabled>
+          <button class="map-ctrl-toggle-btn" [class.is-active]="ui.mapView() === 'all'"
+            (click)="showAreaMarkers()" title="Tutti i punti in zona">
             <i class="bi bi-geo-alt-fill"></i>
-            <span>{{ workspace?.location?.name || 'Nessuna località' }}</span>
+            <span>In zona</span>
           </button>
         </div>
 
-        @if (showLocationSearch()) {
+        <div class="map-ctrl-separator"></div>
+
+        <!-- Route day selector -->
+        <div class="custom-dropdown" [class.open]="showVisibleDayDropdown()">
+          <div class="map-ctrl-btn" (click)="toggleVisibleDayDropdown($event)">
+            <i class="bi bi-map"></i>
+            <span>{{ ui.visibleDayRoute() === 'all' ? 'Tutti i giorni' : 'Percorso G' + ui.visibleDayRoute() }}</span>
+            <i class="bi bi-chevron-down" style="font-size:0.6rem; opacity:0.45;"></i>
+          </div>
+          @if (showVisibleDayDropdown()) {
+            <div class="dropdown-menu-custom glass-effect">
+              <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === 'all'"
+                (click)="selectVisibleDay('all')">
+                <i class="bi bi-calendar-range"></i> Tutti i giorni
+              </div>
+              @for (day of availableDays(); track day) {
+                <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === day"
+                  (click)="selectVisibleDay(day)">
+                  <i class="bi bi-calendar-event"></i> Percorso G{{ day }}
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Active day selector + color -->
+        <div class="custom-dropdown" [class.open]="showActiveDayDropdown()">
+          <div class="map-ctrl-btn map-ctrl-btn--day" (click)="toggleActiveDayDropdown($event)">
+            <span class="day-color-dot"
+              [style.background]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())">
+            </span>
+            <span>G{{ ui.selectedDay() }}</span>
+            <i class="bi bi-chevron-down" style="font-size:0.6rem; opacity:0.45;"></i>
+          </div>
+          @if (showActiveDayDropdown()) {
+            <div class="dropdown-menu-custom glass-effect">
+              @for (day of availableDays(); track day) {
+                <div class="dropdown-item-custom" [class.active]="ui.selectedDay() === day"
+                  (click)="selectActiveDay(day)">
+                  <span class="day-color-dot"
+                    [style.background]="ui.dayRouteColors()[day] || ui.getDefaultDayColor(day)">
+                  </span>
+                  Giorno {{ day }}
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Color picker for active day -->
+        <label class="color-swatch-label" title="Colore percorso giorno {{ ui.selectedDay() }}">
+          <input type="color"
+            [value]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())"
+            (input)="onDayColorChange($event)" class="hidden-color-input">
+          <span class="color-swatch"
+            [style.background-color]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())">
+          </span>
+        </label>
+
+        <div class="map-ctrl-separator"></div>
+
+        <!-- Layout toggles -->
+        <div class="layout-toggles">
+          <button class="toggle-btn" [class.active]="ui.showSummary()" (click)="ui.toggleSummary()"
+            title="Riepilogo viaggio">
+            <i class="bi bi-journal-text"></i>
+          </button>
+          <button class="toggle-btn" [class.active]="ui.showChat()" (click)="ui.toggleChat()" title="Area AI">
+            <i class="bi bi-stars"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Location search overlay -->
+      @if (showLocationSearch()) {
         <div class="location-search-overlay">
           <div class="search-input-wrapper">
             <i class="bi bi-search"></i>
@@ -161,123 +138,141 @@
               <i class="bi bi-x-lg"></i>
             </button>
           </div>
-
           @if (isSearchingLocations()) {
-          <div class="search-loading">
-            <div class="spinner-border spinner-border-sm text-primary"></div>
-            <span>Ricerca in corso...</span>
-          </div>
+            <div class="search-loading">
+              <div class="spinner-border spinner-border-sm text-primary"></div>
+              <span>Ricerca in corso...</span>
+            </div>
           }
-
           @if (locationResults().length > 0) {
-          <ul class="location-results-list">
-            @for (loc of locationResults(); track loc.id) {
-            <li (click)="selectNewLocation(loc)">
-              <i class="bi bi-geo-alt"></i>
-              <div class="loc-info">
-                <span class="loc-name">{{ loc.name }}</span>
-                <span class="loc-prov">{{ loc.province }}</span>
-              </div>
-            </li>
-            }
-          </ul>
+            <ul class="location-results-list">
+              @for (loc of locationResults(); track loc.id) {
+                <li (click)="selectNewLocation(loc)">
+                  <i class="bi bi-geo-alt"></i>
+                  <div class="loc-info">
+                    <span class="loc-name">{{ loc.name }}</span>
+                    <span class="loc-prov">{{ loc.province }}</span>
+                  </div>
+                </li>
+              }
+            </ul>
           } @else if (locationSearchTerm().length >= 2 && !isSearchingLocations()) {
-          <div class="no-results">Nessuna città trovata</div>
+            <div class="no-results">Nessuna città trovata</div>
           }
         </div>
+      }
+    </div>
+
+    <!-- Right: export + save + avatar -->
+    <div class="toolbar-right">
+      <div class="custom-dropdown export-dropdown">
+        <div class="export-split-button" [class.is-open]="showExportDropdown()">
+          <button type="button" class="save-cta save-cta--export-main" (click)="requestExport()"
+            [title]="'Esporta ' + selectedExportLabel()">
+            <i class="bi bi-file-earmark-arrow-down"></i>
+            <span class="export-cta-copy">
+              <strong>Esporta {{ selectedExportLabel() }}</strong>
+              <small>{{ selectedExportHint() }}</small>
+            </span>
+          </button>
+          <button type="button" class="save-cta save-cta--export-toggle" (click)="toggleExportDropdown($event)"
+            [attr.aria-expanded]="showExportDropdown()" aria-label="Seleziona formato export">
+            <i class="bi bi-chevron-down"></i>
+          </button>
+        </div>
+
+        @if (showExportDropdown()) {
+          <div class="dropdown-menu-custom dropdown-menu-custom--export show">
+            <button type="button" class="dropdown-item export-option" (click)="selectExportFormat('pdf')">
+              <i class="bi bi-filetype-pdf"></i>
+              <div>
+                <span class="export-option__title">PDF</span>
+                <span class="export-option__desc">Apertura immediata della stampa.</span>
+              </div>
+            </button>
+            <button type="button" class="dropdown-item export-option" (click)="selectExportFormat('html')">
+              <i class="bi bi-filetype-html"></i>
+              <div>
+                <span class="export-option__title">HTML</span>
+                <span class="export-option__desc">File leggibile e condivisibile.</span>
+              </div>
+            </button>
+            <button type="button" class="dropdown-item export-option" (click)="selectExportFormat('json')">
+              <i class="bi bi-filetype-json"></i>
+              <div>
+                <span class="export-option__title">JSON</span>
+                <span class="export-option__desc">Dati completi con gruppi e orari.</span>
+              </div>
+            </button>
+          </div>
         }
       </div>
-    </section>
 
-    <div class="v-divider"></div>
+      <button type="button" class="save-cta" (click)="saveItinerary()">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <span>Salva</span>
+      </button>
 
-    <section class="toolbar-section">
-      <span class="section-label">Vista mappa</span>
-      <div class="toolbar-row">
-        <div class="btn-group-pill">
-          <button class="pill-btn" [class.active]="ui.mapView() === 'selected'" (click)="showSelectedMarkers()"
-            title="Mostra solo i marker salvati">
-            <i class="bi bi-pin-map-fill"></i>
-            <span>Salvati</span>
-          </button>
-          <button class="pill-btn" [class.active]="ui.mapView() === 'all'" (click)="showAreaMarkers()"
-            title="Mostra tutti i punti in zona">
-            <i class="bi bi-geo-alt-fill"></i>
-            <span>In zona</span>
-          </button>
-        </div>
-        <div class="custom-dropdown" [class.open]="showVisibleDayDropdown()">
-          <div class="dropdown-trigger" (click)="toggleVisibleDayDropdown($event)">
-            <span>{{ ui.visibleDayRoute() === 'all' ? 'Tutti i giorni' : 'Percorso G' + ui.visibleDayRoute() }}</span>
-            <i class="bi bi-chevron-down"></i>
-          </div>
-          @if (showVisibleDayDropdown()) {
-          <div class="dropdown-menu-custom glass-effect">
-            <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === 'all'"
-              (click)="selectVisibleDay('all')">
-              Tutti i giorni
-            </div>
-            @for (day of availableDays(); track day) {
-            <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === day"
-              (click)="selectVisibleDay(day)">
-              Percorso G{{ day }}
-            </div>
-            }
-          </div>
+      <!-- Avatar / User menu -->
+      <div class="dropdown">
+        <button type="button" class="user-avatar pointer" data-bs-toggle="dropdown" aria-expanded="false">
+          @if (user()?.avatarUrl) {
+            <img [src]="user()?.avatarUrl" [alt]="user()?.name" class="avatar-img" referrerpolicy="no-referrer">
+          } @else {
+            {{ user()?.name?.charAt(0) || 'U' }}{{ user()?.surname?.charAt(0) || '' }}
           }
-        </div>
-      </div>
-    </section>
-
-    <div class="v-divider"></div>
-
-    <section class="toolbar-section">
-      <span class="section-label">Percorso Giorno</span>
-      <div class="toolbar-row">
-        <div class="custom-dropdown" [class.open]="showActiveDayDropdown()">
-          <div class="dropdown-trigger" (click)="toggleActiveDayDropdown($event)">
-            <span>Giorno {{ ui.selectedDay() }}</span>
-            <i class="bi bi-chevron-down"></i>
-          </div>
-          @if (showActiveDayDropdown()) {
-          <div class="dropdown-menu-custom glass-effect">
-            @for (day of availableDays(); track day) {
-            <div class="dropdown-item-custom" [class.active]="ui.selectedDay() === day" (click)="selectActiveDay(day)">
-              Giorno {{ day }}
-            </div>
-            }
-          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
+          @if (isAuthenticated()) {
+            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/itineraries']">
+              <i class="bi bi-journal-bookmark"></i><span>I miei itinerari</span></a></li>
+            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/favorites']">
+              <i class="bi bi-heart"></i><span>Preferiti</span></a></li>
+            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
+              <i class="bi bi-gear"></i><span>Impostazioni</span></a></li>
+            <li><hr class="dropdown-divider border-white-10"></li>
+          } @else {
+            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/login']">
+              <i class="bi bi-person"></i><span>Accedi</span></a></li>
+            <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/register']">
+              <i class="bi bi-person-plus"></i><span>Registrati</span></a></li>
+            <li><hr class="dropdown-divider border-white-10"></li>
           }
-        </div>
-        <label class="color-swatch-label" title="Cambia colore percorso del giorno">
-          <input type="color" [value]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())"
-            (input)="onDayColorChange($event)" class="hidden-color-input">
-          <span class="color-swatch"
-            [style.background-color]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())"></span>
-        </label>
+          <li><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/home"
+            (click)="onNavRequest('/home', $event)">
+            <i class="bi bi-house"></i><span>Torna alla home</span></a></li>
+        </ul>
       </div>
-    </section>
-
-    <div class="spacer"></div>
-
-    <section class="toolbar-section toolbar-section--layout">
-      <span class="section-label">Layout</span>
-      <div class="toggle-group">
-        <button class="toggle-btn" [class.active]="ui.showSidebarRail()" (click)="ui.toggleSidebarRail()"
-          title="Categorie">
-          <i class="bi bi-layout-sidebar"></i>
-          <span class="toggle-label">Categorie</span>
-        </button>
-        <button class="toggle-btn" [class.active]="ui.showSummary()" (click)="ui.toggleSummary()"
-          title="Riepilogo viaggio">
-          <i class="bi bi-journal-text"></i>
-          <span class="toggle-label">Riepilogo</span>
-        </button>
-        <button class="toggle-btn" [class.active]="ui.showChat()" (click)="ui.toggleChat()" title="Area AI">
-          <i class="bi bi-stars"></i>
-          <span class="toggle-label">AI</span>
-        </button>
-      </div>
-    </section>
+    </div>
   </div>
+
+  <!-- ═══ CATEGORY BAR (bottom toolbar) ════════════════════════════════════ -->
+  <div class="category-bar-wrap">
+    <!-- Fade left -->
+    <div class="cat-fade cat-fade--left" aria-hidden="true"></div>
+
+    <div class="category-bar" role="tablist" aria-label="Filtra per categoria">
+      @for (pill of categoryPills(); track pill.key) {
+        <button
+          type="button"
+          class="cat-pill"
+          role="tab"
+          [class.cat-pill--active]="activePillKey() === pill.key"
+          [attr.aria-selected]="activePillKey() === pill.key"
+          (click)="selectPill(pill)"
+          [title]="pill.label"
+        >
+          <i class="bi {{ pill.icon }} cat-pill-icon"></i>
+          <span class="cat-pill-label">{{ pill.label }}</span>
+          @if (activePillKey() === pill.key) {
+            <span class="cat-pill-dot" aria-hidden="true"></span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- Fade right -->
+    <div class="cat-fade cat-fade--right" aria-hidden="true"></div>
+  </div>
+
 </header>

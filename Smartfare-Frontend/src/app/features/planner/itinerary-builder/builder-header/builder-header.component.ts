@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output, computed, effect, inject } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -12,7 +12,14 @@ import { LocationService } from '../../../../core/services/location.service';
 import Location from '../../../../core/models/location.model';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { signal } from '@angular/core';
+
+type CategoryPill = {
+  key: string;
+  label: string;
+  icon: string;
+  type: 'all' | 'accommodation' | 'activity';
+  categoryId: number | 'all';
+};
 
 @Component({
   selector: 'app-builder-header',
@@ -22,7 +29,60 @@ import { signal } from '@angular/core';
   styleUrl: './builder-header.component.css'
 })
 export class BuilderHeaderComponent {
-  @Input() workspace: ItineraryWorkspace | null = null;
+  private workspaceSignal = signal<ItineraryWorkspace | null>(null);
+
+  @Input()
+  set workspace(value: ItineraryWorkspace | null) {
+    this.workspaceSignal.set(value);
+  }
+  get workspace(): ItineraryWorkspace | null {
+    return this.workspaceSignal();
+  }
+
+  // ── Category pills (computed from workspace) ───────────────────────────
+  readonly categoryPills = computed((): CategoryPill[] => {
+    const ws = this.workspaceSignal();
+    const pills: CategoryPill[] = [
+      { key: 'all',   label: 'Tutto', icon: 'bi-grid-3x3-gap-fill', type: 'all', categoryId: 'all' },
+      { key: 'hotel', label: 'Hotel', icon: 'bi-building',           type: 'accommodation', categoryId: 'all' }
+    ];
+    if (!ws) return pills;
+    const usedCatIds = new Set(ws.activities.map(a => a.categoryId));
+    for (const cat of ws.categories || []) {
+      if (usedCatIds.has(cat.id)) {
+        pills.push({ key: `cat-${cat.id}`, label: cat.name, icon: this.catIcon(cat.name), type: 'activity', categoryId: cat.id });
+      }
+    }
+    return pills;
+  });
+
+  readonly activePillKey = computed(() => {
+    const t = this.ui.selectedType();
+    const c = this.ui.selectedCategory();
+    if (t === 'all') return 'all';
+    if (t === 'accommodation') return 'hotel';
+    if (t === 'activity' && c !== 'all') return `cat-${c}`;
+    return 'all';
+  });
+
+  selectPill(pill: CategoryPill) {
+    this.ui.setType(pill.type);
+    this.ui.setCategory(pill.categoryId);
+  }
+
+  private catIcon(name: string): string {
+    const n = name.toLowerCase();
+    if (n.includes('muse') || n.includes('monument') || n.includes('storico')) return 'bi-bank';
+    if (n.includes('food') || n.includes('risto') || n.includes('cucina')) return 'bi-cup-hot';
+    if (n.includes('night') || n.includes('club')) return 'bi-moon-stars';
+    if (n.includes('park') || n.includes('parco') || n.includes('nature')) return 'bi-tree';
+    if (n.includes('shop') || n.includes('negozi')) return 'bi-bag';
+    if (n.includes('sport') || n.includes('fitness')) return 'bi-trophy';
+    if (n.includes('spa') || n.includes('wellness')) return 'bi-flower2';
+    if (n.includes('arte') || n.includes('galler')) return 'bi-palette';
+    if (n.includes('beach') || n.includes('spiaggia')) return 'bi-water';
+    return 'bi-compass';
+  }
 
   @Output() navRequest = new EventEmitter<string>();
   @Output() saveRequest = new EventEmitter<void>();
