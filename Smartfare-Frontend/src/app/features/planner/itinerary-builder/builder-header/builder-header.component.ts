@@ -8,8 +8,6 @@ import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AlertService } from '../../../../core/services/alert.service';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
-import { LocationService } from '../../../../core/services/location.service';
-import Location from '../../../../core/models/location.model';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -87,9 +85,6 @@ export class BuilderHeaderComponent {
   @Output() navRequest = new EventEmitter<string>();
   @Output() saveRequest = new EventEmitter<void>();
   @Output() exportRequest = new EventEmitter<'pdf' | 'html' | 'json'>();
-  @Output() locationSelected = new EventEmitter<number>();
-
-  private locationService = inject(LocationService);
 
   private authService = inject(AuthService);
   private itineraryService = inject(ItineraryService);
@@ -97,11 +92,6 @@ export class BuilderHeaderComponent {
   private alertService = inject(AlertService);
   private socialAuthService = inject(SocialAuthService);
   ui = inject(UIStateService);
-
-  showLocationSearch = signal(false);
-  locationSearchTerm = signal('');
-  locationResults = signal<Location[]>([]);
-  isSearchingLocations = signal(false);
 
   // Custom dropdown states
   showVisibleDayDropdown = signal(false);
@@ -131,30 +121,7 @@ export class BuilderHeaderComponent {
     }
   });
 
-  private searchSubject = new Subject<string>();
-
   constructor() {
-    this.searchSubject.pipe(
-      takeUntilDestroyed(),
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap(term => {
-        if (term.length < 2) {
-          this.locationResults.set([]);
-          this.isSearchingLocations.set(false);
-          return [];
-        }
-        this.isSearchingLocations.set(true);
-        return this.locationService.getLocations(term);
-      })
-    ).subscribe({
-      next: (results) => {
-        this.locationResults.set(results);
-        this.isSearchingLocations.set(false);
-      },
-      error: () => this.isSearchingLocations.set(false)
-    });
-
     effect(() => {
       const days = this.availableDays();
       const lastDay = days[days.length - 1] ?? 1;
@@ -178,6 +145,17 @@ export class BuilderHeaderComponent {
   user = computed(() => this.authService.getUserData());
   itinerary = this.itineraryService.itinerary;
   autosaveStatus = this.itineraryService.autosaveStatus;
+
+  canUndo = this.itineraryService.canUndo;
+  canRedo = this.itineraryService.canRedo;
+
+  undo() {
+    this.itineraryService.undo();
+  }
+
+  redo() {
+    this.itineraryService.redo();
+  }
 
   availableDays = computed(() => {
     const it = this.itinerary();
@@ -293,29 +271,6 @@ export class BuilderHeaderComponent {
     this.ui.setMapView('all');
     this.ui.setActiveSurface('map');
     this.alertService.info('Vista mappa: tutti i punti disponibili');
-  }
-
-  onLocationSearchChange(term: string) {
-    this.locationSearchTerm.set(term);
-    this.searchSubject.next(term);
-  }
-
-  selectNewLocation(loc: Location) {
-    this.locationSelected.emit(loc.id);
-    this.showLocationSearch.set(false);
-    this.locationSearchTerm.set('');
-    this.locationResults.set([]);
-    this.alertService.success(`Destinazione cambiata in ${loc.name}`);
-  }
-
-  toggleLocationSearch() {
-    this.showLocationSearch.set(!this.showLocationSearch());
-    if (this.showLocationSearch()) {
-      setTimeout(() => {
-        const input = document.getElementById('location-search-input');
-        input?.focus();
-      }, 100);
-    }
   }
 
   toggleVisibleDayDropdown(event: Event) {

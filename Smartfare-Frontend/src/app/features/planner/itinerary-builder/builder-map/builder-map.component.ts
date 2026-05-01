@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
+import 'leaflet.markercluster';
 import Location from '../../../../core/models/location.model';
 import { BuilderPoi } from '../builder.types';
 import { UIStateService } from '../../../../core/services/ui-state.service';
@@ -42,7 +43,20 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private map?: L.Map;
   private locationLayer = L.layerGroup();
   private savedLayer = L.layerGroup();
-  private availableLayer = L.layerGroup();
+  private availableLayer = L.markerClusterGroup({
+    chunkedLoading: true,
+    maxClusterRadius: 50,
+    spiderfyOnMaxZoom: true,
+    iconCreateFunction: (cluster) => {
+      const count = cluster.getChildCount();
+      return L.divIcon({
+        className: 'custom-cluster-icon',
+        html: `<div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 2px solid #3b82f6; box-shadow: 0 4px 12px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 700; font-size: 13px; font-family: 'Inter', sans-serif;">${count}</div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+      });
+    }
+  });
   private previewLayer = L.layerGroup();
   private routeLayer = L.layerGroup();
   private endpointLayer = L.layerGroup();
@@ -147,25 +161,15 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.map.setView([this.location.latitude, this.location.longitude], 12);
     }
 
+    const availableMarkers: L.Marker[] = [];
     for (const poi of this.availablePois) {
-      let marker: L.Layer;
-
-      if (poi.type === 'accommodation') {
-        const icon = this.createTypeIcon('accommodation', 'var(--text-color-muted)');
-        marker = L.marker([poi.latitude, poi.longitude], { icon });
-      } else {
-        marker = L.circleMarker([poi.latitude, poi.longitude], {
-          radius: 8,
-          color: 'var(--glass-border)',
-          fillColor: 'var(--text-color-muted)',
-          fillOpacity: 0.65,
-          weight: 1.5
-        });
-      }
+      const icon = this.createCategoryIcon(poi.categoryName, poi.type);
+      const marker = L.marker([poi.latitude, poi.longitude], { icon });
 
       marker.bindPopup(this.createPopupHtml(poi));
-      this.availableLayer.addLayer(marker);
+      availableMarkers.push(marker);
     }
+    this.availableLayer.addLayers(availableMarkers);
 
     this.displayRoutePois = this.getDisplayRoutePois();
     const routeOrder = this.buildRouteOrderByDay(this.displayRoutePois);
@@ -215,13 +219,18 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
 
     if (this.previewPoi) {
+      const icon = this.createCategoryIcon(this.previewPoi.categoryName, this.previewPoi.type);
       const previewMarker = L.marker([this.previewPoi.latitude, this.previewPoi.longitude], {
-        icon: this.createPreviewPinIcon(),
-        title: `Anteprima: ${this.previewPoi.title}`
+        icon: icon,
+        title: `Anteprima: ${this.previewPoi.title}`,
+        zIndexOffset: 1000
       }).bindPopup(this.createPopupHtml(this.previewPoi, 'Anteprima'));
 
       this.previewLayer.addLayer(previewMarker);
       this.map.panTo([this.previewPoi.latitude, this.previewPoi.longitude]);
+      
+      // Open the popup immediately
+      setTimeout(() => previewMarker.openPopup(), 50);
     }
 
     void this.refreshRoute();
@@ -619,6 +628,35 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     return L.divIcon({
       className: 'route-stop-icon',
       html: `<div style="width:28px;height:28px;border-radius:999px;background:${color};border:2px solid #f8fafc;box-shadow:0 4px 10px rgba(2,6,23,0.35);display:flex;align-items:center;justify-content:center;color:#ffffff;font-weight:800;font-size:12px;">${iconHtml}</div>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
+  }
+
+  private getCategoryVisuals(categoryName?: string, type?: 'accommodation' | 'activity'): { icon: string, color: string } {
+    if (type === 'accommodation') return { icon: 'bi-building', color: '#3b82f6' }; // blue
+    if (!categoryName) return { icon: 'bi-geo-alt-fill', color: '#64748b' }; // slate
+
+    const n = categoryName.toLowerCase();
+    if (n.includes('muse') || n.includes('monument') || n.includes('storico')) return { icon: 'bi-bank', color: '#f59e0b' }; // amber
+    if (n.includes('food') || n.includes('risto') || n.includes('cucina') || n.includes('bar') || n.includes('caffe')) return { icon: 'bi-cup-hot', color: '#ef4444' }; // red
+    if (n.includes('night') || n.includes('club')) return { icon: 'bi-moon-stars', color: '#8b5cf6' }; // violet
+    if (n.includes('park') || n.includes('parco') || n.includes('nature') || n.includes('naturale')) return { icon: 'bi-tree', color: '#22c55e' }; // green
+    if (n.includes('shop') || n.includes('negozi') || n.includes('commerciali')) return { icon: 'bi-bag', color: '#ec4899' }; // pink
+    if (n.includes('sport') || n.includes('fitness') || n.includes('arrampicata')) return { icon: 'bi-trophy', color: '#f97316' }; // orange
+    if (n.includes('spa') || n.includes('wellness') || n.includes('bagni')) return { icon: 'bi-flower2', color: '#06b6d4' }; // cyan
+    if (n.includes('arte') || n.includes('galler') || n.includes('artigianato')) return { icon: 'bi-palette', color: '#d946ef' }; // fuchsia
+    if (n.includes('beach') || n.includes('spiaggia') || n.includes('cascate')) return { icon: 'bi-water', color: '#0ea5e9' }; // light blue
+    if (n.includes('chies') || n.includes('cattedral')) return { icon: 'bi-bell', color: '#a855f7' }; // purple
+
+    return { icon: 'bi-geo-alt-fill', color: '#10b981' }; // emerald
+  }
+
+  private createCategoryIcon(categoryName: string | undefined, type: 'accommodation' | 'activity'): L.DivIcon {
+    const { icon, color } = this.getCategoryVisuals(categoryName, type);
+    return L.divIcon({
+      className: 'poi-category-icon',
+      html: `<div style="width:28px;height:28px;border-radius:50%;background:${color};border:2px solid #ffffff;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:14px;"><i class="bi ${icon}"></i></div>`,
       iconSize: [28, 28],
       iconAnchor: [14, 14]
     });

@@ -88,13 +88,11 @@
           <div class="sb-items-list">
             @for (poi of section.items; track poi.key) {
               <article
-                class="sb-card"
-                [class.sb-card--saved]="isSaved(poi)"
-                (click)="onPreview(poi)"
-                [attr.title]="poi.title"
+                class="sb-card-vertical"
+                [class.sb-card-vertical--saved]="isSaved(poi)"
               >
-                <!-- Thumbnail -->
-                <div class="sb-card-thumb">
+                <!-- Thumbnail / Cover -->
+                <div class="sb-card-vertical-cover" (click)="onPreview(poi)">
                   @if (poi.imageUrl) {
                     <img [src]="poi.imageUrl" [alt]="poi.title" loading="lazy" decoding="async">
                   } @else {
@@ -103,14 +101,14 @@
                     </div>
                   }
                   @if (isSaved(poi)) {
-                    <div class="sb-thumb-saved-badge">
-                      <i class="bi bi-check-circle-fill"></i>
+                    <div class="sb-thumb-saved-badge-vertical">
+                      <i class="bi bi-check-circle-fill"></i> In percorso
                     </div>
                   }
                 </div>
 
                 <!-- Body -->
-                <div class="sb-card-body">
+                <div class="sb-card-vertical-body">
                   <div class="sb-card-row-top">
                     <h4 class="sb-card-title">{{ poi.title }}</h4>
                     @if (poi.rating) {
@@ -121,21 +119,29 @@
                   </div>
                   <p class="sb-card-sub">{{ poi.subtitle }}</p>
                   @if (poi.price) {
-                    <span class="sb-card-price">{{ poi.price }}€<span class="sb-card-price-unit">{{ poi.type === 'accommodation' ? '/notte' : '' }}</span></span>
+                    <div class="sb-card-price-wrap">
+                      <span class="sb-card-price">{{ poi.price }}€<span class="sb-card-price-unit">{{ poi.type === 'accommodation' ? '/notte' : '' }}</span></span>
+                    </div>
                   }
-                </div>
 
-                <!-- Add Button -->
-                <div class="sb-card-cta">
-                  <button
-                    class="sb-add-btn"
-                    [class.sb-add-btn--saved]="isSaved(poi)"
-                    [disabled]="isSaved(poi)"
-                    (click)="onAdd(poi, $event)"
-                    [attr.title]="isSaved(poi) ? 'Già nel percorso' : 'Aggiungi al percorso'"
-                  >
-                    <i class="bi" [class.bi-check2]="isSaved(poi)" [class.bi-plus-lg]="!isSaved(poi)"></i>
-                  </button>
+                  <!-- Actions -->
+                  <div class="sb-card-vertical-actions">
+                    <button class="sb-action-btn" (click)="onPreview(poi)">
+                      <i class="bi bi-info-circle"></i> Mostra
+                    </button>
+                    <a class="sb-action-btn sb-action-btn--maps" href="https://www.google.com/maps/search/?api=1&query={{poi.latitude}},{{poi.longitude}}" target="_blank" (click)="$event.stopPropagation()">
+                      <i class="bi bi-geo-alt"></i> Maps
+                    </a>
+                    <button
+                      class="sb-action-btn sb-action-btn--add"
+                      [class.sb-action-btn--saved]="isSaved(poi)"
+                      [disabled]="isSaved(poi)"
+                      (click)="onAdd(poi, $event)"
+                      [attr.title]="isSaved(poi) ? 'Già nel percorso' : 'Aggiungi al percorso'"
+                    >
+                      <i class="bi" [class.bi-check2]="isSaved(poi)" [class.bi-plus-lg]="!isSaved(poi)"></i> {{ isSaved(poi) ? 'Aggiunto' : 'Aggiungi' }}
+                    </button>
+                  </div>
                 </div>
               </article>
             }

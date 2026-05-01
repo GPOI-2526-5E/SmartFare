@@ -19,6 +19,13 @@ export class ItineraryService {
   readonly autosaveStatus = this.autosaveStatusSignal.asReadonly();
   private autosaveQueue$ = new Subject<Itinerary>();
 
+  // History State for Undo/Redo
+  private history = signal<Itinerary[]>([]);
+  private historyIndex = signal<number>(-1);
+
+  readonly canUndo = computed(() => this.historyIndex() > 0);
+  readonly canRedo = computed(() => this.historyIndex() < this.history().length - 1);
+
   // Computed boolean helper
   readonly hasDraft = computed(() => !!this.itinerarySignal());
 
@@ -55,8 +62,24 @@ export class ItineraryService {
       });
   }
 
-  setCurrentItinerary(data: Itinerary, options?: { autosave?: boolean }) {
+  setCurrentItinerary(data: Itinerary, options?: { autosave?: boolean; skipHistory?: boolean }) {
     this.itinerarySignal.set(data);
+
+    if (!options?.skipHistory) {
+      const currentHist = this.history();
+      const currentIndex = this.historyIndex();
+      // Drop any future states if we are making a new change after undoing
+      const newHist = currentHist.slice(0, currentIndex + 1);
+      // Deep copy to prevent reference mutation issues
+      newHist.push(JSON.parse(JSON.stringify(data)));
+      
+      // Limit history to last 50 changes to avoid memory leaks
+      if (newHist.length > 50) {
+        newHist.shift();
+      }
+      this.history.set(newHist);
+      this.historyIndex.set(newHist.length - 1);
+    }
 
     // Persistence for guests
     if (!this.authService.IsAuthenticated()) {
@@ -66,6 +89,24 @@ export class ItineraryService {
 
     if (options?.autosave === false) return;
     this.autosaveQueue$.next(data);
+  }
+
+  undo() {
+    if (this.canUndo()) {
+      const newIndex = this.historyIndex() - 1;
+      this.historyIndex.set(newIndex);
+      const pastState = JSON.parse(JSON.stringify(this.history()[newIndex]));
+      this.setCurrentItinerary(pastState, { skipHistory: true });
+    }
+  }
+
+  redo() {
+    if (this.canRedo()) {
+      const newIndex = this.historyIndex() + 1;
+      this.historyIndex.set(newIndex);
+      const futureState = JSON.parse(JSON.stringify(this.history()[newIndex]));
+      this.setCurrentItinerary(futureState, { skipHistory: true });
+    }
   }
 
   loadFromStorage(): boolean {
@@ -90,6 +131,8 @@ export class ItineraryService {
   clearDraft() {
     this.itinerarySignal.set(null);
     this.autosaveStatusSignal.set('idle');
+    this.history.set([]);
+    this.historyIndex.set(-1);
     this.clearStorageDraft();
   }
 

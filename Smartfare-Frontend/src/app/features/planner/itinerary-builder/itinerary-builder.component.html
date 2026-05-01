@@ -6,16 +6,17 @@
   </div>
 
   <app-builder-header [workspace]="workspace()" (navRequest)="handleNavigationIntercept($event)"
-    (saveRequest)="handleSaveRequest()" (exportRequest)="onExportItinerary($event)"
-    (locationSelected)="loadWorkspace($event)">
+    (saveRequest)="handleSaveRequest()" (exportRequest)="onExportItinerary($event)">
   </app-builder-header>
 
-  <main class="builder-workspace" [class.builder-workspace--chat]="ui.showChat()">
-    <aside class="workspace-sidebar workspace-panel" aria-label="Esplora punti di interesse">
-      <app-builder-sidebar [workspace]="workspace()" [savedPoiKeys]="savedPoiKeys()" (focusSidebar)="onSidebarFocused()"
-        (previewPoi)="onPreviewPoi($event)" (addPoi)="onAddPoi($event)">
-      </app-builder-sidebar>
-    </aside>
+  <main class="builder-workspace" [class.builder-workspace--chat]="ui.showChat()" [class.builder-workspace--no-sidebar]="!ui.showSidebar()">
+    @if (ui.showSidebar()) {
+      <aside class="workspace-sidebar workspace-panel" aria-label="Esplora punti di interesse">
+        <app-builder-sidebar [workspace]="workspace()" [savedPoiKeys]="savedPoiKeys()" (focusSidebar)="onSidebarFocused()"
+          (previewPoi)="onPreviewPoi($event)" (addPoi)="onAddPoi($event)">
+        </app-builder-sidebar>
+      </aside>
+    }
 
     <section class="workspace-map workspace-panel" aria-label="Mappa itinerario">
       @if (!ui.showSummary()) {

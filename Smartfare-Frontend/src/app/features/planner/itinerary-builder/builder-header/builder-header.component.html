@@ -9,7 +9,6 @@
         <img src="favicon.png" alt="logo" class="logo-small">
         <div class="brand-copy">
           <span class="brand-name">SMARTFARE</span>
-          <span class="brand-sub">Journey Studio</span>
         </div>
       </a>
 
@@ -30,12 +29,15 @@
     <div class="toolbar-center">
       <div class="map-ctrl-group">
 
-        <!-- Cambia destinazione -->
-        <button type="button" class="map-ctrl-btn" (click)="toggleLocationSearch()" title="Cambia destinazione">
-          <i class="bi bi-geo-alt-fill"></i>
-          <span>{{ workspace?.location?.name || 'Destinazione' }}</span>
-          <i class="bi bi-chevron-down" style="font-size:0.6rem; opacity:0.45;"></i>
-        </button>
+        <!-- Undo/Redo Controls -->
+        <div class="map-ctrl-toggle">
+          <button class="map-ctrl-toggle-btn" [class.is-disabled]="!canUndo()" (click)="undo()" title="Annulla ultima modifica">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+          <button class="map-ctrl-toggle-btn" [class.is-disabled]="!canRedo()" (click)="redo()" title="Ripeti ultima modifica">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
 
         <div class="map-ctrl-separator"></div>
 
@@ -116,6 +118,10 @@
 
         <!-- Layout toggles -->
         <div class="layout-toggles">
+          <button class="toggle-btn" [class.active]="ui.showSidebar()" (click)="ui.toggleSidebar()"
+            title="Mostra/Nascondi scelte attività">
+            <i class="bi bi-layout-sidebar"></i>
+          </button>
           <button class="toggle-btn" [class.active]="ui.showSummary()" (click)="ui.toggleSummary()"
             title="Riepilogo viaggio">
             <i class="bi bi-journal-text"></i>
@@ -125,42 +131,6 @@
           </button>
         </div>
       </div>
-
-      <!-- Location search overlay -->
-      @if (showLocationSearch()) {
-        <div class="location-search-overlay">
-          <div class="search-input-wrapper">
-            <i class="bi bi-search"></i>
-            <input id="location-search-input" type="text" [ngModel]="locationSearchTerm()"
-              (ngModelChange)="onLocationSearchChange($event)" placeholder="Cerca una nuova città..."
-              class="location-search-input">
-            <button class="close-search" (click)="showLocationSearch.set(false)">
-              <i class="bi bi-x-lg"></i>
-            </button>
-          </div>
-          @if (isSearchingLocations()) {
-            <div class="search-loading">
-              <div class="spinner-border spinner-border-sm text-primary"></div>
-              <span>Ricerca in corso...</span>
-            </div>
-          }
-          @if (locationResults().length > 0) {
-            <ul class="location-results-list">
-              @for (loc of locationResults(); track loc.id) {
-                <li (click)="selectNewLocation(loc)">
-                  <i class="bi bi-geo-alt"></i>
-                  <div class="loc-info">
-                    <span class="loc-name">{{ loc.name }}</span>
-                    <span class="loc-prov">{{ loc.province }}</span>
-                  </div>
-                </li>
-              }
-            </ul>
-          } @else if (locationSearchTerm().length >= 2 && !isSearchingLocations()) {
-            <div class="no-results">Nessuna città trovata</div>
-          }
-        </div>
-      }
     </div>
 
     <!-- Right: export + save + avatar -->
