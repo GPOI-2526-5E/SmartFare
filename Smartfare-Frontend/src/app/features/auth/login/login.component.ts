@@ -69,8 +69,16 @@ export class LoginComponent implements OnInit {
           this.router.navigateByUrl(this.returnUrl);
         }
       },
-      error: (error) => {
-        this.alertService.error(error.error?.message || 'Errore durante il login');
+      error: (err) => {
+        let errorMessage = 'Errore durante il login';
+        if (err.error?.details && Array.isArray(err.error.details) && err.error.details.length > 0) {
+          errorMessage = err.error.details.map((d: any) => d.message).join(', ');
+        } else if (err.error?.error) {
+          errorMessage = err.error.error;
+        } else if (err.error?.message) {
+          errorMessage = err.error.message;
+        }
+        this.alertService.error(errorMessage);
       }
     })
 

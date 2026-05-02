@@ -108,7 +108,15 @@ export class RegisterComponent implements OnInit {
         this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl } });
       },
       error: (err) => {
-        this.alertService.error(err.error?.message || 'Errore durante la registrazione');
+        let errorMessage = 'Errore durante la registrazione';
+        if (err.error?.details && Array.isArray(err.error.details) && err.error.details.length > 0) {
+          errorMessage = err.error.details.map((d: any) => d.message).join(', ');
+        } else if (err.error?.error) {
+          errorMessage = err.error.error;
+        } else if (err.error?.message) {
+          errorMessage = err.error.message;
+        }
+        this.alertService.error(errorMessage);
       }
     });
   }

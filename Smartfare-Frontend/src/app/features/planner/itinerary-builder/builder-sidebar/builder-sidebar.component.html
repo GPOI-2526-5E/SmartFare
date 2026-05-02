@@ -118,16 +118,11 @@
                     }
                   </div>
                   <p class="sb-card-sub">{{ poi.subtitle }}</p>
-                  @if (poi.price) {
-                    <div class="sb-card-price-wrap">
-                      <span class="sb-card-price">{{ poi.price }}€<span class="sb-card-price-unit">{{ poi.type === 'accommodation' ? '/notte' : '' }}</span></span>
-                    </div>
-                  }
 
                   <!-- Actions -->
                   <div class="sb-card-actions-grid">
                     <button class="sb-btn-pill sb-btn-pill--info" (click)="onPreview(poi)">
-                      <i class="bi bi-info-circle"></i> Info
+                      <i class="bi bi-info-circle"></i> Mostra
                     </button>
                     <a class="sb-btn-pill sb-btn-pill--google" href="https://www.google.com/search?q={{poi.title}} {{poi.subtitle}}" target="_blank" (click)="$event.stopPropagation()">
                       <i class="bi bi-google"></i> Google

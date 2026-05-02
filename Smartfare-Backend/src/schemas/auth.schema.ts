@@ -10,7 +10,7 @@ export const registerSchema = z.object({
     password: z.string().min(6, "La password deve avere almeno 6 caratteri"),
     name: z.string().min(1, "Il nome è obbligatorio"),
     surname: z.string().min(1, "Il cognome è obbligatorio"),
-    avatarUrl: z.string().url().optional(),
+    avatarUrl: z.string().url().optional().or(z.literal('')),
     authProvider: z.string().optional()
 });
 
