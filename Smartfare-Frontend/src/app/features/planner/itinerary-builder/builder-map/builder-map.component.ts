@@ -237,7 +237,13 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       marker.bindPopup(this.createPopupHtml(poi));
       availableMarkers.push(marker);
     }
-    this.availableLayer.addLayers(availableMarkers);
+
+    // Safely add markers regardless of whether it's a ClusterGroup or a LayerGroup
+    if ((this.availableLayer as any).addLayers) {
+      (this.availableLayer as any).addLayers(availableMarkers);
+    } else {
+      availableMarkers.forEach(m => this.availableLayer.addLayer(m));
+    }
 
     this.displayRoutePois = this.getDisplayRoutePois();
     const routeOrder = this.buildRouteOrderByDay(this.displayRoutePois);
