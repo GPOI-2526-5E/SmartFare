@@ -8,184 +8,213 @@
 .loader-backdrop {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at 20% 18%, rgba(112, 162, 255, 0.16), transparent 24%),
-    radial-gradient(circle at 82% 22%, rgba(88, 134, 239, 0.12), transparent 22%),
-    linear-gradient(145deg, rgba(3, 10, 22, 0.94), rgba(4, 16, 33, 0.96));
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  animation: loader-fade-in 0.2s ease-out;
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(64, 128, 255, 0.15), transparent 30%),
+    radial-gradient(circle at 85% 85%, rgba(64, 128, 255, 0.1), transparent 30%),
+    rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: fade-in 0.3s ease-out;
 }
 
 .loader-panel {
-  display: grid;
-  place-items: center;
-  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
-.loader-mark {
-  display: grid;
-  justify-items: center;
-  text-align: center;
-  gap: 0.65rem;
-  color: #eef4ff;
-  animation: loader-rise 0.28s ease-out;
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  max-width: 400px;
+  width: 100%;
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.loader-logo {
+/* --- Compass Visual --- */
+.loader-visual {
   position: relative;
-  width: 8.5rem;
-  height: 8.5rem;
+  width: 160px;
+  height: 160px;
   display: grid;
   place-items: center;
 }
 
-.logo-orbit {
+.compass {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.compass-ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 1px solid rgba(138, 178, 255, 0.16);
+  border: 2px solid rgba(64, 128, 255, 0.2);
+  box-shadow: 0 0 30px rgba(64, 128, 255, 0.1);
 }
 
-.orbit-one {
-  animation: spin 4.2s linear infinite;
-}
-
-.orbit-two {
-  inset: 0.8rem;
-  border-color: rgba(138, 178, 255, 0.22);
-  animation: spin-reverse 3.2s linear infinite;
-}
-
-.logo-orbit::before {
-  content: '';
+.compass-needle {
   position: absolute;
-  top: -0.28rem;
-  left: 50%;
-  width: 0.58rem;
-  height: 0.58rem;
-  border-radius: 50%;
-  background: #8db2ff;
-  box-shadow: 0 0 14px rgba(141, 178, 255, 0.75);
-  transform: translateX(-50%);
+  width: 4px;
+  height: 80%;
+  background: linear-gradient(to bottom, #4080ff 50%, #1e293b 50%);
+  border-radius: 2px;
+  animation: compass-spin 3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-.logo-core {
+.compass-core {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  border: 2px solid #4080ff;
+  box-shadow: 0 0 15px rgba(64, 128, 255, 0.5);
+  z-index: 2;
+}
+
+.compass-glow {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle, rgba(64, 128, 255, 0.15) 0%, transparent 70%);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.loader-icon-container {
   position: relative;
-  width: 5.3rem;
-  height: 5.3rem;
-  border-radius: 1.8rem;
+  z-index: 3;
+  width: 60px;
+  height: 60px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(64, 128, 255, 0.3);
+  border-radius: 16px;
   display: grid;
   place-items: center;
-  background:
-    linear-gradient(180deg, rgba(122, 169, 255, 0.2), rgba(46, 82, 160, 0.08)),
-    rgba(8, 20, 40, 0.95);
-  border: 1px solid rgba(151, 187, 255, 0.22);
-  box-shadow:
-    0 16px 40px rgba(2, 8, 18, 0.42),
-    0 0 30px rgba(110, 160, 255, 0.18);
-  overflow: hidden;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
-.brand-pill {
-  position: absolute;
-  top: 0.55rem;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.1rem 0.38rem;
-  border-radius: 999px;
-  background: rgba(141, 178, 255, 0.12);
-  color: #dbe8ff;
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+.loader-icon {
+  font-size: 1.75rem;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(64, 128, 255, 0.5);
 }
 
-.logo-icon {
-  font-size: 1.6rem;
-  color: #eef4ff;
-  animation: icon-pulse 1.4s ease-in-out infinite;
+/* --- Text & Progress --- */
+.loader-text {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .loader-brand {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 800;
   letter-spacing: -0.02em;
+  color: #fff;
+  text-transform: uppercase;
 }
 
 .loader-label {
   margin: 0;
-  color: #8db2ff;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.25em;
+  color: #4080ff;
   text-transform: uppercase;
 }
 
-.loader-message {
-  margin: 0.15rem 0 0;
-  max-width: 26rem;
-  color: rgba(223, 234, 255, 0.76);
-  font-size: 0.94rem;
-  line-height: 1.55;
+.progress-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+  border: 1px solid rgba(64, 128, 255, 0.1);
 }
 
-@keyframes loader-fade-in {
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4080ff, #7ca9ff);
+  border-radius: 10px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-glow {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+  filter: blur(4px);
+}
+
+.loader-message {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* --- Animations --- */
+@keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes loader-rise {
-  from {
+@keyframes slide-up {
+  from { 
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(20px);
   }
-
-  to {
+  to { 
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+@keyframes compass-spin {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(180deg); }
+  40% { transform: rotate(90deg); }
+  60% { transform: rotate(270deg); }
+  80% { transform: rotate(160deg); }
+  100% { transform: rotate(360deg); }
 }
 
-@keyframes spin-reverse {
-  to {
-    transform: rotate(-360deg);
-  }
-}
-
-@keyframes icon-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.92;
-  }
-
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
-  }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.8; }
 }
 
 @media (max-width: 480px) {
-  .loader-logo {
-    width: 7.4rem;
-    height: 7.4rem;
+  .loader-visual {
+    width: 130px;
+    height: 130px;
   }
-
-  .logo-core {
-    width: 4.7rem;
-    height: 4.7rem;
+  
+  .loader-icon-container {
+    width: 50px;
+    height: 50px;
   }
-
-  .loader-message {
-    max-width: 18rem;
-    font-size: 0.88rem;
+  
+  .loader-icon {
+    font-size: 1.5rem;
+  }
+  
+  .loader-brand {
+    font-size: 1.1rem;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, effect, input, signal } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 
 @Component({
   selector: 'app-loader',
@@ -37,6 +37,11 @@ export class AppLoaderComponent {
   ] as const;
 
   protected readonly activePhaseIndex = signal(0);
+  protected readonly progress = computed(() => {
+    const total = this.phases.length;
+    const current = this.activePhaseIndex() + 1;
+    return (current / total) * 100;
+  });
 
   private phaseTimerId: number | null = null;
 
