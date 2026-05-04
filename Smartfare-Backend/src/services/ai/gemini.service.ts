@@ -72,10 +72,15 @@ export class GeminiItineraryChatService {
             note: item.note || undefined
         }));
 
-        const conversation = (userInput.conversation || []).slice(-10);
+        const conversation = (userInput.conversation || []).slice(-5); // Reduced history
 
-        const activities = (workspace.activities || []).map(a => ({ id: a.id, name: a.name, categoryId: a.category?.id }));
-        const accommodations = (workspace.accommodations || []).map(acc => ({ id: acc.id, name: acc.name, stars: acc.stars }));
+        // Limit the number of POIs to reduce token usage
+        const activities = (workspace.activities || [])
+            .slice(0, 40)
+            .map(a => ({ id: a.id, name: a.name, categoryId: a.category?.id }));
+        const accommodations = (workspace.accommodations || [])
+            .slice(0, 20)
+            .map(acc => ({ id: acc.id, name: acc.name, stars: acc.stars }));
 
         return [
             'Sei l\'assistente IA di SmartFare per l\'itinerary builder.',
@@ -155,21 +160,29 @@ export class GeminiItineraryChatService {
 
         const systemPrompt = [
             'Sei un esperto di viaggi.',
-            'Dato un prompt dell\'utente e una lista di location (ID e Nome), identifica quale location è la più pertinente.',
+            'Dato un prompt dell\'utente e una lista di nomi di location, identifica quale location è la più pertinente.',
             'Se non trovi una corrispondenza esatta, scegli la più vicina.',
             'Se non c\'è alcuna corrispondenza sensata, restituisci "null".',
-            'Restituisci SOLO l\'ID numerico o la stringa "null".',
+            'Restituisci SOLO il NOME della location identificata o la stringa "null".',
             '',
-            `Lista location: ${JSON.stringify(locations)}`,
+            `Lista location: ${locations.map(l => l.name).join(', ')}`,
             `Prompt utente: "${prompt}"`
         ].join('\n');
 
-        const result = await model.generateContent(systemPrompt);
-        const text = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
-        
-        if (text.toLowerCase().includes('null')) return null;
-        const id = parseInt(text.replace(/[^0-9]/g, ''));
-        return isNaN(id) ? null : id;
+        try {
+            const result = await model.generateContent(systemPrompt);
+            const text = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
+            
+            if (text.toLowerCase().includes('null')) return null;
+            
+            // Find the location by name in the original list
+            const identifiedName = text.trim().toLowerCase();
+            const found = locations.find(l => l.name.toLowerCase() === identifiedName || identifiedName.includes(l.name.toLowerCase()));
+            return found ? found.id : null;
+        } catch (error: any) {
+            console.error("Gemini identifyLocation Error:", error);
+            return null;
+        }
     }
 
     async generateInitialItinerary(prompt: string, workspace: AiItineraryWorkspaceContext): Promise<any> {
@@ -177,8 +190,13 @@ export class GeminiItineraryChatService {
         const ai = new GoogleGenerativeAI(this.apiKey);
         const model = ai.getGenerativeModel({ model: this.modelName });
 
-        const activities = (workspace.activities || []).map(a => ({ id: a.id, name: a.name, category: a.category?.name }));
-        const accommodations = (workspace.accommodations || []).map(acc => ({ id: acc.id, name: acc.name, stars: acc.stars }));
+        // Limit POIs to avoid quota issues
+        const activities = (workspace.activities || [])
+            .slice(0, 30)
+            .map(a => ({ id: a.id, name: a.name, category: a.category?.name }));
+        const accommodations = (workspace.accommodations || [])
+            .slice(0, 15)
+            .map(acc => ({ id: acc.id, name: acc.name, stars: acc.stars }));
 
         const systemPrompt = [
             'Sei un assistente esperto di viaggi SmartFare.',
@@ -198,8 +216,13 @@ export class GeminiItineraryChatService {
             `Alloggi disponibili: ${JSON.stringify(accommodations)}`,
         ].join('\n');
 
-        const result = await model.generateContent(systemPrompt);
-        const responseText = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
-        return this.tryParseJson(responseText);
+        try {
+            const result = await model.generateContent(systemPrompt);
+            const responseText = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
+            return this.tryParseJson(responseText);
+        } catch (error: any) {
+            console.error("Gemini generateInitialItinerary Error:", error);
+            return null;
+        }
     }
 }
