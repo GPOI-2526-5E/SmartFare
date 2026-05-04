@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import Location from '../../../../core/models/location.model';
-import { BuilderPoi } from '../builder.types';
+import { BuilderPoi } from '../../../../core/models/builder.types';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 
 @Component({
@@ -173,9 +173,9 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   private findPoiByKey(key: string | null): BuilderPoi | undefined {
     if (!key) return undefined;
-    return this.availablePois.find(p => p.key === key) || 
-           this.savedPois.find(p => p.key === key) ||
-           (this.previewPoi?.key === key ? this.previewPoi : undefined);
+    return this.availablePois.find(p => p.key === key) ||
+      this.savedPois.find(p => p.key === key) ||
+      (this.previewPoi?.key === key ? this.previewPoi : undefined);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -276,7 +276,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
       this.previewLayer.addLayer(previewMarker);
       this.map.panTo([this.previewPoi.latitude, this.previewPoi.longitude]);
-      
+
       // Open the popup immediately
       setTimeout(() => previewMarker.openPopup(), 50);
     }
@@ -587,7 +587,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     const gMapsLink = `https://www.google.com/maps/search/?api=1&query=${poi.latitude},${poi.longitude}`;
     const gSearchLink = `https://www.google.com/search?q=${encodeURIComponent(poi.title + ' ' + (poi.subtitle || ''))}`;
-    
+
     const isSaved = this.savedPois.some(p => p.key === poi.key);
 
     return `

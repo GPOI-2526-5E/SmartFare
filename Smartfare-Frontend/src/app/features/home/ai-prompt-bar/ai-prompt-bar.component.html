@@ -5,8 +5,8 @@
       <div class="ai-icon-container">
         <i class="bi bi-stars"></i>
       </div>
-      <input type="text" [(ngModel)]="travelQuery" class="prompt-input flex-grow-1"
-        [placeholder]="currentPlaceholder" (keydown.enter)="onAIGenerate()" spellcheck="false" autocomplete="off">
+      <input type="text" [(ngModel)]="travelQuery" class="prompt-input" [placeholder]="currentPlaceholder()"
+        (keydown.enter)="onAIGenerate()" spellcheck="false" autocomplete="off">
       <button type="button" class="btn-send" (click)="onAIGenerate()" [class.active]="travelQuery.trim()"
         title="Genera Viaggio">
         <i class="bi bi-arrow-up-short"></i>

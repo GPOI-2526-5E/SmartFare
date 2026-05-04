@@ -1,0 +1,52 @@
+<section class="wl-header">
+  <div class="wl-header-bg">
+    <img [src]="itinerary()?.imageUrl || '/assets/home-section.avif'" alt="Cover" />
+    <button class="wl-edit-bg-btn" (click)="coverInput.click()">
+      @if (isUploadingImage()) {
+        <span class="spinner-border spinner-border-sm"></span>
+      } @else {
+        <i class="bi bi-pencil-fill"></i>
+      }
+    </button>
+    <input type="file" #coverInput hidden accept="image/*" (change)="onCoverImageSelected($event)" />
+  </div>
+
+  <div class="wl-header-card">
+    <div class="wl-meta-row">
+      <div class="wl-duration-badge">
+        <i class="bi bi-calendar3"></i> {{ itineraryDateSummary() }}
+      </div>
+      <button class="wl-publish-toggle" [class.is-published]="isPublic()" (click)="togglePublish()">
+        <i class="bi" [class.bi-eye-fill]="isPublic()" [class.bi-eye-slash]="!isPublic()"></i>
+        {{ isPublic() ? 'Pubblico' : 'Privato' }}
+      </button>
+    </div>
+
+    <div class="wl-title-container" [class.is-editing]="isEditingTitle()">
+      @if (isEditingTitle()) {
+      <input #titleInput class="wl-title-input" [ngModel]="editTitleValue()"
+        (ngModelChange)="editTitleValue.set($event)" (keyup.enter)="saveTitle()" (blur)="saveTitle()" autofocus />
+      } @else {
+      <h1 class="wl-title">
+        {{ itinerary()?.name || workspace()?.location?.name || 'Viaggio' }}
+      </h1>
+      <button class="wl-edit-title-btn" (click)="startEditingTitle()">
+        <i class="bi bi-pencil-fill"></i>
+      </button>
+      }
+    </div>
+
+    <div class="wl-description-row" [class.is-editing]="isEditingDescription()">
+      @if (isEditingDescription()) {
+      <textarea #descInput class="wl-description-input" [ngModel]="editDescriptionValue()"
+        (ngModelChange)="editDescriptionValue.set($event)" (keyup.enter)="saveDescription()" (blur)="saveDescription()"
+        placeholder="Aggiungi una descrizione..." autofocus></textarea>
+      } @else {
+      <p class="wl-description" (click)="startEditingDescription()">
+        {{ itinerary()?.description || 'Aggiungi una descrizione al tuo viaggio...' }}
+        <span class="wl-edit-hint"><i class="bi bi-pencil"></i></span>
+      </p>
+      }
+    </div>
+  </div>
+</section>

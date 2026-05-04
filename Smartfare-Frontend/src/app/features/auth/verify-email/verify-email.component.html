@@ -1,0 +1,45 @@
+<div class="verify-container">
+  <div class="verify-card glass-morphism">
+    <div class="header">
+      <div class="logo">
+        <img src="/assets/logo.png" alt="SmartFare Logo" onerror="this.src='https://rpcgfwithmoyezrdeahj.supabase.co/storage/v1/object/public/hotels/hotel.avif'"/>
+        <span>SMARTFARE</span>
+      </div>
+    </div>
+
+    <div class="content">
+      @if (isLoading) {
+        <div class="state-container">
+          <div class="spinner"></div>
+          <h2>Verifica in corso...</h2>
+          <p>Stiamo convalidando le tue credenziali. Un momento...</p>
+        </div>
+      }
+
+      @if (success) {
+        <div class="state-container success">
+          <div class="icon-wrapper">
+            <i class="bi bi-check-lg"></i>
+          </div>
+          <h2>Email Verificata!</h2>
+          <p>Il tuo account è attivo. Verrai reindirizzato tra pochi secondi.</p>
+        </div>
+      }
+
+      @if (error) {
+        <div class="state-container error">
+          <div class="icon-wrapper">
+            <i class="bi bi-x-lg"></i>
+          </div>
+          <h2>Errore di Verifica</h2>
+          <p>{{ error }}</p>
+          <button class="btn-action" (click)="goToLogin()">
+            <span>Torna al Login</span>
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+

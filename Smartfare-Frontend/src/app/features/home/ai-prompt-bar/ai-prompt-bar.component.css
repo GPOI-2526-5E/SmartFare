@@ -13,30 +13,17 @@
 
 .glow-effect {
   background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
-  background-size: 300% 300%;
   border-radius: 40px;
-  filter: blur(12px);
+  filter: blur(8px);
   opacity: 0.6;
-  animation: glowingGradient 8s ease infinite;
   z-index: -1;
   transition: opacity 0.3s ease;
+  transform: translateZ(0);
 }
 
 .glow-wrapper:focus-within .glow-effect {
   opacity: 0.9;
-  filter: blur(16px);
-}
-
-@keyframes glowingGradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  filter: blur(10px);
 }
 
 .glow-wrapper {
@@ -55,11 +42,13 @@
   backdrop-filter: blur(20px);
   border: 1px solid var(--prompt-bar-border);
   border-radius: 40px;
+  gap: 12px;
   padding: 8px 12px;
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  contain: layout paint;
 }
 
 .prompt-bar:focus-within {
@@ -85,7 +74,7 @@
   background: linear-gradient(135deg, #a78bfa, #f472b6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: pulseIcon 3s infinite alternate;
+  animation: pulseIcon 4.5s ease-in-out infinite;
 }
 
 @keyframes pulseIcon {
@@ -101,6 +90,8 @@
 
 /* Input */
 .prompt-input {
+  flex: 1 1 auto;
+  min-width: 0;
   background: transparent;
   border: none;
   outline: none;
@@ -108,7 +99,7 @@
   font-size: 1.15rem;
   font-weight: 500;
   padding: 12px 0;
-  margin-right: 15px;
+  margin-right: 0;
 }
 
 .prompt-input::placeholder {
@@ -160,7 +151,7 @@
   justify-content: center;
   gap: 10px;
   margin-top: 10px;
-  animation: fadeUp 0.5s ease 0.5s both;
+  animation: fadeUp 0.35s ease 0.2s both;
 }
 
 @keyframes fadeUp {
@@ -204,6 +195,8 @@
 @media (max-width: 600px) {
   .prompt-bar {
     padding: 6px;
+    gap: 8px;
+    backdrop-filter: blur(12px);
   }
   .prompt-input {
     font-size: 1rem;
@@ -215,5 +208,16 @@
   }
   .glow-effect {
     filter: blur(8px);
+  }
+}
+
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  .ai-icon-container i,
+  .manual-create-prompt {
+    animation: none;
+  }
+
+  .prompt-bar {
+    backdrop-filter: blur(10px);
   }
 }

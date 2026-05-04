@@ -1,13 +1,16 @@
 <section class="experiences-section position-relative min-vh-100 d-flex align-items-center w-100">
 
-  <!-- Animated background images -->
-  @for (exp of experiences; track exp.id) {
+  <!-- Optimized background layers: only 2 layers for cross-fading -->
+  @if (previousExperience(); as prev) {
     <div
-      class="bg-image position-absolute top-0 start-0 w-100 h-100"
-      [class.active]="activeExperience().id === exp.id"
-      [style.backgroundImage]="'url(' + exp.imageUrl + ')'">
+      class="bg-image position-absolute top-0 start-0 w-100 h-100 previous"
+      [style.backgroundImage]="'url(' + prev.imageUrl + ')'">
     </div>
   }
+  <div
+    class="bg-image position-absolute top-0 start-0 w-100 h-100 active"
+    [style.backgroundImage]="'url(' + activeExperience().imageUrl + ')'">
+  </div>
 
   <!-- Cinematic overlay: dark left panel + subtle vignette -->
   <div class="overlay-left position-absolute top-0 start-0 h-100"></div>
@@ -82,7 +85,7 @@
             @if (!exp.imageUrl) {
               <div class="spinner-border text-light position-absolute top-50 start-50 translate-middle" role="status"></div>
             }
-            <img [src]="exp.imageUrl" [alt]="exp.title" class="card-img">
+            <img [src]="exp.cardImageUrl" [alt]="exp.title" class="card-img" loading="lazy">
 
             <!-- Card overlay with title -->
             <div class="card-info">

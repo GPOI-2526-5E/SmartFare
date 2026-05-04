@@ -76,4 +76,17 @@ router.post("/", authenticateJWT, async (req: AuthRequest, res: Response, next: 
     }
 });
 
+// GET /api/itineraries/me - Get all itineraries for the logged user
+router.get("/me", authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = Number(req.user?.userId);
+        if (!userId || Number.isNaN(userId)) return res.status(401).json({ error: "Unauthorized" });
+
+        const itineraries = await itineraryService.getUserItineraries(userId);
+        res.status(200).json(itineraries);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export default router;

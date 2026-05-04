@@ -1,19 +1,19 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { AuthService } from '../services/auth/auth.service';
 import rateLimit from 'express-rate-limit';
-import { loginSchema, registerSchema, forgotPasswordSchema, resetPasswordSchema } from "../schemas/auth.schema";
+import { loginSchema, registerSchema, forgotPasswordSchema, resetPasswordSchema, verifyEmailSchema } from "../schemas/auth.schema";
 
 
 const router = Router();
 const authService = new AuthService();
 
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
+    windowMs: 1 * 60 * 1000, // 1 minuto
+    max: 30,
     standardHeaders: true,
     legacyHeaders: false,
     message: {
-        error: 'Troppi tentativi. Riprova tra 15 minuti.'
+        error: 'Troppi tentativi. Riprova tra 1 minuto.'
     }
 });
 
@@ -100,6 +100,22 @@ router.post("/reset-password", authLimiter, async (req: Request, res: Response, 
         }
 
         return res.status(200).json({ success: true, message: "Password aggiornata con successo" });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// ─── POST /auth/verify-email ──────────────────────────────────────────────────
+router.post("/verify-email", authLimiter, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { token } = verifyEmailSchema.parse(req.body);
+        const result = await authService.VerifyEmail(token);
+
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+
+        return res.status(200).json(result);
     } catch (error) {
         next(error);
     }

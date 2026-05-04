@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, Output, computed, inject, si
 import { CommonModule } from '@angular/common';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
-import { BuilderPoi } from '../builder.types';
+import { BuilderPoi } from '../../../../core/models/builder.types';
 import { Subject, debounceTime } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -151,7 +151,7 @@ export class BuilderSidebarComponent implements OnDestroy {
     const allFiltered = this.filteredPois();
     const page = this.currentPage();
     const size = this.pageSize();
-    
+
     // Pagination slicing
     const startIndex = (page - 1) * size;
     const pois = allFiltered.slice(startIndex, startIndex + size);
@@ -221,5 +221,5 @@ export class BuilderSidebarComponent implements OnDestroy {
     return 'bi-compass';
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

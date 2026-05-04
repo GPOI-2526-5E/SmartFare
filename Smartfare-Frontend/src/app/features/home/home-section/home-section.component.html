@@ -2,7 +2,9 @@
   <div class="background-layer w-100 h-100 position-absolute top-0 start-0">
     @for (videoSrc of videoLayers; track $index) {
     <video #backgroundVideo class="background-video" [class.is-active]="$index === activeVideoLayer"
-      [attr.src]="videoSrc" autoplay muted playsinline loop preload="auto" (loadeddata)="onVideoLoaded($index)"></video>
+      [attr.src]="videoSrc" [attr.autoplay]="$index === activeVideoLayer ? '' : null" muted
+      [attr.loop]="$index === activeVideoLayer ? '' : null"
+      [attr.preload]="$index === activeVideoLayer ? 'auto' : 'metadata'" (loadeddata)="onVideoLoaded($index)"></video>
     }
     <div class="overlay w-100 h-100 position-absolute top-0 start-0"></div>
   </div>
@@ -27,7 +29,7 @@
     </main>
 
     <div class="booking-form-wrap w-100 d-flex justify-content-center align-items-end" data-aos="fade-up">
-      <div class="w-100" style="max-width:1140px;">
+      <div class="booking-form-inner w-100">
         <app-ai-prompt-bar appRevealOnScroll="fade-up" [revealDelay]="140"></app-ai-prompt-bar>
       </div>
     </div>
@@ -46,7 +48,8 @@
       <div class="glow-separator"></div>
     </div>
     <p class="intro-subtitle" appRevealOnScroll="fade-up" [revealDelay]="200">
-      Lasciati ispirare dalle nostre destinazioni migliori. Dai paradisi tropicali alle vette innevate, trova la tua prossima avventura.
+      Lasciati ispirare dalle nostre destinazioni migliori. Dai paradisi tropicali alle vette innevate, trova la tua
+      prossima avventura.
     </p>
   </div>
 </div>

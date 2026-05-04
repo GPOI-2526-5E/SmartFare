@@ -6,8 +6,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// Schema Prisma riscritto per aderire allo schema SQL fornito dall'utente.
-
 model User {
   id                   Int       @id @default(autoincrement())
   email                String    @unique
@@ -15,9 +13,12 @@ model User {
   authProvider         String    @default("local")
   sessionId            String?
   resetPasswordToken   String?
-  resetPasswordExpires DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  resetPasswordExpires     DateTime?
+  isEmailVerified          Boolean   @default(false)
+  emailVerificationToken   String?
+  emailVerificationExpires DateTime?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
 
   profile     UserProfile?
   preference  UserPreference?
@@ -188,6 +189,9 @@ model Itinerary {
   visibility ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
   favorites  ItineraryFavorite[]
   items      ItineraryItem[]
+  
+  @@index([userId])
+  @@index([updatedAt])
 }
 
 model ItineraryFavorite {
@@ -235,4 +239,10 @@ model ItineraryItem {
   airport       Airport?          @relation("ItineraryItem_Airport", fields: [airportId], references: [id])
 
   @@unique([itineraryId, dayNumber, orderInt])
+  @@index([itineraryId])
+  @@index([activityId])
+  @@index([accommodationId])
+  @@index([trainsStationId])
+  @@index([metroStationId])
+  @@index([airportId])
 }

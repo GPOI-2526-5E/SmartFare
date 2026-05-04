@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, NgZone, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,11 +10,12 @@ import { AlertService } from '../../../core/services/alert.service';
   templateUrl: './ai-prompt-bar.component.html',
   styleUrl: './ai-prompt-bar.component.css',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiPromptBarComponent implements OnInit, OnDestroy {
 
   travelQuery: string = '';
-  currentPlaceholder: string = '';
+  protected readonly currentPlaceholder = signal('');
 
   private placeholders: string[] = [
     "Es: Organizza un viaggio on the road in California...",
@@ -22,10 +23,13 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
     "Es: Portami a scoprire l'aurora boreale in Islanda..."
   ];
 
-  private placeholderIndex: number = 0;
-  private charIndex: number = 0;
-  private isDeleting: boolean = false;
-  private typingTimeout: any;
+  private placeholderIndex = 0;
+  private typingTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly ngZone = inject(NgZone);
+  private readonly reduceMotion = typeof window !== 'undefined' && (
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ||
+    (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true
+  );
 
   constructor(
     private router: Router,
@@ -33,38 +37,29 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    setTimeout(() => this.typeNext(), 0);
+    this.currentPlaceholder.set(this.placeholders[0] ?? '');
+
+    if (this.reduceMotion) {
+      return;
+    }
+
+    this.ngZone.runOutsideAngular(() => {
+      this.typingTimeout = setTimeout(() => this.rotatePlaceholder(), 4200);
+    });
   }
 
   ngOnDestroy() {
     if (this.typingTimeout) {
       clearTimeout(this.typingTimeout);
+      this.typingTimeout = null;
     }
   }
 
-  private typeNext() {
-    const currentText = this.placeholders[this.placeholderIndex];
-    let typeSpeed = 50;
+  private rotatePlaceholder() {
+    this.placeholderIndex = (this.placeholderIndex + 1) % this.placeholders.length;
+    this.currentPlaceholder.set(this.placeholders[this.placeholderIndex] ?? '');
 
-    if (this.isDeleting) {
-      this.currentPlaceholder = currentText.substring(0, this.charIndex - 1);
-      this.charIndex--;
-      typeSpeed = 25; // Faster deletion
-    } else {
-      this.currentPlaceholder = currentText.substring(0, this.charIndex + 1);
-      this.charIndex++;
-    }
-
-    if (!this.isDeleting && this.charIndex === currentText.length) {
-      typeSpeed = 2500; // Pause at end of text
-      this.isDeleting = true;
-    } else if (this.isDeleting && this.charIndex === 0) {
-      this.isDeleting = false;
-      this.placeholderIndex = (this.placeholderIndex + 1) % this.placeholders.length;
-      typeSpeed = 500; // Pause before starting next text
-    }
-
-    this.typingTimeout = setTimeout(() => this.typeNext(), typeSpeed);
+    this.typingTimeout = setTimeout(() => this.rotatePlaceholder(), 4200);
   }
 
   onAIGenerate(): void {
@@ -72,8 +67,8 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
       this.alertService.show("Inserisci almeno qualche dettaglio per far lavorare l'IA.");
       return;
     }
-    
-    this.router.navigate(['/planner'], { queryParams: { prompt: this.travelQuery } });
+
+    this.router.navigate(['/itineraries', 'new'], { queryParams: { prompt: this.travelQuery } });
   }
 
   onManualCreate(): void {

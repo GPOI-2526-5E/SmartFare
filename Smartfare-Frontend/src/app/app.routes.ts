@@ -7,6 +7,10 @@ export const APP_ROUTES: Routes = [
   { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then((r) => r.RegisterComponent) },
   { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then((c) => c.ForgotPasswordComponent) },
   { path: 'reset-password', loadComponent: () => import('./features/auth/reset-password/reset-password.component').then((c) => c.ResetPasswordComponent) },
+  { path: 'verify-email', loadComponent: () => import('./features/auth/verify-email/verify-email.component').then((c) => c.VerifyEmailComponent) },
+  { path: 'profile/itineraries', loadComponent: () => import('./features/profile/itineraries/itineraries.component').then((c) => c.ItinerariesComponent)},
+  { path: 'manual/planner', loadComponent: () => import('./features/planner/manual-planner/manual-planner.component').then((m) => m.ManualPlannerComponent) },
+  { path: 'itineraries', loadComponent: () => import('./features/profile/itineraries/itineraries.component').then((c) => c.ItinerariesComponent)},
   { path: 'itineraries/new', loadComponent: () => import('./features/planner/manual-planner/manual-planner.component').then((m) => m.ManualPlannerComponent) },
   { path: 'itineraries/builder', loadComponent: () => import('./features/planner/itinerary-builder/itinerary-builder.component').then((m) => m.ItineraryBuilderComponent) },
   { path: '**', redirectTo: '' }

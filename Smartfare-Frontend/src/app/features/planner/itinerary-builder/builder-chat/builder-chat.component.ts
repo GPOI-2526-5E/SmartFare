@@ -1,314 +1,484 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, Input, OnChanges, SimpleChanges, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Itinerary, ItineraryItem, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
+import { AiChatEntry, AiItineraryChatAction } from '../../../../core/models/ai-chat.model';
+import { AiChatService } from '../../../../core/services/ai-chat.service';
+import { ItineraryService } from '../../../../core/services/itinerary.service';
+import { AlertService } from '../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-builder-chat',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="chat-container">
-      <div class="chat-glow chat-glow--top" aria-hidden="true"></div>
-      <div class="chat-glow chat-glow--bottom" aria-hidden="true"></div>
-
-      <div class="chat-header">
-        <div class="chat-header__eyebrow">
-          <i class="bi bi-stars"></i>
-          <span>AI Assistant</span>
-        </div>
-        <button class="chat-header__status" type="button">
-          <span></span>
-          Beta panel
-        </button>
-      </div>
-
-      <div class="chat-body">
-        <div class="placeholder-wrap">
-          <div class="placeholder-icon">
-            <i class="bi bi-magic"></i>
-          </div>
-
-          <div class="placeholder-copy">
-            <span class="placeholder-kicker">Dark assistant space</span>
-            <p>Il pannello AI ora segue il tema scuro del builder.</p>
-            <small>Nel prossimo step possiamo collegare prompt, suggerimenti di viaggio e azioni rapide.</small>
-          </div>
-
-          <div class="placeholder-suggestions">
-            <button type="button">Ottimizza il giorno 2</button>
-            <button type="button">Suggerisci attivita serali</button>
-            <button type="button">Bilancia hotel e tappe</button>
-          </div>
-        </div>
-
-        <div class="composer-shell">
-          <div class="composer-shell__hint">
-            <i class="bi bi-lightning-charge-fill"></i>
-            Prompt rapido presto disponibile
-          </div>
-          <div class="composer-shell__input">
-            <span>Scrivi una richiesta per l'assistente...</span>
-            <button type="button" aria-label="Invia prompt">
-              <i class="bi bi-arrow-up"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .chat-container {
-      --chat-surface: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.88));
-      --chat-panel: rgba(2, 6, 23, 0.42);
-      --chat-panel-strong: rgba(15, 23, 42, 0.72);
-      --chat-border: rgba(148, 163, 184, 0.16);
-      --chat-copy: rgba(226, 232, 240, 0.76);
-      --chat-copy-strong: #f8fafc;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-      border-radius: inherit;
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 30%),
-        radial-gradient(circle at 100% 100%, rgba(249, 115, 22, 0.14), transparent 34%),
-        var(--chat-surface);
-      color: var(--chat-copy-strong);
-    }
-
-    .chat-glow {
-      position: absolute;
-      border-radius: 999px;
-      filter: blur(60px);
-      opacity: 0.55;
-      pointer-events: none;
-    }
-
-    .chat-glow--top {
-      width: 180px;
-      height: 180px;
-      top: -70px;
-      right: -40px;
-      background: rgba(14, 165, 233, 0.24);
-    }
-
-    .chat-glow--bottom {
-      width: 220px;
-      height: 220px;
-      bottom: -100px;
-      left: -60px;
-      background: rgba(249, 115, 22, 0.16);
-    }
-
-    .chat-header {
-      position: relative;
-      z-index: 1;
-      padding: 16px;
-      border-bottom: 1px solid var(--chat-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      background: linear-gradient(180deg, rgba(15, 23, 42, 0.34), rgba(15, 23, 42, 0.08));
-    }
-
-    .chat-header__eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(14, 165, 233, 0.12);
-      color: #7dd3fc;
-      font-size: 0.74rem;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .chat-header__status {
-      border: 1px solid var(--chat-border);
-      background: rgba(15, 23, 42, 0.55);
-      color: var(--chat-copy);
-      border-radius: 999px;
-      padding: 8px 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.74rem;
-      font-weight: 800;
-    }
-
-    .chat-header__status span {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #34d399;
-      box-shadow: 0 0 0 6px rgba(52, 211, 153, 0.12);
-    }
-
-    .chat-body {
-      position: relative;
-      z-index: 1;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 16px;
-    }
-
-    .placeholder-wrap {
-      width: 100%;
-      border: 1px solid var(--chat-border);
-      border-radius: 22px;
-      background:
-        linear-gradient(180deg, rgba(15, 23, 42, 0.78), rgba(2, 6, 23, 0.5)),
-        rgba(15, 23, 42, 0.24);
-      text-align: left;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    }
-
-    .placeholder-icon {
-      width: 56px;
-      height: 56px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(249, 115, 22, 0.16));
-      border: 1px solid rgba(125, 211, 252, 0.16);
-    }
-
-    .placeholder-wrap i {
-      font-size: 1.8rem;
-      color: #7dd3fc;
-    }
-
-    .placeholder-copy {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .placeholder-kicker {
-      color: #99f6e4;
-      font-size: 0.72rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-    }
-
-    .placeholder-wrap p {
-      margin: 0;
-      font-weight: 800;
-      color: var(--chat-copy-strong);
-      font-size: 1.08rem;
-      line-height: 1.35;
-    }
-
-    .placeholder-wrap small {
-      color: var(--chat-copy);
-      font-size: 0.82rem;
-      line-height: 1.55;
-    }
-
-    .placeholder-suggestions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .placeholder-suggestions button,
-    .composer-shell__input button,
-    .chat-header__status {
-      transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
-    }
-
-    .placeholder-suggestions button {
-      width: 100%;
-      text-align: left;
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px solid var(--chat-border);
-      background: var(--chat-panel);
-      color: var(--chat-copy-strong);
-      font-size: 0.83rem;
-      font-weight: 700;
-    }
-
-    .placeholder-suggestions button:hover,
-    .chat-header__status:hover {
-      border-color: rgba(45, 212, 191, 0.28);
-      background: rgba(15, 23, 42, 0.86);
-      transform: translateY(-1px);
-    }
-
-    .composer-shell {
-      width: 100%;
-      border-radius: 22px;
-      border: 1px solid var(--chat-border);
-      background: var(--chat-panel-strong);
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .composer-shell__hint {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: #93c5fd;
-      font-size: 0.76rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .composer-shell__input {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 12px 12px 14px;
-      border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      background: rgba(2, 6, 23, 0.48);
-      color: var(--chat-copy);
-      font-size: 0.84rem;
-    }
-
-    .composer-shell__input button {
-      width: 36px;
-      height: 36px;
-      border: 0;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #14b8a6, #3b82f6);
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .composer-shell__input button:hover {
-      transform: translateY(-1px);
-    }
-
-    @media (max-width: 640px) {
-      .chat-header,
-      .chat-body {
-        padding: 14px;
-      }
-
-      .chat-header {
-        flex-direction: column;
-        align-items: stretch;
-      }
-    }
-  `]
+  imports: [CommonModule, FormsModule],
+  templateUrl: './builder-chat.component.html',
+  styleUrl: './builder-chat.component.css'
 })
-export class BuilderChatComponent { }
+export class BuilderChatComponent implements OnChanges {
+  @Input() workspace: ItineraryWorkspace | null = null;
+  @Input() itinerary: Itinerary | null = null;
+
+  private readonly chatService = inject(AiChatService);
+  private readonly itineraryService = inject(ItineraryService);
+  private readonly alertService = inject(AlertService);
+
+  draftMessage = '';
+  readonly loading = signal(false);
+  readonly errorMessage = signal('');
+  readonly messages = signal<AiChatEntry[]>([]);
+
+  readonly starterPrompts = [
+    'Cosa dovrei fare in questo posto?',
+    'Suggeriscimi attività per la sera',
+    'Ottimizza il mio itinerario per essere più rilassante'
+  ];
+
+  get hasContext(): boolean {
+    return !!this.workspace?.location?.id;
+  }
+
+  get canSend(): boolean {
+    return this.hasContext && !this.loading() && this.draftMessage.trim().length > 0;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['workspace'] || changes['itinerary']) {
+      this.bootstrapConversation();
+    }
+  }
+
+  private bootstrapConversation(): void {
+    if (!this.hasContext || this.messages().length > 0) {
+      return;
+    }
+
+    this.messages.set([
+      {
+        id: this.createId(),
+        role: 'assistant',
+        content: `Dimmi cosa vuoi fare a ${this.workspace?.location?.name || 'questa destinazione'} e ti aiuto a costruire la giornata.`
+      }
+    ]);
+  }
+
+  sendQuickPrompt(prompt: string): void {
+    this.draftMessage = prompt;
+    this.sendMessage();
+  }
+
+  handleEnter(event: Event): void {
+    const keyboardEvent = event as KeyboardEvent;
+
+    if (keyboardEvent.shiftKey) {
+      return;
+    }
+
+    keyboardEvent.preventDefault();
+    this.sendMessage();
+  }
+
+  sendMessage(): void {
+    if (!this.canSend) {
+      if (!this.hasContext) {
+        this.errorMessage.set('Seleziona una destinazione prima di avviare la chat.');
+      }
+      return;
+    }
+
+    const message = this.draftMessage.trim();
+    this.draftMessage = '';
+    this.errorMessage.set('');
+
+    const userEntry: AiChatEntry = {
+      id: this.createId(),
+      role: 'user',
+      content: message
+    };
+
+    this.messages.update((entries) => [...entries, userEntry]);
+    this.loading.set(true);
+
+    const conversation = this.messages()
+      .filter((entry) => entry.role !== 'assistant' || entry.content !== 'Sto pensando alla tua richiesta...')
+      .slice(-8)
+      .map((entry) => ({ role: entry.role, content: entry.content }));
+
+    this.chatService.sendMessage({
+      message,
+      locationId: this.workspace?.location?.id,
+      itinerary: this.itinerary,
+      conversation
+    }).subscribe({
+      next: (response) => {
+        this.loading.set(false);
+
+        if (!response) {
+          this.errorMessage.set('Non sono riuscito a contattare l\'assistente.');
+          this.alertService.error('Errore nella chat IA.');
+          return;
+        }
+
+        const assistantEntry: AiChatEntry = {
+          id: this.createId(),
+          role: 'assistant',
+          content: response.reply,
+          suggestions: response.suggestions,
+          actions: response.actions,
+          followUpQuestions: response.followUpQuestions,
+          needsConfirmation: response.needsConfirmation
+        };
+
+        this.messages.update((entries) => [...entries, assistantEntry]);
+        this.applyAiActions(response.actions);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.errorMessage.set('Errore di rete durante la richiesta IA.');
+      }
+    });
+  }
+
+  private createId(): string {
+    return Math.random().toString(36).slice(2, 11);
+  }
+
+  private applyAiActions(actions: AiItineraryChatAction[]): void {
+    if (!actions.length) {
+      return;
+    }
+
+    const current = this.itineraryService.itinerary();
+    if (!current) {
+      return;
+    }
+
+    let nextItinerary: Itinerary = {
+      ...current,
+      items: [...(current.items || [])].map((item) => ({ ...item }))
+    };
+    let changed = false;
+
+    for (const action of actions) {
+      switch (action.type) {
+        case 'add_item': {
+          const added = this.addItemFromAction(nextItinerary, action.payload);
+          if (added) {
+            nextItinerary = added;
+            changed = true;
+          }
+          break;
+        }
+        case 'remove_item': {
+          const removed = this.removeItemFromAction(nextItinerary, action.payload);
+          if (removed) {
+            nextItinerary = removed;
+            changed = true;
+          }
+          break;
+        }
+        case 'update_item': {
+          const updated = this.updateItemFromAction(nextItinerary, action.payload);
+          if (updated) {
+            nextItinerary = updated;
+            changed = true;
+          }
+          break;
+        }
+        case 'reorder_items': {
+          const reordered = this.reorderItemsFromAction(nextItinerary, action.payload);
+          if (reordered) {
+            nextItinerary = reordered;
+            changed = true;
+          }
+          break;
+        }
+        default:
+          break;
+      }
+    }
+
+    if (!changed) {
+      return;
+    }
+
+    this.itineraryService.setCurrentItinerary(nextItinerary);
+    this.alertService.success('Itinerario aggiornato con i suggerimenti dell\'IA.');
+  }
+
+  private addItemFromAction(itinerary: Itinerary, payload: Record<string, unknown> | undefined): Itinerary | null {
+    const resolved = this.resolvePoiFromPayload(payload);
+    if (!resolved) {
+      return null;
+    }
+
+    const items = [...(itinerary.items || [])];
+    const alreadyExists = items.some((item) => this.isSamePoiItem(item, resolved.itemTypeCode, resolved.entityId));
+    if (alreadyExists) {
+      return null;
+    }
+
+    const newItem: ItineraryItem = {
+      dayNumber: this.resolveNumber(payload?.['dayNumber'], this.itineraryService.itinerary()?.items?.length ? 1 : 1),
+      orderInt: this.resolveNumber(payload?.['orderInt'], items.reduce((acc, item) => Math.max(acc, item.orderInt || 0), 0) + 1),
+      itemTypeCode: resolved.itemTypeCode,
+      activityId: resolved.activityId ?? undefined,
+      accommodationId: resolved.accommodationId ?? undefined,
+      note: this.resolveString(payload?.['note']) || undefined,
+      plannedStartAt: this.resolveNullableString(payload?.['plannedStartAt']),
+      plannedEndAt: this.resolveNullableString(payload?.['plannedEndAt']),
+      groupName: this.resolveNullableString(payload?.['groupName'])
+    };
+
+    return { ...itinerary, items: [...items, newItem] };
+  }
+
+  private removeItemFromAction(itinerary: Itinerary, payload: Record<string, unknown> | undefined): Itinerary | null {
+    const items = itinerary.items || [];
+    if (!items.length) {
+      return null;
+    }
+
+    const match = this.findItemIndex(items, payload);
+    if (match === -1) {
+      return null;
+    }
+
+    const nextItems = items.filter((_, index) => index !== match);
+    return { ...itinerary, items: nextItems };
+  }
+
+  private updateItemFromAction(itinerary: Itinerary, payload: Record<string, unknown> | undefined): Itinerary | null {
+    const items = itinerary.items || [];
+    if (!items.length) {
+      return null;
+    }
+
+    const match = this.findItemIndex(items, payload);
+    if (match === -1) {
+      return null;
+    }
+
+    const currentItem = items[match];
+    const updatedItem: ItineraryItem = {
+      ...currentItem,
+      dayNumber: this.resolveNumber(payload?.['dayNumber'], currentItem.dayNumber),
+      orderInt: this.resolveNumber(payload?.['orderInt'], currentItem.orderInt),
+      note: payload && Object.prototype.hasOwnProperty.call(payload, 'note') ? (this.resolveString(payload['note']) || undefined) : currentItem.note,
+      plannedStartAt: payload && Object.prototype.hasOwnProperty.call(payload, 'plannedStartAt') ? this.resolveNullableString(payload['plannedStartAt']) : currentItem.plannedStartAt,
+      plannedEndAt: payload && Object.prototype.hasOwnProperty.call(payload, 'plannedEndAt') ? this.resolveNullableString(payload['plannedEndAt']) : currentItem.plannedEndAt,
+      groupName: payload && Object.prototype.hasOwnProperty.call(payload, 'groupName') ? this.resolveNullableString(payload['groupName']) : currentItem.groupName,
+      groupStartAt: payload && Object.prototype.hasOwnProperty.call(payload, 'groupStartAt') ? this.resolveNullableString(payload['groupStartAt']) : currentItem.groupStartAt,
+      groupEndAt: payload && Object.prototype.hasOwnProperty.call(payload, 'groupEndAt') ? this.resolveNullableString(payload['groupEndAt']) : currentItem.groupEndAt,
+    };
+
+    const nextItems = [...items];
+    nextItems[match] = updatedItem;
+    return { ...itinerary, items: nextItems };
+  }
+
+  private reorderItemsFromAction(itinerary: Itinerary, payload: Record<string, unknown> | undefined): Itinerary | null {
+    const items = [...(itinerary.items || [])];
+    const requestedOrder = Array.isArray(payload?.['items']) ? payload?.['items'] as Record<string, unknown>[] : [];
+
+    if (!requestedOrder.length) {
+      return null;
+    }
+
+    const indexByKey = new Map<string, ItineraryItem>();
+    for (const item of items) {
+      const key = this.getItemKey(item);
+      indexByKey.set(key, item);
+    }
+
+    let changed = false;
+    const nextItems: ItineraryItem[] = [];
+
+    requestedOrder.forEach((entry, position) => {
+      const key = this.getActionKey(entry);
+      if (!key) {
+        return;
+      }
+
+      const item = indexByKey.get(key);
+      if (!item) {
+        return;
+      }
+
+      changed = true;
+      nextItems.push({
+        ...item,
+        dayNumber: this.resolveNumber(entry['dayNumber'], item.dayNumber),
+        orderInt: this.resolveNumber(entry['orderInt'], position + 1)
+      });
+    });
+
+    if (!changed) {
+      return null;
+    }
+
+    const remaining = items.filter((item) => !nextItems.some((next) => this.sameItemIdentity(item, next)));
+    const merged = [...nextItems, ...remaining].map((item, index) => ({
+      ...item,
+      orderInt: index + 1
+    }));
+
+    return { ...itinerary, items: merged };
+  }
+
+  private resolvePoiFromPayload(payload: Record<string, unknown> | undefined): { itemTypeCode: 'ACTIVITY' | 'ACCOMMODATION'; activityId?: number | null; accommodationId?: number | null; entityId: number } | null {
+    const activityId = this.extractNumericId(payload?.['activityId']);
+    if (activityId) {
+      return { itemTypeCode: 'ACTIVITY', activityId, entityId: activityId };
+    }
+
+    const accommodationId = this.extractNumericId(payload?.['accommodationId']);
+    if (accommodationId) {
+      return { itemTypeCode: 'ACCOMMODATION', accommodationId, entityId: accommodationId };
+    }
+
+    const title = this.resolveString(payload?.['title'] || payload?.['name'] || payload?.['poiTitle']);
+    if (!title) {
+      return null;
+    }
+
+    const normalizedTitle = this.normalizeText(title);
+    const activity = this.workspace?.activities.find((entry) => this.normalizeText(entry.name).includes(normalizedTitle) || normalizedTitle.includes(this.normalizeText(entry.name)));
+    if (activity) {
+      return { itemTypeCode: 'ACTIVITY', activityId: activity.id, entityId: activity.id };
+    }
+
+    const accommodation = this.workspace?.accommodations.find((entry) => this.normalizeText(entry.name).includes(normalizedTitle) || normalizedTitle.includes(this.normalizeText(entry.name)));
+    if (accommodation) {
+      return { itemTypeCode: 'ACCOMMODATION', accommodationId: accommodation.id, entityId: accommodation.id };
+    }
+
+    return null;
+  }
+
+  private findItemIndex(items: ItineraryItem[], payload: Record<string, unknown> | undefined): number {
+    const itemId = this.extractNumericId(payload?.['id']);
+    if (itemId) {
+      const byId = items.findIndex((item) => item.id === itemId);
+      if (byId !== -1) return byId;
+    }
+
+    const activityId = this.extractNumericId(payload?.['activityId']);
+    if (activityId) {
+      const byActivity = items.findIndex((item) => item.activityId === activityId);
+      if (byActivity !== -1) return byActivity;
+    }
+
+    const accommodationId = this.extractNumericId(payload?.['accommodationId']);
+    if (accommodationId) {
+      const byAccommodation = items.findIndex((item) => item.accommodationId === accommodationId);
+      if (byAccommodation !== -1) return byAccommodation;
+    }
+
+    const dayNumber = this.extractNumericId(payload?.['dayNumber']);
+    const orderInt = this.extractNumericId(payload?.['orderInt']);
+    if (dayNumber && orderInt) {
+      const byPosition = items.findIndex((item) => item.dayNumber === dayNumber && item.orderInt === orderInt);
+      if (byPosition !== -1) return byPosition;
+    }
+
+    const title = this.resolveString(payload?.['title'] || payload?.['name'] || payload?.['poiTitle']);
+    if (title) {
+      const normalizedTitle = this.normalizeText(title);
+      const byTitle = items.findIndex((item) => {
+        const poi = this.getWorkspacePoiForItem(item);
+        return poi ? this.normalizeText(poi.title).includes(normalizedTitle) || normalizedTitle.includes(this.normalizeText(poi.title)) : false;
+      });
+      if (byTitle !== -1) return byTitle;
+    }
+
+    return -1;
+  }
+
+  private getWorkspacePoiForItem(item: ItineraryItem): { title: string; type: 'activity' | 'accommodation' } | null {
+    if (item.activityId) {
+      const activity = this.workspace?.activities.find((entry) => entry.id === item.activityId);
+      if (activity) {
+        return { title: activity.name, type: 'activity' };
+      }
+    }
+
+    if (item.accommodationId) {
+      const accommodation = this.workspace?.accommodations.find((entry) => entry.id === item.accommodationId);
+      if (accommodation) {
+        return { title: accommodation.name, type: 'accommodation' };
+      }
+    }
+
+    return null;
+  }
+
+  private getItemKey(item: ItineraryItem): string {
+    if (item.activityId) return `activity-${item.activityId}`;
+    if (item.accommodationId) return `accommodation-${item.accommodationId}`;
+    return `item-${item.id ?? item.dayNumber}-${item.orderInt}`;
+  }
+
+  private getActionKey(entry: Record<string, unknown>): string | null {
+    const activityId = this.extractNumericId(entry['activityId']);
+    if (activityId) return `activity-${activityId}`;
+
+    const accommodationId = this.extractNumericId(entry['accommodationId']);
+    if (accommodationId) return `accommodation-${accommodationId}`;
+
+    const id = this.extractNumericId(entry['id']);
+    if (id) return `item-${id}`;
+
+    return null;
+  }
+
+  private sameItemIdentity(a: ItineraryItem, b: ItineraryItem): boolean {
+    return this.getItemKey(a) === this.getItemKey(b);
+  }
+
+  private isSamePoiItem(item: ItineraryItem, type: 'ACTIVITY' | 'ACCOMMODATION', entityId: number): boolean {
+    if (type === 'ACTIVITY') {
+      return item.activityId === entityId;
+    }
+
+    return item.accommodationId === entityId;
+  }
+
+  private extractNumericId(value: unknown): number | null {
+    if (typeof value === 'number' && Number.isInteger(value) && value > 0) {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      const parsed = Number(value);
+      return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+    }
+
+    return null;
+  }
+
+  private resolveNumber(value: unknown, fallback: number): number {
+    const parsed = this.extractNumericId(value);
+    return parsed ?? fallback;
+  }
+
+  private resolveString(value: unknown): string {
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
+  private resolveNullableString(value: unknown): string | null {
+    if (value === null) {
+      return null;
+    }
+
+    const text = this.resolveString(value);
+    return text.length > 0 ? text : null;
+  }
+
+  private normalizeText(value: string): string {
+    return value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  }
+}

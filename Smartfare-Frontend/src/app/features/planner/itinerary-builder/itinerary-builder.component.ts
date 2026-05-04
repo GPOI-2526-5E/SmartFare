@@ -14,7 +14,7 @@ import { LoginPromptModalComponent } from '../../ui/modals/login-prompt-modal/lo
 import { UIStateService } from '../../../core/services/ui-state.service';
 import { AlertService } from '../../../core/services/alert.service';
 import { ItineraryExportService } from '../../../core/services/itinerary-export.service';
-import { BuilderPoi } from './builder.types';
+import { BuilderPoi } from '../../../core/models/builder.types';
 
 @Component({
   selector: 'app-itinerary-builder',
@@ -325,7 +325,7 @@ export class ItineraryBuilderComponent implements OnInit {
 
     const updatedItems = current.items.filter(item => {
       return !((poi.type === 'accommodation' && item.accommodationId === poi.entityId) ||
-               (poi.type === 'activity' && item.activityId === poi.entityId));
+        (poi.type === 'activity' && item.activityId === poi.entityId));
     });
 
     if (updatedItems.length === current.items.length) {

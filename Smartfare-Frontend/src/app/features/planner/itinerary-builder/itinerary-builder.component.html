@@ -35,7 +35,7 @@
 
     @if (ui.showChat()) {
     <aside class="workspace-chat workspace-panel" aria-label="Area assistente AI">
-      <app-builder-chat></app-builder-chat>
+      <app-builder-chat [workspace]="workspace()" [itinerary]="itineraryService.itinerary()"></app-builder-chat>
     </aside>
     }
   </main>

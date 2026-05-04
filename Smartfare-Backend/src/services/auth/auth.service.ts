@@ -27,6 +27,7 @@ export class AuthService {
                     email: true,
                     passwordHash: true,
                     sessionId: true,
+                    isEmailVerified: true,
                     profile: {
                         select: {
                             avatarUrl: true
@@ -46,6 +47,13 @@ export class AuthService {
                 return {
                     success: false,
                     message: "Account configurato per accesso tramite provider esterno",
+                };
+            }
+
+            if (!user.isEmailVerified) {
+                return {
+                    success: false,
+                    message: "Account non verificato. Controlla la tua email.",
                 };
             }
 
@@ -98,15 +106,19 @@ export class AuthService {
         try {
             const existingUser = await prisma.user.findUnique({
                 where: { email: registerData.email },
-                select: { id: true }
+                select: { id: true, isEmailVerified: true }
             });
 
             if (existingUser) {
-                console.log("Email già esistente");
-                return {
-                    success: false,
-                    message: "Email già esistente"
-                };
+                if (existingUser.isEmailVerified) {
+                    console.log("Email già esistente");
+                    return {
+                        success: false,
+                        message: "Email già esistente"
+                    };
+                } else {
+                    console.log("Utente non verificato trovato, aggiorno i dati e rinvio la mail...");
+                }
             }
 
             console.log("DATI REGISTRAZIONE RICEVUTI:", JSON.stringify(registerData, null, 2));
@@ -118,24 +130,71 @@ export class AuthService {
             // Use explicit provider when available, fallback to local.
             const provider = registerData.authProvider === "google" ? "google" : "local";
 
-            await prisma.user.create({
-                data: {
-                    email: registerData.email,
-                    passwordHash: hashedPassword,
-                    authProvider: provider,
-                    profile: {
-                        create: {
-                            name: registerData.name || null,
-                            surname: registerData.surname || null,
-                            avatarUrl: registerData.avatarUrl || null,
-                            street: null,
-                            city: null
+            const isGoogle = provider === "google";
+            const verificationToken = isGoogle ? null : crypto.randomBytes(32).toString("hex");
+            const hashedVerificationToken = verificationToken ? crypto.createHash("sha256").update(verificationToken).digest("hex") : null;
+            const verificationExpires = isGoogle ? null : new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+            if (verificationToken) {
+                console.log("🆕 Generato nuovo token di verifica per", registerData.email);
+                console.log("🎫 Token raw:", verificationToken);
+                console.log("🔒 Token hashed (saved to DB):", hashedVerificationToken);
+                console.log("⏰ Scadenza impostata:", verificationExpires);
+            }
+
+            const userData = {
+                passwordHash: hashedPassword,
+                authProvider: provider,
+                isEmailVerified: isGoogle,
+                emailVerificationToken: hashedVerificationToken,
+                emailVerificationExpires: verificationExpires,
+            };
+
+            const profileData = {
+                name: registerData.name || null,
+                surname: registerData.surname || null,
+                avatarUrl: registerData.avatarUrl || null,
+                street: null,
+                city: null
+            };
+
+            if (existingUser && !existingUser.isEmailVerified) {
+                await prisma.user.update({
+                    where: { id: existingUser.id },
+                    data: {
+                        ...userData,
+                        profile: {
+                            upsert: {
+                                create: profileData,
+                                update: {
+                                    name: profileData.name,
+                                    surname: profileData.surname,
+                                    avatarUrl: profileData.avatarUrl
+                                }
+                            }
                         }
                     }
-                }
-            });
+                });
+            } else {
+                await prisma.user.create({
+                    data: {
+                        email: registerData.email,
+                        ...userData,
+                        profile: {
+                            create: profileData
+                        }
+                    }
+                });
+            }
 
             console.log("Utente creato ", registerData.email);
+
+            if (!isGoogle && verificationToken) {
+                const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+                const verificationLink = `${frontendUrl}/verify-email?token=${verificationToken}`;
+                await emailService.sendVerificationEmail(registerData.email, verificationLink);
+            }
+
             return {
                 success: true
             };
@@ -314,6 +373,90 @@ export class AuthService {
             return {
                 success: false,
                 message: "Errore durante l'aggiornamento della password",
+            };
+        }
+    }
+
+    async VerifyEmail(token: string) {
+        try {
+            console.log("🔍 Tentativo di verifica email con token:", token);
+            const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+            console.log("🔑 Token hash generato:", hashedToken);
+
+            const user = await prisma.user.findFirst({
+                where: {
+                    emailVerificationToken: hashedToken,
+                },
+                select: {
+                    id: true,
+                    email: true,
+                    emailVerificationExpires: true,
+                    isEmailVerified: true,
+                    profile: {
+                        select: { avatarUrl: true }
+                    }
+                }
+            });
+
+            if (!user) {
+                console.warn("❌ Nessun utente trovato con questo token hash.");
+                return {
+                    success: false,
+                    message: "Link di verifica non valido o scaduto.",
+                };
+            }
+
+            console.log("👤 Utente trovato:", user.email);
+            console.log("⏰ Scadenza token:", user.emailVerificationExpires);
+            console.log("📅 Ora attuale:", new Date());
+
+            if (user.emailVerificationExpires && user.emailVerificationExpires < new Date()) {
+                console.warn("⚠️ Il token è scaduto.");
+                return {
+                    success: false,
+                    message: "Link di verifica scaduto.",
+                };
+            }
+
+            if (user.isEmailVerified) {
+                console.log("ℹ️ Email già verificata per questo utente.");
+            }
+
+            const sessionId = randomUUID();
+
+            await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    isEmailVerified: true,
+                    emailVerificationToken: null,
+                    emailVerificationExpires: null,
+                    sessionId
+                },
+            });
+
+            const jwtToken = jwt.sign(
+                {
+                    userId: user.id,
+                    email: user.email,
+                    username: user.email,
+                    sessionId: sessionId,
+                    avatarUrl: user.profile?.avatarUrl
+                },
+                JWT_SECRET,
+                {
+                    expiresIn: JWT_EXPIRES_IN,
+                } as jwt.SignOptions
+            );
+
+            return {
+                success: true,
+                token: jwtToken
+            };
+        } catch (error) {
+            console.error("❌ Errore durante VerifyEmail:", error);
+            return {
+                success: false,
+                message: "Errore durante la verifica dell'email",
             };
         }
     }

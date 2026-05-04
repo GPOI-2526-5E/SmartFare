@@ -10,7 +10,7 @@
   font-family: 'Inter', sans-serif;
 }
 
-/* --- Animated Glowing Background --- */
+/* --- Animated World Map Background --- */
 .animated-background {
   position: absolute;
   top: 0;
@@ -19,108 +19,32 @@
   height: 100%;
   overflow: hidden;
   z-index: -2;
-  background-color: var(--bg-color);
+  background: linear-gradient(180deg, #060c1a 0%, #071020 40%, #08091a 100%);
 }
 
-.gradient-bg {
+.world-map-svg {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, var(--accent-color-glow) 0%, var(--bg-color) 100%);
-  z-index: 0;
+  background-color: rgba(80, 140, 255, 0.12);
+  -webkit-mask-image: url('/world-map.svg');
+  mask-image: url('/world-map.svg');
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  pointer-events: none;
 }
 
-.bg-grid {
+.world-map-canvas {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
-    linear-gradient(var(--card-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--card-border) 1px, transparent 1px);
-  background-size: 60px 60px;
-  z-index: 0;
-  opacity: 0.6;
-  mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
-  -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
+  display: block;
 }
 
-/* Glowing Orbs */
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  z-index: 0;
-  opacity: 0.4;
-  animation: floatOrb 25s infinite alternate ease-in-out;
-}
-
-.orb-1 {
-  width: 450px;
-  height: 450px;
-  background: #3b82f6; /* Blue */
-  top: -15%;
-  left: -10%;
-  animation-delay: 0s;
-}
-
-.orb-2 {
-  width: 550px;
-  height: 550px;
-  background: #8b5cf6; /* Violet */
-  bottom: -20%;
-  right: -15%;
-  animation-duration: 28s;
-  animation-delay: -5s;
-}
-
-.orb-3 {
-  width: 350px;
-  height: 350px;
-  background: #ec4899; /* Pink */
-  top: 30%;
-  left: 45%;
-  animation-duration: 35s;
-  animation-delay: -10s;
-}
-
-@keyframes floatOrb {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(60px, -60px) scale(1.1); }
-  66% { transform: translate(-40px, 60px) scale(0.9); }
-  100% { transform: translate(0, 0) scale(1); }
-}
-
-/* Subtle Particles */
-.particle {
-  position: absolute;
-  background: #ffffff;
-  border-radius: 50%;
-  opacity: 0.3;
-  animation: floatParticle linear infinite;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-.p-1 { width: 4px; height: 4px; top: 100%; left: 15%; animation-duration: 18s; animation-delay: 0s; }
-.p-2 { width: 6px; height: 6px; top: 100%; left: 35%; animation-duration: 25s; animation-delay: 2s; }
-.p-3 { width: 3px; height: 3px; top: 100%; left: 80%; animation-duration: 20s; animation-delay: 5s; }
-.p-4 { width: 5px; height: 5px; top: 100%; left: 70%; animation-duration: 22s; animation-delay: 1s; }
-.p-5 { width: 4px; height: 4px; top: 100%; left: 60%; animation-duration: 28s; animation-delay: 4s; }
-.p-6 { width: 7px; height: 7px; top: 100%; left: 40%; animation-duration: 32s; animation-delay: 7s; }
-.p-7 { width: 3px; height: 3px; top: 100%; left: 30%; animation-duration: 19s; animation-delay: 3s; }
-.p-8 { width: 5px; height: 5px; top: 100%; left: 50%; animation-duration: 26s; animation-delay: 8s; }
-.p-9 { width: 6px; height: 6px; top: 100%; left: 90%; animation-duration: 24s; animation-delay: 6s; }
-.p-10 { width: 4px; height: 4px; top: 100%; left: 20%; animation-duration: 21s; animation-delay: 9s; }
-
-@keyframes floatParticle {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  10% { opacity: 0.6; }
-  90% { opacity: 0.6; }
-  100% { transform: translateY(-120vh) translateX(80px); opacity: 0; }
-}
 
 .navbar-layer {
   position: absolute;

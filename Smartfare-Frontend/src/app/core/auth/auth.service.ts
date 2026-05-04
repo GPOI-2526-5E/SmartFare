@@ -111,5 +111,10 @@ export class AuthService {
     const hashedPassword = SHA256(password).toString();
     return this.http.post<any>(`${this.AUTH_URL}/reset-password`, { token, newPassword: hashedPassword });
   }
+
+  VerifyEmail(token: string): Observable<any> {
+    return this.http.post<any>(`${this.AUTH_URL}/verify-email`, { token });
+  }
 }
+
 

@@ -4,6 +4,7 @@ import path from "path";
 import authRoutes from "./routes/auth.route";
 import locationsRoutes from './routes/location.route';
 import itineraryRoutes from './routes/itinerary.route';
+import aiRoutes from './routes/ai.route';
 import activityRoutes from './routes/activity.route';
 import accommodationRoutes from './routes/accommodation.route';
 import uploadRoutes from './routes/upload.route';
@@ -56,6 +57,7 @@ export function createApp() {
   // API Routes
   app.use("/api/locations", locationsRoutes);
   app.use("/api/itineraries", itineraryRoutes);
+  app.use("/api/ai", aiRoutes);
   app.use("/api/activity", activityRoutes);
   app.use("/api/accommodation", accommodationRoutes);
   app.use("/api/upload", uploadRoutes);
@@ -64,6 +66,6 @@ export function createApp() {
   // Global Error handling
   app.use(errorHandler);
 
-  
+
   return app;
 }

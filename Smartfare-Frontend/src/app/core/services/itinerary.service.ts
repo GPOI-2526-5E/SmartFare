@@ -205,4 +205,11 @@ export class ItineraryService {
       catchError(() => of(null))
     );
   }
+
+  getMyItineraries(): Observable<Itinerary[]> {
+    if (!this.authService.IsAuthenticated()) return of([]);
+    return this.http.get<Itinerary[]>(`${this.API_URL}/me`).pipe(
+      catchError(() => of([]))
+    );
+  }
 }

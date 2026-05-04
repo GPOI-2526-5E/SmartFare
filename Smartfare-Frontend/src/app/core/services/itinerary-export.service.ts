@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Itinerary, ItineraryItem } from '../models/itinerary.model';
-import { BuilderPoi } from '../../features/planner/itinerary-builder/builder.types';
+import { BuilderPoi } from '../models/builder.types';
 
 export interface CostBreakdown {
     accommodations: { title: string; price: number; days: number; subtotal: number }[];

@@ -32,9 +32,9 @@ export class NavbarComponent {
 
   readonly navItems: NavItem[] = [
     { icon: 'bi bi-house-door', label: 'Home', route: '/home' },
-    { icon: 'bi bi-magic', label: 'Pianifica', route: '/planner' },
-    { icon: 'bi bi-compass', label: 'Scopri', route: '/discover' },
-    { icon: 'bi bi-info-circle', label: 'Chi Siamo', route: '/about' }
+    { icon: 'bi bi-compass', label: 'Esplora', route: '/discover' },
+    { icon: 'bi bi-journal-bookmark', label: 'Crea', route: '/itineraries/new' },
+    { icon: 'bi bi-magic', label: 'AI Planner', route: '/' }
   ];
 
   mobileMenuOpen = false;

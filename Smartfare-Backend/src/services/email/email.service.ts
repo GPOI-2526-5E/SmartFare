@@ -174,4 +174,144 @@ export class EmailService {
             throw new Error("Errore durante l'invio dell'email");
         }
     }
+
+    public async sendVerificationEmail(to: string, verificationLink: string) {
+        if (!this.transporter) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            if (!this.transporter) {
+                console.error("Nessun transporter configurato per inviare l'email");
+                return;
+            }
+        }
+
+        const htmlTemplate = `
+        <!DOCTYPE html>
+        <html lang="it">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Verifica Email</title>
+            <style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f4f4f4;
+                    font-family: Arial, Helvetica, sans-serif;
+                    color: #333333;
+                }
+                .wrapper {
+                    padding: 30px 15px;
+                }
+                .container {
+                    background-color: #ffffff;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #e0e0e0;
+                }
+                .header {
+                    padding: 20px 30px 15px;
+                }
+                .logo-text {
+                    font-size: 28px;
+                    font-weight: 900;
+                    color: #000000;
+                    margin: 0;
+                    letter-spacing: -1px;
+                    display: flex;
+                    align-items: center;
+                }
+                .divider {
+                    height: 5px;
+                    background-color: #666666;
+                    width: 100%;
+                }
+                .content {
+                    padding: 40px 30px;
+                    font-size: 15px;
+                    line-height: 1.5;
+                }
+                .content p {
+                    margin-bottom: 20px;
+                    color: #333333;
+                }
+                .bold {
+                    font-weight: bold;
+                }
+                a.button {
+                    display: inline-block;
+                    padding: 12px 24px;
+                    background-color: #000000;
+                    color: #ffffff;
+                    text-decoration: none;
+                    font-weight: bold;
+                    border-radius: 4px;
+                    margin: 20px 0;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="wrapper">
+                <div class="container">
+                    <div class="header">
+                        <div class="logo-text">
+                            <img src="cid:smartfarelogo" alt="Logo" style="height: 36px; vertical-align: middle; margin-right: 12px; border: 0;" />
+                            <span style="vertical-align: middle;">SMARTFARE</span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    
+                    <div class="content">
+                        <p>Benvenuto su SmartFare!</p>
+                        
+                        <p>Grazie per esserti registrato. Per completare la registrazione e attivare il tuo account, clicca sul pulsante qui sotto per verificare il tuo indirizzo email.</p>
+                        
+                        <center>
+                            <a href="${verificationLink}" class="button" target="_blank">Verifica Email</a>
+                        </center>
+                        
+                        <p>Questo link scadrà tra 1 ora.</p>
+                        <p>Se non hai creato un account SmartFare, puoi ignorare questa email in tutta sicurezza.</p>
+                        
+                        <br><br>
+                        <p>Cordialmente,</p>
+                        <p>Il team SmartFare</p>
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+
+        try {
+            const fromEmail = process.env.SMTP_USER 
+                ? `"SmartFare Support" <${process.env.SMTP_USER}>` 
+                : '"SmartFare Support" <support@smartfare.com>';
+
+            const path = require('path');
+            const logoPath = path.resolve(process.cwd(), 'assets', 'logo.png');
+
+            const info = await this.transporter.sendMail({
+                from: fromEmail,
+                to: to,
+                subject: "Verifica il tuo indirizzo email - SmartFare Tickets",
+                html: htmlTemplate,
+                attachments: [
+                    {
+                        filename: 'logo.png',
+                        path: logoPath,
+                        cid: 'smartfarelogo'
+                    }
+                ]
+            });
+
+            console.log("Message sent: %s", info.messageId);
+            const testUrl = nodemailer.getTestMessageUrl(info);
+            if (testUrl) {
+                console.log("Preview URL: %s", testUrl);
+            }
+        } catch (error) {
+            console.error("Errore durante l'invio dell'email di verifica:", error);
+            throw new Error("Errore durante l'invio dell'email di verifica");
+        }
+    }
 }

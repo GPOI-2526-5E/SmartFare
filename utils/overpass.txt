@@ -1,0 +1,160 @@
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["amenity"="bicycle_rental"](area.searchArea);
+  way["amenity"="bicycle_rental"](area.searchArea);
+  relation["amenity"="bicycle_rental"](area.searchArea);
+
+  node["sport"="climbing"](area.searchArea);
+  way["sport"="climbing"](area.searchArea);
+
+  node["sport"="canoe"](area.searchArea);
+  way["sport"="canoe"](area.searchArea);
+
+  node["leisure"="horse_riding"](area.searchArea);
+  way["leisure"="horse_riding"](area.searchArea);
+
+  node["leisure"="spa"](area.searchArea);
+  way["leisure"="spa"](area.searchArea);
+
+  node["leisure"="swimming_pool"](area.searchArea);
+  way["leisure"="swimming_pool"](area.searchArea);
+);
+out center;
+
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["leisure"="park"](area.searchArea);
+  way["leisure"="park"](area.searchArea);
+
+  node["landuse"="forest"](area.searchArea);
+  way["landuse"="forest"](area.searchArea);
+
+  relation["boundary"="protected_area"](area.searchArea);
+
+  node["natural"="peak"](area.searchArea);
+  way["natural"="peak"](area.searchArea);
+
+  node["waterway"="waterfall"](area.searchArea);
+
+  node["tourism"="camp_site"](area.searchArea);
+  way["tourism"="camp_site"](area.searchArea);
+
+  node["tourism"="picnic_site"](area.searchArea);
+);
+out center;
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  way["highway"="path"](area.searchArea);
+  way["highway"="cycleway"](area.searchArea);
+
+  node["railway"="station"](area.searchArea);
+
+  node["highway"="bus_stop"](area.searchArea);
+
+  node["amenity"="parking"](area.searchArea);
+  way["amenity"="parking"](area.searchArea);
+);
+out center;
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["amenity"="restaurant"](area.searchArea);
+  way["amenity"="restaurant"](area.searchArea);
+
+  node["amenity"="fast_food"](area.searchArea);
+  node["amenity"="cafe"](area.searchArea);
+  node["amenity"="bar"](area.searchArea);
+  node["amenity"="pub"](area.searchArea);
+
+  node["amenity"="ice_cream"](area.searchArea);
+
+  node["shop"="bakery"](area.searchArea);
+  node["shop"="wine"](area.searchArea);
+);
+out center;
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["tourism"="hotel"](area.searchArea);
+  way["tourism"="hotel"](area.searchArea);
+
+  node["tourism"="guest_house"](area.searchArea);
+  node["tourism"="hostel"](area.searchArea);
+
+  node["tourism"="farm"](area.searchArea);
+);
+out center;
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["tourism"="museum"](area.searchArea);
+  node["amenity"="cinema"](area.searchArea);
+  node["amenity"="theatre"](area.searchArea);
+  node["amenity"="concert_hall"](area.searchArea);
+  node["amenity"="library"](area.searchArea);
+  node["leisure"="stadium"](area.searchArea);
+);
+out center;
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["shop"](area.searchArea);
+  way["shop"](area.searchArea);
+
+  node["amenity"="marketplace"](area.searchArea);
+
+  node["shop"="mall"](area.searchArea);
+);
+out center;
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["amenity"="place_of_worship"](area.searchArea);
+  way["amenity"="place_of_worship"](area.searchArea);
+
+  node["historic"="abbey"](area.searchArea);
+);
+out center;
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["tourism"="attraction"](area.searchArea);
+  node["tourism"="viewpoint"](area.searchArea);
+
+  node["historic"="castle"](area.searchArea);
+  way["historic"="castle"](area.searchArea);
+
+  node["historic"="monument"](area.searchArea);
+);
+out center;
+
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["amenity"="nightclub"](area.searchArea);
+  node["amenity"="bar"](area.searchArea);
+  node["amenity"="pub"](area.searchArea);
+);
+out center;
+
+[out:json][timeout:60];
+area["name"="Piemonte"]->.searchArea;
+(
+  node["amenity"="toilets"](area.searchArea);
+  node["amenity"="drinking_water"](area.searchArea);
+  node["amenity"="fuel"](area.searchArea);
+  node["amenity"="pharmacy"](area.searchArea);
+);
+out center;

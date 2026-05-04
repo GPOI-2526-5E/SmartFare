@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BuilderPoi } from '../builder.types';
+import { BuilderPoi } from '../../../../core/models/builder.types';
 import { ItineraryItem } from '../../../../core/models/itinerary.model';
 
 @Component({

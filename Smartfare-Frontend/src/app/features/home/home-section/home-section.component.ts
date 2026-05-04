@@ -58,8 +58,23 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly ngZone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly elRef = inject(ElementRef);
+
+  private heroObserver: IntersectionObserver | null = null;
+  private isHeroVisible = true;
+  private readonly reduceMotion = typeof window !== 'undefined' && (
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ||
+    (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true
+  );
 
   ngOnInit(): void {
+    if (this.reduceMotion) {
+      this.heroLineTop.set(this.heroTypingLines[0] ?? '');
+      this.heroLineBottom.set(this.heroTypingLines[1] ?? '');
+      this.caretLine.set(1);
+      return;
+    }
+
     this.startTypingLoop();
   }
 
@@ -69,11 +84,40 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playLayer(this.activeVideoLayer);
     });
 
-    this.scheduleNextTransition();
+    if (!this.reduceMotion) {
+      this.scheduleNextTransition();
+    }
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      this.ngZone.runOutsideAngular(() => {
+        this.heroObserver = new IntersectionObserver((entries) => {
+          const entry = entries[0];
+          if (entry) {
+            this.isHeroVisible = entry.isIntersecting;
+            if (!this.isHeroVisible) {
+              this.pauseAllVideos();
+            } else {
+              this.playLayer(this.activeVideoLayer);
+              this.scheduleNextTransition();
+            }
+          }
+        }, { threshold: 0 });
+        this.heroObserver.observe(this.elRef.nativeElement);
+      });
+    }
   }
 
   ngOnDestroy(): void {
     this.clearTimers();
+    this.heroObserver?.disconnect();
+  }
+
+  private pauseAllVideos(): void {
+    this.backgroundVideos?.forEach((videoRef) => {
+      try {
+        videoRef.nativeElement.pause();
+      } catch { }
+    });
   }
 
   protected onVideoLoaded(layerIndex: number): void {
@@ -116,6 +160,10 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private scheduleNextTransition(): void {
+    if (this.reduceMotion) {
+      return;
+    }
+
     if (this.videoSources.length < 2) {
       return;
     }
@@ -155,7 +203,7 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private prepareVideoElements(): void {
-    this.backgroundVideos?.forEach((videoRef) => {
+    this.backgroundVideos?.forEach((videoRef, index) => {
       const video = videoRef.nativeElement;
       video.muted = true;
       video.defaultMuted = true;
@@ -163,7 +211,13 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', 'true');
-      video.load();
+
+      if (index === this.activeVideoLayer) {
+        video.load();
+        return;
+      }
+
+      video.pause();
     });
   }
 
@@ -176,6 +230,7 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private async playVideo(video: HTMLVideoElement): Promise<void> {
+    if (!this.isHeroVisible) return;
     try {
       await video.play();
     } catch {
@@ -280,11 +335,8 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private queueTypingFrame(delayMs: number): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.typingTimeoutId = setTimeout(() => {
-        this.startTypingLoop();
-        this.cdr.detectChanges();
-      }, delayMs);
-    });
+    this.typingTimeoutId = setTimeout(() => {
+      this.startTypingLoop();
+    }, delayMs);
   }
 }

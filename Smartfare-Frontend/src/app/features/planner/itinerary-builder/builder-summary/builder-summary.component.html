@@ -1,97 +1,10 @@
 <div class="summary-shell" [class.is-preview]="previewItinerary()">
 
   <!-- HEADER -->
-  <section class="wl-header">
-    <div class="wl-header-bg">
-      <img [src]="itinerary()?.imageUrl || '/assets/home-section.avif'" alt="Cover" />
-      <button class="wl-edit-bg-btn" (click)="coverInput.click()">
-        @if (isUploadingImage()) {
-          <span class="spinner-border spinner-border-sm"></span>
-        } @else {
-          <i class="bi bi-pencil-fill"></i>
-        }
-      </button>
-      <input type="file" #coverInput hidden accept="image/*" (change)="onCoverImageSelected($event)" />
-    </div>
-
-    <div class="wl-header-card">
-      <div class="wl-meta-row">
-        <div class="wl-duration-badge">
-          <i class="bi bi-calendar3"></i> {{ itineraryDateSummary() }}
-        </div>
-        <button class="wl-publish-toggle" [class.is-published]="isPublic()" (click)="togglePublish()">
-          <i class="bi" [class.bi-eye-fill]="isPublic()" [class.bi-eye-slash]="!isPublic()"></i>
-          {{ isPublic() ? 'Pubblico' : 'Privato' }}
-        </button>
-      </div>
-
-      <div class="wl-title-container" [class.is-editing]="isEditingTitle()">
-        @if (isEditingTitle()) {
-        <input #titleInput class="wl-title-input" [ngModel]="editTitleValue()"
-          (ngModelChange)="editTitleValue.set($event)" (keyup.enter)="saveTitle()" (blur)="saveTitle()" autofocus />
-        } @else {
-        <h1 class="wl-title">
-          {{ itinerary()?.name || workspace()?.location?.name || 'Viaggio' }}
-        </h1>
-        <button class="wl-edit-title-btn" (click)="startEditingTitle()">
-          <i class="bi bi-pencil-fill"></i>
-        </button>
-        }
-      </div>
-
-      <div class="wl-description-row" [class.is-editing]="isEditingDescription()">
-        @if (isEditingDescription()) {
-        <textarea #descInput class="wl-description-input" [ngModel]="editDescriptionValue()"
-          (ngModelChange)="editDescriptionValue.set($event)" (keyup.enter)="saveDescription()" (blur)="saveDescription()"
-          placeholder="Aggiungi una descrizione..." autofocus></textarea>
-        } @else {
-        <p class="wl-description" (click)="startEditingDescription()">
-          {{ itinerary()?.description || 'Aggiungi una descrizione al tuo viaggio...' }}
-          <span class="wl-edit-hint"><i class="bi bi-pencil"></i></span>
-        </p>
-        }
-      </div>
-    </div>
-  </section>
+  <app-builder-summary-header [workspace]="workspace()"></app-builder-summary-header>
 
   <!-- ESPLORA -->
-  <section class="wl-section">
-    <div class="wl-section-header">
-      <h2><i class="bi bi-chevron-down"></i> Esplora itinerari</h2>
-      <button class="wl-btn-primary"><i class="bi bi-search"></i> Sfoglia tutto</button>
-    </div>
-
-    <div class="wl-explore-grid">
-      @for (itin of publicItineraries(); track itin.id) {
-      <div class="wl-explore-card" (click)="openPreview(itin)">
-        <div class="wl-explore-img">
-          <img
-            [src]="itin.imageUrl"
-            alt="Preview">
-          <div class="wl-explore-badge">Itinerario</div>
-        </div>
-        <div class="wl-explore-info">
-          <h3>{{ itin.name }}</h3>
-          <p>{{ itin.description || 'Scopri questo fantastico itinerario' }}</p>
-          <div class="wl-explore-footer">
-            <div class="wl-provider">
-              <div class="wl-provider-icon">
-                <img [src]="itin.user?.profile?.avatarUrl || '/assets/home-section.avif'" alt="User">
-              </div>
-              <span>{{ itin.user?.profile?.name || 'Utente' }}</span>
-            </div>
-            <button class="wl-apply-btn" (click)="$event.stopPropagation(); openPreview(itin)">Vedi anteprima</button>
-          </div>
-        </div>
-      </div>
-      } @empty {
-      <div class="wl-no-explore">
-        <i class="bi bi-info-circle"></i>
-        <p>Nessun itinerario pubblico trovato per questa posizione.</p>
-      </div>
-      }
-    </div>
-  </section>
+  <app-builder-summary-explore [workspace]="workspace()" (previewRequested)="openPreview($event)"></app-builder-summary-explore>
 
   <!-- PERCORSO GIORNO SELEZIONATO (solo se giorno ≠ 'all') -->
   @if (visibleDayRoute() !== 'all' && selectedDayStopsCount() > 0) {
@@ -225,140 +138,18 @@
              [attr.data-poi-key]="poi.key"
              [attr.data-day-number]="day.day">
 
-          <div class="wl-poi-left">
-            <div class="wl-drag-handle" cdkDragHandle><i class="bi bi-grid-3x2-gap-fill"></i></div>
-            <div class="wl-poi-checkbox" (click)="toggleSelection(poi)" [class.checked]="selectedPoiKeys().has(poi.key)">
-              <i class="bi" [class.bi-check-circle-fill]="selectedPoiKeys().has(poi.key)" [class.bi-circle]="!selectedPoiKeys().has(poi.key)"></i>
-            </div>
-            <div class="wl-poi-pin">
-              <svg viewBox="0 0 24 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 0C5.37258 0 0 5.37258 0 12C0 21 12 34 12 34C12 34 24 21 24 12C24 5.37258 18.6274 0 12 0Z"
-                  [style.fill]="getDayColor(day.day)" />
-              </svg>
-              <span>{{ idx + 1 }}</span>
-            </div>
-            <!-- Linea verticale che connette i pin -->
-            <div class="wl-vertical-line" *ngIf="idx < day.items.length - 1"
-              [style.background-color]="getDayColor(day.day)"></div>
-          </div>
-
-          <div class="wl-poi-card-container">
-            <div class="wl-poi-card">
-              <div class="wl-poi-card-content">
-                <div class="wl-poi-main-info">
-                  <div class="wl-poi-icon-box" [style.border-color]="getDayColor(day.day)">
-                    <i class="bi" [class.bi-building]="poi.type === 'accommodation'"
-                      [class.bi-geo-alt-fill]="poi.type === 'activity'"></i>
-                  </div>
-
-                  <div class="wl-poi-text-group">
-                    <div class="wl-poi-header">
-                      <h4 class="wl-poi-title">{{ poi.title }}</h4>
-                      <div class="wl-poi-header-actions">
-                        <a [href]="'https://www.google.com/search?q=' + encode(poi.title + ' ' + (poi.subtitle || ''))" 
-                           target="_blank" class="wl-card-pill wl-card-pill--google" title="Cerca su Google">
-                          <i class="bi bi-google"></i>
-                          <span>Google</span>
-                        </a>
-                        <a [href]="'https://www.google.com/maps/search/?api=1&query=' + poi.latitude + ',' + poi.longitude" 
-                           target="_blank" class="wl-card-pill wl-card-pill--maps" title="Vedi su Google Maps">
-                          <i class="bi bi-geo-alt"></i>
-                          <span>Maps</span>
-                        </a>
-                        <button class="wl-card-btn-circle wl-card-btn-circle--delete" (click)="removeItem(poi)" title="Elimina">
-                          <i class="bi bi-trash3"></i>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="wl-poi-subtitle">
-                      <i class="bi bi-geo-alt"></i>
-                      <span>{{ poi.subtitle || 'Indirizzo non disponibile' }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Note -->
-                <div class="wl-poi-notes-box">
-                  <input type="text" placeholder="Aggiungi note per questa tappa..." [ngModel]="poi.note"
-                    (ngModelChange)="updateNote(poi, $event)" [ngModelOptions]="{updateOn: 'blur'}"
-                    (focus)="activeEditingNotePoiKey.set(poi.key)" (blur)="activeEditingNotePoiKey.set(null)"
-                    [class.is-editing]="activeEditingNotePoiKey() === poi.key" />
-                </div>
-
-
-                <!-- Actions -->
-                <div class="wl-poi-actions-row">
-
-                  @if (!poi.groupName) {
-                  <div class="wl-time-wrapper">
-                      <div class="wl-poi-time-row">
-                        <div class="wl-time-pill" (click)="openTimePopup(poi, $event)">
-                          <i class="bi bi-calendar-check"></i>
-                          <div class="wl-time-segment">
-                            <span class="wl-time-label">Check-in</span>
-                            <span class="wl-time-val">{{ formatTimeString(poi.plannedStartAt, true) || '--' }}</span>
-                          </div>
-                          <i class="bi bi-arrow-right wl-time-arrow"></i>
-                          <div class="wl-time-segment">
-                            <span class="wl-time-label">Check-out</span>
-                            <span class="wl-time-val">{{ formatTimeString(poi.plannedEndAt, true) || '--' }}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                    @if (activeTimePopupPoiKey() === poi.key) {
-                    <div class="wl-time-popup" (click)="onPopupClick($event)">
-                      <div class="wl-time-inputs">
-                        <div class="wl-time-field">
-                          <label>{{ poi.type === 'accommodation' ? 'Check-in' : 'Inizio' }}</label>
-                          <div class="wl-datetime-inputs">
-                            @if (poi.type === 'accommodation') {
-                            <select [ngModel]="popupStartDay()" (ngModelChange)="popupStartDay.set($event)">
-                              @for (d of dayOptions(); track d) { <option [value]="d">Giorno {{ d }}</option> }
-                            </select>
-                            }
-                            <select [ngModel]="popupStartTime()" (ngModelChange)="popupStartTime.set($event)">
-                              <option value="">--:--</option>
-                              @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
-                            </select>
-                          </div>
-                        </div>
-
-                        <span class="wl-time-sep">-</span>
-
-                        <div class="wl-time-field">
-                          <label>{{ poi.type === 'accommodation' ? 'Check-out' : 'Fine' }}</label>
-                          <div class="wl-datetime-inputs">
-                            @if (poi.type === 'accommodation') {
-                            <select [ngModel]="popupEndDay()" (ngModelChange)="popupEndDay.set($event)">
-                              @for (d of dayOptions(); track d) { <option [value]="d">Giorno {{ d }}</option> }
-                            </select>
-                            }
-                            <select [ngModel]="popupEndTime()" (ngModelChange)="popupEndTime.set($event)">
-                              <option value="">--:--</option>
-                              @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="wl-time-popup-actions">
-                        <button class="wl-btn-cancel" (click)="clearTime(poi)">Cancella</button>
-                        <button class="wl-btn-save" (click)="saveTime(poi)">Salva</button>
-                      </div>
-                    </div>
-                    }
-                  </div>
-                  }
-                </div>
-
-
-              </div>
-
-              <div class="wl-poi-image">
-                <img [src]="poi.imageUrl || '/assets/home-section.avif'" [alt]="poi.title">
-              </div>
-            </div>
-          </div>
+          <app-builder-summary-poi-card
+            [poi]="poi"
+            [dayNumber]="day.day"
+            [index]="idx"
+            [isLast]="isLastInGroup(idx, day.items)"
+            [dayColor]="getDayColor(day.day)"
+            [isSelected]="selectedPoiKeys().has(poi.key)"
+            [totalDaysCount]="daySections().length"
+            (toggleSelect)="toggleSelection(poi)"
+            (remove)="removeItem(poi)"
+            (poiUpdate)="updatePoi(poi, $event)">
+          </app-builder-summary-poi-card>
         </div>
         }
       </div>

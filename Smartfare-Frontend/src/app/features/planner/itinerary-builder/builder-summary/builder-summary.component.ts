@@ -1,15 +1,18 @@
 // Forced rebuild      
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, HostListener, effect } from '@angular/core';  
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, CdkDragEnd, CdkDragMove, CdkDragStart, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
-import { BuilderPoi } from '../builder.types';
+import { BuilderPoi } from '../../../../core/models/builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { AlertService } from '../../../../core/services/alert.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { BuilderSummaryHeaderComponent } from '../builder-summary-header/builder-summary-header.component';
+import { BuilderSummaryExploreComponent } from '../builder-summary-explore/builder-summary-explore.component';
+import { BuilderSummaryPoiCardComponent } from '../builder-summary-poi-card/builder-summary-poi-card.component';
 
 interface DaySection {
   day: number;
@@ -29,7 +32,12 @@ interface ExploreCard {
 @Component({
   selector: 'app-builder-summary',
   standalone: true,
-  imports: [CommonModule, DragDropModule, FormsModule],
+  imports: [
+    CommonModule, DragDropModule, FormsModule,
+    BuilderSummaryHeaderComponent,
+    BuilderSummaryExploreComponent,
+    BuilderSummaryPoiCardComponent
+  ],
   templateUrl: './builder-summary.component.html',
   styleUrls: ['./builder-summary.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -46,22 +54,9 @@ export class BuilderSummaryComponent {
 
   itinerary = this.itineraryService.itinerary;
 
-  // Stato per l'editing del titolo dell'itinerario
-  isEditingTitle = signal<boolean>(false);
-  editTitleValue = signal<string>('');
-  
-  isEditingDescription = signal<boolean>(false);
-  editDescriptionValue = signal<string>('');
-  
-  // Stato per l'editing delle note dei POI
-  activeEditingNotePoiKey = signal<string | null>(null);
-
   // Modalità Anteprima
   previewItinerary = signal<Itinerary | null>(null);
   isPreviewMode = computed(() => !!this.previewItinerary());
-
-  // Stato upload immagine
-  isUploadingImage = signal<boolean>(false);
 
   // ---- Sezione percorso giorno selezionato ----
   /** Giorno attualmente visibile nella mappa (number | 'all') */
@@ -99,65 +94,7 @@ export class BuilderSummaryComponent {
   groupStartTime = signal<string>('');
   groupEndTime = signal<string>('');
 
-  async onCoverImageSelected(event: any) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Controllo dimensione (es. 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      this.alertService.error('L\'immagine è troppo grande. Massimo 5MB.');
-      return;
-    }
-
-    const current = this.itinerary();
-    const formData = new FormData();
-    formData.append('image', file);
-
-    // Aggiungiamo l'ID dell'itinerario se esiste
-    if (current?.id) {
-      formData.append('itineraryId', current.id.toString());
-    }
-
-
-    this.isUploadingImage.set(true);
-
-    try {
-      // Usiamo l'endpoint del backend per caricare su Cloudinary
-      const response: any = await this.http.post(`${environment.apiUrl}/api/upload/image`, formData).toPromise();
-      
-      if (response && response.url) {
-        const current = this.itinerary();
-        if (current) {
-          // Aggiorniamo l'immagine dell'itinerario
-          this.itineraryService.setCurrentItinerary({
-            ...current,
-            imageUrl: response.url
-          });
-          
-          this.alertService.success('Copertina aggiornata con successo!');
-        }
-      }
-    } catch (error) {
-      console.error('Errore durante l\'upload:', error);
-      this.alertService.error('Errore durante il caricamento dell\'immagine.');
-    } finally {
-      this.isUploadingImage.set(false);
-      // Resettiamo l'input per permettere di selezionare lo stesso file
-      event.target.value = '';
-    }
-  }
-
-  // Stato per il popup dell'orario
-  activeTimePopupPoiKey = signal<string | null>(null);
-  popupStartTime = signal<string>('');
-  popupEndTime = signal<string>('');
-  popupStartDay = signal<number>(1);
-  popupEndDay = signal<number>(1);
-
-  isPublic = computed(() => {
-    const itin = this.itinerary();
-    return itin?.visibilityCode === 'PUBLIC' || itin?.isPublished === true;
-  });
+  // Note: time popup state and cover upload handled by subcomponents
 
   // Segnale unito: Itinerario (o Anteprima) + Dati del Workspace (POI)
   joinedPois = computed(() => {
@@ -201,28 +138,6 @@ export class BuilderSummaryComponent {
   });
 
   // Calcolo automatico della data/durata
-  itineraryDateSummary = computed(() => {
-    const itin = this.itinerary();
-    if (!itin?.startDate || !itin?.endDate) {
-      const days = this.getDaysCount();
-      return `${days} ${days === 1 ? 'giorno' : 'giorni'}`;
-    }
-
-    const start = new Date(itin.startDate);
-    const end = new Date(itin.endDate);
-
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      const days = this.getDaysCount();
-      return `${days} ${days === 1 ? 'giorno' : 'giorni'}`;
-    }
-
-    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
-    const startStr = start.toLocaleDateString('it-IT', options);
-    const endStr = end.toLocaleDateString('it-IT', options);
-
-    return `${startStr} - ${endStr}`;
-  });
-
   dayOptions = computed(() => {
     const count = this.getDaysCount();
     return Array.from({ length: count }, (_, i) => i + 1);
@@ -240,19 +155,6 @@ export class BuilderSummaryComponent {
     }
     return options;
   });
-
-  publicItineraries = signal<Itinerary[]>([]);
-
-  constructor() {
-    effect(() => {
-      const ws = this.workspace();
-      if (ws?.location?.id) {
-        this.itineraryService.getPublicItineraries(ws.location.id).subscribe(list => {
-          this.publicItineraries.set(list);
-        });
-      }
-    });
-  }
 
   applyItinerary(publicItin: Itinerary): void {
     const target = this.previewItinerary() || publicItin;
@@ -304,22 +206,11 @@ export class BuilderSummaryComponent {
     this.previewItinerary.set(null);
   }
 
-  togglePublish(): void {
-    const current = this.itinerary();
-    if (!current) return;
+  // togglePublish extracted
 
-    const isCurrentlyPublic = current.visibilityCode === 'PUBLIC' || current.isPublished;
-    const newState = !isCurrentlyPublic;
-    
-    this.itineraryService.setCurrentItinerary({
-      ...current,
-      isPublished: newState,
-      visibilityCode: newState ? 'PUBLIC' : 'PRIVATE'
-    });
-
-    this.alertService.success(newState ? 'Itinerario pubblicato!' : 'Itinerario reso privato.');
+  onPopupClick(event: Event) {
+    event.stopPropagation();
   }
-
 
   readonly daySections = computed<DaySection[]>(() => {
     const totalDays = Math.max(1, this.getDaysCount());
@@ -400,193 +291,14 @@ export class BuilderSummaryComponent {
     return date;
   }
 
-  // --- Title Edit ---
-  startEditingTitle(): void {
-    const currentName = this.itinerary()?.name || this.workspace()?.location?.name || 'Viaggio';
-    this.editTitleValue.set(currentName);
-    this.isEditingTitle.set(true);
-  }
-
-  saveTitle(): void {
-    const newName = this.editTitleValue().trim();
-    if (newName) {
-      const current = this.itinerary();
-      if (current) {
-        this.itineraryService.setCurrentItinerary({
-          ...current,
-          name: newName
-        });
-      }
-    }
-    this.isEditingTitle.set(false);
-  }
-
-  cancelTitleEdit(): void {
-    this.isEditingTitle.set(false);
-  }
-
-  // --- Description Edit ---
-  startEditingDescription(): void {
-    const currentDesc = this.itinerary()?.description || '';
-    this.editDescriptionValue.set(currentDesc);
-    this.isEditingDescription.set(true);
-  }
-
-  saveDescription(): void {
-    const newDesc = this.editDescriptionValue().trim();
-    const current = this.itinerary();
-    if (current) {
-      this.itineraryService.setCurrentItinerary({
-        ...current,
-        description: newDesc || undefined
-      });
-    }
-    this.isEditingDescription.set(false);
-  }
-
-  cancelDescriptionEdit(): void {
-    this.isEditingDescription.set(false);
-  }
-
-  // --- Notes Edit ---
-  updateNote(poi: BuilderPoi, note: string): void {
-    this.updateField(poi, 'note', note);
-  }
-
-  // --- Time Popup ---
-  openTimePopup(poi: BuilderPoi, event: Event): void {
-    event.stopPropagation();
-
-    // Parse existing time
-    let start = '';
-    let end = '';
-    if (poi.plannedStartAt) {
-      const d = new Date(poi.plannedStartAt);
-      if (!Number.isNaN(d.getTime())) {
-        start = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-      }
-    }
-    if (poi.plannedEndAt) {
-      const d = new Date(poi.plannedEndAt);
-      if (!Number.isNaN(d.getTime())) {
-        end = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-      }
-    }
-
-    this.popupStartTime.set(start);
-    this.popupEndTime.set(end);
-
-    // Day extraction
-    const startD = poi.plannedStartAt ? new Date(poi.plannedStartAt) : null;
-    const endD = poi.plannedEndAt ? new Date(poi.plannedEndAt) : null;
-
-    this.popupStartDay.set(startD ? this.getDayNumberFromDate(startD) : poi.dayNumber || 1);
-    this.popupEndDay.set(endD ? this.getDayNumberFromDate(endD) : poi.dayNumber || 1);
-
-    this.activeTimePopupPoiKey.set(poi.key);
-  }
-
-  private getDayNumberFromDate(date: Date): number {
-    const itinerary = this.itinerary();
-    if (!itinerary?.startDate) return 1;
-    const start = new Date(itinerary.startDate);
-    const diff = date.getTime() - start.getTime();
-    return Math.max(1, Math.floor(diff / (1000 * 60 * 60 * 24)) + 1);
-  }
-
-  closeTimePopup(): void {
-    this.activeTimePopupPoiKey.set(null);
-  }
-
-  @HostListener('document:click')
-  onDocumentClick() {
-    // Chiudi il popup se si clicca fuori
-    if (this.activeTimePopupPoiKey()) {
-      this.closeTimePopup();
-    }
-  }
-
-  // Previene la chiusura cliccando all'interno del popup
-  onPopupClick(event: Event) {
-    event.stopPropagation();
-  }
-
-  saveTime(poi: BuilderPoi): void {
-    const startStr = this.popupStartTime();
-    const endStr = this.popupEndTime();
-
-    let startIso = null;
-    let endIso = null;
-
-    const startDayDate = this.getDayDate(this.popupStartDay()) || new Date();
-    const endDayDate = this.getDayDate(this.popupEndDay()) || new Date();
-
-    if (startStr && startDayDate) {
-      const [h, m] = startStr.split(':').map(Number);
-      const d = new Date(startDayDate);
-      d.setHours(h, m, 0, 0);
-      startIso = d.toISOString();
-    }
-
-    if (endStr && endDayDate) {
-      const [h, m] = endStr.split(':').map(Number);
-      const d = new Date(endDayDate);
-      d.setHours(h, m, 0, 0);
-      endIso = d.toISOString();
-    }
-
-    const current = this.itinerary();
-    if (!current?.items) {
-      this.closeTimePopup();
-      return;
-    }
-
-    const updatedItems = current.items.map((item) => {
-      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
-      if (key === poi.key) {
-        return { ...item, plannedStartAt: startIso, plannedEndAt: endIso };
-      }
-      return item;
-    });
-
-    this.itineraryService.setCurrentItinerary({
-      ...current,
-      items: updatedItems
-    });
-
-    this.closeTimePopup();
-  }
-
-  clearTime(poi: BuilderPoi): void {
+  updatePoi(poi: BuilderPoi, updates: Partial<BuilderPoi>) {
     const current = this.itinerary();
     if (!current?.items) return;
 
     const updatedItems = current.items.map((item) => {
       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
       if (key === poi.key) {
-        return { ...item, plannedStartAt: null, plannedEndAt: null };
-      }
-      return item;
-    });
-
-    this.itineraryService.setCurrentItinerary({
-      ...current,
-      items: updatedItems
-    });
-    this.closeTimePopup();
-  }
-
-  // --- Utils ---
-  private updateField(poi: BuilderPoi, field: string, value: any): void {
-    const current = this.itinerary();
-    if (!current?.items) return;
-
-    if ((poi as any)[field] === value) return;
-
-    const updatedItems = current.items.map((item) => {
-      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
-      if (key === poi.key) {
-        return { ...item, [field]: value };
+        return { ...item, ...updates };
       }
       return item;
     });
@@ -660,7 +372,7 @@ export class BuilderSummaryComponent {
   openGroupTimePopup(poi: BuilderPoi, event: Event) {
     event.stopPropagation();
     if (!poi.groupName) return;
-    
+
     let start = '';
     let end = '';
     if (poi.groupStartAt) {
@@ -889,13 +601,13 @@ export class BuilderSummaryComponent {
     // Trova le attività selezionate
     const allPois = this.joinedPois();
     const selectedPois = allPois.filter(p => selectedKeys.includes(p.key));
-    
+
     // Usa il giorno della prima attività selezionata come giorno di riferimento
     const targetDay = selectedPois[0]?.dayNumber || 1;
     const groupName = `Gruppo Giorno ${targetDay} - ${Math.floor(Math.random() * 1000)}`;
 
     const dayMap = this.buildDayMap(current.items);
-    
+
     // Rimuovi tutti gli elementi selezionati dalle loro posizioni attuali
     for (const key of selectedKeys) {
       for (const [day, list] of dayMap.entries()) {
@@ -928,7 +640,7 @@ export class BuilderSummaryComponent {
           groupEndAt: null
         };
       }
-      
+
       if (position) {
         return { ...item, dayNumber: position.day, orderInt: position.order };
       }
@@ -944,7 +656,7 @@ export class BuilderSummaryComponent {
     this.clearSelection();
     this.alertService.success('Attività raggruppate con successo!');
   }
-  
+
   deleteSelected() {
     const current = this.itinerary();
     const selectedKeys = this.selectedPoiKeys();

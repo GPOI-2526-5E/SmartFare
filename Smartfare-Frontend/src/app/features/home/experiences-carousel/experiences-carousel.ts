@@ -23,6 +23,8 @@ export interface Experience {
   subtitle: string;
   description: string;
   imageUrl: string;
+  /** Low resolution image for carousel cards */
+  cardImageUrl: string;
   /** CSS gradient used for the category badge */
   accentGradient: string;
   /** Glow rgba color used for card highlight */
@@ -49,6 +51,8 @@ export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
         'Discover the world\'s most beautiful shores, from secluded coves with pristine white sand to vibrant coastal towns. Immerse yourself in the relaxing sounds of the waves, soak up the sun, and dive into crystal-clear waters.',
       imageUrl:
         'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?fm=jpg&q=80&w=1920',
+      cardImageUrl:
+        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?fm=jpg&q=80&w=400',
       accentGradient: 'linear-gradient(135deg, #0077b6, #00b4d8)',
       glowColor: 'rgba(0, 180, 216, 0.45)',
     },
@@ -62,6 +66,8 @@ export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
         'Experience the thrill of reaching new heights. Our mountain excursions offer breathtaking panoramic views, challenging trails for all levels, and a deep connection with untouched nature.',
       imageUrl:
         'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?fm=jpg&q=80&w=1920',
+      cardImageUrl:
+        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?fm=jpg&q=80&w=400',
       accentGradient: 'linear-gradient(135deg, #6a4c93, #c77dff)',
       glowColor: 'rgba(199, 125, 255, 0.45)',
     },
@@ -75,6 +81,8 @@ export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
         'Explore vibrant coral reefs and majestic marine life. Plunge into the depths of the ocean to experience an unforgettable and mesmerizing underwater world full of colors and mystery.',
       imageUrl:
         'https://images.unsplash.com/photo-1544551763-46a013bb70d5?fm=jpg&q=80&w=1920',
+      cardImageUrl:
+        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?fm=jpg&q=80&w=400',
       accentGradient: 'linear-gradient(135deg, #005f73, #0a9396)',
       glowColor: 'rgba(10, 147, 150, 0.45)',
     },
@@ -88,6 +96,8 @@ export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
         'Reconnect with tranquility in ancient forests. Walk among towering trees, breathe the fresh pine-scented air, and let the peaceful ambiance of the deep woods rejuvenate your soul.',
       imageUrl:
         'https://images.unsplash.com/photo-1448375240586-882707db888b?fm=jpg&q=80&w=1920',
+      cardImageUrl:
+        'https://images.unsplash.com/photo-1448375240586-882707db888b?fm=jpg&q=80&w=400',
       accentGradient: 'linear-gradient(135deg, #2d6a4f, #52b788)',
       glowColor: 'rgba(82, 183, 136, 0.45)',
     },
@@ -101,6 +111,8 @@ export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
         'Embark on an unforgettable journey through golden dunes, starlit skies, and ancient caravan routes that stretch beyond the horizon. Let the silence of the desert speak to you.',
       imageUrl:
         'https://images.unsplash.com/photo-1509316785289-025f5b846b35?fm=jpg&q=80&w=1920',
+      cardImageUrl:
+        'https://images.unsplash.com/photo-1509316785289-025f5b846b35?fm=jpg&q=80&w=400',
       accentGradient: 'linear-gradient(135deg, #c77800, #ffb703)',
       glowColor: 'rgba(255, 183, 3, 0.45)',
     },
@@ -112,12 +124,13 @@ export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('cardEl') cardElements!: QueryList<ElementRef>;
 
   activeExperience = signal<Experience>(this.experiences[0]);
+  previousExperience = signal<Experience | null>(null);
   private autoScrollInterval: ReturnType<typeof setInterval> | null = null;
   private isHovering = false;
   private itemWidth = 264;
 
   ngOnInit() {
-    this.displayExperiences = Array(12).fill(this.experiences).flat();
+    this.displayExperiences = Array(3).fill(this.experiences).flat();
     this.startAutoScroll();
   }
 
@@ -137,6 +150,8 @@ export class ExperiencesCarousel implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectExperience(exp: Experience) {
+    if (this.activeExperience().id === exp.id) return;
+    this.previousExperience.set(this.activeExperience());
     this.activeExperience.set(exp);
   }
 

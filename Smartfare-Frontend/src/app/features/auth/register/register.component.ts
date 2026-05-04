@@ -101,10 +101,18 @@ export class RegisterComponent implements OnInit {
     }
 
     const { confirmPassword, ...data } = this.registerData;
+    const finalData = {
+      ...data,
+      authProvider: this.isGoogleRegistration ? 'google' : 'local'
+    };
 
-    this.authService.Register(data).subscribe({
+    this.authService.Register(finalData).subscribe({
       next: (res) => {
-        this.alertService.success('Registrazione completata! Ora puoi effettuare il login.');
+        if (this.isGoogleRegistration) {
+          this.alertService.success('Registrazione completata! Ora puoi effettuare il login.');
+        } else {
+          this.alertService.success('Registrazione completata! Controlla la tua email per verificare l\'account.');
+        }
         this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl } });
       },
       error: (err) => {

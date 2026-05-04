@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
-import { BuilderPoi } from '../builder.types';
+import { BuilderPoi } from '../../../../core/models/builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
 
 @Component({
