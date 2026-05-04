@@ -1,7 +1,9 @@
 import { Router, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
+import prisma from '../config/prisma';
 import { optionalAuthenticateJWT, AuthRequest } from '../middleware/auth.middleware';
 import { aiItineraryChatSchema } from '../schemas/ai.schema';
+import { aiItineraryGenerateSchema } from '../schemas/ai-generate.schema';
 import { ItineraryService } from '../services/itinerary/itinerary.service';
 import { GeminiItineraryChatService } from '../services/ai/gemini.service';
 import { AppError } from '../middleware/error.middleware';
@@ -50,6 +52,58 @@ router.post('/itinerary/chat', aiLimiter, optionalAuthenticateJWT, async (req: A
         res.status(200).json({
             success: true,
             ...response,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.post('/itinerary/generate', aiLimiter, optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const { prompt } = aiItineraryGenerateSchema.parse(req.body);
+
+        // 1. Fetch all locations to identify the destination
+        const locations = await prisma.location.findMany({
+            select: { id: true, name: true }
+        });
+
+        const locationId = await geminiService.identifyLocation(prompt, locations);
+
+        if (!locationId) {
+            throw new AppError('Non sono riuscito a identificare una destinazione valida per la tua richiesta. Prova a specificare meglio la città.', 400);
+        }
+
+        // 2. Fetch workspace data for the identified location
+        const workspace = await itineraryService.getWorkspaceData(locationId, req.user?.userId ? Number(req.user.userId) : undefined);
+
+        // 3. Generate the initial itinerary
+        const response = await geminiService.generateInitialItinerary(prompt, {
+            location: workspace.location
+                ? {
+                    id: workspace.location.id,
+                    name: workspace.location.name,
+                    city: workspace.location.name,
+                    province: workspace.location.province ?? undefined,
+                    country: 'Italia',
+                }
+                : null,
+            itinerary: null,
+            accommodations: workspace.accommodations,
+            activities: workspace.activities,
+            categories: workspace.categories,
+        });
+
+        if (!response) {
+            throw new AppError('Errore durante la generazione dell\'itinerario. Riprova.', 500);
+        }
+
+        res.status(200).json({
+            success: true,
+            itinerary: {
+                ...response,
+                locationId,
+                location: workspace.location
+            }
         });
     } catch (error) {
         next(error);

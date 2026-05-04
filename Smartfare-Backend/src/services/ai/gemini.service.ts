@@ -147,4 +147,59 @@ export class GeminiItineraryChatService {
             return null;
         }
     }
+
+    async identifyLocation(prompt: string, locations: { id: number, name: string }[]): Promise<number | null> {
+        if (!this.apiKey) throw new AppError('GEMINI_API_KEY mancante', 500);
+        const ai = new GoogleGenerativeAI(this.apiKey);
+        const model = ai.getGenerativeModel({ model: this.modelName });
+
+        const systemPrompt = [
+            'Sei un esperto di viaggi.',
+            'Dato un prompt dell\'utente e una lista di location (ID e Nome), identifica quale location è la più pertinente.',
+            'Se non trovi una corrispondenza esatta, scegli la più vicina.',
+            'Se non c\'è alcuna corrispondenza sensata, restituisci "null".',
+            'Restituisci SOLO l\'ID numerico o la stringa "null".',
+            '',
+            `Lista location: ${JSON.stringify(locations)}`,
+            `Prompt utente: "${prompt}"`
+        ].join('\n');
+
+        const result = await model.generateContent(systemPrompt);
+        const text = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
+        
+        if (text.toLowerCase().includes('null')) return null;
+        const id = parseInt(text.replace(/[^0-9]/g, ''));
+        return isNaN(id) ? null : id;
+    }
+
+    async generateInitialItinerary(prompt: string, workspace: AiItineraryWorkspaceContext): Promise<any> {
+        if (!this.apiKey) throw new AppError('GEMINI_API_KEY mancante', 500);
+        const ai = new GoogleGenerativeAI(this.apiKey);
+        const model = ai.getGenerativeModel({ model: this.modelName });
+
+        const activities = (workspace.activities || []).map(a => ({ id: a.id, name: a.name, category: a.category?.name }));
+        const accommodations = (workspace.accommodations || []).map(acc => ({ id: acc.id, name: acc.name, stars: acc.stars }));
+
+        const systemPrompt = [
+            'Sei un assistente esperto di viaggi SmartFare.',
+            `L'utente vuole organizzare un viaggio a ${workspace.location?.name}.`,
+            `Richiesta specifica: "${prompt}"`,
+            '',
+            'Usa i POI (attività e alloggi) forniti per costruire un itinerario di 3-5 giorni.',
+            'Per ogni tappa, specifica dayNumber, orderInt, itemTypeCode (ACTIVITY o ACCOMMODATION), activityId o accommodationId, note, e groupName.',
+            'Il groupName serve per raggruppare le attività della giornata (es. "Mattina", "Pomeriggio", "Cena").',
+            'Sii creativo ma coerente con la richiesta dell\'utente.',
+            'Restituisci SOLO JSON valido.',
+            '',
+            'Esempio formato:',
+            '{"name": "Titolo Viaggio", "items": [{"dayNumber": 1, "orderInt": 1, "itemTypeCode": "ACTIVITY", "activityId": 10, "note": "Descrizione", "groupName": "Mattina"}]}',
+            '',
+            `Attività disponibili: ${JSON.stringify(activities)}`,
+            `Alloggi disponibili: ${JSON.stringify(accommodations)}`,
+        ].join('\n');
+
+        const result = await model.generateContent(systemPrompt);
+        const responseText = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
+        return this.tryParseJson(responseText);
+    }
 }

@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertService } from '../../../core/services/alert.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+import { ItineraryService } from '../../../core/services/itinerary.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-ai-prompt-bar',
@@ -23,6 +27,8 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
     "Es: Portami a scoprire l'aurora boreale in Islanda..."
   ];
 
+  isGenerating = signal(false);
+
   private placeholderIndex = 0;
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly ngZone = inject(NgZone);
@@ -33,7 +39,9 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private http: HttpClient,
+    private itineraryService: ItineraryService
   ) { }
 
   ngOnInit() {
@@ -68,7 +76,35 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.router.navigate(['/itineraries', 'new'], { queryParams: { prompt: this.travelQuery } });
+    if (this.isGenerating()) return;
+
+    this.isGenerating.set(true);
+
+    this.http.post<any>(`${environment.apiUrl}/api/ai/itinerary/generate`, {
+      prompt: this.travelQuery
+    }).pipe(
+      finalize(() => this.isGenerating.set(false))
+    ).subscribe({
+      next: (res) => {
+        if (res.success && res.itinerary) {
+          // Set the itinerary in the service
+          this.itineraryService.setCurrentItinerary(res.itinerary, { autosave: true });
+          
+          // Redirect to builder
+          this.router.navigate(['/itineraries', 'builder'], {
+            queryParams: { 
+              locationId: res.itinerary.locationId,
+              dest: res.itinerary.location?.name
+            }
+          });
+        }
+      },
+      error: (err) => {
+        console.error('AI Generation error:', err);
+        const msg = err.error?.error || "Non sono riuscito a generare l'itinerario. Riprova con un altro prompt.";
+        this.alertService.error(msg);
+      }
+    });
   }
 
   onManualCreate(): void {

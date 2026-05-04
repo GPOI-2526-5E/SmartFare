@@ -143,6 +143,17 @@
   transform: scale(0.92);
 }
 
+.btn-send:disabled {
+  background: var(--prompt-button-bg);
+  color: rgba(255, 255, 255, 0.2);
+  cursor: wait;
+}
+
+.prompt-input:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 /* Manual Create */
 .manual-create-prompt {
   display: flex;
