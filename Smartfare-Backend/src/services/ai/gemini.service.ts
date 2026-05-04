@@ -28,6 +28,22 @@ export class GeminiItineraryChatService {
         return validModel || 'gemini-2.0-flash';
     }
 
+    private async callGeminiWithRetry(model: any, prompt: string, retries = 2): Promise<any> {
+        for (let i = 0; i <= retries; i++) {
+            try {
+                return await model.generateContent(prompt);
+            } catch (error: any) {
+                const isNetworkError = error?.message?.includes('fetch failed') || error?.code === 'UND_ERR_CONNECT_TIMEOUT';
+                if (isNetworkError && i < retries) {
+                    console.log(`Gemini API Fetch failed (attempt ${i + 1}/${retries + 1}), retrying...`);
+                    await new Promise(res => setTimeout(res, 1000 * (i + 1))); // Exponential backoff
+                    continue;
+                }
+                throw error;
+            }
+        }
+    }
+
     async generateChatResponse(
         userInput: AiItineraryChatRequest,
         workspace: AiItineraryWorkspaceContext
@@ -42,7 +58,7 @@ export class GeminiItineraryChatService {
         const prompt = this.buildPrompt(userInput, workspace);
 
         try {
-            const result = await model.generateContent(prompt);
+            const result = await this.callGeminiWithRetry(model, prompt);
             const responseText = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
             return this.parseResponse(responseText);
         } catch (error: any) {
@@ -155,6 +171,17 @@ export class GeminiItineraryChatService {
 
     async identifyLocation(prompt: string, locations: { id: number, name: string }[]): Promise<number | null> {
         if (!this.apiKey) throw new AppError('GEMINI_API_KEY mancante', 500);
+
+        // --- FALLBACK: Local Matching ---
+        const promptLower = prompt.toLowerCase();
+        for (const loc of locations) {
+            const locNameLower = loc.name.toLowerCase();
+            const regex = new RegExp(`\\b${locNameLower}\\b`, 'i');
+            if (regex.test(promptLower)) {
+                return loc.id;
+            }
+        }
+
         const ai = new GoogleGenerativeAI(this.apiKey);
         const model = ai.getGenerativeModel({ model: this.modelName });
 
@@ -170,17 +197,18 @@ export class GeminiItineraryChatService {
         ].join('\n');
 
         try {
-            const result = await model.generateContent(systemPrompt);
+            const result = await this.callGeminiWithRetry(model, systemPrompt);
             const text = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
             
             if (text.toLowerCase().includes('null')) return null;
             
-            // Find the location by name in the original list
             const identifiedName = text.trim().toLowerCase();
             const found = locations.find(l => l.name.toLowerCase() === identifiedName || identifiedName.includes(l.name.toLowerCase()));
             return found ? found.id : null;
         } catch (error: any) {
             console.error("Gemini identifyLocation Error:", error);
+            const broadMatch = locations.find(l => promptLower.includes(l.name.toLowerCase()));
+            if (broadMatch) return broadMatch.id;
             return null;
         }
     }
@@ -190,7 +218,6 @@ export class GeminiItineraryChatService {
         const ai = new GoogleGenerativeAI(this.apiKey);
         const model = ai.getGenerativeModel({ model: this.modelName });
 
-        // Limit POIs to avoid quota issues
         const activities = (workspace.activities || [])
             .slice(0, 30)
             .map(a => ({ id: a.id, name: a.name, category: a.category?.name }));
@@ -217,7 +244,7 @@ export class GeminiItineraryChatService {
         ].join('\n');
 
         try {
-            const result = await model.generateContent(systemPrompt);
+            const result = await this.callGeminiWithRetry(model, systemPrompt);
             const responseText = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
             return this.tryParseJson(responseText);
         } catch (error: any) {

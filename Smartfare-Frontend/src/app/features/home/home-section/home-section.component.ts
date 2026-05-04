@@ -34,7 +34,6 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly heroTypingLines = ['Explore the World', 'With SmartFare'];
   protected readonly videoSources = [
     'assets/videos/home/background-3.mp4',
-    'assets/videos/home/background-4.mp4',
     'assets/videos/home/background-5.mp4',
     'assets/videos/home/background-6.mp4',
   ];
