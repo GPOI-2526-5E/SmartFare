@@ -43,25 +43,12 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   @Output() removePoi = new EventEmitter<BuilderPoi>();
 
   private map?: L.Map;
-  private locationLayer = L.layerGroup();
-  private savedLayer = L.layerGroup();
-  private availableLayer = L.markerClusterGroup({
-    chunkedLoading: true,
-    maxClusterRadius: 50,
-    spiderfyOnMaxZoom: true,
-    iconCreateFunction: (cluster) => {
-      const count = cluster.getChildCount();
-      return L.divIcon({
-        className: 'custom-cluster-icon',
-        html: `<div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 2px solid #3b82f6; box-shadow: 0 4px 12px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 700; font-size: 13px; font-family: 'Inter', sans-serif;">${count}</div>`,
-        iconSize: [34, 34],
-        iconAnchor: [17, 17]
-      });
-    }
-  });
-  private previewLayer = L.layerGroup();
-  private routeLayer = L.layerGroup();
-  private endpointLayer = L.layerGroup();
+  private locationLayer!: L.LayerGroup;
+  private savedLayer!: L.LayerGroup;
+  private availableLayer!: L.MarkerClusterGroup;
+  private previewLayer!: L.LayerGroup;
+  private routeLayer!: L.LayerGroup;
+  private endpointLayer!: L.LayerGroup;
   private routeRequestId = 0;
   private resizeObserver?: ResizeObserver;
   private readonly ui = inject(UIStateService);
@@ -104,6 +91,8 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   ngAfterViewInit(): void {
+    this.initializeLayers();
+
     this.map = L.map(this.mapRoot.nativeElement, {
       zoomControl: false,
       attributionControl: true
@@ -132,6 +121,37 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     });
 
     this.resizeObserver.observe(this.mapRoot.nativeElement);
+  }
+
+  private initializeLayers(): void {
+    this.locationLayer = L.layerGroup();
+    this.savedLayer = L.layerGroup();
+    this.previewLayer = L.layerGroup();
+    this.routeLayer = L.layerGroup();
+    this.endpointLayer = L.layerGroup();
+
+    // Use a check to ensure markerClusterGroup exists (important for production build)
+    const clusterFn = (L as any).markerClusterGroup || (L as any).MarkerClusterGroup;
+    
+    if (clusterFn) {
+      this.availableLayer = clusterFn({
+        chunkedLoading: true,
+        maxClusterRadius: 50,
+        spiderfyOnMaxZoom: true,
+        iconCreateFunction: (cluster: any) => {
+          const count = cluster.getChildCount();
+          return L.divIcon({
+            className: 'custom-cluster-icon',
+            html: `<div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 2px solid #3b82f6; box-shadow: 0 4px 12px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 700; font-size: 13px; font-family: 'Inter', sans-serif;">${count}</div>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+          });
+        }
+      });
+    } else {
+      console.warn('MarkerClusterGroup not found, falling back to LayerGroup');
+      this.availableLayer = L.layerGroup() as any;
+    }
   }
 
   private bindPopupActions(popup: L.Popup) {
