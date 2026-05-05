@@ -7,12 +7,12 @@ datasource db {
 }
 
 model User {
-  id                   Int       @id @default(autoincrement())
-  email                String    @unique
-  passwordHash         String?
-  authProvider         String    @default("local")
-  sessionId            String?
-  resetPasswordToken   String?
+  id                       Int       @id @default(autoincrement())
+  email                    String    @unique
+  passwordHash             String?
+  authProvider             String    @default("local")
+  sessionId                String?
+  resetPasswordToken       String?
   resetPasswordExpires     DateTime?
   isEmailVerified          Boolean   @default(false)
   emailVerificationToken   String?
@@ -62,8 +62,9 @@ model UserPreference {
 }
 
 model UserPreferenceInterest {
-  activityCateegoryId Int @id @default(autoincrement())
-  preferenceId        Int
+  id                 Int @id @default(autoincrement())
+  activityCategoryId Int
+  preferenceId       Int
 
   preference UserPreference @relation(fields: [preferenceId], references: [id])
 }
@@ -78,9 +79,6 @@ model Location {
 
   accommodations Accommodation[]
   activities     Activity[]
-  airports       Airport[]
-  metroStations  MetroStation[]
-  stations       Station[]
   itineraries    Itinerary[]
 }
 
@@ -124,42 +122,6 @@ model Activity {
   itineraryItems ItineraryItem[]
 }
 
-model Airport {
-  id         Int     @id @default(autoincrement())
-  name       String
-  iataCode   String?
-  icaoCode   String?
-  latitude   Float
-  longitude  Float
-  locationId Int
-
-  location       Location        @relation(fields: [locationId], references: [id])
-  itineraryItems ItineraryItem[] @relation("ItineraryItem_Airport")
-}
-
-model MetroStation {
-  id         Int     @id @default(autoincrement())
-  name       String
-  line       String?
-  latitude   Float
-  longitude  Float
-  locationId Int
-
-  location       Location        @relation(fields: [locationId], references: [id])
-  itineraryItems ItineraryItem[] @relation("ItineraryItem_MetroStation")
-}
-
-model Station {
-  id         Int    @id @default(autoincrement())
-  name       String
-  latitude   Float
-  longitude  Float
-  locationId Int
-
-  location       Location        @relation(fields: [locationId], references: [id])
-  itineraryItems ItineraryItem[] @relation("ItineraryItem_TrainsStation")
-}
-
 model ItineraryVisibility {
   code        String  @id
   name        String
@@ -182,14 +144,14 @@ model Itinerary {
   updatedAt      DateTime  @updatedAt
   userId         Int?
   locationId     Int?
-  imageUrl       String @default("https://images.trvl-media.com/place/6046257/dfc1097b-fb0b-4d2f-96f5-15d86e72f134.jpg")
+  imageUrl       String    @default("https://images.trvl-media.com/place/6046257/dfc1097b-fb0b-4d2f-96f5-15d86e72f134.jpg")
 
   user       User?               @relation(fields: [userId], references: [id])
   location   Location?           @relation(fields: [locationId], references: [id])
   visibility ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
   favorites  ItineraryFavorite[]
   items      ItineraryItem[]
-  
+
   @@index([userId])
   @@index([updatedAt])
 }
@@ -226,23 +188,14 @@ model ItineraryItem {
   groupEndAt      DateTime?
   activityId      Int?
   accommodationId Int?
-  trainsStationId Int?      @map("TrainsStationId")
-  metroStationId  Int?      @map("MetroStationId")
-  airportId       Int?      @map("AirportId")
 
   itinerary     Itinerary         @relation(fields: [itineraryId], references: [id])
   itemType      ItineraryItemType @relation(fields: [itemTypeCode], references: [code])
   activity      Activity?         @relation(fields: [activityId], references: [id])
   accommodation Accommodation?    @relation(fields: [accommodationId], references: [id])
-  trainsStation Station?          @relation("ItineraryItem_TrainsStation", fields: [trainsStationId], references: [id])
-  metroStation  MetroStation?     @relation("ItineraryItem_MetroStation", fields: [metroStationId], references: [id])
-  airport       Airport?          @relation("ItineraryItem_Airport", fields: [airportId], references: [id])
 
   @@unique([itineraryId, dayNumber, orderInt])
   @@index([itineraryId])
   @@index([activityId])
   @@index([accommodationId])
-  @@index([trainsStationId])
-  @@index([metroStationId])
-  @@index([airportId])
 }

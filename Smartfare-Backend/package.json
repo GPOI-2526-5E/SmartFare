@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "test": "jest",
     "populate-db": "ts-node src/scripts/populate-trains.ts",
-    "populate-hotels": "ts-node src/scripts/populate-hotels.ts"
+    "populate-hotels": "ts-node src/scripts/populate-hotels.ts",
+    "export-locations": "ts-node src/scripts/export-locations.ts"
   },
   "author": "",
   "license": "ISC",

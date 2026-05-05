@@ -1,0 +1,6713 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-05-05T08:57:11Z",
+    "timestamp_areas_base": "2026-05-05T02:43:58Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+    {
+      "type": "node",
+      "id": 155142754,
+      "lat": 44.4069039,
+      "lon": 8.9521232,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Edmondo De Amicis"
+      }
+    },
+    {
+      "type": "node",
+      "id": 187098366,
+      "lat": 44.4184435,
+      "lon": 8.9245283,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "18",
+        "addr:postcode": "16136",
+        "addr:street": "Corso Dogali",
+        "email": "castellodalbertis@comune.genova.it",
+        "fee": "yes",
+        "museum": "ethnography",
+        "name": "Museo delle culture del mondo",
+        "opening_hours": "Apr-Sep Tu-Su 10:00-18:00; Oct-Mar Tu-Su 10:00-17:00; Mo off",
+        "operator": "Comune di Genova",
+        "operator:type": "public",
+        "phone": "+39 010 2723820",
+        "tourism": "museum",
+        "website": "http://www.museidigenova.it/it/content/castello-dalbertis",
+        "wikidata": "Q3868144",
+        "wikipedia": "it:Museo delle culture del mondo"
+      }
+    },
+    {
+      "type": "node",
+      "id": 206128918,
+      "lat": 44.4049623,
+      "lon": 8.9371255,
+      "tags": {
+        "addr:housenumber": "16",
+        "addr:postcode": "16121",
+        "addr:street": "Via del Seminario",
+        "amenity": "library",
+        "contact:email": "berio@comune.genova.it",
+        "contact:fax": "+39 010 5576060",
+        "contact:phone": "+39 010 5576010",
+        "email": "beriocons@comune.genova.it",
+        "internet_access": "wlan",
+        "internet_access:fee": "no",
+        "internet_access:operator": "Vallicom",
+        "internet_access:ssid": "Berio",
+        "name": "Biblioteca Civica Berio",
+        "ref": "GB00000160",
+        "ref:ntcn": "07/00108722",
+        "wheelchair": "limited",
+        "wikidata": "Q3639568",
+        "wikipedia": "it:Biblioteca civica Berio"
+      }
+    },
+    {
+      "type": "node",
+      "id": 237234215,
+      "lat": 44.519812,
+      "lon": 9.160815,
+      "tags": {
+        "amenity": "library",
+        "created_by": "JOSM",
+        "name": "Biblioteca Popolare di Torriglia"
+      }
+    },
+    {
+      "type": "node",
+      "id": 237298943,
+      "lat": 44.411255,
+      "lon": 8.9382365,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "6",
+        "addr:street": "Via Nicolò Bacigalupo",
+        "amenity": "theatre",
+        "check_date": "2026-05-05",
+        "name": "Teatro Duse",
+        "wikidata": "Q3981969",
+        "wikipedia": "it:Teatro Duse (Genova)"
+      }
+    },
+    {
+      "type": "node",
+      "id": 237300388,
+      "lat": 44.404524,
+      "lon": 8.9481031,
+      "tags": {
+        "alt_name": "Teatro della Corte",
+        "amenity": "theatre",
+        "name": "Teatro Ivo Chiesa"
+      }
+    },
+    {
+      "type": "node",
+      "id": 242693780,
+      "lat": 44.4049524,
+      "lon": 8.9318247,
+      "tags": {
+        "amenity": "theatre",
+        "check_date": "2025-12-22",
+        "name": "Teatro della Tosse",
+        "wheelchair": "yes",
+        "wikidata": "Q3982309",
+        "wikipedia": "it:Teatro della Tosse"
+      }
+    },
+    {
+      "type": "node",
+      "id": 247849985,
+      "lat": 44.412561,
+      "lon": 8.9294189,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "11",
+        "addr:postcode": "16124",
+        "addr:street": "Via Lomellini",
+        "air_conditioning": "no",
+        "alt_name": "Casa natale di Giuseppe Mazzini",
+        "baby_feeding": "no",
+        "changing_table": "no",
+        "email": "museorisorgimento@comune.genova.it",
+        "fee": "yes",
+        "kids_area": "no",
+        "museum": "history",
+        "museum_type": "national",
+        "name": "Museo Risorgimento - Casa Mazzini",
+        "opening_hours": "Mar 26-Oct 06: Tu, Fr 09:00-14:00; We 09:00-19:00; Sa 10:00-19:30; Su[1] 10:00-19:30; Mo,Th off; Oct 08-Mar 25: Tu,Fr 09:00-14:00; We 09:00-18:30; Sa 09:30-18:30; Su[1] 09:30-18:30; Mo,Th off; Dec 25 off",
+        "operator": "Comune di Genova",
+        "operator:type": "public",
+        "phone": "+39 010 557 6430",
+        "toilets": "yes",
+        "toilets:access": "customers",
+        "toilets:wheelchair": "designated",
+        "tourism": "museum",
+        "website": "http://www.musei.it/liguria/genova/museo-del-risorgimento---casa-mazzini.asp",
+        "wheelchair": "yes",
+        "wikidata": "Q3867926",
+        "wikipedia": "it:Museo del Risorgimento e istituto mazziniano"
+      }
+    },
+    {
+      "type": "node",
+      "id": 252630595,
+      "lat": 44.4043725,
+      "lon": 8.9319129,
+      "tags": {
+        "addr:housenumber": "35 rosso",
+        "addr:street": "Piazza Sarzano",
+        "fee": "yes",
+        "name": "Museo di Sant'Agostino",
+        "tourism": "museum",
+        "url": "http://www.museidigenova.it/spip.php?rubrique27",
+        "wheelchair": "yes",
+        "wikidata": "Q18613378"
+      }
+    },
+    {
+      "type": "node",
+      "id": 252806062,
+      "lat": 44.4082236,
+      "lon": 8.9214789,
+      "tags": {
+        "amenity": "cinema",
+        "brand": "The Space Cinema",
+        "brand:wikidata": "Q3989406",
+        "brand:wikipedia": "it:The Space Cinema",
+        "name": "The Space Cinema",
+        "website": "https://www.thespacecinema.it/cinema/genova",
+        "wheelchair": "yes",
+        "wikidata": "Q37155803"
+      }
+    },
+    {
+      "type": "node",
+      "id": 253266745,
+      "lat": 44.4086467,
+      "lon": 8.9323264,
+      "tags": {
+        "amenity": "cinema",
+        "check_date": "2025-10-03",
+        "name": "Ariston",
+        "phone": "+39 010 2473549",
+        "url": "http://www.circuitocinemagenova.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 253267452,
+      "lat": 44.4135442,
+      "lon": 8.8799778,
+      "tags": {
+        "amenity": "cinema",
+        "brand": "UCI",
+        "brand:wikidata": "Q521922",
+        "level": "2",
+        "name": "UCI Cinemas Fiumara",
+        "ref:vatin": "IT04342801000",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 253268182,
+      "lat": 44.4064408,
+      "lon": 8.942127,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "11",
+        "addr:postcode": "16121",
+        "addr:street": "Via Colombo",
+        "amenity": "cinema",
+        "check_date": "2025-09-26",
+        "name": "America",
+        "phone": "+39 010 4559703",
+        "url": "https://circuitocinemagenova.com/america/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 253486824,
+      "lat": 44.4091765,
+      "lon": 8.9344257,
+      "tags": {
+        "amenity": "cinema",
+        "check_date": "2025-10-02",
+        "name": "City",
+        "phone": "+39 010 8690073",
+        "url": "http://www.circuitocinemagenova.com/",
+        "wikidata": "Q37155711"
+      }
+    },
+    {
+      "type": "node",
+      "id": 253489497,
+      "lat": 44.4075798,
+      "lon": 8.934801,
+      "tags": {
+        "check_date": "2025-04-09",
+        "name": "Museo dell'Accademia Ligustica di Belle Arti",
+        "tourism": "museum",
+        "wikidata": "Q42810756"
+      }
+    },
+    {
+      "type": "node",
+      "id": 254372356,
+      "lat": 44.4079822,
+      "lon": 8.9248654,
+      "tags": {
+        "access": "no",
+        "name": "Museo Emanuele Luzzati",
+        "tourism": "museum",
+        "wheelchair": "yes",
+        "wikidata": "Q20008344",
+        "wikipedia": "it:Museo Emanuele Luzzati di Genova"
+      }
+    },
+    {
+      "type": "node",
+      "id": 254565440,
+      "lat": 44.4080705,
+      "lon": 8.9589109,
+      "tags": {
+        "amenity": "theatre",
+        "check_date": "2025-05-17",
+        "created_by": "Potlatch 0.9",
+        "name": "Teatro Garage"
+      }
+    },
+    {
+      "type": "node",
+      "id": 263821565,
+      "lat": 44.4083489,
+      "lon": 8.9615294,
+      "tags": {
+        "amenity": "library",
+        "check_date": "2025-10-17",
+        "created_by": "Potlatch 0.9a",
+        "layer": "1",
+        "name": "Biblioteca Lercari"
+      }
+    },
+    {
+      "type": "node",
+      "id": 266981519,
+      "lat": 44.2723437,
+      "lon": 9.3959717,
+      "tags": {
+        "amenity": "library",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 269696744,
+      "lat": 44.4166345,
+      "lon": 8.8724654,
+      "tags": {
+        "amenity": "library",
+        "check_date": "2026-03-28",
+        "contact:email": "guerrazzi@comune.genova.it",
+        "contact:fax": "+39 010 6515060",
+        "contact:phone": "+39 010 6515071;+39 010 6512027",
+        "name": "Biblioteca Civica Francesco Domenico Guerrazzi",
+        "ref": "GB00000150",
+        "ref:ntcn": "07/00108382",
+        "wikidata": "Q112893622"
+      }
+    },
+    {
+      "type": "node",
+      "id": 269904280,
+      "lat": 44.4581034,
+      "lon": 8.9009628,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro Rina e Gilberto Govi",
+        "wikidata": "Q3982117",
+        "wikipedia": "it:Teatro Rina e Gilberto Govi"
+      }
+    },
+    {
+      "type": "node",
+      "id": 302324772,
+      "lat": 44.4264205,
+      "lon": 8.8499972,
+      "tags": {
+        "amenity": "cinema",
+        "check_date": "2025-04-07",
+        "description:en": "Film shows, theatre, concerts, conferences",
+        "description:it": "Proiezioni cinematografiche, spettacoli teatrali, intrattenimenti musicali,conferenze",
+        "name": "Cinema teatro Verdi",
+        "wheelchair": "yes",
+        "wikidata": "Q16612535"
+      }
+    },
+    {
+      "type": "node",
+      "id": 303163729,
+      "lat": 44.42969,
+      "lon": 8.8520087,
+      "tags": {
+        "amenity": "cinema",
+        "created_by": "Potlatch 0.10d",
+        "name": "San Giovanni Battista"
+      }
+    },
+    {
+      "type": "node",
+      "id": 304978993,
+      "lat": 44.3459735,
+      "lon": 9.2387897,
+      "tags": {
+        "name": "Museo del Merletto",
+        "tourism": "museum",
+        "url": "http://www.comune.rapallo.ge.it/interna_AT.asp?menu=316&id=319",
+        "wikidata": "Q3867961",
+        "wikipedia": "it:Museo del merletto (Rapallo)"
+      }
+    },
+    {
+      "type": "node",
+      "id": 310450475,
+      "lat": 44.407406,
+      "lon": 8.9322588,
+      "tags": {
+        "addr:housenumber": "34 rosso",
+        "addr:street": "Via Tommaso Reggio",
+        "amenity": "nightclub",
+        "name": "Louisiana Jazz Club",
+        "tourism": "museum",
+        "website": "https://www.italianjazzinstitute.com/",
+        "wikidata": "Q18785499",
+        "wikipedia": "it:Museo del jazz di Genova"
+      }
+    },
+    {
+      "type": "node",
+      "id": 311614752,
+      "lat": 44.3978483,
+      "lon": 8.9493101,
+      "tags": {
+        "amenity": "theatre",
+        "name": "cinema teatro Instabile",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 413995262,
+      "lat": 44.4098903,
+      "lon": 8.9369744,
+      "tags": {
+        "amenity": "cinema",
+        "check_date": "2025-04-06",
+        "name": "Sìvori",
+        "phone": "+39 010 5532054",
+        "url": "http://www.circuitocinemagenova.com/",
+        "wikidata": "Q37155757"
+      }
+    },
+    {
+      "type": "node",
+      "id": 413995838,
+      "lat": 44.4062187,
+      "lon": 8.9413425,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "5 rosso",
+        "addr:postcode": "16121",
+        "addr:street": "Via della Consolazione",
+        "amenity": "cinema",
+        "check_date": "2025-09-26",
+        "name": "Nickelodeon",
+        "phone": "+39 010 589640",
+        "screen": "1",
+        "url": "http://www.cineclubnickelodeon.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 442709467,
+      "lat": 44.4275114,
+      "lon": 8.7748279,
+      "tags": {
+        "air_conditioning": "yes",
+        "amenity": "cinema",
+        "changing_table": "no",
+        "name": "Nuovo Cinema Palmaro",
+        "toilets": "yes",
+        "toilets:access": "customers",
+        "website": "https://www.nuovocinemapalmaro.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 472445152,
+      "lat": 43.8890162,
+      "lon": 8.0413873,
+      "tags": {
+        "amenity": "cinema",
+        "contact:housenumber": "9",
+        "contact:street": "Via dell'Unione",
+        "name": "Cinema Imperia",
+        "operator": "Dianorama",
+        "phone": "+39 0183 292745",
+        "screen": "2",
+        "website": "https://cinemaimperia.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 472445652,
+      "lat": 43.8932611,
+      "lon": 8.0380315,
+      "tags": {
+        "addr:city": "Imperia",
+        "addr:housenumber": "13",
+        "addr:postcode": "18100",
+        "addr:street": "Via Garessio",
+        "email": "info@museodellolivo.com",
+        "museum": "agriculture",
+        "name": "Museo dell'Olivo",
+        "name:de": "Olivenmuseum",
+        "name:en": "Olive Museum",
+        "name:fr": "Musée de l'Olive",
+        "name:it": "Museo dell'Olivo",
+        "opening_hours": "Tu-Sa 10:00-13:00,15:00-18:00",
+        "phone": "+39 0183 295762",
+        "tourism": "museum",
+        "website": "http://www.museodellolivo.com/",
+        "wikidata": "Q55348773",
+        "wikipedia": "it:Museo dell'olivo Carlo Carli"
+      }
+    },
+    {
+      "type": "node",
+      "id": 512568211,
+      "lat": 44.4163613,
+      "lon": 8.9229593,
+      "tags": {
+        "addr:housenumber": "40",
+        "addr:postcode": "16126",
+        "addr:street": "Via Balbi",
+        "amenity": "library",
+        "check_date": "2025-08-29",
+        "contact:email": "statistiche@bibliotecauniversitaria.ge.it",
+        "contact:fax": "+39 010 2546420",
+        "contact:phone": "+39 010 254641",
+        "name": "Biblioteca universitaria di Genova (BUG)",
+        "ref": "GB00000440",
+        "wikidata": "Q3639620",
+        "wikipedia": "it:Biblioteca universitaria di Genova"
+      }
+    },
+    {
+      "type": "node",
+      "id": 601477594,
+      "lat": 44.3107358,
+      "lon": 8.4787927,
+      "tags": {
+        "addr:city": "Savona",
+        "addr:housenumber": "1r",
+        "addr:postcode": "17100",
+        "addr:street": "Via Giuseppe Brignoni",
+        "amenity": "cinema",
+        "check_date": "2025-01-13",
+        "cinema:3D": "yes",
+        "name": "Multisala Diana",
+        "operator": "Famiglia Savonese Snc",
+        "ref:vatin": "IT07610120961",
+        "screen": "6",
+        "website": "http://www.multisaladiana.it/",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 602510995,
+      "lat": 44.3450084,
+      "lon": 8.4344795,
+      "tags": {
+        "name": "Museo del Santuario",
+        "tourism": "museum",
+        "wikidata": "Q55351380"
+      }
+    },
+    {
+      "type": "node",
+      "id": 602511004,
+      "lat": 44.3074888,
+      "lon": 8.4880209,
+      "tags": {
+        "amenity": "cinema",
+        "name": "Nuovo Filmstudio"
+      }
+    },
+    {
+      "type": "node",
+      "id": 628745865,
+      "lat": 44.4284259,
+      "lon": 8.8151205,
+      "tags": {
+        "name": "Museo Navale",
+        "tourism": "museum",
+        "wikidata": "Q3868414",
+        "wikipedia": "it:Museo navale di Pegli"
+      }
+    },
+    {
+      "type": "node",
+      "id": 638737873,
+      "lat": 44.4042498,
+      "lon": 8.685966,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca civica Giuseppe Mazzini",
+        "wheelchair": "yes",
+        "wikidata": "Q112893597"
+      }
+    },
+    {
+      "type": "node",
+      "id": 644619948,
+      "lat": 44.3318377,
+      "lon": 9.2067189,
+      "tags": {
+        "addr:street": "Lungomare Federico da Pagana",
+        "name": "Cimitero",
+        "opening_hours": "Jun-Sep: Mo-Su,PH 08:00-19:00; Oct-May: Mo-Su,PH 08:00-17:00",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 664525961,
+      "lat": 44.4085329,
+      "lon": 8.9278294,
+      "tags": {
+        "check_date": "2023-06-22",
+        "name": "Museo della Storia del Genoa",
+        "tourism": "museum",
+        "website": "https://www.fondazionegenoa.com/",
+        "wikidata": "Q3868112",
+        "wikipedia": "it:Genoa Museum and Store"
+      }
+    },
+    {
+      "type": "node",
+      "id": 686595637,
+      "lat": 44.5622388,
+      "lon": 8.6703203,
+      "tags": {
+        "amenity": "cinema",
+        "name": "Cinema Comunale"
+      }
+    },
+    {
+      "type": "node",
+      "id": 691922233,
+      "lat": 44.5374125,
+      "lon": 8.6987293,
+      "tags": {
+        "addr:housenumber": "20",
+        "addr:street": "Via della Giustina",
+        "contact:phone": "+39 010 920099",
+        "name": "Museo civico della Filigrana Pietro Carlo Bosio",
+        "tourism": "museum",
+        "website": "http://www.museofiligrana.org/",
+        "wikidata": "Q55377567"
+      }
+    },
+    {
+      "type": "node",
+      "id": 703898097,
+      "lat": 44.3978077,
+      "lon": 8.9465657,
+      "tags": {
+        "addr:full": "Largo S. Maria dei Servi 5",
+        "addr:postcode": "16129",
+        "amenity": "library",
+        "contact:email": "giorgioemiliolivari@libero.it",
+        "contact:fax": "+39 010 564077",
+        "contact:phone": "+39 010 564077",
+        "name": "Biblioteca Servitana",
+        "ref": "GB00000404",
+        "url": "http://wap.comune.genova.it/detail.html?contentId=2427&section=offices",
+        "wikidata": "Q113092675"
+      }
+    },
+    {
+      "type": "node",
+      "id": 731254641,
+      "lat": 44.3480586,
+      "lon": 9.2353879,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Auditorium delle Clarisse"
+      }
+    },
+    {
+      "type": "node",
+      "id": 750786139,
+      "lat": 44.4124524,
+      "lon": 8.9373157,
+      "tags": {
+        "alt_name": "Cineclub Charles Chaplin",
+        "amenity": "cinema",
+        "name": "Cinema Cappuccini",
+        "phone": "+39 010 880069",
+        "wikidata": "Q37155671"
+      }
+    },
+    {
+      "type": "node",
+      "id": 811924480,
+      "lat": 44.1092423,
+      "lon": 8.2415932,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Civica di Borghetto SS"
+      }
+    },
+    {
+      "type": "node",
+      "id": 815524905,
+      "lat": 44.0729163,
+      "lon": 9.9072609,
+      "tags": {
+        "name": "Museo Geopaleontologico",
+        "tourism": "museum",
+        "wikidata": "Q3868382",
+        "wikipedia": "it:Museo geopaleontologico di Lerici"
+      }
+    },
+    {
+      "type": "node",
+      "id": 849602140,
+      "lat": 43.9918944,
+      "lon": 7.7670119,
+      "tags": {
+        "name": "Biblioteca Ferraioni",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 860373594,
+      "lat": 44.3605016,
+      "lon": 9.4509555,
+      "tags": {
+        "name": "Museo e Miniera Gambatesa",
+        "tourism": "museum",
+        "wikidata": "Q55348577"
+      }
+    },
+    {
+      "type": "node",
+      "id": 956009817,
+      "lat": 44.3481661,
+      "lon": 9.2355317,
+      "tags": {
+        "addr:street": "Piazzale San Josemaría Escrivá",
+        "name": "Museo Attilio e Cleofe Gaffoglio",
+        "short_name": "Museo Gaffoglio",
+        "tourism": "museum",
+        "wikidata": "Q55348595"
+      }
+    },
+    {
+      "type": "node",
+      "id": 966304779,
+      "lat": 44.409583,
+      "lon": 8.8943025,
+      "tags": {
+        "amenity": "cinema",
+        "check_date": "2026-03-28",
+        "min_age": "18",
+        "name": "Cinema Eldorado"
+      }
+    },
+    {
+      "type": "node",
+      "id": 972240047,
+      "lat": 44.3361191,
+      "lon": 8.3420769,
+      "tags": {
+        "addr:city": "Altare",
+        "addr:housenumber": "4",
+        "addr:postcode": "17041",
+        "addr:street": "Piazza del Consolato",
+        "email": "info@museodelvetro.org",
+        "fax": "+39 019 5899384",
+        "fee": "yes",
+        "name": "Museo dell'Arte Vetraria",
+        "opening_hours": "Tu-Su 15:00-19:00; Mo off; Jan 01 off; easter off, Dec 25-26 off",
+        "phone": "+39 019 584734",
+        "tourism": "museum",
+        "website": "https://www.museodelvetro.org/",
+        "wikidata": "Q37870367"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1095221666,
+      "lat": 43.8536823,
+      "lon": 7.9639966,
+      "tags": {
+        "addr:city": "San Lorenzo al Mare",
+        "addr:housenumber": "1",
+        "addr:postcode": "18017",
+        "addr:street": "Via Vignasse",
+        "amenity": "theatre",
+        "name": "Sala Teatro Samuel Beckett",
+        "website": "https://www.ilteatrodellalbero.it/",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1273655066,
+      "lat": 44.4143997,
+      "lon": 9.1599447,
+      "tags": {
+        "name": "Museo degli orologi da torre Roberto Trebino",
+        "tourism": "museum",
+        "website": "https://www.trebino.it/museo/",
+        "wikidata": "Q20009254"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1321427854,
+      "lat": 43.8770002,
+      "lon": 8.014365,
+      "tags": {
+        "amenity": "cinema",
+        "contact:city": "Imperia",
+        "contact:housenumber": "52",
+        "contact:postcode": "18100",
+        "contact:street": "Via Felice Cascione",
+        "name": "Cinema Centrale",
+        "operator": "Dianorama",
+        "ref:vatin": "IT00886660083",
+        "screen": "1",
+        "website": "https://cinemacentrale.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1377933953,
+      "lat": 44.4307069,
+      "lon": 8.7500213,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "4",
+        "addr:postcode": "16158",
+        "addr:street": "Vico Nicolò da Corte",
+        "amenity": "theatre",
+        "check_date": "2025-07-07",
+        "description": "Teatro storico del 1786",
+        "name": "Teatro Storico di Villa Duchessa di Galliera",
+        "operator": "Teatro della Tosse"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1380921303,
+      "lat": 44.343657,
+      "lon": 8.5496009,
+      "tags": {
+        "addr:housenumber": "1",
+        "addr:street": "Lungomare Carlo Russo",
+        "amenity": "library",
+        "check_date": "2025-09-08",
+        "internet_access": "wlan",
+        "internet_access:fee": "no",
+        "name": "Biblioteca Pietro Costa",
+        "operator": "Comune di Celle Ligure",
+        "operator:type": "public"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1412174940,
+      "lat": 44.42409,
+      "lon": 8.843704,
+      "tags": {
+        "alt_name": "Civica Biblioteca Bruschi",
+        "amenity": "library",
+        "contact:email": "biblbruschi@comune.genova.it",
+        "contact:fax": "+39 010 6041555",
+        "contact:phone": "+39 010 6041555; +39 010 6047548",
+        "description:it": "libri e periodici",
+        "name": "Biblioteca Civica Dino Bruschi",
+        "ref": "GB00000148",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1417138880,
+      "lat": 44.1588653,
+      "lon": 8.3047851,
+      "tags": {
+        "amenity": "cinema",
+        "name": "Cinema Teatro Gassmann"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1426740528,
+      "lat": 44.4022442,
+      "lon": 8.6648832,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro \"Il Sipario Strappato\""
+      }
+    },
+    {
+      "type": "node",
+      "id": 1470967922,
+      "lat": 44.4300951,
+      "lon": 8.8946507,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro S.O.C"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1529901945,
+      "lat": 44.4351448,
+      "lon": 8.8917408,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "8",
+        "addr:street": "Via Gio Batta Roggerone",
+        "amenity": "theatre",
+        "name": "Cinema Albatros",
+        "phone": "+39 010 7491662",
+        "website": "https://www.albatroscinema.it/",
+        "wikidata": "Q3981896",
+        "wikipedia": "it:Teatro Albatros"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1671174481,
+      "lat": 44.0480252,
+      "lon": 8.213421,
+      "tags": {
+        "name": "Museo della Fionda",
+        "toilets:wheelchair": "yes",
+        "tourism": "museum",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1671174485,
+      "lat": 44.0487544,
+      "lon": 8.2126653,
+      "tags": {
+        "addr:city": "Albenga",
+        "name": "Museo navale romano",
+        "tourism": "museum",
+        "wheelchair": "yes",
+        "wikidata": "Q3330748",
+        "wikipedia": "it:Museo navale romano"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1686489622,
+      "lat": 44.1758618,
+      "lon": 8.3263351,
+      "tags": {
+        "addr:city": "Finale Ligure",
+        "addr:postcode": "17024",
+        "email": "info@museoarcheofinale.it",
+        "fee": "yes",
+        "name": "Museo Archeologico del Finale",
+        "opening_hours": "Jun 15-Sep 19: Tu-Su 10:00-13:00,16:00-19:00; Sep 20-Jun 14: Tu-Su 09:00-12:00,14:30-17:00",
+        "phone": "+39 019 690020",
+        "tourism": "museum",
+        "website": "http://www.museoarcheofinale.it/",
+        "wikidata": "Q55350141"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1686489623,
+      "lat": 44.1761891,
+      "lon": 8.3259305,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Mediateca",
+        "opening_hours": "Mo-We 09:00-17:30;Th-Fr 09:00-18:00",
+        "operator": "Comune di Finale Ligure"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1728116823,
+      "lat": 44.449775,
+      "lon": 9.0121589,
+      "tags": {
+        "addr:full": "Via Struppa 214 A",
+        "addr:postcode": "16165",
+        "amenity": "library",
+        "contact:email": "biblcampanella@comune.genova.it",
+        "contact:fax": "+39 010 802184",
+        "contact:phone": "+39 010 802184",
+        "name": "Biblioteca Civica Federico Campanella",
+        "ref": "GB00000151",
+        "wikidata": "Q112893624"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1739073478,
+      "lat": 44.2696086,
+      "lon": 9.4233022,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro Lavagnina"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1744768165,
+      "lat": 44.2741271,
+      "lon": 8.4392766,
+      "tags": {
+        "air_conditioning": "yes",
+        "amenity": "library",
+        "changing_table": "no",
+        "name": "Biblioteca Civica \"F.lli Rosselli\"",
+        "opening_hours": "Mo 14:00-18:00; Tu-Fr 09:00-12:00,15:00-18:00; Sa 10:00-12:00",
+        "wheelchair": "yes",
+        "wikidata": "Q112893732"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1759651300,
+      "lat": 44.4053983,
+      "lon": 8.929126,
+      "tags": {
+        "name": "Museo di Santa Maria di Castello",
+        "tourism": "museum",
+        "website": "https://www.santamariadicastello.it/contesto.html"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1761253894,
+      "lat": 44.459231,
+      "lon": 8.9012088,
+      "tags": {
+        "addr:full": "Via Pasquale Pastorino 8",
+        "addr:postcode": "16162",
+        "amenity": "library",
+        "contact:email": "biblpiersantelli@comune.genova.it",
+        "contact:fax": "+39 010 5579528",
+        "contact:phone": "+39 010 5579507;+39 010 5579508",
+        "indoor": "yes",
+        "name": "Biblioteca Giuseppe Piersantelli",
+        "opening_hours": "Mo-Fr 14:00-19:00; Tu,Th 09:00-12:00,14:00-19:00",
+        "operator": "Municipio V - Val Polcevera",
+        "ref": "GB00000157",
+        "ref:ntcn": "07/00209074"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1771951775,
+      "lat": 44.4190869,
+      "lon": 9.3880536,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro Fabrizio De Andrè"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1807569525,
+      "lat": 44.5066633,
+      "lon": 8.8925215,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1824107632,
+      "lat": 43.7889211,
+      "lon": 7.6252604,
+      "tags": {
+        "addr:city": "Ventimiglia",
+        "addr:housenumber": "134",
+        "addr:postcode": "18034",
+        "addr:street": "Corso Genova",
+        "check_date": "2026-04-05",
+        "email": "pm-lig.albintimilium@beniculturali.it",
+        "name": "Antiquarium di Albintimilium",
+        "opening_hours": "Sep 16-Jun 15: Tu-Fr,Sa,Su[1,3] 09:00-14:00; Jun 16-Sep 15: Sa,Su[1,3] 13:00-19:00; Mo off, Su[2,4] off",
+        "operator": "Soprintendenza Archeologia della Liguria",
+        "phone": "+39 0184 252320",
+        "tourism": "museum",
+        "wikidata": "Q3608794",
+        "wikipedia": "it:Antiquarium di Ventimiglia"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1867672340,
+      "lat": 44.3366357,
+      "lon": 9.2093398,
+      "tags": {
+        "amenity": "library",
+        "wikidata": "Q112893616"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1891508496,
+      "lat": 44.3734421,
+      "lon": 9.1051394,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Comunale"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1891508504,
+      "lat": 44.3733558,
+      "lon": 9.1050965,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro del Levante"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1939336511,
+      "lat": 44.1036188,
+      "lon": 9.8218535,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro Civico",
+        "wikidata": "Q3981934",
+        "wikipedia": "it:Teatro Civico (La Spezia)"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1971565981,
+      "lat": 43.7905204,
+      "lon": 7.5956637,
+      "tags": {
+        "name": "Museo Archeologico",
+        "tourism": "museum",
+        "wikidata": "Q636940"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2012047890,
+      "lat": 44.106861,
+      "lon": 9.8184868,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:housenumber": "232",
+        "addr:postcode": "19121",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "addr:street": "Via del Prione",
+        "mapillary": "749324090883081",
+        "name": "Museo civico Amedeo Lia",
+        "opening_hours": "Tu-Su 10:00-18:00",
+        "tourism": "museum",
+        "wikidata": "Q3867771"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2027126976,
+      "lat": 44.1077784,
+      "lon": 9.8156546,
+      "tags": {
+        "amenity": "cinema",
+        "name": "Controluce",
+        "website": "https://www.cgscontroluce.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2109222543,
+      "lat": 43.8667548,
+      "lon": 7.6738516,
+      "tags": {
+        "addr:city": "Perinaldo",
+        "addr:housenumber": "1",
+        "addr:postcode": "18032",
+        "addr:street": "Piazza Monsignor Antonio Rossi",
+        "email": "info@perinaldo.org",
+        "internet_access": "wlan",
+        "internet_access:ssid": "Liguria WiFi",
+        "museum": "history",
+        "name": "Museo Cassiniano",
+        "operator": "Comune di Perinaldo",
+        "operator:type": "public",
+        "tourism": "museum",
+        "wheelchair": "limited"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2178108475,
+      "lat": 44.4023346,
+      "lon": 8.9354965,
+      "tags": {
+        "addr:housenumber": "13 rosso",
+        "addr:street": "Via Innocenzo Quarto",
+        "amenity": "cinema",
+        "check_date:opening_hours": "2022-01-02",
+        "name": "Cinema Corallo",
+        "phone": "+39 010 586419",
+        "url": "http://www.circuitocinemagenova.com/",
+        "wikidata": "Q37155731"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2180401836,
+      "lat": 44.4136755,
+      "lon": 8.9232361,
+      "tags": {
+        "amenity": "library",
+        "name": "Centro Servizi Bibliotecari - Economia"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2297335585,
+      "lat": 44.496499,
+      "lon": 8.9038209,
+      "tags": {
+        "amenity": "library",
+        "contact:fax": "+39 010 7230300",
+        "contact:phone": "+39 010 720051",
+        "indoor": "yes",
+        "name": "Biblioteca Ferdinando Palasciano",
+        "ref": "GB00000178"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2328035050,
+      "lat": 44.2071068,
+      "lon": 8.4089165,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Civica Angiola Minella"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463165,
+      "lat": 44.4029006,
+      "lon": 8.9545181,
+      "tags": {
+        "addr:full": "Via Caffa 3/5B",
+        "addr:postcode": "16129",
+        "amenity": "library",
+        "contact:email": "legambiente.liguria@libero.it",
+        "contact:fax": "+39 010 319168",
+        "contact:phone": "+39 010 319168",
+        "name": "BiblioAmbiente (Biblioteca Legambiente)",
+        "ref": "GB00000205"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463180,
+      "lat": 44.3106831,
+      "lon": 8.4760112,
+      "tags": {
+        "addr:full": "Via Don Bosco 6",
+        "addr:postcode": "17100",
+        "amenity": "library",
+        "contact:email": "biblioteca@itcboselli.it",
+        "contact:fax": "+39 019 853963",
+        "contact:phone": "+39 019 827458",
+        "name": "Bibliomediateca dell'Istituto Paolo Boselli",
+        "ref": "GB00000462"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463196,
+      "lat": 44.4116922,
+      "lon": 8.8836909,
+      "tags": {
+        "addr:full": "via Bombrini 8",
+        "addr:postcode": "16149",
+        "amenity": "library",
+        "contact:email": "giovanni.ferretti@arpal.org",
+        "contact:fax": "+39 010 6437475",
+        "contact:phone": "+39 010 64371",
+        "name": "Biblioteca A.R.P.A.L. - Agenzia Regionale Protezione Ambiente Ligure",
+        "ref": "GB00000428"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463208,
+      "lat": 44.4065132,
+      "lon": 8.9379943,
+      "tags": {
+        "addr:full": "Via XX Settembre 29/4",
+        "addr:postcode": "16121",
+        "addr:street": "Via Venti Settembre",
+        "amenity": "library",
+        "contact:email": "associazione.ames@libero.it",
+        "contact:fax": "+39 010 57211218",
+        "contact:phone": "+39 010 572111",
+        "name": "Biblioteca AMES (Associazione per la mutualit la storia e la cultura dell'economia sociale)",
+        "ref": "GB00000486"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463221,
+      "lat": 44.3952318,
+      "lon": 9.0026319,
+      "tags": {
+        "addr:full": "Via Borghero 4",
+        "addr:postcode": "16148",
+        "amenity": "library",
+        "contact:email": "sma@missioni-africane.it",
+        "contact:fax": "+39 010 30701240",
+        "contact:phone": "+39 010 307011",
+        "name": "Biblioteca Borghero (Società Missioni Africane)",
+        "ref": "GB00000409",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463233,
+      "lat": 44.4145144,
+      "lon": 8.9129442,
+      "tags": {
+        "addr:full": "Via Fassolo 29",
+        "addr:postcode": "16126",
+        "amenity": "library",
+        "contact:fax": "+39 010 267792",
+        "contact:phone": "+39 010 261805",
+        "name": "Biblioteca Casa della Missione",
+        "ref": "GB00000134",
+        "wikidata": "Q113092668"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463246,
+      "lat": 44.3130988,
+      "lon": 8.4784135,
+      "tags": {
+        "addr:full": "Via Monturbano 14",
+        "addr:postcode": "17100",
+        "amenity": "library",
+        "contact:email": "biblioteca.informazioni@comune.savona.it",
+        "contact:fax": "+39 019 854296",
+        "contact:phone": "+39 019 8310393",
+        "name": "Biblioteca Centrale Barrili",
+        "ref": "GB00000325",
+        "ref:ntcn": "07/00208890"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463254,
+      "lat": 44.3036082,
+      "lon": 8.4738456,
+      "tags": {
+        "addr:city": "Savona",
+        "addr:full": "Corso Tardy e Benech 14 (piano terra)",
+        "addr:housenumber": "14",
+        "addr:postcode": "17100",
+        "addr:street": "Corso Tardy e Benech",
+        "amenity": "library",
+        "contact:fax": "+39 019 8310331",
+        "internet_access": "no",
+        "name": "Biblioteca decentrata Oltreletimbro",
+        "opening_hours": "Tu,We,Th 15:30-18:00",
+        "phone": "+39 019 853986",
+        "ref": "GB00000326",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463273,
+      "lat": 44.1117411,
+      "lon": 9.9608033,
+      "tags": {
+        "addr:full": "Via Ippolito Landinelli 78",
+        "addr:postcode": "19038",
+        "amenity": "library",
+        "contact:email": "scuola@sarzana.org",
+        "contact:fax": "+39 0187 614284",
+        "contact:phone": "+39 0187 614284",
+        "name": "Biblioteca Civica Corrado Martinetti",
+        "ref": "GB00000317"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463299,
+      "lat": 44.4186895,
+      "lon": 8.9614654,
+      "tags": {
+        "addr:full": "Via A. Sacheri 9",
+        "addr:postcode": "16142",
+        "amenity": "library",
+        "contact:email": "biblpodesta@comune.genova.it",
+        "contact:fax": "+39 010 8461194",
+        "contact:phone": "+39 010 826745",
+        "name": "Biblioteca Civica Francesco Podestà",
+        "ref": "GB00000153",
+        "wikidata": "Q112893606"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463310,
+      "lat": 43.8156052,
+      "lon": 7.7744599,
+      "tags": {
+        "addr:full": "Via Carli 1",
+        "addr:postcode": "18038",
+        "amenity": "library",
+        "contact:fax": "+39 0184 530945",
+        "contact:phone": "+39 0184 531632",
+        "name": "Biblioteca Civica Francesco Corradi",
+        "ref": "GB00000305"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463325,
+      "lat": 44.4179661,
+      "lon": 8.9083443,
+      "tags": {
+        "addr:full": "Via Bologna 8 CR",
+        "addr:postcode": "16127",
+        "amenity": "library",
+        "contact:phone": "+39 010 252993",
+        "name": "Biblioteca Civica G. Rapetti",
+        "ref": "GB00000154"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463334,
+      "lat": 44.4068538,
+      "lon": 8.9712575,
+      "tags": {
+        "addr:full": "Salita Superiore Noce 41/43 R",
+        "addr:postcode": "16131",
+        "amenity": "library",
+        "contact:email": "lercari@comune.genova.it",
+        "contact:fax": "+39 010 5451254",
+        "contact:phone": "+39 010 505890",
+        "name": "Biblioteca Civica Gian Luigi Lercari",
+        "ref": "GB00000156"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463340,
+      "lat": 44.3749887,
+      "lon": 9.083971,
+      "tags": {
+        "addr:full": "Via Demola 2",
+        "addr:postcode": "16030",
+        "amenity": "library",
+        "contact:email": "bibliopieve@libero.it",
+        "contact:fax": "+39 010 3460302",
+        "contact:phone": "+39 010 3462247",
+        "name": "Biblioteca Civica Il treno di carta",
+        "ref": "GB00000285"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463346,
+      "lat": 43.8880053,
+      "lon": 8.0406906,
+      "tags": {
+        "amenity": "library",
+        "contact:email": "biblioim@comune.imperia.it",
+        "contact:fax": "+39 0183 572603",
+        "contact:phone": "+39 0183 701608",
+        "contact:website": "https://imperia.sebina.it/opac/.do",
+        "name": "Biblioteca Civica Leonardo Lagorio",
+        "opening_hours": "Mo-Fr 08:30-19:00; Sa 08:30-13:00",
+        "ref": "GB00000240",
+        "wheelchair": "yes",
+        "wikidata": "Q112893655"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463354,
+      "lat": 44.1137255,
+      "lon": 9.8404515,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Trasversale Via del Popolo 61",
+        "addr:postcode": "19126",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "bbeghi@laspeziacultura.it",
+        "contact:fax": "+39 0187 284971",
+        "contact:phone": "+39 0187 513295; +39 0187 513417",
+        "name": "Biblioteca Civica P. M. Beghi",
+        "ref": "GB00000253"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463360,
+      "lat": 43.8126563,
+      "lon": 7.7294433,
+      "tags": {
+        "addr:full": "Piazza S. Sebastiano",
+        "addr:postcode": "18038",
+        "amenity": "library",
+        "contact:fax": "+39 0184 531942",
+        "contact:phone": "+39 0184 670131",
+        "name": "Biblioteca Civica Rambaldi",
+        "ref": "GB00000306",
+        "ref:isil": "IT-IM0036",
+        "ref:ntcn": "07/00110491",
+        "source": "Regione Liguria"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463367,
+      "lat": 44.154975,
+      "lon": 9.7644988,
+      "tags": {
+        "addr:city": "Riccò del Golfo di Spezia",
+        "addr:full": "Via Aurelia 152",
+        "addr:postcode": "19020",
+        "addr:street": "Via Aurelia",
+        "amenity": "library",
+        "contact:email": "biblioricco@libero.it",
+        "contact:fax": "+39 0187 926114",
+        "contact:phone": "+39 0187 925900",
+        "name": "Biblioteca Civica Riccò del Golfo",
+        "operator": "Comune di Riccò del Golfo di Spezia",
+        "operator:type": "public",
+        "ref": "GB00000297"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463374,
+      "lat": 44.0481178,
+      "lon": 8.2132247,
+      "tags": {
+        "amenity": "library",
+        "contact:email": "biblioteca@comune.albenga.sv.it",
+        "contact:fax": "+39 0182 51760",
+        "contact:phone": "+39 0182 51760",
+        "contact:postcode": "17031",
+        "contact:street": "Via Roma",
+        "level": "2",
+        "name": "Biblioteca Civica Simonetta Comanedi",
+        "opening_hours": "Mo,We 09:00-18:00; Tu,Th,Fr 09:00-14:00,15:00-18:00; Sa 09:00-14:00; PH off",
+        "ref": "GB00000022"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463380,
+      "lat": 44.3154053,
+      "lon": 8.4897241,
+      "tags": {
+        "addr:housenumber": "6",
+        "addr:postcode": "17100",
+        "addr:street": "Via Filippo Turati",
+        "amenity": "library",
+        "name": "Biblioteca Civica Valloria",
+        "ref": "GB00000327"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463386,
+      "lat": 44.383515,
+      "lon": 9.0428315,
+      "tags": {
+        "addr:full": "Via Aldo Casotti 1",
+        "addr:postcode": "16167",
+        "amenity": "library",
+        "contact:email": "biblbrocchi@comune.genova.it",
+        "contact:fax": "+39 010 3726441",
+        "contact:phone": "+39 010 321892",
+        "name": "Biblioteca Civica Virgilio Brocchi",
+        "ref": "GB00000161",
+        "ref:ntcn": "07/00209906",
+        "wikidata": "Q112893629"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463393,
+      "lat": 44.3160637,
+      "lon": 9.3264596,
+      "tags": {
+        "addr:full": "Via Delpino 2",
+        "addr:postcode": "16043",
+        "amenity": "library",
+        "contact:email": "luisa.moggia@fastwebnet.it",
+        "contact:fax": "+39 0185 324145",
+        "contact:phone": "+39 0185 314367",
+        "name": "Biblioteca Corsi di Cultura per la Terza Età",
+        "ref": "GB00000398",
+        "ref:ntcn": "07/00112785"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463401,
+      "lat": 44.4207709,
+      "lon": 8.9392476,
+      "tags": {
+        "addr:full": "Salita E. Cavallo 104",
+        "addr:postcode": "16136",
+        "amenity": "library",
+        "contact:email": "biblioteca@seminarioge.191.it",
+        "contact:fax": "+39 010 2724341",
+        "contact:phone": "+39 010 2721513",
+        "name": "Biblioteca Diocesana Monsignor Luigi Roba (Seminario Arcivescovile)",
+        "ref": "GB00000223"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463407,
+      "lat": 44.1012241,
+      "lon": 9.8219861,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Viale Italia 2",
+        "addr:postcode": "19126",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:phone": "+39 0187 31297",
+        "name": "Biblioteca Dipartimentale della Marina Militare",
+        "ref": "GB00000459"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463418,
+      "lat": 44.005872,
+      "lon": 8.1689938,
+      "tags": {
+        "addr:full": "Via Don Bosco  12",
+        "addr:postcode": "17021",
+        "amenity": "library",
+        "contact:fax": "+39 0182 646134",
+        "contact:phone": "+39 0182 640309",
+        "name": "Biblioteca Don Bosco",
+        "ref": "GB00000020"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463432,
+      "lat": 44.0119849,
+      "lon": 8.1528027,
+      "tags": {
+        "addr:full": "Via Mazzini 12",
+        "addr:postcode": "17021",
+        "amenity": "library",
+        "contact:email": "biblioteca@comune.alassio.sv.it",
+        "contact:phone": "+39 0182 469198",
+        "name": "Biblioteca Frazione Moglio",
+        "ref": "GB00000018",
+        "source": "Regione Liguria"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463439,
+      "lat": 44.4726682,
+      "lon": 8.9144693,
+      "tags": {
+        "addr:full": "Via Sardorella 57",
+        "addr:housenumber": "57",
+        "addr:postcode": "16162",
+        "addr:street": "Via Sardorella",
+        "amenity": "library",
+        "contact:email": "bibliotecapalatucci@libero.it",
+        "contact:fax": "+39 010 7239225",
+        "contact:phone": "+39 010 7239206",
+        "description": "contiene una estesa collezione di volumi nella sua sezione centro memorie del 900 . È liberamente visitabile scrivendo a bibliotecapalatucci@libro.it",
+        "email": "bibliotecapalatucci@libero.it",
+        "name": "Biblioteca Giovanni Palatucci",
+        "ref": "GB00000490",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463452,
+      "lat": 44.4087443,
+      "lon": 8.923631,
+      "tags": {
+        "addr:full": "Calata Molo Vecchio",
+        "addr:postcode": "16128",
+        "amenity": "library",
+        "check_date": "2025-08-22",
+        "check_date:opening_hours": "2025-08-22",
+        "contact:email": "deamicis@comune.genova.it",
+        "contact:fax": "+39 010 252568",
+        "contact:phone": "+39 010 265237",
+        "name": "Biblioteca Internazionale per Ragazzi Edmondo De Amicis",
+        "opening_hours": "Mo-Sa 09:00-19:00",
+        "ref": "GB00000166",
+        "wikidata": "Q48811020"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463460,
+      "lat": 44.4099652,
+      "lon": 8.9354782,
+      "tags": {
+        "addr:full": "Piazza delle Fontane Marose 6/4",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "check_date": "2026-04-25",
+        "contact:phone": "+39 010 542763",
+        "name": "Biblioteca Italia Nostra - Sezione Genova",
+        "ref": "GB00000199",
+        "wikidata": "Q113515393"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463464,
+      "lat": 44.411727,
+      "lon": 8.9347039,
+      "tags": {
+        "addr:full": "Via Caffaro 1",
+        "addr:postcode": "16124",
+        "amenity": "library",
+        "contact:email": "cdtge@bibciechi.it",
+        "contact:fax": "+39 010 2544150",
+        "contact:phone": "+39 010 2543035",
+        "name": "Biblioteca Italiana per Ciechi Regina Margherita",
+        "ref": "GB00000433"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463465,
+      "lat": 44.4151502,
+      "lon": 8.9210074,
+      "tags": {
+        "addr:full": "Via Rubattino 6",
+        "addr:postcode": "16126",
+        "amenity": "library",
+        "contact:email": "lab.genova@agenziadogane.it",
+        "contact:fax": "+39 010 252958",
+        "contact:phone": "+39 010 256305",
+        "name": "Biblioteca Laboratorio Chimico dell'Agenzia delle Dogane di Genova",
+        "ref": "GB00000457"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463466,
+      "lat": 44.4063819,
+      "lon": 8.9294473,
+      "tags": {
+        "addr:housenumber": "5",
+        "addr:postcode": "16123",
+        "addr:street": "Piazza Embriaci",
+        "amenity": "library",
+        "contact:email": "ferrer@ecn.org",
+        "name": "Biblioteca Libertaria Francisco Ferrer",
+        "ref": "GB00000436",
+        "website": "www.ecn.org/ferrer",
+        "wikidata": "Q113319430"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463469,
+      "lat": 44.4049593,
+      "lon": 8.9416558,
+      "tags": {
+        "addr:full": "Via Domenico Fiasella 34R",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:email": "comitato.genova@unicef.it",
+        "contact:fax": "+39 010 532550",
+        "contact:phone": "+39 010 532550",
+        "name": "Biblioteca Librodomani",
+        "ref": "GB00000206"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463490,
+      "lat": 44.4227613,
+      "lon": 8.8598748,
+      "tags": {
+        "addr:full": "Via Calda 5",
+        "addr:postcode": "16153",
+        "amenity": "library",
+        "contact:fax": "+39 010 6003800",
+        "contact:phone": "+39 010 60021",
+        "name": "Biblioteca Marconi Italiana",
+        "ref": "GB00000207"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463510,
+      "lat": 44.1042662,
+      "lon": 9.8239462,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via Cadorna 24",
+        "addr:postcode": "19121",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "circoloanspi@castagna.it",
+        "contact:fax": "+39 0187 730161",
+        "contact:phone": "+39 0187 730161",
+        "name": "Biblioteca Mons. Antonio Mori",
+        "ref": "GB00000410",
+        "wikidata": "Q113535987"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463516,
+      "lat": 44.4038007,
+      "lon": 8.9443326,
+      "tags": {
+        "addr:full": "Piazza della Vittoria 7/2",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:fax": "+39 010 5774656",
+        "contact:phone": "+39 010 5773450",
+        "name": "Biblioteca Multimediale",
+        "ref": "GB00000407"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463522,
+      "lat": 44.1134426,
+      "lon": 9.9635992,
+      "tags": {
+        "addr:full": "Via A.Paci 2",
+        "addr:postcode": "19038",
+        "amenity": "library",
+        "contact:email": "biblioteca@parcomagra.it",
+        "contact:fax": "+39 0187 606738",
+        "contact:phone": "+39 0187 691071",
+        "name": "Biblioteca Naturalistica dell'Ente Parco Montemarcello - Magra",
+        "name:etymology:wikidata": "Q113611084",
+        "ref": "GB00000408",
+        "ref:ntcn": "07/00209157"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463528,
+      "lat": 44.3070298,
+      "lon": 8.4841472,
+      "tags": {
+        "addr:full": "Piazza Brandale 2",
+        "addr:postcode": "17100",
+        "amenity": "library",
+        "contact:fax": "+39 019 821379",
+        "contact:phone": "+39 019 821379",
+        "name": "Biblioteca Sociale P. Poggi - Associazione Savonese A Campanassa",
+        "ref": "GB00000322",
+        "wikidata": "Q113319778"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463534,
+      "lat": 44.107066,
+      "lon": 9.818341,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via del Prione 238",
+        "addr:postcode": "19121",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "bib.arte@laspeziacultura.it",
+        "contact:fax": "+39 0187 777179",
+        "contact:phone": "+39 0187 778544",
+        "name": "Biblioteca Speciale di Storia dell'Arte e Archeologia",
+        "ref": "GB00000416",
+        "wikidata": "Q113086214"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463541,
+      "lat": 44.3121604,
+      "lon": 8.4770714,
+      "tags": {
+        "addr:city": "Savona",
+        "addr:housenumber": "48r",
+        "addr:postcode": "17100",
+        "addr:street": "Via Camillo Benso Cavour",
+        "amenity": "library",
+        "contact:email": "enpa.sv@libero.it",
+        "contact:fax": "+39 019 802470",
+        "contact:phone": "+39 019 824735",
+        "name": "Biblioteca Specializzata (ENPA)",
+        "ref": "GB00000332"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463547,
+      "lat": 44.4149412,
+      "lon": 8.9271206,
+      "tags": {
+        "addr:full": "Piazzetta Balbi 1a",
+        "addr:postcode": "16126",
+        "amenity": "library",
+        "contact:email": "boero@irre.liguria.it",
+        "contact:fax": "+39 010 8466343",
+        "contact:phone": "+39 010 846631",
+        "name": "Biblioteca Specializzata di Documentazione Pedagogica (BSDP IRRE Liguria)",
+        "ref": "GB00000186"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463552,
+      "lat": 44.416331,
+      "lon": 8.9543174,
+      "tags": {
+        "addr:full": "Via Casata Centuriona 10",
+        "addr:postcode": "16139",
+        "amenity": "library",
+        "contact:email": "rgrozio@hotmail.com",
+        "contact:fax": "+39 010 5531281",
+        "contact:phone": "+39 010 5530319",
+        "name": "Biblioteca Sportopolis - Amici Museo dello Sport",
+        "ref": "GB00000231"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463564,
+      "lat": 44.434451,
+      "lon": 8.8868244,
+      "tags": {
+        "addr:full": "Corso Perrone 25",
+        "addr:postcode": "16161",
+        "amenity": "library",
+        "contact:email": "biblio@nsaldo.it",
+        "contact:fax": "+39 010 64018042",
+        "contact:phone": "+39 010 6558042",
+        "name": "Biblioteca Tecnica Ansaldo Energia",
+        "ref": "GB00000123"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463574,
+      "lat": 44.1153847,
+      "lon": 9.8429216,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Trasv. Via del Popolo 61",
+        "addr:postcode": "19126",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "biblioteca@castagna.it",
+        "contact:fax": "+39 0187 519434",
+        "contact:phone": "+39 0187 599354",
+        "name": "Biblioteca Virtuale - Associazione Roberto Ugo Castagna",
+        "ref": "GB00000383"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463586,
+      "lat": 44.4002368,
+      "lon": 8.9535015,
+      "tags": {
+        "addr:full": "Piazza Palermo 10b",
+        "addr:postcode": "16129",
+        "amenity": "library",
+        "contact:phone": "+39 010 5704871",
+        "name": "Biblioteca del Centro Ligure Documentazione per la Pace",
+        "ref": "GB00000138"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463596,
+      "lat": 44.4075229,
+      "lon": 8.9332614,
+      "tags": {
+        "addr:full": "Piazza Matteotti 5/24",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "contact:email": "biblioteca@centroliguredistoriasociale.it",
+        "contact:fax": "+39 010 5764446",
+        "contact:phone": "+39 010 5761749",
+        "name": "Biblioteca del Centro ligure di storia sociale",
+        "ref": "GB00000137",
+        "ref:ntcn": "07/00108985",
+        "wikidata": "Q113515390"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463607,
+      "lat": 44.4285065,
+      "lon": 8.81523,
+      "tags": {
+        "addr:full": "Piazza C. Bonavino",
+        "addr:postcode": "16156",
+        "amenity": "library",
+        "contact:phone": "+39 010 680022",
+        "name": "Biblioteca del Civico Museo Navale",
+        "ref": "GB00000163"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463618,
+      "lat": 44.4086093,
+      "lon": 8.9358605,
+      "tags": {
+        "addr:full": "Galleria Mazzini 7/3",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:email": "segreteria.cailigure@fastwebnet.it",
+        "contact:fax": "+39 010 592122",
+        "contact:phone": "+39 010 592122",
+        "name": "Biblioteca del Club Alpino Italiano - Sezione Ligure",
+        "ref": "GB00000169"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463640,
+      "lat": 44.3827467,
+      "lon": 9.0302015,
+      "tags": {
+        "addr:full": "Via Provana di Leyni 15",
+        "addr:postcode": "16167",
+        "amenity": "library",
+        "contact:email": "biblioemiliani@tiscali.it",
+        "contact:fax": "+39 010 3202037",
+        "contact:phone": "+39 010 3202075",
+        "name": "Biblioteca del Collegio Emiliani - Padri Somaschi",
+        "ref": "GB00000214",
+        "ref:ntcn": "07/00113000"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463648,
+      "lat": 44.1072476,
+      "lon": 9.8247196,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via XX Settembre 34",
+        "addr:postcode": "19121",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "puccini@castagna.it",
+        "contact:fax": "+39 0187 770347",
+        "contact:phone": "+39 0187 770333",
+        "name": "Biblioteca del Conservatorio Statale di Musica Giacomo Puccini",
+        "ref": "GB00000464",
+        "ref:ntcn": "07/00111221",
+        "wikidata": "Q113528799"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463663,
+      "lat": 44.4000252,
+      "lon": 8.9604097,
+      "tags": {
+        "addr:full": "Via Albaro 38",
+        "addr:postcode": "16145",
+        "amenity": "library",
+        "contact:email": "biblioteca@conservatoriopaganini.org",
+        "contact:fax": "+39 010 3620819",
+        "contact:phone": "+39 010 3620747",
+        "name": "Biblioteca del Conservatorio Statale di Musica Nicolò Paganini",
+        "ref": "GB00000458",
+        "toilets:wheelchair": "yes",
+        "wikidata": "Q113528695"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463675,
+      "lat": 44.4039366,
+      "lon": 8.9355751,
+      "tags": {
+        "addr:full": "Via D'Annunzio 38",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:email": "biblioteca@regione.liguria.it",
+        "contact:phone": "+39 010 5485865",
+        "name": "Biblioteca del Consiglio Regionale",
+        "ref": "GB00000385"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463686,
+      "lat": 44.4054181,
+      "lon": 8.9292915,
+      "tags": {
+        "addr:full": "Salita S. Maria di Castello 15",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "contact:fax": "+39 010 25495244",
+        "contact:phone": "+39 010 2549511",
+        "name": "Biblioteca del Convento Santa Maria di Castello",
+        "ref": "GB00000175"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463721,
+      "lat": 44.1070929,
+      "lon": 9.8261458,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:housenumber": "3",
+        "addr:postcode": "19124;19121",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "addr:street": "Viale Mazzini",
+        "amenity": "library",
+        "contact:email": "biblioteca@liceocosta1.191.it",
+        "contact:phone": "+39 0187 734520",
+        "name": "Biblioteca del Liceo Classico Lorenzo Costa",
+        "ref": "GB00000444",
+        "ref:ntcn": "07/00208293",
+        "wikidata": "Q113360003"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463745,
+      "lat": 44.4112753,
+      "lon": 8.9361687,
+      "tags": {
+        "addr:full": "Piazzale Mazzini 4N",
+        "addr:postcode": "16122",
+        "amenity": "library",
+        "name": "Biblioteca del Museo Chiossone",
+        "ref": "GB00000476",
+        "ref:ntcn": "07/00112690"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463754,
+      "lat": 43.8172568,
+      "lon": 7.7767789,
+      "tags": {
+        "addr:full": "Via Matteotti 143",
+        "addr:postcode": "18038",
+        "amenity": "library",
+        "contact:fax": "+39 0184 531942",
+        "contact:phone": "+39 0184 531942",
+        "name": "Biblioteca del Museo Civico Archeologico",
+        "ref": "GB00000307",
+        "ref:ntcn": "07/00111806"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463766,
+      "lat": 44.4024899,
+      "lon": 8.9427022,
+      "tags": {
+        "addr:full": "Via Brigata Liguria 9",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:email": "pvolvera@comune.genova.it",
+        "contact:fax": "+39 010 566319",
+        "contact:phone": "+39 010 564567; +39 010 582171",
+        "name": "Biblioteca del Museo Civico di Storia Naturale Giacomo Doria",
+        "ref": "GB00000212",
+        "ref:ntcn": "07/00110186",
+        "wikidata": "Q113086108"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463780,
+      "lat": 44.113344,
+      "lon": 9.9617375,
+      "tags": {
+        "addr:full": "Via Mascardi 93",
+        "addr:postcode": "19038",
+        "amenity": "library",
+        "contact:fax": "+39 0187 605516",
+        "contact:phone": "+39 0187 603552",
+        "name": "Biblioteca del Seminario Vescovile Niccol V",
+        "ref": "GB00000318",
+        "ref:ntcn": "07/00113133"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463791,
+      "lat": 44.3126989,
+      "lon": 8.4836377,
+      "tags": {
+        "addr:full": "Via Ponzone 5",
+        "addr:postcode": "17100",
+        "amenity": "library",
+        "contact:email": "biblio-sem-sv@libero.it",
+        "contact:fax": "+39 019 853317",
+        "contact:phone": "+39 019 813573",
+        "name": "Biblioteca del Seminario Vescovile Savona",
+        "ref": "GB00000335",
+        "ref:ntcn": "07/00208479"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463804,
+      "lat": 44.0484554,
+      "lon": 8.2247236,
+      "tags": {
+        "addr:full": "Via Galileo Galilei 36",
+        "addr:postcode": "17031",
+        "amenity": "library",
+        "contact:email": "beniculturalialbengaimp@tin.it",
+        "contact:fax": "+39 0182 554914",
+        "contact:phone": "+39 0182 50443",
+        "name": "Biblioteca del Seminario Vescovile di Albenga",
+        "ref": "GB00000024",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463817,
+      "lat": 43.8206734,
+      "lon": 7.7683119,
+      "tags": {
+        "addr:full": "Via G. Galilei",
+        "addr:postcode": "18038",
+        "amenity": "library",
+        "name": "Biblioteca del quartiere del Borgo (Punto di prestito)",
+        "ref": "GB00000303"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463824,
+      "lat": 44.4087288,
+      "lon": 8.9011602,
+      "tags": {
+        "addr:full": "Via De Marini 6",
+        "addr:postcode": "16149",
+        "amenity": "library",
+        "contact:email": "bsd@itd.ge.cnr.it",
+        "contact:fax": "+39 010 6475300",
+        "contact:phone": "+39 010 6475327",
+        "name": "Biblioteca del software didattico",
+        "ref": "GB00000401"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463833,
+      "lat": 44.4075341,
+      "lon": 8.9325027,
+      "tags": {
+        "addr:full": "Piazza Matteotti 5",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "contact:email": "accademialigure@fastwebnet.it",
+        "contact:fax": "+39 010 566080",
+        "contact:phone": "+39 010 565570",
+        "name": "Biblioteca dell'Accademia ligure di scienze e lettere",
+        "ref": "GB00000116",
+        "ref:ntcn": "07/00108985",
+        "wikidata": "Q113527461"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463845,
+      "lat": 44.4076097,
+      "lon": 8.9348223,
+      "tags": {
+        "addr:full": "Largo A. Pertini 4",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "check_date": "2025-04-09",
+        "contact:fax": "+39 010 587810",
+        "contact:phone": "+39 010 581957",
+        "name": "Biblioteca dell'Accademia Ligustica di Belle Arti",
+        "ref": "GB00000117",
+        "ref:ntcn": "07/00108760"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463856,
+      "lat": 44.1058539,
+      "lon": 9.8208648,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via XX Settembre 148",
+        "addr:postcode": "19121",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "acc.capellini@libero.it",
+        "contact:fax": "+39 0187 736944",
+        "contact:phone": "+39 0187 736944",
+        "name": "Biblioteca dell'Accademia Lunigianese di Scienze G. Capellini",
+        "ref": "GB00000244"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463866,
+      "lat": 44.4092114,
+      "lon": 8.9413632,
+      "tags": {
+        "addr:full": "Via Serra 6c",
+        "addr:postcode": "16122",
+        "amenity": "library",
+        "contact:phone": "+39 010 543461",
+        "name": "Biblioteca dell'Apostolato Liturgico",
+        "ref": "GB00000432"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463871,
+      "lat": 44.4356645,
+      "lon": 8.8858761,
+      "tags": {
+        "addr:full": "Corso Perrone 118",
+        "addr:postcode": "16161",
+        "amenity": "library",
+        "contact:phone": "+39 010 6558525",
+        "name": "Biblioteca dell'Archivio Cinetecario della Liguria",
+        "ref": "GB00000121",
+        "ref:ntcn": "07/00109625"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463877,
+      "lat": 44.4103842,
+      "lon": 8.9332315,
+      "tags": {
+        "addr:full": "Piazza della Maddalena 11/8",
+        "addr:postcode": "16124",
+        "amenity": "library",
+        "contact:email": "mbrioli@somaschi.org",
+        "name": "Biblioteca dell'Archivio Storico Padri Somaschi",
+        "ref": "GB00000096"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463890,
+      "lat": 44.4075977,
+      "lon": 8.9330693,
+      "tags": {
+        "addr:full": "Piazza Matteotti 10",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "contact:email": "archiviostorico@comune.genova.it",
+        "contact:fax": "+39 010 5574823",
+        "contact:phone": "+39 010 5574808",
+        "name": "Biblioteca dell'Archivio Storico del Comune di Genova",
+        "ref": "GB00000442",
+        "ref:ntcn": "07/00108985"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463896,
+      "lat": 44.4164672,
+      "lon": 8.9179406,
+      "tags": {
+        "addr:full": "Piazza del Principe 4/2 SC. B",
+        "addr:postcode": "16126",
+        "amenity": "library",
+        "contact:phone": "+39 010 2758934",
+        "name": "Biblioteca dell'Archivio Storico della Pubblicità (CORIGRAF)",
+        "ref": "GB00000122"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463901,
+      "lat": 44.1144492,
+      "lon": 9.8260973,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via Galvani 21",
+        "addr:postcode": "19100",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "antonella.carro@beniculturali.it",
+        "contact:fax": "+39 0187 563592",
+        "contact:phone": "+39 0187 506360",
+        "name": "Biblioteca dell'Archivio di Stato",
+        "ref": "GB00000414",
+        "wikidata": "Q45031520"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463907,
+      "lat": 44.4079076,
+      "lon": 8.9319439,
+      "tags": {
+        "addr:full": "Via T. Reggio 14",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "contact:fax": "+39 010 2468992",
+        "contact:phone": "+39 010 2468373",
+        "name": "Biblioteca dell'Archivio di Stato",
+        "ref": "GB00000451"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463918,
+      "lat": 44.4104641,
+      "lon": 8.9310971,
+      "tags": {
+        "addr:full": "Piazza della Posta Vecchia 3/5",
+        "addr:postcode": "16124",
+        "amenity": "library",
+        "contact:phone": "+39 010 2469925",
+        "name": "Biblioteca dell'Associazione A Compagna",
+        "ref": "GB00000124"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463927,
+      "lat": 44.1043933,
+      "lon": 9.8224629,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via Manin 27",
+        "addr:postcode": "19100",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "acit.spezia@tedescoweb.it",
+        "contact:fax": "+39 0187 24572",
+        "contact:phone": "+39 0187 739625",
+        "name": "Biblioteca dell'Associazione Culturale Italo -Tedesca",
+        "ref": "GB00000245"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463938,
+      "lat": 44.4088997,
+      "lon": 8.931891,
+      "tags": {
+        "addr:full": "Piazza Campetto 8A int. 4/5",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "contact:email": "_leonardividea_@libero.it",
+        "contact:phone": "+39 010 2474576",
+        "name": "Biblioteca dell'Associazione Culturale Leonardi V-Idea",
+        "ref": "GB00000467"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463948,
+      "lat": 44.4112385,
+      "lon": 8.929978,
+      "tags": {
+        "addr:full": "Via S. Luca 15/9",
+        "addr:postcode": "16124",
+        "amenity": "library",
+        "name": "Biblioteca dell'Associazione Culturale Libero Pensiero G. Bruno",
+        "ref": "GB00000099"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463957,
+      "lat": 44.3979436,
+      "lon": 8.9342035,
+      "tags": {
+        "addr:full": "Via al Molo Cagni",
+        "addr:postcode": "16128",
+        "amenity": "library",
+        "contact:fax": "+39 010 2758723",
+        "contact:phone": "+39 010 2758723",
+        "name": "Biblioteca dell'Associazione Culturale dei Barbi",
+        "ref": "GB00000382"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463978,
+      "lat": 44.4062776,
+      "lon": 8.9405897,
+      "tags": {
+        "addr:full": "Via S. Vincenzo 184r",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:email": "informa@hunkapi.com",
+        "contact:phone": "+39 010 565530",
+        "name": "Biblioteca dell'Associazione Hunkapi",
+        "ref": "GB00000422"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358463990,
+      "lat": 44.4054508,
+      "lon": 8.9292637,
+      "tags": {
+        "addr:full": "Via S. Maria di Castello 15",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "name": "Biblioteca dell'Associazione Internazionale dei Caterinati - Gruppo di Genova",
+        "ref": "GB00000489"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464026,
+      "lat": 44.4114362,
+      "lon": 8.883283,
+      "tags": {
+        "addr:full": "Via degli Operai 48",
+        "addr:postcode": "16149",
+        "amenity": "library",
+        "contact:email": "biblioteca@aism.it",
+        "contact:fax": "+39 010 2713205",
+        "contact:phone": "+39 010 2713270",
+        "name": "Biblioteca dell'Associazione Italiana Sclerosi Multipla AISM",
+        "ref": "GB00000441",
+        "wikidata": "Q113319421"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464036,
+      "lat": 44.4091921,
+      "lon": 8.9288079,
+      "tags": {
+        "addr:full": "Via della Mercanzia 2",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "contact:email": "D.Cabona@porto.genova.it",
+        "contact:fax": "+39 010 2412397",
+        "contact:phone": "+39 010 2412625;+39 010 2412754",
+        "name": "Biblioteca dell'Autorità Portuale di Genova",
+        "ref": "GB00000172",
+        "ref:ntcn": "07/00053104"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464046,
+      "lat": 44.4226834,
+      "lon": 8.9467597,
+      "tags": {
+        "addr:full": "Via L. Montaldo 2",
+        "addr:postcode": "16137",
+        "amenity": "library",
+        "contact:email": "amtspa@amt.genova.it",
+        "contact:fax": "+39 010 5582400",
+        "contact:phone": "+39 010 5582417",
+        "name": "Biblioteca dell'Azienda Mobilità e Trasporti S.p.A. (AMT)",
+        "ref": "GB00000127"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464058,
+      "lat": 44.1165883,
+      "lon": 9.8487124,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via Bragarina 32",
+        "addr:postcode": "19100",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "segrfoss@tin.it",
+        "contact:fax": "+39 0187 516697",
+        "contact:phone": "+39 0187 500557",
+        "name": "Biblioteca dell'IIS Fossati - Da Passano",
+        "ref": "GB00000478",
+        "wikidata": "Q113360005"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464070,
+      "lat": 44.4195344,
+      "lon": 8.9212751,
+      "tags": {
+        "addr:full": "Passo dell'Osservatorio 4",
+        "addr:postcode": "16134",
+        "amenity": "library",
+        "contact:email": "iim.sre@marina.difesa.it",
+        "contact:fax": "+39 010 261400",
+        "contact:phone": "+39 010 2442324",
+        "name": "Biblioteca dell'Istituto Idrografico della Marina",
+        "ref": "GB00000445",
+        "ref:ntcn": "07/00111690",
+        "wikidata": "Q113528693"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464097,
+      "lat": 44.0488001,
+      "lon": 8.2126079,
+      "tags": {
+        "addr:full": "Piazza S. Michele 12",
+        "addr:postcode": "17031",
+        "amenity": "library",
+        "contact:email": "iisl.ingauna@tin.it",
+        "contact:fax": "+39 0182 570434",
+        "contact:phone": "+39 0182 51215",
+        "name": "Biblioteca dell'Istituto Internazionale di Studi Liguri - Sezione Ingauna",
+        "ref": "GB00000023",
+        "ref:ntcn": "07/00111118",
+        "toilets:wheelchair": "yes",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464111,
+      "lat": 44.3045163,
+      "lon": 8.4843916,
+      "tags": {
+        "addr:full": "Corso Mazzini 1",
+        "addr:postcode": "17100",
+        "amenity": "library",
+        "contact:email": "biblioteca@museoarcheosavona.it",
+        "contact:fax": "+39 019 822708",
+        "contact:phone": "+39 019 822708",
+        "name": "Biblioteca dell'Istituto Internazionale di Studi Liguri - Sezione Sabazia",
+        "ref": "GB00000334",
+        "ref:ntcn": "07/00109484"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464129,
+      "lat": 44.3169429,
+      "lon": 9.3270997,
+      "tags": {
+        "addr:full": "Via Costaguta 3",
+        "addr:postcode": "16043",
+        "amenity": "library",
+        "contact:fax": "+39 0185 320829",
+        "contact:phone": "+39 0185 320829",
+        "name": "Biblioteca dell'Istituto Internazionale di Studi Liguri - Sezione Tigullia",
+        "ref": "GB00000086",
+        "ref:ntcn": "07/00045322"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464147,
+      "lat": 44.4114306,
+      "lon": 8.9285304,
+      "tags": {
+        "addr:full": "Via di Sottoripa 129 r.",
+        "addr:postcode": "16124",
+        "amenity": "library",
+        "contact:email": "biblioteca@grupporicerche.it",
+        "contact:phone": "+39 010 2785922",
+        "name": "Biblioteca dell'Istituto Internazionale di Studi Liguri - Sezione di Genova",
+        "ref": "GB00000194"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464156,
+      "lat": 44.4050215,
+      "lon": 8.9371783,
+      "tags": {
+        "addr:full": "Via del Seminario 16",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "check_date": "2025-09-10",
+        "contact:email": "ILSREC@ARUBA.IT",
+        "contact:fax": "+39 010 5953126",
+        "contact:phone": "+39 010 5576091; +39 010 5955031",
+        "name": "Biblioteca dell'Istituto Ligure per la Storia della Resistenza e dell'Età Contemporanea",
+        "ref": "GB00000198"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464179,
+      "lat": 43.8169925,
+      "lon": 7.7582482,
+      "tags": {
+        "addr:full": "Corso Inglesi 508",
+        "addr:postcode": "18038",
+        "amenity": "library",
+        "contact:email": "segreteria@istflori.it",
+        "contact:fax": "+39 0184 694856",
+        "contact:phone": "+39 0184 694820",
+        "name": "Biblioteca dell'Istituto Sperimentale per la Floricoltura",
+        "ref": "GB00000310",
+        "ref:ntcn": "07/00208161"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464192,
+      "lat": 44.1155155,
+      "lon": 9.8427768,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Trasversale Via del Popolo 61",
+        "addr:postcode": "19126",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "isr@laspeziacultura.it",
+        "contact:fax": "+39 0187 284971",
+        "contact:phone": "+39 0187 513295",
+        "name": "Biblioteca dell'Istituto Spezzino per la Storia della Resistenza e dell'Et Contemporanea",
+        "ref": "GB00000255"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464197,
+      "lat": 43.8761944,
+      "lon": 8.0135454,
+      "tags": {
+        "addr:full": "Via Cascione 86",
+        "amenity": "library",
+        "contact:city": "Imperia",
+        "contact:email": "isrecim@gmail.com",
+        "contact:fax": "+39 0183 650756",
+        "contact:housenumber": "86",
+        "contact:phone": "+39 0183 650755",
+        "contact:postcode": "18100",
+        "contact:street": "Via Felice Cascione",
+        "description": "isrecim@pec.isrecim.it",
+        "name": "Biblioteca dell'Istituto Storico della Resistenza e dell'Età Contemporanea",
+        "opening_hours": "Mo-Th 10:00-12:00",
+        "ref": "GB00000242",
+        "ref:isil": "IT-IM0040",
+        "website": "http://www.isrecim.it",
+        "wikidata": "Q113527464"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464212,
+      "lat": 43.8179545,
+      "lon": 7.7748597,
+      "tags": {
+        "addr:full": "Piazza Eroi Sanremesi 77",
+        "addr:postcode": "18038",
+        "amenity": "library",
+        "contact:email": "bibliotecacolombo@yahoo.it",
+        "name": "Biblioteca dell'Istituto Tecnico Colombo",
+        "ref": "GB00000475",
+        "ref:ntcn": "07/00111876"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464221,
+      "lat": 44.4112583,
+      "lon": 8.928689,
+      "tags": {
+        "addr:full": "Via Sottoripa 5/1",
+        "addr:postcode": "16124",
+        "amenity": "library",
+        "contact:email": "biblioteca@iscum.it",
+        "contact:fax": "+39 010 2532710",
+        "contact:phone": "+39 010 2463924",
+        "name": "Biblioteca dell'Istituto di Storia della Cultura Materiale - ISCUM",
+        "ref": "GB00000192"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464232,
+      "lat": 44.1057738,
+      "lon": 9.8265571,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via Don Minzoni 64",
+        "addr:postcode": "19100",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:fax": "+39 0187 732187",
+        "contact:phone": "+39 0187 734424",
+        "name": "Biblioteca dell'Ufficio Inventario dei Beni Culturali della Diocesi",
+        "ref": "GB00000419"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464242,
+      "lat": 44.4034154,
+      "lon": 8.9341982,
+      "tags": {
+        "addr:full": "D'Annunzio 64",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:email": "guido.audasso@regione.liguria.it",
+        "contact:phone": "+39 010 5485359",
+        "name": "Biblioteca dell'Ufficio Statistica della Regione Liguria",
+        "ref": "GB00000437",
+        "wikidata": "Q113639744"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464252,
+      "lat": 44.1083772,
+      "lon": 9.8292889,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via Giulio Rezasco 11",
+        "addr:postcode": "19124",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "paolo.brizzi@sp.camcom.it",
+        "contact:fax": "+39 0187 777908",
+        "contact:phone": "+39 0187 728200",
+        "name": "Biblioteca della Camera di Commercio Industria Artigianato e Agricoltura",
+        "ref": "GB00000246"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464264,
+      "lat": 44.3086021,
+      "lon": 8.4826059,
+      "tags": {
+        "addr:full": "Piazza Chabrol 1/2",
+        "addr:postcode": "17100",
+        "addr:street": "Piazza Gilbert Chabrol",
+        "amenity": "library",
+        "contact:phone": "+39 019 828601",
+        "name": "Biblioteca della Civica Pinacoteca",
+        "ref": "GB00000328",
+        "ref:ntcn": "07/00109819",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464274,
+      "lat": 44.4061698,
+      "lon": 8.9697526,
+      "tags": {
+        "addr:full": "Corso Europa 42",
+        "addr:postcode": "16132",
+        "amenity": "library",
+        "contact:email": "drl-liguria@welfare.gov.it",
+        "contact:fax": "+39 010 508170",
+        "contact:phone": "+39 010 513451",
+        "name": "Biblioteca della Direzione Regionale del Lavoro",
+        "ref": "GB00000469"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464285,
+      "lat": 44.4346799,
+      "lon": 8.9609392,
+      "tags": {
+        "addr:full": "Via Piacenza 54",
+        "addr:postcode": "16138",
+        "amenity": "library",
+        "contact:email": "biblioteca@fondazioneamga.org",
+        "contact:fax": "+39 010 5586847",
+        "contact:phone": "+39 010 5586824",
+        "name": "Biblioteca della Fondazione AMGA",
+        "ref": "GB00000485",
+        "wikidata": "Q113319423"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464298,
+      "lat": 44.3972977,
+      "lon": 8.9407666,
+      "tags": {
+        "addr:full": "Corso Aurelio Saffi 9/11",
+        "addr:postcode": "16128",
+        "amenity": "library",
+        "contact:email": "biblioteca.novaro@fastwebnet.it",
+        "contact:fax": "+39 010 5531281",
+        "contact:phone": "+39 010 5530319",
+        "name": "Biblioteca della Fondazione Mario Novaro",
+        "opening_hours": "Mo-Fr 14:30-18:30",
+        "ref": "GB00000181",
+        "wikidata": "Q113527463"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464310,
+      "lat": 43.8237977,
+      "lon": 7.8385428,
+      "tags": {
+        "addr:full": "Piazza Chiappe 3",
+        "addr:postcode": "18032",
+        "amenity": "library",
+        "contact:phone": "+39 0184 513004",
+        "name": "Biblioteca della Frazione di Bussana",
+        "ref": "GB00000381"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464321,
+      "lat": 43.8314053,
+      "lon": 7.813859,
+      "tags": {
+        "addr:full": "Via Castello 12",
+        "addr:postcode": "18038",
+        "amenity": "library",
+        "contact:phone": "+39 0184 513573",
+        "name": "Biblioteca della Frazione di Poggio",
+        "ref": "GB00000302",
+        "source": "Regione Liguria"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464334,
+      "lat": 44.403551,
+      "lon": 8.9352528,
+      "tags": {
+        "addr:full": "Via Fieschi 15",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:email": "biblio.giunta@regione.liguria.it",
+        "contact:fax": "+39 010 5485827",
+        "contact:phone": "+39 010 5485485",
+        "name": "Biblioteca della Giunta Regionale",
+        "ref": "GB00000384"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464345,
+      "lat": 44.4174015,
+      "lon": 8.9554922,
+      "tags": {
+        "addr:full": "Via Marassi 37 R",
+        "addr:postcode": "16142",
+        "amenity": "library",
+        "contact:fax": "+39 010 8392313",
+        "contact:phone": "+39 010 8392313",
+        "name": "Biblioteca della Parrocchia di Santa Margherita",
+        "ref": "GB00000215"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464354,
+      "lat": 44.1153918,
+      "lon": 9.845159,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Via del Canaletto",
+        "addr:postcode": "19100",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:email": "scm.fontana@castagna.it",
+        "contact:fax": "+39 0187 980454",
+        "contact:phone": "+39 0187 523648",
+        "name": "Biblioteca della Scuola Media Statale Fontana-Cervi",
+        "ref": "GB00000477"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464362,
+      "lat": 44.3179786,
+      "lon": 9.3251138,
+      "tags": {
+        "addr:full": "Via Ravaschieri 15",
+        "addr:postcode": "16043",
+        "amenity": "library",
+        "contact:email": "biblioteca@societaeconomica.com",
+        "contact:fax": "+39 0185 364719",
+        "contact:phone": "+39 0185 324713",
+        "name": "Biblioteca della Società Economica di Chiavari",
+        "ref": "GB00000088",
+        "ref:ntcn": "07/00108651"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464375,
+      "lat": 44.4025406,
+      "lon": 8.9427183,
+      "tags": {
+        "addr:full": "Via Brigata Liguria 9",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:email": "zoologia@unige.it",
+        "name": "Biblioteca della Società entomologica italiana",
+        "ref": "GB00000225",
+        "wikidata": "Q113515388"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464380,
+      "lat": 44.4118692,
+      "lon": 8.8899855,
+      "tags": {
+        "addr:full": "Via Carzino 2",
+        "addr:postcode": "16149",
+        "amenity": "library",
+        "contact:email": "universale60@hotmail.com",
+        "contact:fax": "+39 010 411767",
+        "contact:phone": "+39 010 411767",
+        "name": "Biblioteca della Società Operaia di Mutuo Soccorso Universale Giuseppe Mazzini",
+        "ref": "GB00000230",
+        "ref:ntcn": "07/00209480"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464387,
+      "lat": 44.3079681,
+      "lon": 8.4834799,
+      "tags": {
+        "addr:full": "Via Pia 14/4",
+        "addr:postcode": "17100",
+        "addr:street": "Via Pia",
+        "amenity": "library",
+        "contact:email": "biblioteca@storiapatriasavona.it",
+        "contact:fax": "+39 019 811960",
+        "contact:phone": "+39 019 811960",
+        "name": "Biblioteca della Società Savonese di Storia Patria",
+        "ref": "GB00000336",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464390,
+      "lat": 44.4075193,
+      "lon": 8.9324611,
+      "tags": {
+        "addr:full": "Piazza Matteotti 5",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "contact:email": "letturescientifiche@libero.it",
+        "contact:fax": "+39 010 5709220",
+        "contact:phone": "+39 010 565141",
+        "name": "Biblioteca della Società di Letture e Conversazioni Scientifiche",
+        "ref": "GB00000224",
+        "ref:ntcn": "07/00108985"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464391,
+      "lat": 44.4083568,
+      "lon": 8.9388557,
+      "tags": {
+        "addr:full": "Piazza S. Caterina Fieschi Adorno 4/a",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:email": "caterina.mondo@beniculturali.it",
+        "contact:fax": "+39 010 542357",
+        "contact:phone": "+39 010 542357",
+        "name": "Biblioteca della Soprintendenza Archivistica per la Liguria",
+        "ref": "GB00000450"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464401,
+      "lat": 44.4144678,
+      "lon": 8.9253565,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:full": "Via Balbi 10",
+        "addr:housenumber": "10",
+        "addr:postcode": "16126",
+        "addr:street": "Via Balbi",
+        "amenity": "library",
+        "internet_access": "yes",
+        "internet_access:fee": "no",
+        "name": "Biblioteca della Soprintendenza Archeologia, Belle Arti e Paesaggio della Liguria",
+        "opening_hours": "\"su appuntamento\"",
+        "operator": "Soprintendenza Archeologia, Belle Arti e Paesaggio della Liguria",
+        "ref": "GB00000452",
+        "website": "http://www.soprintendenza.liguria.beniculturali.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464412,
+      "lat": 44.4071621,
+      "lon": 8.9331778,
+      "tags": {
+        "addr:full": "Piazza Matteotti 9",
+        "addr:postcode": "16123",
+        "amenity": "library",
+        "contact:email": "info@wolfsoniana.it",
+        "contact:fax": "+39 010 5761393",
+        "contact:phone": "+39 010 5761393",
+        "name": "Biblioteca della Wolfsonian Foundation",
+        "ref": "GB00000235",
+        "ref:ntcn": "07/00108985"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464429,
+      "lat": 44.40528,
+      "lon": 8.9344154,
+      "tags": {
+        "addr:full": "Via del Colle 64/R",
+        "addr:postcode": "16128",
+        "amenity": "library",
+        "contact:phone": "+39 010 2518401",
+        "name": "Biblioteca dello Sportello del Consumatore",
+        "ref": "GB00000387"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464435,
+      "lat": 44.4003726,
+      "lon": 8.9320266,
+      "tags": {
+        "addr:full": "Porticciolo Duca degli Abruzzi",
+        "addr:postcode": "16126",
+        "amenity": "library",
+        "contact:email": "INFO@YCI.IT",
+        "contact:fax": "+39 010 2461193",
+        "contact:phone": "+39 010 2461206",
+        "name": "Biblioteca dello Yacht Club Italiano",
+        "ref": "GB00000236"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464441,
+      "lat": 44.1114841,
+      "lon": 9.8484882,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:full": "Viale S. Bartolomeo 400",
+        "addr:postcode": "19138",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "amenity": "library",
+        "contact:fax": "+39 0187 550399",
+        "contact:phone": "+39 0187 550702",
+        "name": "Biblioteca di Mariperman",
+        "ref": "GB00000446"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464447,
+      "lat": 44.3041296,
+      "lon": 8.4651583,
+      "tags": {
+        "addr:full": "Via G. Copello 12R",
+        "addr:postcode": "17100",
+        "amenity": "library",
+        "contact:email": "upregin@assmulpregin.191.it",
+        "contact:fax": "+39 019 861636",
+        "contact:phone": "+39 019 861636",
+        "name": "Biblioteca di Quartiere U Pregin",
+        "ref": "GB00000331",
+        "source": "Regione Liguria"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464453,
+      "lat": 44.4085914,
+      "lon": 8.9358118,
+      "tags": {
+        "addr:full": "Galleria Mazzini 7",
+        "addr:postcode": "16121",
+        "amenity": "library",
+        "contact:phone": "+39 010 586556",
+        "name": "Biblioteca di Studi Asiatici",
+        "ref": "GB00000377"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464458,
+      "lat": 44.4314925,
+      "lon": 9.1811715,
+      "tags": {
+        "addr:full": "Via Terzonasca 30",
+        "addr:postcode": "16030",
+        "amenity": "library",
+        "contact:fax": "+39 0185 939939",
+        "contact:phone": "+39 0185 938025",
+        "name": "Biblioteca per Bambini e Ragazzi Musica di Libri",
+        "ref": "GB00000465",
+        "source": "Regione Liguria"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464465,
+      "lat": 44.4106133,
+      "lon": 8.9447932,
+      "tags": {
+        "addr:full": "Via Peschiera 35",
+        "addr:postcode": "16122",
+        "amenity": "library",
+        "contact:email": "bibl@genua.goethe.org",
+        "contact:fax": "+39 010 8398810",
+        "contact:phone": "+39 010 8390734",
+        "name": "Bibliothek Goethe Institut Genua",
+        "ref": "GB00000184"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464472,
+      "lat": 44.4135794,
+      "lon": 8.9441336,
+      "tags": {
+        "addr:full": "Corso Armellini 11",
+        "addr:postcode": "16122",
+        "amenity": "library",
+        "contact:email": "dchiossone@split.it",
+        "contact:fax": "+39 010 812234",
+        "contact:phone": "+39 010 8391160",
+        "name": "Centro Documentazione Istituto David Chiossone",
+        "ref": "GB00000197"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464475,
+      "lat": 44.4056148,
+      "lon": 8.968941,
+      "tags": {
+        "addr:full": "Corso Europa 26",
+        "addr:postcode": "16132",
+        "amenity": "library",
+        "contact:email": "disanto@unige.it",
+        "contact:fax": "+39 010 3538120",
+        "contact:phone": "+39 010 3538273",
+        "name": "Centro Servizio Bibliotecario di Biologia, Scienze della Terra e del Mare (C.S.B.- B.T.M.)",
+        "ref": "GB00000470"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464479,
+      "lat": 44.3156977,
+      "lon": 9.3322134,
+      "tags": {
+        "addr:full": "Via Entella 205",
+        "addr:postcode": "16043",
+        "amenity": "library",
+        "contact:email": "centrodocza@libero.it",
+        "contact:fax": "+39 0185 368557",
+        "contact:phone": "+39 0185 322209",
+        "name": "Centro di Documentazione Zucchero Amaro",
+        "ref": "GB00000472"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464485,
+      "lat": 44.4102534,
+      "lon": 8.9270575,
+      "tags": {
+        "addr:full": "Ponte Spinola",
+        "addr:postcode": "16128",
+        "amenity": "library",
+        "contact:phone": "+39 010 2488018",
+        "name": "Centro di Documentazione dell'Acquario di Genova",
+        "ref": "GB00000406"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2358464515,
+      "lat": 44.4087003,
+      "lon": 8.9012353,
+      "tags": {
+        "addr:full": "Via De Marini 6",
+        "addr:postcode": "16149",
+        "amenity": "library",
+        "contact:email": "biblio@area.ge.cnr.it",
+        "contact:fax": "+39 010 6475894",
+        "contact:phone": "+39 010 6475764",
+        "name": "Servizio di Documentazione Scientifica del CNR",
+        "ref": "GB00000400"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2387852143,
+      "lat": 44.4124217,
+      "lon": 8.9283184,
+      "tags": {
+        "addr:housenumber": "29 rosso",
+        "addr:street": "Via del Campo",
+        "fee": "no",
+        "name": "Via del Campo 29 Rosso",
+        "operator": "Solidarietà e lavoro",
+        "phone": "+39 010 2474064",
+        "tourism": "museum",
+        "wikidata": "Q18670434"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2475817865,
+      "lat": 44.2682044,
+      "lon": 9.4926946,
+      "tags": {
+        "description": "Visitabile con prenotazione",
+        "name": "Museo archeominerario",
+        "phone": "+39 0185 469139",
+        "tourism": "museum",
+        "wikidata": "Q34191455"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2481427021,
+      "lat": 44.2696422,
+      "lon": 9.3945551,
+      "tags": {
+        "fee": "yes",
+        "name": "Galleria Rizzi",
+        "tourism": "museum",
+        "wikidata": "Q55348684"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2493863929,
+      "lat": 43.7912156,
+      "lon": 7.6109045,
+      "tags": {
+        "addr:city": "Ventimiglia",
+        "addr:housenumber": "1",
+        "addr:postcode": "18039",
+        "addr:street": "Piazza Ettore e Marco Bassi",
+        "amenity": "library",
+        "name": "Biblioteca Civica Aprosiana",
+        "phone": "+39 0184 618106",
+        "website": "http://www.comune.ventimiglia.it/servizi/Menu/dinamica.aspx?idArea=16612&idCat=18983&ID=18983",
+        "wikidata": "Q3639567",
+        "wikipedia": "it:Biblioteca civica Aprosiana"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505042849,
+      "lat": 44.3086881,
+      "lon": 8.4825129,
+      "tags": {
+        "addr:city": "Savona",
+        "addr:housename": "Palazzo Gavotti",
+        "addr:housenumber": "1;2",
+        "addr:postcode": "17100",
+        "addr:street": "Piazza Gilbert Chabrol",
+        "fee": "yes",
+        "name": "Museo d'arte di Palazzo Gavotti",
+        "tourism": "museum",
+        "wikidata": "Q23807320"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2586827566,
+      "lat": 44.4566165,
+      "lon": 8.9801201,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca comunale A. Saffi"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2597739297,
+      "lat": 44.5647092,
+      "lon": 8.9890727,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2620401938,
+      "lat": 44.4111195,
+      "lon": 8.9379068,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "2",
+        "addr:street": "Via Nicolò Bacigalupo",
+        "amenity": "theatre",
+        "check_date": "2026-05-05",
+        "name": "Politeama Genovese",
+        "wikidata": "Q3907408",
+        "wikipedia": "it:Politeama Genovese"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2758096417,
+      "lat": 44.4526982,
+      "lon": 8.9748091,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "48",
+        "addr:postcode": "16138",
+        "addr:street": "Via Salvador Allende",
+        "amenity": "theatre",
+        "name": "Teatro dell'Ortica",
+        "operator": "Teatro dell'Ortica",
+        "website": "https://www.teatrortica.it/",
+        "wikidata": "Q131859443"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2947450138,
+      "lat": 43.78352,
+      "lon": 7.5352857,
+      "tags": {
+        "fee": "yes",
+        "name": "Museo vecchio Preistorico dei Balzi Rossi",
+        "phone": "+39 0184 38113",
+        "tourism": "museum",
+        "website": "http://www.archeoliguria.beniculturali.it/",
+        "wheelchair": "limited"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2982357583,
+      "lat": 44.2088189,
+      "lon": 9.5542709,
+      "tags": {
+        "amenity": "library",
+        "name": "Framura"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2990114658,
+      "lat": 44.4107756,
+      "lon": 8.9302399,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "1",
+        "addr:postcode": "16123",
+        "addr:street": "Piazza Inferiore di Pellicceria",
+        "baby_feeding": "no",
+        "changing_table": "no",
+        "check_date": "2025-06-21",
+        "email": "palazzospinola@beniculturali.it",
+        "kids_area": "no",
+        "museum": "art",
+        "museum_type": "national",
+        "name": "Galleria Nazionale di Palazzo Spinola",
+        "opening_hours": "Tu-Sa 08:30-19:30; Mo off; Su, PH off",
+        "payment:mastercard": "yes",
+        "payment:visa": "yes",
+        "phone": "+39 010 270 5300",
+        "toilets": "yes",
+        "toilets:access": "customers",
+        "toilets:wheelchair": "designated",
+        "tourism": "museum",
+        "website": "https://www.palazzospinola.beniculturali.it",
+        "wheelchair": "yes",
+        "wikidata": "Q3757770",
+        "wikipedia": "it:Galleria nazionale di palazzo Spinola"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3087303428,
+      "lat": 44.1699394,
+      "lon": 9.612716,
+      "tags": {
+        "addr:housenumber": "5",
+        "addr:street": "Piazza Cavour",
+        "amenity": "library",
+        "name": "Biblioteca Civica Matteo Vinzoni",
+        "opening_hours": "Mo-Fr 14:30-18:30; We 09:00-13:00,14:30-18:30; Sa 09:00-13:00",
+        "phone": "+39 0187 802256",
+        "ref:isil": "IT-SP0038",
+        "wheelchair": "no",
+        "wikidata": "Q112893684"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3097325587,
+      "lat": 44.4344237,
+      "lon": 8.8925116,
+      "tags": {
+        "addr:housenumber": "60",
+        "addr:postcode": "16159",
+        "addr:street": "Via Germano Jori",
+        "amenity": "library",
+        "contact:email": "cervetto@comune.genova.it",
+        "contact:fax": "+39 010 4694717",
+        "contact:phone": "+39 010 4695050;+39 010 4694711",
+        "name": "Biblioteca Civica Luigi Augusto Cervetto",
+        "ref": "GB00000158",
+        "ref:ntcn": "07/00108375",
+        "wikidata": "Q112893625"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3120670438,
+      "lat": 44.406733,
+      "lon": 8.9300911,
+      "tags": {
+        "amenity": "cinema",
+        "min_age": "18",
+        "name": "Chiabrera"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3132652485,
+      "lat": 44.047486,
+      "lon": 8.144909,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca \"Nelson Mandela\"",
+        "name:etymology:wikidata": "Q8023",
+        "website": "https://www.villanovadalbenga.com/turismo/index.php/biblioteca",
+        "wikidata": "Q112893739"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3204396920,
+      "lat": 43.7824587,
+      "lon": 7.6683549,
+      "tags": {
+        "addr:city": "Bordighera",
+        "addr:country": "IT",
+        "addr:housenumber": "34/36",
+        "addr:postcode": "18012",
+        "addr:street": "Via Romana",
+        "fixme": "Combine with villa grounds",
+        "name": "Museo Fondazione Terruzzi - Villa Regina Margherita",
+        "tourism": "museum",
+        "website": "http://www.ftvm.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3298106659,
+      "lat": 44.3168505,
+      "lon": 9.3273119,
+      "tags": {
+        "addr:city": "Chiavari",
+        "addr:housenumber": "4",
+        "addr:postcode": "16043",
+        "addr:street": "Via Costaguta",
+        "email": "pm-lig.museochiavari@beniculturali.it",
+        "name": "Museo Archeologico di Chiavari",
+        "opening_hours": "Tu-Sa 09:00-14:00; Su [1,3,5] 09:00-14:00; Mo off; Su [2,4] off",
+        "operator": "Soprintendenza Archeologia della Liguria",
+        "phone": "+39 0185 320829",
+        "tourism": "museum",
+        "website": "https://www.musei.liguria.beniculturali.it/musei?mid=187&nome=museo-archeologico-di-chiavari-palazzo-rocca",
+        "wheelchair": "limited",
+        "wikidata": "Q3867722",
+        "wikipedia": "it:Museo archeologico di Chiavari"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3313128687,
+      "lat": 43.8633393,
+      "lon": 7.8688637,
+      "tags": {
+        "name": "Antiche Carceri",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3423366550,
+      "lat": 44.3090329,
+      "lon": 8.4841124,
+      "tags": {
+        "name": "Pinacoteca Civica",
+        "tourism": "museum",
+        "wikidata": "Q18812377"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3450444309,
+      "lat": 44.5636691,
+      "lon": 8.9879465,
+      "tags": {
+        "addr:city": "Savignone",
+        "addr:housenumber": "12",
+        "addr:postcode": "16010",
+        "addr:street": "Via Angelo Caprile",
+        "name": "Museo degli Alpini",
+        "operator": "Grupo Alpini Savignone",
+        "phone": "+39 010 9360103",
+        "tourism": "museum",
+        "website": "http://www.museoalpini.com",
+        "wikidata": "Q55348676"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3468419999,
+      "lat": 44.6126922,
+      "lon": 8.9508915,
+      "tags": {
+        "amenity": "cinema",
+        "name": "Columbia"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3468420000,
+      "lat": 44.6127647,
+      "lon": 8.9512295,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Comunale"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3471197512,
+      "lat": 44.1014873,
+      "lon": 9.8205714,
+      "tags": {
+        "museum": "maritime",
+        "name": "Museo Tecnico Navale",
+        "name:ru": "Музей морского флота",
+        "opening_hours": "Mo-Su 08:30-19:30",
+        "tourism": "museum",
+        "website": "https://www.marina.difesa.it/EN/history/museums/Pagine/museotecniconavale.aspx#",
+        "wikidata": "Q1954321"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3479517076,
+      "lat": 43.8551772,
+      "lon": 7.9405652,
+      "tags": {
+        "addr:city": "Costarainera",
+        "addr:housenumber": "12",
+        "addr:postcode": "18017",
+        "addr:street": "Via Dottor Raineri",
+        "amenity": "library",
+        "name": "Biblioteca comunale \"Il geco sapiente\"",
+        "opening_hours": "Mo - Fr 17:00-19:00",
+        "operator": "Associazione \"Quelli del geco\"",
+        "website": "https://sites.google.com/site/bibliotecacomunalecostarainera/",
+        "wheelchair": "limited"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3610446816,
+      "lat": 44.3181396,
+      "lon": 9.3231559,
+      "tags": {
+        "amenity": "cinema",
+        "name": "Cinema Mignon"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3614940800,
+      "lat": 44.4103278,
+      "lon": 8.9318176,
+      "tags": {
+        "addr:housenumber": "1",
+        "addr:street": "Piazzetta Cambiaso",
+        "amenity": "theatre",
+        "check_date": "2025-10-19",
+        "name": "Teatro TiQu",
+        "website": "https://www.sarabanda-associazione.it/attivit%C3%A0/tiqu-teatro-internazionale-di-quartiere-genova/",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3653559131,
+      "lat": 43.7845611,
+      "lon": 7.5550253,
+      "tags": {
+        "addr:city": "Ventimiglia",
+        "addr:postcode": "18039",
+        "name": "Herbarium Mortolense",
+        "note": "Erbario: 26100 campioni L'erbario fu istituito da Sir Thomas Hanbury intorno agli anni Novanta del XIX secolo quando i Giardini, realizzati a partire dal 1867, erano già una realtà.",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3653559477,
+      "lat": 43.7845266,
+      "lon": 7.5549279,
+      "tags": {
+        "addr:city": "Ventimiglia",
+        "addr:postcode": "18039",
+        "name": "Laboratorio Didattico e Laboratorio Semi",
+        "note": "L'aula didattica è ubicata al pian terreno del Palazzo, dove un tempo era la Sala del Biliardo, e si affaccia sulla Terrazza Sud, ed è a disposizione per le attività proposte alle scuole.",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3653560150,
+      "lat": 43.7811795,
+      "lon": 7.5557923,
+      "tags": {
+        "addr:city": "Ventimiglia",
+        "addr:postcode": "18039",
+        "addr:street": "Corso Montecarlo",
+        "name": "Museo del Legno – La Casa Rustica",
+        "note": "La Casa Rustica è stata realizzata su progetto dell'architetto Pio Soli nel 1886-87 come sede di attività scientifiche e della direzione e allo scopo di riunire collezioni museali.",
+        "opening_hours": "Mo-Su 09:30-17:00",
+        "phone": "+39 0184 229507",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3653705263,
+      "lat": 43.7822906,
+      "lon": 7.5556316,
+      "tags": {
+        "name": "Villa Hanbury",
+        "tourism": "museum",
+        "wikidata": "Q124342010"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3653767962,
+      "lat": 43.933241,
+      "lon": 7.6637495,
+      "tags": {
+        "name": "Museo La Terra e la Memoria",
+        "note": "www.parconaturalealpiliguri.it",
+        "phone": "+39 0184 241016",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3653878090,
+      "lat": 44.0462206,
+      "lon": 8.2236171,
+      "tags": {
+        "addr:city": "Albenga",
+        "addr:postcode": "17031",
+        "addr:street": "Fortino cinquecentesco - Piazza Europa",
+        "alt_name": "Museo del mare",
+        "name": "Centro multimediale \"Riserva Isola Gallinara\"",
+        "note": "Orari: Orario invernale (4 Novembre – Vigilia SS.Pasqua) 10.30 – 12.30 / 15.30 – 18.30 Giorno di chiusura lunedi",
+        "phone": "+39 0182 571443",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3653878091,
+      "lat": 44.0972116,
+      "lon": 8.2046362,
+      "tags": {
+        "addr:hamlet": "Peagna",
+        "addr:housenumber": "209",
+        "addr:postcode": "17023",
+        "addr:street": "Via Nuova di Peagna",
+        "email": "ufficiomanifestazioni@comune.ceriale.sv.it",
+        "name": "Museo paleontologico Silvio Lai",
+        "operator": "Arcadia cooperativa sociale di solidarietà a r.l.",
+        "phone": "+39 0182 990208",
+        "tourism": "museum",
+        "wikidata": "Q3868436",
+        "wikipedia": "it:Museo paleontologico Silvio Lai"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3682665901,
+      "lat": 43.9073061,
+      "lon": 7.9510202,
+      "tags": {
+        "addr:city": "Dolcedo",
+        "addr:country": "IT",
+        "addr:postcode": "18020",
+        "addr:street": "Piazza San Tommaso",
+        "amenity": "library",
+        "name": "Parrocchia S. Tommaso",
+        "phone": "+39 0183 280015"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3725430216,
+      "lat": 43.9208667,
+      "lon": 8.0997629,
+      "tags": {
+        "addr:city": "San Bartolomeo al Mare",
+        "addr:housenumber": "106",
+        "addr:postcode": "18016",
+        "addr:street": "Via Aurelia",
+        "amenity": "cinema",
+        "name": "Smeraldo",
+        "website": "http://www.cineinfo.it/smer.html"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3731066767,
+      "lat": 44.4032043,
+      "lon": 8.5342911,
+      "tags": {
+        "name": "Museo Archeologico Mario Fenoglio",
+        "tourism": "museum",
+        "wikidata": "Q54873677"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3741493558,
+      "lat": 44.3290391,
+      "lon": 8.5079992,
+      "tags": {
+        "addr:city": "Albissola Marina",
+        "addr:housenumber": "29",
+        "addr:postcode": "17012",
+        "addr:street": "Viale Giacomo Matteotti",
+        "craft": "pottery",
+        "fee": "no",
+        "name": "Museo della Ceramica Giuseppe Mazzotti",
+        "operator": "Tullio Mazzotti",
+        "start_date": "1903",
+        "tourism": "museum",
+        "website": "http://www.gmazzotti1903.it/",
+        "wheelchair": "limited",
+        "wikidata": "Q3770979",
+        "wikipedia": "it:Giuseppe Mazzotti Manifattura Ceramiche"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3747823361,
+      "lat": 44.3821984,
+      "lon": 9.0456947,
+      "tags": {
+        "fee": "yes",
+        "name": "Galleria d'Arte Moderna",
+        "tourism": "museum",
+        "website": "https://www.museidigenova.it/it/gam-galleria-darte-moderna",
+        "wikidata": "Q3757718",
+        "wikipedia": "it:Galleria d'arte moderna (Genova)"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3747823362,
+      "lat": 44.3801028,
+      "lon": 9.0545837,
+      "tags": {
+        "name": "Museo Giannettino Luxoro",
+        "tourism": "museum",
+        "website": "www.museoluxoro.museidigenova.it",
+        "wikidata": "Q3867605",
+        "wikipedia": "it:Museo Giannettino Luxoro"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3747823363,
+      "lat": 44.3813514,
+      "lon": 9.0477439,
+      "tags": {
+        "name": "Raccolte Frugone",
+        "tourism": "museum",
+        "website": "https://www.museidigenova.it/it/raccolte-frugone",
+        "wikidata": "Q2217376",
+        "wikipedia": "it:Raccolte Frugone"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3820290849,
+      "lat": 44.3320453,
+      "lon": 8.5177748,
+      "tags": {
+        "amenity": "library",
+        "level": "0",
+        "name": "Biblioteca Civica",
+        "operator": "Comune di Albisola Superiore",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3820290850,
+      "lat": 44.3319347,
+      "lon": 8.5178418,
+      "tags": {
+        "level": "1",
+        "name": "Museo della Ceramica Manlio Trucco",
+        "operator": "Comune di Albisola Superiore",
+        "toilets:wheelchair": "yes",
+        "tourism": "museum",
+        "wheelchair": "yes",
+        "wikidata": "Q38372952"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3820479008,
+      "lat": 44.3360737,
+      "lon": 8.5102997,
+      "tags": {
+        "name": "Giardino Monumentale Fabbrica Pacetti Ernan",
+        "tourism": "museum",
+        "wheelchair": "no",
+        "wikidata": "Q29886150"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3820540206,
+      "lat": 44.3297187,
+      "lon": 8.514351,
+      "tags": {
+        "name": "La Stella Collezione permanente di Arte Contemporanea",
+        "tourism": "museum",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3820547207,
+      "lat": 44.3278107,
+      "lon": 8.5019248,
+      "tags": {
+        "fee": "no",
+        "name": "Centro Esposizioni del MuDA",
+        "tourism": "museum",
+        "wheelchair": "yes",
+        "wikidata": "Q113030301"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3820637457,
+      "lat": 44.3313276,
+      "lon": 8.5025691,
+      "tags": {
+        "addr:city": "Albissola Marina",
+        "addr:postcode": "17012",
+        "addr:street": "Viale Faraggiana",
+        "email": "villafaraggiana@albezzanosrl.191.it",
+        "museum": "art",
+        "name": "Villa Faraggiana",
+        "phone": "+39 019 480622",
+        "tourism": "museum",
+        "website": "https://www.villafaraggiana.it/",
+        "wikidata": "Q4011980",
+        "wikipedia": "it:Villa Faraggiana"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3820653380,
+      "lat": 44.329225,
+      "lon": 8.4961384,
+      "tags": {
+        "addr:housenumber": "6",
+        "addr:street": "Via Gabriele D'Annunzio",
+        "fee": "no",
+        "name": "Casa museo Asger Jorn",
+        "opening_hours": "Tu,Th,Sa,Su 10:00-17:00",
+        "operator": "Comune di Albissola Marina",
+        "tourism": "museum",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3870833271,
+      "lat": 44.3092525,
+      "lon": 8.487288,
+      "tags": {
+        "addr:city": "Savona",
+        "addr:housenumber": "12r-14r",
+        "addr:postcode": "17100",
+        "addr:street": "Piazza Fabrizio De Andrè",
+        "fee": "yes",
+        "name": "All About Apple Museum",
+        "opening_hours": "Sa 09:30-12:30,14:30-17:30; Su 09:30-13:30",
+        "phone": "+39 019 9380100",
+        "tourism": "museum",
+        "website": "https://www.allaboutapple.com/",
+        "wheelchair": "yes",
+        "wikidata": "Q3867572"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3902149433,
+      "lat": 44.2695657,
+      "lon": 8.4356396,
+      "tags": {
+        "name": "Museo Archeologico Don Cesare Queirolo",
+        "opening_hours": "\"su appuntamento\"",
+        "source": "Regione Liguria",
+        "tourism": "museum",
+        "wikidata": "Q66054535"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3942483410,
+      "lat": 44.3475465,
+      "lon": 9.1566847,
+      "tags": {
+        "addr:city": "Camogli",
+        "addr:housenumber": "41",
+        "addr:postcode": "16032",
+        "addr:street": "Via Gio Bono Ferrari",
+        "amenity": "library",
+        "check_date": "2024-10-17",
+        "contact:email": "biblioteca@comune.camogli.ge.it",
+        "name": "Biblioteca civica Niccolò Cuneo",
+        "phone": "+39 0185 729048",
+        "website": "https://www.comune.camogli.ge.it/c010007/zf/index.php/servizi-aggiuntivi/index/index/idtesto/20008",
+        "wheelchair": "yes",
+        "wikidata": "Q112893599"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3942491058,
+      "lat": 44.347535,
+      "lon": 9.1567075,
+      "tags": {
+        "addr:city": "Camogli",
+        "addr:housenumber": "42",
+        "addr:postcode": "16032",
+        "addr:street": "Via Gio Bono Ferrari",
+        "check_date": "2024-10-17",
+        "name": "Museo Marinaro Gio Bono Ferrari",
+        "tourism": "museum",
+        "website": "https://www.museomarinaro.it/",
+        "wheelchair": "no",
+        "wikidata": "Q3868402",
+        "wikipedia": "it:Museo marinaro di Camogli"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3942501175,
+      "lat": 44.3475254,
+      "lon": 9.1566767,
+      "tags": {
+        "addr:city": "Camogli",
+        "addr:housenumber": "41",
+        "addr:postcode": "16032",
+        "addr:street": "Via Gio Bono Ferrari",
+        "name": "Sala archeologica",
+        "phone": "+39 0185 729048",
+        "tourism": "museum",
+        "website": "https://www.comune.camogli.ge.it/c010007/zf/index.php/musei-monumenti/index/dettaglio-museo/museo/6",
+        "wheelchair": "no",
+        "wikidata": "Q54873227"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3964854703,
+      "lat": 44.3085194,
+      "lon": 8.4838549,
+      "tags": {
+        "amenity": "theatre",
+        "check_date": "2025-12-26",
+        "email": "info@teatrosacco.com",
+        "facebook": "https://www.facebook.com/teatrosacco/",
+        "name": "Antico Teatro Sacco",
+        "operator": "Associazione S.A.C.C.O.",
+        "start_date": "1785",
+        "website": "https://www.teatrosacco.com/",
+        "wikidata": "Q3982124",
+        "wikipedia": "it:Teatro Sacco"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3994812962,
+      "lat": 44.337272,
+      "lon": 8.5119466,
+      "tags": {
+        "amenity": "theatre",
+        "level": "2",
+        "name": "Auditorium",
+        "toilets:wheelchair": "yes",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4007074950,
+      "lat": 44.384224,
+      "lon": 9.0388597,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "6 rosso",
+        "addr:postcode": "16167",
+        "addr:street": "Via alla Chiesa Plebana",
+        "amenity": "cinema",
+        "name": "Cinema San Siro",
+        "screen": "1"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4073590024,
+      "lat": 44.4053398,
+      "lon": 8.9318984,
+      "tags": {
+        "addr:housenumber": "9",
+        "addr:street": "Vico di San Donato",
+        "alt_name": "Teatro della Tosse Sala Agorà",
+        "amenity": "theatre",
+        "name": "Teatro La Claque in Agorà"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4150629505,
+      "lat": 44.1597953,
+      "lon": 8.304281,
+      "tags": {
+        "addr:city": "Borgio Verezzi",
+        "addr:housenumber": "33",
+        "addr:street": "Via Giacomo Matteotti",
+        "amenity": "library",
+        "description": "Prestito libri e dvd. Servizi a pagamento: fotocopie, uso pc, internet, fax, scanner",
+        "name": "Biblioteca Civica di Borgio Verezzi",
+        "phone": "+39 019 612973",
+        "website": "https://www.comuneborgioverezzi.gov.it/?p=327",
+        "wikidata": "Q112893733"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4173481392,
+      "lat": 44.4348237,
+      "lon": 8.7668062,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "2",
+        "addr:postcode": "16157",
+        "addr:street": "Via della Benedicta",
+        "amenity": "library",
+        "internet_access": "yes",
+        "name": "Biblioteca Edoardo Firpo",
+        "phone": "+39 010 693333",
+        "website": "https://www.bibliotechedigenova.it/content/biblioteca-firpo",
+        "wheelchair": "yes",
+        "wikidata": "Q112893631"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4187189906,
+      "lat": 44.4309632,
+      "lon": 9.1822746,
+      "tags": {
+        "addr:city": "Gattorna",
+        "addr:housenumber": "4",
+        "addr:street": "Via Terzonasca",
+        "name": "La Mecca del Videogioco",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4201760687,
+      "lat": 44.1765977,
+      "lon": 8.3274839,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro Andrea Aycardi"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4208087610,
+      "lat": 44.5634232,
+      "lon": 9.2182267,
+      "tags": {
+        "name": "Museo del lupo",
+        "tourism": "museum",
+        "website": "https://www.parcoantola.it/dettaglio.php?id=32549"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4208100297,
+      "lat": 44.5241651,
+      "lon": 9.2478443,
+      "tags": {
+        "name": "Museo del contadino",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4242579508,
+      "lat": 44.2211527,
+      "lon": 9.5205479,
+      "tags": {
+        "addr:street": "Via della Libertà",
+        "amenity": "library",
+        "name": "Biblioteca & Information",
+        "toilets:wheelchair": "no",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4261436118,
+      "lat": 44.1703575,
+      "lon": 9.6127839,
+      "tags": {
+        "amenity": "cinema",
+        "check_date": "2025-07-30",
+        "name": "Cinema Roma"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4272285252,
+      "lat": 44.3499842,
+      "lon": 9.1544073,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Salone parrocchiale S. Maria Assunta",
+        "old_name": "Casa del popolo Bendetto 16"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4333450727,
+      "lat": 44.3277305,
+      "lon": 8.5019037,
+      "tags": {
+        "amenity": "library",
+        "check_date": "2025-01-04",
+        "name": "Sala di Lettura Comunale",
+        "phone": "+39 019 4002110"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4339050757,
+      "lat": 44.4024954,
+      "lon": 8.6185223,
+      "tags": {
+        "contact:phone": "+39 333 1547258",
+        "description": "Per poterla visitare contattare il Sig. Stefano, 3331547258",
+        "description:en": "By appointment please contact miste Stefano see contact:phone",
+        "fee": "no",
+        "name": "Casa contadina",
+        "name:en": "Country house Museum",
+        "opening_hours": "\"by appointment\"",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4378844942,
+      "lat": 44.4278758,
+      "lon": 8.8061812,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:postcode": "16156",
+        "addr:street": "Viale Giorgio Modugno",
+        "name": "Museo storico Batteria Giorgio Mameli",
+        "opening_hours": "Sa,Su 14:00-18:00",
+        "operator": "Coordinamento Ligure Studi Militari",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4405712552,
+      "lat": 44.4087333,
+      "lon": 8.9339627,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "15",
+        "addr:street": "Via Cassa di Risparmio",
+        "name": "Collezioni di Arte Banca Carige",
+        "ref": "19",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4405714625,
+      "lat": 44.4078451,
+      "lon": 8.9323805,
+      "tags": {
+        "addr:street": "Via Tommaso Reggio 34 r",
+        "name": "Museo del Jazz Gianni Dagnino - Italian Jazz Institute",
+        "ref": "30",
+        "source": "Regione Liguria",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4440345732,
+      "lat": 43.9167453,
+      "lon": 7.8476698,
+      "tags": {
+        "name": "museo frantoio panizzi",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358015,
+      "lat": 44.2741608,
+      "lon": 8.4392268,
+      "tags": {
+        "name": "Collezione Eredi Arturo Martini",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358016,
+      "lat": 44.1334249,
+      "lon": 8.2171638,
+      "tags": {
+        "description": "apertura su richiesta",
+        "name": "Collezione del Centro Internazionale di Sperimentazioni Artistiche Marie Louise Jeanneret",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358021,
+      "lat": 43.8562953,
+      "lon": 7.8515677,
+      "tags": {
+        "fee": "yes",
+        "name": "Museo Convento dei Domenicani di Taggia",
+        "tourism": "museum",
+        "wikimedia_commons": "Category:San Domenico (Taggia) - Convent interior"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358022,
+      "lat": 43.9271128,
+      "lon": 8.1151142,
+      "tags": {
+        "fee": "yes",
+        "name": "Museo Etnografico del Ponente ligure",
+        "opening_hours": "Jun-Sep Tu-Su 09:00-13:00,16:00-20:00; Oct-May Tu-Su 10:00-13:00,15:00-17:00",
+        "tourism": "museum",
+        "wheelchair": "no",
+        "wikidata": "Q55377717"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358023,
+      "lat": 43.8443078,
+      "lon": 7.8550578,
+      "tags": {
+        "name": "Museo Ferroviario Ligure di Arma di Taggia",
+        "tourism": "museum",
+        "wikidata": "Q55348844"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358024,
+      "lat": 44.1625957,
+      "lon": 8.3042196,
+      "tags": {
+        "name": "Museo Grotte Valdemino",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358025,
+      "lat": 43.9684706,
+      "lon": 7.9639738,
+      "tags": {
+        "name": "Museo Lazzaro Acquarone",
+        "tourism": "museum",
+        "wikidata": "Q113044413"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358026,
+      "lat": 43.7886776,
+      "lon": 7.6153667,
+      "tags": {
+        "name": "Museo Radio e Trasmissioni A.N.G.E.T. - Raccolta Cartoline d'epoca del mondo",
+        "tourism": "museum",
+        "wikidata": "Q55377766"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358027,
+      "lat": 43.9237158,
+      "lon": 8.0660532,
+      "tags": {
+        "name": "Museo Suor Leonarda Ranixe",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358028,
+      "lat": 44.2031331,
+      "lon": 8.2964257,
+      "tags": {
+        "name": "Museo d'Arte Contemporanea Remo Pastori",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358029,
+      "lat": 43.8804029,
+      "lon": 7.6597979,
+      "tags": {
+        "name": "Museo del Castello della Lucertola",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358030,
+      "lat": 43.9035488,
+      "lon": 7.7193705,
+      "tags": {
+        "name": "Museo del Sorriso",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358031,
+      "lat": 44.0767668,
+      "lon": 7.8314264,
+      "tags": {
+        "name": "Museo delle erbe",
+        "tourism": "museum",
+        "wikidata": "Q55348740"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358032,
+      "lat": 44.0307137,
+      "lon": 7.896009,
+      "tags": {
+        "name": "Museo del Territorio: I Maestri della Pietra",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358033,
+      "lat": 44.0202961,
+      "lon": 7.8721361,
+      "tags": {
+        "name": "Museo del Territorio: Il Bosco Naturale",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358034,
+      "lat": 44.0850103,
+      "lon": 7.7846739,
+      "tags": {
+        "name": "Museo del Territorio: L'Alta Valle tra contese di frontiera e quotidianità della vita nelle Malghe",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358035,
+      "lat": 44.0462395,
+      "lon": 7.9152034,
+      "tags": {
+        "addr:city": "Pieve di Teco",
+        "addr:postcode": "18026",
+        "addr:street": "Via Madonna della Ripa",
+        "email": "museodiocesano@diocesidialbengaimperia.it",
+        "museum": "art",
+        "name": "Museo Diocesano Sezione dell’Alta Valle Arroscia",
+        "opening_hours": "Sa, Su 09:30-13:00, 14:30-18:30; Mo-Fr off",
+        "operator": "Diocesi di Albenga",
+        "operator:type": "religious",
+        "phone": "+39 0182 579310",
+        "source": "https://www.finestresullarte.info/musei/riapre-museo-diocesano-oratorio-della-ripa-di-pieve-di-teco",
+        "tourism": "museum",
+        "website": "https://www.formaelucis.com/museo-diocesano/onde-barocche-biglietti-orari-albenga-pieve-di-tec",
+        "wikidata": "Q55672092"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358036,
+      "lat": 44.077862,
+      "lon": 8.1057669,
+      "tags": {
+        "name": "Museo dell'Olivo e della civiltà contadina",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358037,
+      "lat": 43.7893213,
+      "lon": 7.6466975,
+      "tags": {
+        "contact:website": "http://www.museodellacanzone.it/",
+        "image": "https://commons.m.wikimedia.org/wiki/File:Locomotive_%22Cirilla%22_in_the_Erio_restaurant.jpg#mw-jump-to-license",
+        "name": "Museo della Canzone e della Riproduzione Sonora",
+        "tourism": "museum",
+        "wikimedia_commons": "Category:Museo della Canzone e della Riproduzione Sonora"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358038,
+      "lat": 44.2265911,
+      "lon": 8.2636213,
+      "tags": {
+        "name": "Museo della Civiltà Contadina",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358039,
+      "lat": 43.927217,
+      "lon": 7.9214686,
+      "tags": {
+        "name": "Museo delle Cose Dimenticate",
+        "phone": "+39 0183 282396",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358040,
+      "lat": 43.8125224,
+      "lon": 7.7294534,
+      "tags": {
+        "contact:mobile": "+39 320 0375820",
+        "contact:phone": "+39 0184 670398",
+        "name": "Pinacoteca Rambaldi",
+        "opening_hours": "Fr 09:00-12:00; Sa 09:00-12:00,15:00-18:00; Su 15:00-18:00",
+        "tourism": "museum",
+        "website": "http://pinacotecarambaldi.it/",
+        "wikidata": "Q16337920"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358041,
+      "lat": 43.9339418,
+      "lon": 8.0002328,
+      "tags": {
+        "name": "Raccolta etnografica di Bestagno",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442358042,
+      "lat": 43.822647,
+      "lon": 7.7859836,
+      "tags": {
+        "name": "Raccolte di Fisica del Liceo G.D. Cassini",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442370138,
+      "lat": 44.3043789,
+      "lon": 8.4846551,
+      "tags": {
+        "name": "Collezione d'arte Sandro Pertini",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442370139,
+      "lat": 44.5466247,
+      "lon": 8.977567,
+      "tags": {
+        "name": "Museo Civico Archeologico di Savignone",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442370140,
+      "lat": 44.5855968,
+      "lon": 9.0222995,
+      "tags": {
+        "addr:street": "Via alla Chiesa",
+        "contact:phone": "+39 347 8436982",
+        "name": "Museo Paleontologico",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442370141,
+      "lat": 44.5623764,
+      "lon": 8.6701831,
+      "tags": {
+        "email": "segreteria@museopassatempo.it",
+        "name": "Museo Passatempo - Moto Cicli Oggetti del 900 Collezione privata Minetti & Pizzorno",
+        "phone": "+39 3428322843",
+        "tourism": "museum",
+        "website": "https://www.museopassatempo.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442370142,
+      "lat": 44.3044768,
+      "lon": 8.484462,
+      "tags": {
+        "name": "Museo Renata Cuneo",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442370143,
+      "lat": 44.3050401,
+      "lon": 8.484855,
+      "tags": {
+        "name": "Museo Storico Archeologico di Savona",
+        "tourism": "museum",
+        "wikidata": "Q16580536"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442370144,
+      "lat": 44.5779338,
+      "lon": 8.9406895,
+      "tags": {
+        "name": "Museo del Territorio dell'Alta Valle Scrivia",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442370145,
+      "lat": 44.3073339,
+      "lon": 8.4821413,
+      "tags": {
+        "name": "Museo del Tesoro della Cattedrale",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442381208,
+      "lat": 44.4085081,
+      "lon": 9.2364536,
+      "tags": {
+        "name": "Ecomuseo dell'Ardesia - La Via della Pietra Nera",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442381209,
+      "lat": 44.4409489,
+      "lon": 9.2509529,
+      "tags": {
+        "name": "Monteghirfo: il museo etnografico",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442381210,
+      "lat": 44.2777852,
+      "lon": 9.7446764,
+      "tags": {
+        "name": "Mostra Permanente Storico Archeologica",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442381211,
+      "lat": 44.4499394,
+      "lon": 9.2605219,
+      "tags": {
+        "addr:housenumber": "16",
+        "addr:street": "Località Acereto",
+        "name": "Museo Casa Giannini o Museo dell'Emigrante",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442381212,
+      "lat": 44.4072913,
+      "lon": 9.5096418,
+      "tags": {
+        "addr:city": "Varese Ligure",
+        "addr:postcode": "19028",
+        "addr:street": "Loc Costa, Cassego",
+        "name": "Museo Contadino",
+        "opening_hours": "\"by appointment\"",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442381213,
+      "lat": 44.2371629,
+      "lon": 9.7238056,
+      "tags": {
+        "name": "Museo Diocesano di Brugnato",
+        "tourism": "museum",
+        "wikidata": "Q3868263",
+        "wikipedia": "it:Museo diocesano (Brugnato)"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442381214,
+      "lat": 44.082391,
+      "lon": 10.0372562,
+      "tags": {
+        "loc_name": "Museo Etnografico della Colombara - Ex Frantoio",
+        "name": "Museo Etnografico di Ortonovo",
+        "tourism": "museum",
+        "wikidata": "Q55349996"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4442381215,
+      "lat": 44.2130068,
+      "lon": 9.8408789,
+      "tags": {
+        "name": "Pinacoteca David Beghé",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4468747322,
+      "lat": 44.4590946,
+      "lon": 8.9011277,
+      "tags": {
+        "addr:full": "Via Pasquale Pastorino 8",
+        "addr:postcode": "16162",
+        "amenity": "library",
+        "description": "A ottobre 2016 risultano 1237 volumi",
+        "indoor": "yes",
+        "name": "Biblioteca Adriano Vanzetti"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4468747324,
+      "lat": 44.4591878,
+      "lon": 8.9013514,
+      "tags": {
+        "indoor": "yes",
+        "name": "Museo della Montagna",
+        "operator": "Municipio V - Val Polcevera",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4481733823,
+      "lat": 44.2947887,
+      "lon": 8.4538138,
+      "tags": {
+        "amenity": "library",
+        "name": "U Pregin",
+        "office": "association",
+        "website": "https://www.upregin.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4523406529,
+      "lat": 44.4294607,
+      "lon": 8.8173016,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "11",
+        "addr:postcode": "16155",
+        "addr:street": "Viale Durazzo Pallavicini",
+        "email": "archligure@comune.genova.it",
+        "museum": "archaeological",
+        "name": "Museo Civico di Archeologia Ligure",
+        "opening_hours": "Mar 26-Oct 06: Tu-Fr 09:00-19:00; Sa,Su 10:00-19:30; Mo off; Oct 08-Mar 25: Tu-Fr 09:30-18:30; Sa,Su 09:30-18:30; Mo off",
+        "operator": "Comune di Genova",
+        "operator:type": "public",
+        "phone": "+39 010 6981048",
+        "tourism": "museum",
+        "website": "http://www.museidigenova.it/it/content/museo-di-archeologia",
+        "wikidata": "Q2644208",
+        "wikipedia": "it:Museo di archeologia ligure"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4542716189,
+      "lat": 44.093443,
+      "lon": 10.0071387,
+      "tags": {
+        "addr:street": "Via Carbonara",
+        "amenity": "theatre",
+        "name": "Teatro Tenda Molicciara",
+        "name:it": "Teatro Tenda Molicciara"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4587394431,
+      "lat": 44.2727924,
+      "lon": 9.3987767,
+      "tags": {
+        "addr:housenumber": "12",
+        "addr:street": "Via E. Fico",
+        "amenity": "cinema",
+        "name": "Cinema Ariston"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4622308193,
+      "lat": 44.3351856,
+      "lon": 9.2131687,
+      "tags": {
+        "amenity": "cinema",
+        "check_date": "2024-10-13",
+        "name": "Cinema Centrale"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4646798620,
+      "lat": 44.3443923,
+      "lon": 8.5002596,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro all'aperto",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4696352037,
+      "lat": 43.8259576,
+      "lon": 7.6937536,
+      "tags": {
+        "layer": "-1",
+        "name": "Collezione Fogliarini",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4726254230,
+      "lat": 44.350311,
+      "lon": 9.2295507,
+      "tags": {
+        "addr:city": "Rapallo",
+        "addr:housenumber": "6",
+        "addr:postcode": "16035",
+        "addr:street": "Via Canonico Gaetano Muzio",
+        "amenity": "cinema",
+        "name": "Cinema Augustus",
+        "phone": "+39 0185 61951"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4728186055,
+      "lat": 44.1671304,
+      "lon": 9.6135699,
+      "tags": {
+        "addr:housenumber": "1",
+        "addr:street": "Via San Nicolò",
+        "contact:phone": "+39 0187 817776",
+        "name": "Mostra Permanente della Cultura materiale",
+        "tourism": "museum",
+        "website": "http://www.levanto.com/1princip/mpcm.htm"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4740891173,
+      "lat": 44.048843,
+      "lon": 8.214647,
+      "tags": {
+        "addr:floor": "EG",
+        "addr:housenumber": "10",
+        "addr:street": "Via Archivolto del Teatro",
+        "amenity": "theatre",
+        "check_date": "2025-09-15",
+        "level": "0",
+        "name": "Teatro Ambra",
+        "toilets:wheelchair": "yes",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4797400407,
+      "lat": 44.4283015,
+      "lon": 9.1891111,
+      "tags": {
+        "leisure": "stadium",
+        "name": "Campo dei Bassi",
+        "sport": "soccer"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4869683752,
+      "lat": 44.3049409,
+      "lon": 8.4706116,
+      "tags": {
+        "addr:city": "Savona",
+        "addr:housenumber": "32r",
+        "addr:postcode": "17100",
+        "addr:street": "Via Luigi Pirandello",
+        "amenity": "library",
+        "email": "dlfsavona@dlf.it",
+        "fax": "+39 019 8486148",
+        "name": "Biblioteca del Gruppo Speleologico Savonese",
+        "operator": "Dopolavoro Ferroviario",
+        "phone": "+39 019 853752"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4922612204,
+      "lat": 44.0782847,
+      "lon": 7.8060597,
+      "tags": {
+        "name": "Museo Storico Cartografico",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4923560703,
+      "lat": 44.4784381,
+      "lon": 8.4918986,
+      "tags": {
+        "addr:housenumber": "33",
+        "addr:street": "Via dei Perrando",
+        "name": "Nuovo Polo Museale Perrando",
+        "operator": "Associazione Amici del Sassell",
+        "phone": "+39 019 724100",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5012362667,
+      "lat": 43.7776679,
+      "lon": 7.6696503,
+      "tags": {
+        "addr:housenumber": "4",
+        "addr:street": "Via Sant'Ampelio",
+        "amenity": "cinema",
+        "name": "Zeni"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5078615379,
+      "lat": 44.3877792,
+      "lon": 9.0156196,
+      "tags": {
+        "amenity": "cinema",
+        "name": "Cinema Teatro San Pietro"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5084798091,
+      "lat": 44.2375243,
+      "lon": 9.7248061,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5105241188,
+      "lat": 44.3112278,
+      "lon": 8.4769215,
+      "tags": {
+        "amenity": "theatre",
+        "check_date": "2025-04-03",
+        "name": "Cinema Teatro Don Bosco"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5115952356,
+      "lat": 44.4345479,
+      "lon": 8.9609036,
+      "tags": {
+        "name": "Museo dell'Acqua e del Gas",
+        "opening_hours": "\"by appointment\"",
+        "tourism": "museum",
+        "wikidata": "Q3868006",
+        "wikipedia": "it:Museo dell'acqua e del gas"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5138613356,
+      "lat": 44.412805,
+      "lon": 8.9275168,
+      "tags": {
+        "addr:housenumber": "59 rosso",
+        "addr:street": "Via del Campo",
+        "amenity": "library",
+        "name": "Sala di Lettura Luigi Tenco"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5149826096,
+      "lat": 44.4337191,
+      "lon": 9.1419451,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5155327717,
+      "lat": 44.3157653,
+      "lon": 9.3235798,
+      "tags": {
+        "addr:housenumber": "7",
+        "addr:street": "Piazza Nostra Signora dell'Orto",
+        "fee": "yes",
+        "name": "Museo Diocesano di Arte Sacra",
+        "opening_hours": "Th,Fr 10:00-13:00,15:00-18:00; Sa 10:00-18:00",
+        "tourism": "museum",
+        "wikidata": "Q3868309"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5155328475,
+      "lat": 44.3180029,
+      "lon": 9.3251221,
+      "tags": {
+        "addr:housenumber": "15",
+        "addr:street": "Via Ravaschieri",
+        "name": "Museo Storico del Risorgimento",
+        "tourism": "museum",
+        "wikidata": "Q3868474"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5312474144,
+      "lat": 43.9494099,
+      "lon": 8.141065,
+      "tags": {
+        "fee": "no",
+        "name": "Museo mineralogico Luciano Dabroi",
+        "opening_hours": "Sa-Su 18:00-23:00",
+        "phone": "+39 328 3815744",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5387349531,
+      "lat": 44.3997808,
+      "lon": 8.2740033,
+      "tags": {
+        "addr:city": "Cairo Montenotte",
+        "addr:housenumber": "29",
+        "addr:postcode": "17014",
+        "addr:street": "Piazza della Vittoria",
+        "amenity": "theatre",
+        "name": "Cinema Teatro Comunale Osvaldo Chebello",
+        "website": "https://www.cinemacairomontenotte.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5646318317,
+      "lat": 44.5563989,
+      "lon": 9.119575,
+      "tags": {
+        "name": "Sezione Etnologica \"La stalla\"",
+        "operator": "Museo Storico Alta Valle Scrivia",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5687421135,
+      "lat": 43.7999798,
+      "lon": 7.7234477,
+      "tags": {
+        "amenity": "theatre",
+        "theatre:type": "amphi"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5696113591,
+      "lat": 43.9494577,
+      "lon": 8.1410153,
+      "tags": {
+        "check_date": "2025-06-25",
+        "name": "Contemporary Culture Center",
+        "opening_hours": "Sa-Su 18:00-23:00",
+        "tourism": "museum",
+        "website": "https://palazzotagliaferro.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5711972637,
+      "lat": 44.4002783,
+      "lon": 8.9378358,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro Carignano"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5731970720,
+      "lat": 44.511938,
+      "lon": 8.9398938,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Edoardo Firpo"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5747829963,
+      "lat": 44.4425228,
+      "lon": 8.847886,
+      "tags": {
+        "name": "Museo speleologico del Monte Gazzo",
+        "tourism": "museum",
+        "wikidata": "Q3868462",
+        "wikipedia": "it:Museo speleologico del Monte Gazzo"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5785012049,
+      "lat": 44.3965346,
+      "lon": 8.9895764,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5797903826,
+      "lat": 44.0885917,
+      "lon": 8.2167247,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Piccolo Teatro Caraibi",
+        "operator": "Marina Srl",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5959457075,
+      "lat": 44.183006,
+      "lon": 9.5839271,
+      "tags": {
+        "amenity": "cinema",
+        "check_date:opening_hours": "2024-01-13",
+        "name": "Arena La Bussola",
+        "opening_hours:signed": "no",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5988337544,
+      "lat": 44.3112598,
+      "lon": 8.478561,
+      "tags": {
+        "addr:housenumber": "10r",
+        "addr:street": "Via Mentana",
+        "amenity": "theatre",
+        "name": "La corte dei Sogni",
+        "operator": "Nati da un Sogno Associazione Culturale",
+        "phone": "+39 338 2282096",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6203379270,
+      "lat": 44.5035636,
+      "lon": 8.709792,
+      "tags": {
+        "name": "Museo civico Andrea Tubino",
+        "tourism": "museum",
+        "wikidata": "Q55348552"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6283613984,
+      "lat": 44.3104306,
+      "lon": 8.4834078,
+      "tags": {
+        "addr:housenumber": "2",
+        "addr:street": "Via Famagosta",
+        "amenity": "theatre",
+        "name": "Teatro del Pozzetto"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6356589641,
+      "lat": 44.0055713,
+      "lon": 8.0278063,
+      "tags": {
+        "name": "Museo Rurale e degli Antichi Mestieri",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6394700960,
+      "lat": 44.4111753,
+      "lon": 8.9319512,
+      "tags": {
+        "addr:housenumber": "2",
+        "addr:street": "Vico Boccanegra",
+        "amenity": "theatre",
+        "check_date": "2025-10-03",
+        "name": "StradaNuova Teatro Auditorium",
+        "website": "https://teatrostradanuova.it/",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6424873316,
+      "lat": 43.7914177,
+      "lon": 7.6019269,
+      "tags": {
+        "addr:city": "Ventimiglia",
+        "addr:housenumber": "10",
+        "addr:postcode": "18039",
+        "addr:street": "Via Giuseppe Garibaldi",
+        "amenity": "library",
+        "name": "Biblioteca Civica Aprosiana",
+        "operator": "Comune di Ventimiglia",
+        "ref:isil": "IT-IM0038",
+        "website": "https://www.comune.ventimiglia.it/servizi/Menu/dinamica.aspx?idSezione=616&idArea=16612&idCat=18983&ID=18983&TipoElemento=categoria",
+        "wikidata": "Q3639567"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6597416060,
+      "lat": 43.8140052,
+      "lon": 7.7718982,
+      "tags": {
+        "name": "Museo della Musica",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6787751288,
+      "lat": 44.2835824,
+      "lon": 8.4290162,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro di Valleggia"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6789843322,
+      "lat": 44.3977308,
+      "lon": 8.2751191,
+      "tags": {
+        "addr:city": "Cairo Montenotte",
+        "addr:housenumber": "28",
+        "addr:postcode": "17014",
+        "addr:street": "Via Ospedale Luigi Baccino",
+        "name": "Ferrania Film Museum",
+        "opening_hours": "Th-Sa 09:00-12:00,14:30-18:00",
+        "tourism": "museum",
+        "wikipedia": "it:Ferrania Film Museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6796657257,
+      "lat": 44.1153018,
+      "lon": 9.8459415,
+      "tags": {
+        "amenity": "cinema",
+        "name": "Megacine",
+        "website": "https://www.megacine.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6835420367,
+      "lat": 44.3605568,
+      "lon": 8.5741089,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Cine Teatro Don Bosco",
+        "operator": "Compagnia Teatrale Don Bosco",
+        "ref:vatin": "IT01554390094",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6836722821,
+      "lat": 44.3290441,
+      "lon": 8.5036211,
+      "tags": {
+        "amenity": "library",
+        "check_date": "2025-01-04",
+        "name": "Biblioteca dei Ragazzi",
+        "operator": "Comune di Albissola Marina"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6845456000,
+      "lat": 44.561925,
+      "lon": 8.6706403,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7072399579,
+      "lat": 44.0474533,
+      "lon": 8.2144975,
+      "tags": {
+        "name": "Museo storico Croce Bianca",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7072414725,
+      "lat": 44.0502725,
+      "lon": 8.2114937,
+      "tags": {
+        "addr:city": "Albenga",
+        "contact:housenumber": "7",
+        "contact:postcode": "17031",
+        "contact:street": "Via Goffredo Mameli",
+        "fee": "no",
+        "name": "Museo della civiltà dell'olivo",
+        "opening_hours": "Mo-Sa 08:30-12:30,15:00-18:00; PH off",
+        "reservation": "no",
+        "tourism": "museum",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7072671098,
+      "lat": 44.049615,
+      "lon": 8.2129467,
+      "tags": {
+        "fee": "yes",
+        "name": "Museo diocesano",
+        "tourism": "museum",
+        "wikidata": "Q3868253",
+        "wikipedia": "it:Museo diocesano (Albenga)"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7110764836,
+      "lat": 44.4828827,
+      "lon": 8.9619872,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Giuseppe Di Vittorio"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7154494032,
+      "lat": 44.507491,
+      "lon": 8.8915854,
+      "tags": {
+        "contact:city": "Campomorone",
+        "contact:housenumber": "14 rosso",
+        "contact:postcode": "16014",
+        "contact:street": "Via Primo Cavallieri",
+        "museum": "history",
+        "name": "Museo storico della Croce Rossa",
+        "operator": "Croce Rossa Italiana",
+        "operator:wikidata": "Q913903",
+        "operator:wikipedia": "it:Croce Rossa Italiana",
+        "tourism": "museum",
+        "website": "https://www.cricampomorone.org/wpcri/?page_id=81",
+        "wikidata": "Q55348183"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7603243540,
+      "lat": 43.8177603,
+      "lon": 7.7758289,
+      "tags": {
+        "addr:city": "Sanremo",
+        "addr:housenumber": "2",
+        "addr:street": "Piazza Alberto Nota",
+        "fee": "yes",
+        "museum": "history",
+        "museum_type": "municipal",
+        "name": "Museo Civico di Sanremo",
+        "operator": "Comune di Sanremo",
+        "operator:type": "government",
+        "tourism": "museum",
+        "wikidata": "Q54855312"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8099813917,
+      "lat": 44.3624953,
+      "lon": 9.1419804,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8235947896,
+      "lat": 44.3548502,
+      "lon": 8.5668713,
+      "tags": {
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8284372176,
+      "lat": 43.8172514,
+      "lon": 7.7768414,
+      "tags": {
+        "addr:city": "Sanremo",
+        "addr:postcode": "18038",
+        "addr:street": "Via Giacomo Matteotti",
+        "museum": "art",
+        "name": "Museo della Canzone Italiana",
+        "operator": "Comune di Sanremo",
+        "operator:type": "public",
+        "source": "https://www.lastampa.it/imperia-sanremo/2020/12/30/news/sanremo-il-museo-della-canzone-italiana-a-palazzo-borea-d-olmo-1.39715449",
+        "start_date": "2021-03",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8360343517,
+      "lat": 44.41152,
+      "lon": 8.9565697,
+      "tags": {
+        "addr:housenumber": "35",
+        "addr:street": "Via Ayroli",
+        "amenity": "theatre",
+        "check_date": "2025-12-07",
+        "name": "Teatro Von Pauer",
+        "wikidata": "Q3982207",
+        "wikipedia": "it:Teatro Von Pauer"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8406157941,
+      "lat": 44.4157514,
+      "lon": 8.9220513,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "1",
+        "addr:postcode": "16126",
+        "addr:street": "Piazza della Commenda",
+        "description": "Il MEI racconta l’emigrazione italiana dall’Unità d’Italia al Novecento.",
+        "indoor": "yes",
+        "museum": "ethnography",
+        "name": "Museo nazionale dell’emigrazione italiana",
+        "short_name": "MEI",
+        "source": "https://www.eventbrite.com/e/biglietti-inaugurazione-mei-331723442747",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8437126959,
+      "lat": 43.9087445,
+      "lon": 8.0810973,
+      "tags": {
+        "addr:housenumber": "35",
+        "addr:street": "Via Cairoli",
+        "amenity": "cinema",
+        "name": "Cinema Teatro Politeama Dianese",
+        "screen": "1"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8444908468,
+      "lat": 43.9072111,
+      "lon": 8.0802331,
+      "tags": {
+        "addr:city": "Diano Marina",
+        "addr:housenumber": "60",
+        "addr:postcode": "18013",
+        "addr:street": "Corso Giuseppe Garibaldi",
+        "air_conditioning": "yes",
+        "amenity": "library",
+        "internet_access": "wlan",
+        "internet_access:fee": "no",
+        "name": "Biblioteca Civica A.S. Novaro"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8454130133,
+      "lat": 43.907232,
+      "lon": 8.0801782,
+      "tags": {
+        "addr:city": "Diano Marina",
+        "addr:housenumber": "60",
+        "addr:postcode": "18013",
+        "addr:street": "Corso Giuseppe Garibaldi",
+        "check_date": "2025-11-12",
+        "name": "Museo Civico Archeologico di Diano Marina",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8485609073,
+      "lat": 43.9086929,
+      "lon": 8.0828857,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Anfiteatro",
+        "theatre:type": "amphi"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8936350331,
+      "lat": 43.9329951,
+      "lon": 7.6636618,
+      "tags": {
+        "addr:city": "Pigna",
+        "addr:postcode": "18037",
+        "addr:street": "Via Piazza Castello",
+        "email": "iatpigna@gmail.com",
+        "museum": "ethnography",
+        "name": "Museo del Cibo dell’Alta Val Nervia",
+        "operator": "Comune di Pigna",
+        "operator:type": "public",
+        "source": "https://www.sanremonews.it/2021/07/20/leggi-notizia/argomenti/altre-notizie/articolo/pigna-lavanda-cibo-e-vita-contadina-sabato-linaugurazione-del-nuovo-museo.html",
+        "start_date": "2021-07-24",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8975491182,
+      "lat": 44.3758209,
+      "lon": 8.3015736,
+      "tags": {
+        "amenity": "theatre",
+        "theatre:type": "amphi"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9182023055,
+      "lat": 44.407573,
+      "lon": 8.9326765,
+      "tags": {
+        "name": "Casa Luzzati",
+        "tourism": "museum",
+        "website": "https://casaluzzati.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9209500242,
+      "lat": 44.4283818,
+      "lon": 8.7651606,
+      "tags": {
+        "description": "Il mortaio",
+        "museum": "local",
+        "name": "Parco del Basilico di Pra'",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9240361702,
+      "lat": 43.9574562,
+      "lon": 7.9946844,
+      "tags": {
+        "addr:city": "Chiusanico",
+        "addr:postcode": "18027",
+        "addr:street": "SS28",
+        "description": "La collezione di lattine di olio della famiglia Guatelli di Imperia è unica e originale: seimila pezzi raccontano la storia del boom dell'industria olearia imperiese nel mondo tra metà '800 e metà '900.",
+        "museum": "local",
+        "name": "Collezione Guatelli",
+        "opening_hours": "\"by appointment\"",
+        "operator": "Associazione Culturale Guatelli",
+        "operator:type": "private",
+        "phone": "+39 375 5124430",
+        "source": "https://video.repubblica.it/edizione/genova/a-chiusanico-imperia-il-museo-delle-lattine-d-olio-che-ha-affascinato-francis-ford-coppola/400985?video",
+        "tourism": "museum",
+        "website": "https://www.collezioneguatelli.com/collezione-guatelli"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9314464667,
+      "lat": 44.4087047,
+      "lon": 8.9235007,
+      "tags": {
+        "check_date": "2025-09-06",
+        "fee": "yes",
+        "name": "FantaCinema",
+        "operator": "Associazione \"Rescue Cinema\"",
+        "phone": "+39 339 4637510",
+        "tourism": "museum",
+        "website": "https://www.museointernazionaledelcinema.it/",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9366047744,
+      "lat": 44.5067732,
+      "lon": 8.8926307,
+      "tags": {
+        "addr:city": "Campomorone",
+        "addr:postcode": "16014",
+        "addr:street": "Via Antonio Gavino",
+        "museum": "children",
+        "name": "Museo delle Marionette",
+        "operator": "Comune di Campomorone",
+        "operator:type": "public",
+        "phone": "+39 010 7224312",
+        "tourism": "museum",
+        "website": "https://www.comune.campomorone.ge.it/index.php?option=com_content&view=article&id=229&Itemid=150"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9366051767,
+      "lat": 44.506727,
+      "lon": 8.8927269,
+      "tags": {
+        "addr:city": "Campomorone",
+        "addr:postcode": "16014",
+        "addr:street": "Via Antonio Gavino",
+        "fee": "no",
+        "museum": "nature",
+        "name": "Museo di Paleontologia e Mineralogia",
+        "opening_hours": "Mo-Fr 09:00-12:00; Tu, Th 14:30-17:30; Sa, Su, PH off",
+        "operator": "Comune di Campomorone",
+        "operator:type": "public",
+        "phone": "+39 010 7224314",
+        "tourism": "museum",
+        "website": "https://www.comune.campomorone.ge.it/index.php?option=com_content&view=article&id=229&Itemid=150"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9385434771,
+      "lat": 44.3977298,
+      "lon": 8.2750895,
+      "tags": {
+        "addr:city": "Cairo Montenotte",
+        "addr:housenumber": "30",
+        "addr:postcode": "17014",
+        "addr:street": "Via Ospedale Luigi Baccino",
+        "amenity": "library",
+        "email": "biblioteca@comunecairo.it",
+        "name": "Biblioteca Civica \"F.C. Rossi\"",
+        "opening_hours": "Mo-Sa 09:00-12:00,14:30-18:00",
+        "phone": "+39 019 50707310",
+        "ref:isil": "IT-SV0013"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9673742217,
+      "lat": 44.4111311,
+      "lon": 8.9320479,
+      "tags": {
+        "addr:street": "Via Giuseppe Garibaldi",
+        "fee": "yes",
+        "name": "Musei di",
+        "name:en": "Strada Nuova Musems",
+        "name:it": "Musei di Strada Nuova",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9678292366,
+      "lat": 44.160097,
+      "lon": 9.6640222,
+      "tags": {
+        "access": "destination",
+        "amenity": "library",
+        "name": "Soviore Cinque Terre"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9686520152,
+      "lat": 44.4590514,
+      "lon": 8.9012702,
+      "tags": {
+        "indoor": "yes",
+        "name": "Casa della Resistenza",
+        "operator": "Municipio V Valpolcevera",
+        "tourism": "museum",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9695510050,
+      "lat": 44.1121211,
+      "lon": 9.9628988,
+      "tags": {
+        "amenity": "cinema",
+        "name": "Cinema Italia"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9770004662,
+      "lat": 44.1116165,
+      "lon": 9.962905,
+      "tags": {
+        "addr:city": "Sarzana",
+        "addr:postcode": "19038",
+        "addr:street": "Viale Giuseppe Mazzini",
+        "amenity": "theatre",
+        "name": "Teatro degli Impavidi",
+        "website": "https://www.teatroimpavidisarzana.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9840289660,
+      "lat": 44.4162878,
+      "lon": 8.8879003,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "15",
+        "addr:postcode": "16151",
+        "addr:street": "Via Carlo Rolando",
+        "amenity": "cinema",
+        "name": "Club Amici del Cinema",
+        "phone": "+39 010 413838"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9842697956,
+      "lat": 44.4221382,
+      "lon": 8.9183352,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9853869035,
+      "lat": 43.861804,
+      "lon": 7.8496698,
+      "tags": {
+        "amenity": "theatre",
+        "theatre:type": "amphi"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9855217476,
+      "lat": 43.8752845,
+      "lon": 8.0142666,
+      "tags": {
+        "name": "Museo del presepe e pinacoteca",
+        "tourism": "museum",
+        "wikidata": "Q3867966",
+        "wikipedia": "it:Museo del presepe e pinacoteca civica di Imperia"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9906033215,
+      "lat": 44.5477788,
+      "lon": 9.4509403,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10058394764,
+      "lat": 44.3367126,
+      "lon": 8.511658,
+      "tags": {
+        "amenity": "library",
+        "contact:facebook": "https://www.facebook.com/bibliotecadeiragazzidellealbisole/",
+        "email": "cdgalbisole@gmail.com",
+        "level": "1",
+        "name": "Biblioteca dei Ragazzi Pupi Rolandi",
+        "phone": "+39 339 439 6698",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10111544755,
+      "lat": 44.0027378,
+      "lon": 8.1698446,
+      "tags": {
+        "amenity": "library",
+        "email": "biblioteca@comune.alassio.sv.it",
+        "name": "Biblioteca Civica “Renzo Deaglio”",
+        "short_name": "La Biblioteca sul mare",
+        "website": "https://liguria.on-line.it/opac/article/il-sistema-bibliotecario-urbano-della-citta-di-alassio/chi_siamo?sysb=LI3AL"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10115037101,
+      "lat": 44.3943324,
+      "lon": 8.99468,
+      "tags": {
+        "operator": "Museo Garibaldino",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10143208834,
+      "lat": 44.4539976,
+      "lon": 8.9785901,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Saffi",
+        "website": "https://www.bibliotechedigenova.it/saffi"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10207171899,
+      "lat": 43.8375713,
+      "lon": 7.8819188,
+      "tags": {
+        "addr:housenumber": "15",
+        "addr:street": "Via Nino Bixio",
+        "museum": "history",
+        "name": "SEM Spazio Espositivo Multimediale",
+        "opening_hours": "Mo-Sa 09:30-12:30; PH closed; Tu,Th 16:30-19:00",
+        "operator": "Comune di Riva Ligure",
+        "operator:type": "public",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10276049709,
+      "lat": 44.4279883,
+      "lon": 8.7488768,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "9",
+        "addr:postcode": "16158",
+        "addr:street": "Piazza Bernardo e Giovanni Odicini",
+        "amenity": "theatre",
+        "check_date": "2025-11-04",
+        "name": "Teatro del Ponente",
+        "website": "https://teatrodellatosse.it/teatro-del-ponente/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10304140976,
+      "lat": 44.4101537,
+      "lon": 8.9267091,
+      "tags": {
+        "addr:housenumber": "4",
+        "addr:street": "Ponte degli Spìnola",
+        "check_date": "2023-06-21",
+        "fee": "yes",
+        "name": "Città dei Bambini e dei Ragazzi",
+        "tourism": "museum",
+        "website": "https://www.cittadeibambini.net/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10581556324,
+      "lat": 44.4855838,
+      "lon": 8.9013961,
+      "tags": {
+        "amenity": "theatre",
+        "check_date": "2025-04-25",
+        "indoor": "yes",
+        "name": "Teatro Beppe De Ferrari",
+        "operator": "Parrocchia dei Santi Quirico e Giulitta"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10608561053,
+      "lat": 44.1767078,
+      "lon": 8.2685872,
+      "tags": {
+        "addr:city": "Tovo San Giacomo",
+        "addr:housenumber": "2",
+        "addr:postcode": "17020",
+        "addr:street": "Via Com. Cavigli",
+        "amenity": "library",
+        "internet_access": "yes",
+        "internet_access:fee": "no",
+        "name": "Biblioteca Civica \"Mario Borsalino\"",
+        "wikidata": "Q112893748"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10610414452,
+      "lat": 44.0482236,
+      "lon": 8.2133562,
+      "tags": {
+        "level": "1",
+        "name": "Magiche Trasparenze",
+        "operator": "Fondazione Gian Maria Oddi",
+        "tourism": "museum",
+        "wheelchair": "yes",
+        "wikidata": "Q54855377"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10678192329,
+      "lat": 44.4061988,
+      "lon": 8.941333,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:postcode": "16121",
+        "addr:street": "Via della Consolazione",
+        "name": "Museo Agostiniano di Arte Sacra",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10878626723,
+      "lat": 43.9604661,
+      "lon": 7.8667668,
+      "tags": {
+        "addr:city": "Carpasio",
+        "addr:housenumber": "3",
+        "addr:postcode": "18010",
+        "addr:street": "Via Castello",
+        "museum": "local",
+        "name": "Museo della Lavanda di Carpasio",
+        "source": "https://www.rivieratime.news/a-carpasio-riapre-il-museo-della-lavanda-profumi-e-oggetti-di-un-mondo-passato-ma-si-progetta-e-sogna-una-distilleria-per-il-mondo-che-sara/",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10884488232,
+      "lat": 44.2052729,
+      "lon": 8.413977,
+      "tags": {
+        "addr:city": "Noli",
+        "addr:housenumber": "14",
+        "addr:postcode": "17026",
+        "addr:street": "Via Pareto",
+        "amenity": "theatre",
+        "name": "Teatro Defferrari",
+        "operator": "LA FILARMONICA “AMICI DELL’ARTE” DI NOLI",
+        "website": "http://www.filarmonicaamicidellarte.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11034421972,
+      "lat": 44.4099957,
+      "lon": 8.9310964,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Kora"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11071787580,
+      "lat": 44.407962,
+      "lon": 8.9488558,
+      "tags": {
+        "addr:housenumber": "22r",
+        "addr:street": "Via Borgo Incrociati",
+        "amenity": "library",
+        "name": "Il Librificio del Borgo"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11097056554,
+      "lat": 44.4086812,
+      "lon": 8.9234619,
+      "tags": {
+        "fee": "yes",
+        "name": "Mostra delle Illusioni",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11101604256,
+      "lat": 44.4239374,
+      "lon": 8.8568079,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "10",
+        "addr:postcode": "16153",
+        "addr:street": "Via Mario Boeddu",
+        "amenity": "theatre",
+        "name": "Teatro Akropolis",
+        "website": "https://www.teatroakropolis.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11121248128,
+      "lat": 44.3880741,
+      "lon": 9.1643396,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11196595544,
+      "lat": 44.310121,
+      "lon": 9.345393,
+      "tags": {
+        "addr:housenumber": "3",
+        "addr:place": "Piazza Giuseppe Ravenna",
+        "amenity": "library",
+        "level": "1",
+        "name": "Biblioteca Civica di Lavagna"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11360813048,
+      "lat": 44.33553,
+      "lon": 8.3379341,
+      "tags": {
+        "addr:city": "Altare",
+        "amenity": "cinema",
+        "name": "Cimema Roma Vallechiara",
+        "source": "https://www.lastampa.it/savona/2023/11/17/news/altare_riapre_dopo_tre_anni_il_cinema_vallechiara-13869521/",
+        "start_date": "2023-11-18"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11375096994,
+      "lat": 44.2722441,
+      "lon": 9.6088938,
+      "tags": {
+        "name": "Museo mineralogico della Val di Vara",
+        "operator": "City Council",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11378555533,
+      "lat": 44.5712159,
+      "lon": 8.9445185,
+      "tags": {
+        "addr:city": "Busalla",
+        "addr:housenumber": "1",
+        "addr:postcode": "16012",
+        "addr:street": "Via Chiappa",
+        "amenity": "library",
+        "name": "Biblioteca Bertha Von Suttner",
+        "opening_hours": "Mo-Fr 15:00-18:00; Th 09:00-12:00; Sa 09:00-12:00,15:00-18:00"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11390858895,
+      "lat": 44.612834,
+      "lon": 8.9510776,
+      "tags": {
+        "name": "Mastodonte dei Giovi",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11403837607,
+      "lat": 44.1070995,
+      "lon": 9.8183217,
+      "tags": {
+        "addr:city": "La Spezia",
+        "addr:country": "IT",
+        "addr:housenumber": "234",
+        "addr:postcode": "19121",
+        "addr:province": "SP",
+        "addr:state": "Liguria",
+        "addr:street": "Via del Prione",
+        "description": "Palazzina delle Arti, edificio neogotico. Dal 10/11/2023 trecento sigilli inediti.",
+        "email": "museo.sigillo@comune.sp.it",
+        "museum": "ethnography",
+        "name": "Museo del Sigillo",
+        "opening_hours": "Tu-Su 10:00-18:00; Jan 01, Aug 15, Dec 25, Mo off",
+        "operator": "Comune di La Spezia",
+        "operator:type": "public",
+        "phone": "+39 0187 727220",
+        "tourism": "museum",
+        "website": "http://sigillo.museilaspezia.it/",
+        "wikidata": "Q3889484"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11534737171,
+      "lat": 43.8897388,
+      "lon": 8.0411995,
+      "tags": {
+        "addr:city": "Imperia",
+        "addr:housenumber": "37",
+        "addr:postcode": "18100",
+        "addr:street": "Via Silvio Bonfante",
+        "amenity": "theatre",
+        "description": "Galleria degli Orti",
+        "email": "info@spaziovuoto.com",
+        "name": "Lo Spazio Vuoto",
+        "phone": "+39 0183 960598",
+        "website": "http://www.spaziovuoto.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11749016644,
+      "lat": 44.1359247,
+      "lon": 8.2002913,
+      "tags": {
+        "museum": "archaeological",
+        "name": "Museo Preistorico della Valle Varatella",
+        "operator": "Comune di Toirano",
+        "operator:type": "public",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11750081813,
+      "lat": 44.1255808,
+      "lon": 8.2102159,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Civica",
+        "operator": "Comune di Toirano",
+        "wikidata": "Q112893731"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11766034861,
+      "lat": 44.4190152,
+      "lon": 8.9311723,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca Sergio Lupetti"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11777766644,
+      "lat": 44.2723289,
+      "lon": 9.3959126,
+      "tags": {
+        "addr:housename": "Palazzo Fascie Rossi",
+        "check_date": "2025-07-31",
+        "name": "Museo Archeologico e della Città",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11881272247,
+      "lat": 44.5590079,
+      "lon": 8.6753509,
+      "tags": {
+        "name": "Museo Passatempo",
+        "tourism": "museum",
+        "website": "https://www.museopassatempo.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11928819612,
+      "lat": 44.4299854,
+      "lon": 8.8951089,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "8",
+        "addr:postcode": "16159",
+        "addr:street": "Via Ludovico Ariosto",
+        "museum": "local",
+        "name": "Museo Certosa di Genova",
+        "official_name": "MUCE Museo Certosa di Genova",
+        "opening_hours": "May-Sep: Mo-Su “by appointment guided tours. Groups must be at least ten people”; Oct-Dec: Fr-Sa 14:00-17:00; Su 10:30-12:30,14:00-17:00; Mo-Th “by appointment guided tours”",
+        "operator": "Comune di Genova",
+        "operator:type": "public",
+        "phone": "+39 010 5579081",
+        "short_name": "MUCE",
+        "source": "https://www.finestresullarte.info/musei/genova-apre-nuovo-museo-della-certosa-di-san-bartolomeo",
+        "tourism": "museum",
+        "website": "https://www.museidigenova.it/it/muce-museo-certosa-di-genova"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11994260226,
+      "lat": 44.4156088,
+      "lon": 8.9248785,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca di Giurisprudenza"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12358962132,
+      "lat": 44.1829271,
+      "lon": 9.5828005,
+      "tags": {
+        "amenity": "theatre",
+        "layer": "-1",
+        "name": "Sala Ugo Maria Morosi",
+        "operator": "Comune di Bonassola",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12378381663,
+      "lat": 44.0493598,
+      "lon": 8.212942,
+      "tags": {
+        "addr:city": "Albenga",
+        "addr:housenumber": "24",
+        "addr:postcode": "17031",
+        "addr:street": "Via Bernardo Ricci",
+        "air_conditioning": "no",
+        "alt_name": "Civico museo ingauno",
+        "fee": "no",
+        "museum": "history",
+        "name": "Museo Civico Ingauno",
+        "tourism": "museum",
+        "wikidata": "Q3678772",
+        "wikipedia": "it:Civico museo ingauno"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12379098467,
+      "lat": 44.4056131,
+      "lon": 8.9337648,
+      "tags": {
+        "amenity": "library",
+        "name": "Blabla Book Biblioteca di Quartiere"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12400635512,
+      "lat": 43.9044203,
+      "lon": 8.0384624,
+      "tags": {
+        "description": "by reservation",
+        "mobile": "+39 347 4317611",
+        "museum": "communication",
+        "name": "Voci nell'etere",
+        "tourism": "museum",
+        "website": "https://www.imperiaexperience.it/it/cultura/poi.html?id=24458:museo-della-comunicazione-voci-nell%E2%80%99etere",
+        "wikidata": "Q113030300"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12609318436,
+      "lat": 43.8722845,
+      "lon": 8.0116309,
+      "tags": {
+        "amenity": "theatre",
+        "contact:city": "Imperia",
+        "contact:housenumber": "43",
+        "contact:postcode": "18100",
+        "contact:street": "Via Bartolomeo Bossi",
+        "name": "Teatro dell'Attrito",
+        "start_date": "2008"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12645391059,
+      "lat": 43.8842951,
+      "lon": 8.0258561,
+      "tags": {
+        "fee": "yes",
+        "museum": "art",
+        "name": "Villa Faravelli",
+        "tourism": "museum",
+        "website": "https://www.imperiaexperience.it/it/cultura/poi.html?id=24285:villa-faravelli-m-a-c-i",
+        "wikidata": "Q55672206"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12650817201,
+      "lat": 43.8735498,
+      "lon": 8.0158726,
+      "tags": {
+        "addr:city": "Imperia",
+        "addr:housenumber": "19",
+        "addr:postcode": "18100",
+        "addr:street": "Via Santa Caterina",
+        "mobile": "+39 335 7183232",
+        "museum": "person",
+        "name": "Museo di San Leonardo",
+        "phone": "+39 0183 61901",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12798255801,
+      "lat": 43.9106089,
+      "lon": 7.8915625,
+      "tags": {
+        "name": "Museo della resistenza",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12830266445,
+      "lat": 43.9640002,
+      "lon": 8.100697,
+      "tags": {
+        "name": "U Gumbu de Nuccio",
+        "name:it": "Museo Etnografico Frantoio di Nuccio",
+        "opening_hours": "Su 16:00-18:00",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12846795501,
+      "lat": 43.9677172,
+      "lon": 7.9628976,
+      "tags": {
+        "amenity": "library"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12848675534,
+      "lat": 43.8671916,
+      "lon": 7.6681613,
+      "tags": {
+        "amenity": "library",
+        "name": "Biblioteca comunale"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12848675554,
+      "lat": 43.8679714,
+      "lon": 7.6676584,
+      "tags": {
+        "level": "1",
+        "name": "Esposizione sole e tempo",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12930886934,
+      "lat": 44.09301,
+      "lon": 10.0100472,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatrika"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12952526192,
+      "lat": 43.8212641,
+      "lon": 7.7927559,
+      "tags": {
+        "fee": "yes",
+        "museum": "person",
+        "name": "Villa Nobel",
+        "opening_hours": "Mo-Fr 09:30-12:30",
+        "subject:wikidata": "Q23810",
+        "tourism": "museum",
+        "wikidata": "Q2525526"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12959084668,
+      "lat": 43.8630669,
+      "lon": 7.8687892,
+      "tags": {
+        "addr:city": "Castellaro",
+        "addr:housenumber": "24",
+        "addr:postcode": "18011",
+        "addr:street": "Via Spirito Santo",
+        "amenity": "library",
+        "name": "Biblioteca di Castellaro"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12959186531,
+      "lat": 44.399318,
+      "lon": 8.943974,
+      "tags": {
+        "addr:city": "Genova",
+        "addr:housenumber": "1",
+        "addr:street": "Corso Aurelio Saffi",
+        "air_conditioning": "yes",
+        "fee": "no",
+        "internet_access": "wlan",
+        "level": "3",
+        "museum": "art",
+        "name": "Casa del Mutilato di Genova - Fondazione A.N.M.I.G.",
+        "opening_hours": "dal martedì al venerdì (9:30-12:00)",
+        "operator": "Fondazione A.N.M.I.G.",
+        "operator:type": "private",
+        "toilets": "yes",
+        "tourism": "museum",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13096908615,
+      "lat": 43.8374814,
+      "lon": 7.8985552,
+      "tags": {
+        "air_conditioning": "yes",
+        "amenity": "library",
+        "name": "Biblioteca Parrochiale Caterina Conio",
+        "opening_hours": "Tu-Sa 16:00-18:00; Fr 10:00-12:00",
+        "wheelchair": "yes",
+        "wikidata": "Q113535842"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13140897565,
+      "lat": 44.1324307,
+      "lon": 9.7905312,
+      "tags": {
+        "museum": "history",
+        "name": "Museo dell'artiglieria contraerea della Regia Marina Italiana",
+        "operator": "AAS",
+        "operator:type": "government",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13246627892,
+      "lat": 43.8385297,
+      "lon": 7.8920782,
+      "tags": {
+        "contact:facebook": "https://www.facebook.com/MuseoMURR",
+        "name": "Museo del Relitto Romano",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13274608447,
+      "lat": 43.8762622,
+      "lon": 8.0144903,
+      "tags": {
+        "amenity": "theatre",
+        "name": "Teatro Cavour",
+        "source": "Regione Liguria",
+        "wikidata": "Q46505270",
+        "wikipedia": "it:Teatro Cavour"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13274608467,
+      "lat": 43.87637,
+      "lon": 8.0143894,
+      "tags": {
+        "amenity": "theatre",
+        "contact:city": "Imperia",
+        "contact:housenumber": "2",
+        "contact:postcode": "18100",
+        "contact:street": "Via al Teatro",
+        "name": "Ridotto Teatro Cavour"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13283177937,
+      "lat": 43.8503701,
+      "lon": 7.625195,
+      "tags": {
+        "amenity": "cinema",
+        "cinema:3D": "yes",
+        "name": "Visionarium",
+        "operator": "Eugenio Andrighetto",
+        "phone": "+39 0184 206638",
+        "website": "http://visionarium-3d.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13415107723,
+      "lat": 44.1341579,
+      "lon": 8.2201941,
+      "tags": {
+        "amenity": "library",
+        "contact:phone": "+390182922114",
+        "name": "Biblioteca Civica di Boissano",
+        "opening_hours": "Mo 17:15-18:30; Sa 08:30-10:00; PH closed"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13422139728,
+      "lat": 44.2735505,
+      "lon": 9.5146282,
+      "tags": {
+        "addr:housenumber": "1",
+        "addr:street": "Via Sciaccona",
+        "amenity": "library",
+        "name": "Biblioteca comunale di Castiglione Chiavarese",
+        "phone": "+39 0185 1908115",
+        "url": "https://anagrafe.iccu.sbn.it/isil/IT-GE0453"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13424189250,
+      "lat": 43.8737785,
+      "lon": 8.0050461,
+      "tags": {
+        "level": "1",
+        "name": "Museo delle Confraternite",
+        "tourism": "museum",
+        "website": "https://www.museodelleconfraternite.it/",
+        "wheelchair": "no",
+        "wikidata": "Q113028576"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13462503410,
+      "lat": 44.1282016,
+      "lon": 8.2620867,
+      "tags": {
+        "fee": "no",
+        "name": "Museo del Mare",
+        "tourism": "museum"
+      }
+    }
+  ]
+}

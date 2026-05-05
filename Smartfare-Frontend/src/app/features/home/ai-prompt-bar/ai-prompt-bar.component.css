@@ -49,6 +49,9 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   contain: layout paint;
+  /* Promote to GPU compositor layer so backdrop-filter
+     doesn't invalidate scroll compositing */
+  transform: translateZ(0);
 }
 
 .prompt-bar:focus-within {

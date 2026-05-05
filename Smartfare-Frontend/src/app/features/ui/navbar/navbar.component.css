@@ -45,6 +45,7 @@
   gap: 1rem;
   background: var(--navbar-bg);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition:
     background 0.28s ease,
     box-shadow 0.28s ease,
@@ -52,6 +53,10 @@
     opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.28s ease;
   width: 100%;
+  /* Promote to GPU compositor layer — prevents backdrop-filter
+     from causing full-page repaint on every scroll frame */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .navbar-shell.is-pinned .main-bar {

@@ -13,9 +13,6 @@ type DraftItemPayload = {
     groupEndAt: Date | null;
     activityId: number | null;
     accommodationId: number | null;
-    trainsStationId: number | null;
-    metroStationId: number | null;
-    airportId: number | null;
 };
 
 type NormalizedDraftIdentity = {
@@ -54,14 +51,8 @@ export class ItineraryService {
                     groupEndAt: true,
                     activityId: true,
                     accommodationId: true,
-                    trainsStationId: true,
-                    metroStationId: true,
-                    airportId: true,
                     activity: { select: { id: true, name: true, categoryId: true } },
                     accommodation: { select: { id: true, name: true } },
-                    trainsStation: { select: { id: true, name: true } },
-                    metroStation: { select: { id: true, name: true } },
-                    airport: { select: { id: true, name: true } },
                     itemType: { select: { code: true, label: true } }
                 }
             }
@@ -80,10 +71,7 @@ export class ItineraryService {
             groupStartAt: item.groupStartAt ? new Date(item.groupStartAt) : null,
             groupEndAt: item.groupEndAt ? new Date(item.groupEndAt) : null,
             activityId: item.activityId ? Number(item.activityId) : null,
-            accommodationId: item.accommodationId ? Number(item.accommodationId) : null,
-            trainsStationId: item.TrainsStationId ? Number(item.TrainsStationId) : (item.trainsStationId ? Number(item.trainsStationId) : null),
-            metroStationId: item.MetroStationId ? Number(item.MetroStationId) : (item.metroStationId ? Number(item.metroStationId) : null),
-            airportId: item.AirportId ? Number(item.AirportId) : (item.airportId ? Number(item.airportId) : null)
+            accommodationId: item.accommodationId ? Number(item.accommodationId) : null
         }));
     }
 
@@ -120,10 +108,7 @@ export class ItineraryService {
             groupStartAt: item.groupStartAt,
             groupEndAt: item.groupEndAt,
             activityId: item.activityId,
-            accommodationId: item.accommodationId,
-            trainsStationId: item.trainsStationId,
-            metroStationId: item.metroStationId,
-            airportId: item.airportId
+            accommodationId: item.accommodationId
         };
     }
 
@@ -141,7 +126,7 @@ export class ItineraryService {
                     if (left.dayNumber !== right.dayNumber) return left.dayNumber - right.dayNumber;
                     if (left.orderInt !== right.orderInt) return left.orderInt - right.orderInt;
                     if (left.itemTypeCode !== right.itemTypeCode) return left.itemTypeCode.localeCompare(right.itemTypeCode);
-                    return (left.activityId ?? left.accommodationId ?? left.trainsStationId ?? left.metroStationId ?? left.airportId ?? 0) - (right.activityId ?? right.accommodationId ?? right.trainsStationId ?? right.metroStationId ?? right.airportId ?? 0);
+                    return (left.activityId ?? left.accommodationId ?? 0) - (right.activityId ?? right.accommodationId ?? 0);
                 })
                 .map((item) => this.normalizeItemForComparison(item))
         });
@@ -347,10 +332,7 @@ export class ItineraryService {
                             groupStartAt: true,
                             groupEndAt: true,
                             activityId: true,
-                            accommodationId: true,
-                            trainsStationId: true,
-                            metroStationId: true,
-                            airportId: true
+                            accommodationId: true
                         }
                     });
 
@@ -399,7 +381,7 @@ export class ItineraryService {
 
     async getPublicItineraries(locationId?: number, excludeUserId?: number) {
         try {
-            return await prisma.itinerary.findMany({
+            const itineraries = await prisma.itinerary.findMany({
                 where: {
                     OR: [
                         { isPublished: true },
@@ -416,13 +398,20 @@ export class ItineraryService {
                         include: { profile: true }
                     },
                     items: {
-                        take: 3,
-                        include: {
-                            activity: { select: { imageUrl: true } },
-                            accommodation: { select: { imageUrl: true } }
-                        }
+                        select: { dayNumber: true }
+                    },
+                    _count: {
+                        select: { items: true }
                     }
                 }
+            });
+
+            // Compute durationDays from the max dayNumber across all items
+            return itineraries.map((itin) => {
+                const maxDay = itin.items.length > 0
+                    ? Math.max(...itin.items.map((i) => i.dayNumber))
+                    : null;
+                return { ...itin, durationDays: maxDay };
             });
         } catch (error) {
             console.error("Errore recupero itinerari pubblici:", error);
@@ -461,6 +450,9 @@ export class ItineraryService {
                             activity: { select: { imageUrl: true } },
                             accommodation: { select: { imageUrl: true } }
                         }
+                    },
+                    _count: {
+                        select: { items: true }
                     }
                 }
             });

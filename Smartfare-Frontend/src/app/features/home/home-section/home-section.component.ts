@@ -86,7 +86,6 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.itineraryService.getPublicItineraries().subscribe(itineraries => {
-      // Filter by isPublished as requested
       this.publicItineraries.set(itineraries.filter(i => i.isPublished));
       this.cdr.markForCheck();
     });
@@ -98,7 +97,11 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.startTypingLoop();
+    // Run typing animation outside Angular zone to avoid triggering
+    // change detection every 85ms, which causes scroll jank
+    this.ngZone.runOutsideAngular(() => {
+      this.startTypingLoop();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -358,6 +361,7 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private queueTypingFrame(delayMs: number): void {
+    // Already outside Angular zone — setTimeout won't trigger zone-based CD
     this.typingTimeoutId = setTimeout(() => {
       this.startTypingLoop();
     }, delayMs);

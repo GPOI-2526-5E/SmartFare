@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
-
 import { GoogleSigninButtonModule, SocialAuthService } from '@abacritt/angularx-social-login';
 
 @Component({

@@ -46,6 +46,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
+
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -60,6 +61,7 @@ area["name"="Piemonte"]->.searchArea;
   way["amenity"="parking"](area.searchArea);
 );
 out center;
+
 
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
@@ -79,6 +81,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
+
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -92,6 +95,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
+
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -103,6 +107,7 @@ area["name"="Piemonte"]->.searchArea;
   node["leisure"="stadium"](area.searchArea);
 );
 out center;
+
 
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
@@ -116,6 +121,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
+
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -125,6 +131,7 @@ area["name"="Piemonte"]->.searchArea;
   node["historic"="abbey"](area.searchArea);
 );
 out center;
+
 
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
@@ -148,6 +155,7 @@ area["name"="Piemonte"]->.searchArea;
   node["amenity"="pub"](area.searchArea);
 );
 out center;
+
 
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;

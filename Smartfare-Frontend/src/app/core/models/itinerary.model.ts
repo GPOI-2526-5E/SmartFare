@@ -23,6 +23,10 @@ export interface Itinerary {
             avatarUrl?: string;
         };
     };
+    _count?: {
+        items?: number;
+    };
+    durationDays?: number | null;
 }
 
 export interface ItineraryItem {
@@ -33,9 +37,6 @@ export interface ItineraryItem {
     itemTypeCode: string;
     activityId?: number;
     accommodationId?: number;
-    trainsStationId?: number;
-    metroStationId?: number;
-    airportId?: number;
     plannedStartAt?: string | null;
     plannedEndAt?: string | null;
     groupName?: string | null;

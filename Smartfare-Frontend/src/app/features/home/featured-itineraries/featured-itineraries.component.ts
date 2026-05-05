@@ -13,4 +13,16 @@ import { RevealOnScrollDirective } from '../../../core/directives/reveal-on-scro
 })
 export class FeaturedItinerariesComponent {
   @Input({ required: true }) itineraries: Itinerary[] = [];
+
+  getDuration(itinerary: Itinerary): string {
+    const days = itinerary.durationDays;
+    if (days != null && days > 0) {
+      return `${days} ${days === 1 ? 'Giorno' : 'Giorni'} di Viaggio`;
+    }
+    return 'Durata non definita';
+  }
+
+  getItemCount(itinerary: Itinerary): number {
+    return itinerary._count?.items ?? itinerary.items?.length ?? 0;
+  }
 }

@@ -1,3 +1,9 @@
+:host {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+  display: block;
+}
+
 .cta-section {
   position: relative;
   padding: 140px 0;
@@ -9,8 +15,7 @@
 .cta-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(2, 6, 23, 0.7);
-  backdrop-filter: blur(4px);
+  background: rgba(2, 6, 23, 0.78);
 }
 
 .cta-content {

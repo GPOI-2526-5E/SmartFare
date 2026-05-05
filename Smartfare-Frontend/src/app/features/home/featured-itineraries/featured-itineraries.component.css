@@ -1,3 +1,10 @@
+:host {
+  /* Skip rendering when off-screen — major scroll performance gain */
+  content-visibility: auto;
+  contain-intrinsic-size: 0 700px;
+  display: block;
+}
+
 .featured-itineraries {
   background-color: #020617;
   padding: 100px 0;
@@ -146,10 +153,43 @@
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.card-meta-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.card-meta-item i {
+  font-size: 0.8rem;
+  color: #3b82f6;
+}
+
 .days-info {
   font-size: 0.85rem;
   color: #64748b;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.days-info i {
+  color: #3b82f6;
+  font-size: 0.8rem;
 }
 
 .view-plan {

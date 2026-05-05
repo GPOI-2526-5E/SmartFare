@@ -7,16 +7,23 @@
   min-height: 100dvh;
   color: var(--text-color);
   position: relative;
-  overflow: visible;
+  /* clip instead of visible: enables paint containment for the GPU */
+  overflow: clip;
   width: 100%;
   z-index: 20;
+  /* Isolate this stacking context from below-the-fold sections */
+  isolation: isolate;
 }
 
 .background-layer {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  transform: scale(1.02);
+  /* translateZ(0) promotes to its own GPU compositor layer */
+  transform: scale(1.02) translateZ(0);
+  will-change: transform;
+  /* Contain layout & paint so changes here don't affect the rest of the page */
+  contain: layout paint;
   background-size: cover;
   background-position: center;
 }
@@ -29,8 +36,9 @@
   object-fit: cover;
   opacity: 0;
   transition: opacity 1.2s ease;
-  will-change: opacity;
-  transform: scale(1.01);
+  /* Promote each video to its own compositor layer for smooth opacity transitions */
+  will-change: opacity, transform;
+  transform: scale(1.01) translateZ(0);
   pointer-events: none;
 }
 

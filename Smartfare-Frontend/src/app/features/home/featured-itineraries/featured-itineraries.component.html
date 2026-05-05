@@ -16,17 +16,28 @@
         <div class="itinerary-card" appRevealOnScroll="fade-up" [revealDelay]="$index * 100">
           <div class="card-image-wrap">
             <img [src]="itinerary.imageUrl || 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800'" class="card-image" alt="Itinerary cover">
-            <div class="card-badge">
-              <i class="bi bi-star-fill"></i>
-              <span>4.9</span>
-            </div>
           </div>
           <div class="card-content">
-            <span class="location-tag">{{ itinerary.location?.name || 'ITALIA' }}</span>
+            <span class="location-tag">{{ itinerary.location?.name?.toUpperCase() || 'ITALIA' }}</span>
             <h3>{{ itinerary.name }}</h3>
-            <p>{{ itinerary.description || 'Esplora le grotte nascoste e i limoneti baciati dal sole lungo la costa.' }}</p>
+            <p>{{ itinerary.description || 'Nessuna descrizione disponibile per questo itinerario.' }}</p>
+
+            <div class="card-meta-row">
+              <div class="card-meta-item">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>{{ itinerary.location?.name || 'Destinazione libera' }}</span>
+              </div>
+              <div class="card-meta-item">
+                <i class="bi bi-collection-fill"></i>
+                <span>{{ getItemCount(itinerary) }} {{ getItemCount(itinerary) === 1 ? 'tappa' : 'tappe' }}</span>
+              </div>
+            </div>
+
             <div class="card-footer">
-              <span class="days-info">7 Giorni di Viaggio</span>
+              <span class="days-info">
+                <i class="bi bi-clock"></i>
+                {{ getDuration(itinerary) }}
+              </span>
               <a [routerLink]="['/manual/planner']" [queryParams]="{ publicId: itinerary.id }" class="view-plan">
                 Vedi Piano <i class="bi bi-arrow-right"></i>
               </a>

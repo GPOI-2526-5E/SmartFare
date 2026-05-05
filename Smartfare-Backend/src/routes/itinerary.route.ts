@@ -5,7 +5,6 @@ import { itinerarySchema } from "../schemas/itinerary.schema";
 const router = Router();
 const itineraryService = new ItineraryService();
 
-
 // GET /api/itineraries/workspace?locationId=1 - Aggregated workspace payload for the builder
 router.get("/workspace", optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -21,7 +20,6 @@ router.get("/workspace", optionalAuthenticateJWT, async (req: AuthRequest, res: 
         next(error);
     }
 });
-
 
 // GET /api/itineraries/latest - Get the latest draft for the logged user
 router.get("/latest", authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
