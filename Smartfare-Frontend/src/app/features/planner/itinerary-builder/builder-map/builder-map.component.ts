@@ -19,6 +19,7 @@ import 'leaflet.markercluster';
 import Location from '../../../../core/models/location.model';
 import { BuilderPoi } from '../../../../core/models/builder.types';
 import { UIStateService } from '../../../../core/services/ui-state.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-builder-map',
@@ -95,7 +96,8 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     this.map = L.map(this.mapRoot.nativeElement, {
       zoomControl: false,
-      attributionControl: true
+      attributionControl: true,
+      closePopupOnClick: false // Allow multiple popups to stay open
     }).setView([41.9028, 12.4964], 5);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -162,6 +164,15 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
       const addBtn = container.querySelector('.popup-action-btn--add') as HTMLElement;
       const removeBtn = container.querySelector('.popup-action-btn--remove') as HTMLElement;
+      const closeBtn = container.querySelector('.popup-close-btn') as HTMLElement;
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.map?.closePopup(popup);
+        });
+      }
 
       if (addBtn) {
         addBtn.addEventListener('click', (e) => {
@@ -171,7 +182,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           const poi = this.findPoiByKey(key);
           if (poi) {
             this.addPoi.emit(poi);
-            this.map?.closePopup();
+            this.map?.closePopup(popup);
           }
         });
       }
@@ -184,7 +195,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           const poi = this.findPoiByKey(key);
           if (poi) {
             this.removePoi.emit(poi);
-            this.map?.closePopup();
+            this.map?.closePopup(popup);
           }
         });
       }
@@ -234,7 +245,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       const icon = this.createCategoryIcon(poi.categoryName, poi.type);
       const marker = L.marker([poi.latitude, poi.longitude], { icon });
 
-      marker.bindPopup(this.createPopupHtml(poi));
+      marker.bindPopup(this.createPopupHtml(poi), { autoClose: false, closeOnClick: false, closeButton: false });
       availableMarkers.push(marker);
     }
 
@@ -266,7 +277,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           : `Tappa ${orderNumber}`;
         const icon = this.createStopIcon(orderNumber, dayColor, poi.type === 'accommodation');
         const marker = L.marker([poi.latitude, poi.longitude], { icon }).bindPopup(
-          this.createPopupHtml(poi, stopLabel, dayColor)
+          this.createPopupHtml(poi, stopLabel, dayColor), { autoClose: false, closeOnClick: false, closeButton: false }
         );
         this.savedLayer.addLayer(marker);
         continue;
@@ -288,7 +299,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         });
       }
 
-      marker.bindPopup(this.createPopupHtml(poi, "Salvato nell'itinerario"));
+      marker.bindPopup(this.createPopupHtml(poi, "Salvato nell'itinerario"), { autoClose: false, closeOnClick: false, closeButton: false });
       this.savedLayer.addLayer(marker);
     }
 
@@ -298,7 +309,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         icon: icon,
         title: `Anteprima: ${this.previewPoi.title}`,
         zIndexOffset: 1000
-      }).bindPopup(this.createPopupHtml(this.previewPoi, 'Anteprima'));
+      }).bindPopup(this.createPopupHtml(this.previewPoi, 'Anteprima'), { autoClose: false, closeOnClick: false, closeButton: false });
 
       this.previewLayer.addLayer(previewMarker);
       this.map.panTo([this.previewPoi.latitude, this.previewPoi.longitude]);
@@ -560,7 +571,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       const startMarker = L.marker([start.latitude, start.longitude], {
         icon: startIcon,
         title: `Partenza Giorno ${day}: ${start.title}`
-      }).bindPopup(this.createPopupHtml(start, `GIORNO ${day} - PARTENZA`, dayColor));
+      }).bindPopup(this.createPopupHtml(start, `GIORNO ${day} - PARTENZA`, dayColor), { autoClose: false, closeOnClick: false, closeButton: false });
       this.endpointLayer.addLayer(startMarker);
 
       // End marker (only if different from start)
@@ -569,7 +580,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         const endMarker = L.marker([end.latitude, end.longitude], {
           icon: endIcon,
           title: `Arrivo Giorno ${day}: ${end.title}`
-        }).bindPopup(this.createPopupHtml(end, `GIORNO ${day} - ARRIVO`, dayColor));
+        }).bindPopup(this.createPopupHtml(end, `GIORNO ${day} - ARRIVO`, dayColor), { autoClose: false, closeOnClick: false, closeButton: false });
         this.endpointLayer.addLayer(endMarker);
       }
     }
@@ -590,7 +601,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   private createPopupHtml(poi: BuilderPoi, label?: string, labelColor?: string): string {
-    const isHotel = poi.itemTypeCode === 'ACCOMMODATION';
+    const isHotel = poi.itemTypeCode === 'ACCOMMODATION' || poi.type === 'accommodation';
     const startLabel = isHotel ? 'Check-in' : 'Inizio';
     const endLabel = isHotel ? 'Check-out' : 'Fine';
 
@@ -616,11 +627,24 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     const isSaved = this.savedPois.some(p => p.key === poi.key);
 
+    // Fallback image for hotels if imageUrl is missing
+    let finalImageUrl = poi.imageUrl;
+    
+    // Check if imageUrl is relative
+    if (finalImageUrl && !finalImageUrl.startsWith('http') && !finalImageUrl.startsWith('data:')) {
+      finalImageUrl = `${environment.apiUrl}${finalImageUrl.startsWith('/') ? '' : '/'}${finalImageUrl}`;
+    }
+
+    if (!finalImageUrl && isHotel) {
+      finalImageUrl = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=800';
+    }
+
     return `
       <div class="map-popup-card">
+        <button class="popup-close-btn" title="Chiudi">&times;</button>
         ${label ? `<div class="popup-label" style="background: ${labelColor || 'var(--accent-color)'}">${label}</div>` : ''}
-        ${poi.imageUrl ? `
-          <div class="popup-image" style="background-image: url('${poi.imageUrl}')"></div>
+        ${finalImageUrl ? `
+          <div class="popup-image" style="background-image: url('${finalImageUrl}')"></div>
         ` : ''}
         <div class="popup-content">
           <h5 class="popup-title">${poi.title}</h5>

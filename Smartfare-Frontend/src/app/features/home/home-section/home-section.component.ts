@@ -12,15 +12,30 @@ import {
   ChangeDetectorRef,
   inject
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { AiPromptBarComponent } from "../ai-prompt-bar/ai-prompt-bar.component";
 import { RevealOnScrollDirective } from '../../../core/directives/reveal-on-scroll.directive';
-import { ExperiencesCarousel } from "../experiences-carousel/experiences-carousel";
+import { ItineraryService } from '../../../core/services/itinerary.service';
+import { Itinerary } from '../../../core/models/itinerary.model';
+import { FooterComponent } from '../../ui/footer/footer.component';
+import { FeaturedItinerariesComponent } from '../featured-itineraries/featured-itineraries.component';
+import { FeaturesGridComponent } from '../features-grid/features-grid.component';
+import { CtaSectionComponent } from '../cta-section/cta-section.component';
 
 @Component({
   selector: 'app-home-section',
   standalone: true,
-  imports: [NavbarComponent, AiPromptBarComponent, RevealOnScrollDirective, ExperiencesCarousel],
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    AiPromptBarComponent,
+    RevealOnScrollDirective,
+    FooterComponent,
+    FeaturedItinerariesComponent,
+    FeaturesGridComponent,
+    CtaSectionComponent
+  ],
   templateUrl: './home-section.component.html',
   styleUrl: './home-section.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -28,6 +43,9 @@ import { ExperiencesCarousel } from "../experiences-carousel/experiences-carouse
 export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('backgroundVideo')
   private backgroundVideos!: QueryList<ElementRef<HTMLVideoElement>>;
+
+  protected readonly publicItineraries = signal<Itinerary[]>([]);
+  private readonly itineraryService = inject(ItineraryService);
 
   protected readonly transitionMs = 1200;
   protected readonly videoRotationMs = 9000;
@@ -67,6 +85,12 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   );
 
   ngOnInit(): void {
+    this.itineraryService.getPublicItineraries().subscribe(itineraries => {
+      // Filter by isPublished as requested
+      this.publicItineraries.set(itineraries.filter(i => i.isPublished));
+      this.cdr.markForCheck();
+    });
+
     if (this.reduceMotion) {
       this.heroLineTop.set(this.heroTypingLines[0] ?? '');
       this.heroLineBottom.set(this.heroTypingLines[1] ?? '');

@@ -36,23 +36,13 @@
   </div>
 </div>
 
-<!-- Experiences Intro Divider -->
-<div class="experiences-intro-section text-center">
-  <div class="container">
-    <div class="d-inline-flex accent-pill mb-4" appRevealOnScroll="fade-up">
-      <div class="pulse-dot"></div>
-      <span class="pill-text ms-2">Scopri di più</span>
-    </div>
-    <h2 class="intro-headline" appRevealOnScroll="fade-up" [revealDelay]="100">Le Nostre Esperienze</h2>
-    <div class="d-flex justify-content-center mb-4" appRevealOnScroll="fade-up" [revealDelay]="150">
-      <div class="glow-separator"></div>
-    </div>
-    <p class="intro-subtitle" appRevealOnScroll="fade-up" [revealDelay]="200">
-      Lasciati ispirare dalle nostre destinazioni migliori. Dai paradisi tropicali alle vette innevate, trova la tua
-      prossima avventura.
-    </p>
-  </div>
-</div>
+<!-- Featured Itineraries Section -->
+<app-featured-itineraries [itineraries]="publicItineraries()"></app-featured-itineraries>
 
-<!-- Experiences Carousel Section -->
-<app-experiences-carousel></app-experiences-carousel>
+<!-- Features Section -->
+<app-features-grid></app-features-grid>
+
+<!-- CTA Section -->
+<app-cta-section></app-cta-section>
+
+<app-footer></app-footer>
