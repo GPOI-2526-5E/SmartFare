@@ -14,6 +14,11 @@ const JWT_SECRET: string = process.env.JWT_SECRET || "";
 const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "";
 
 export class AuthService {
+    private getFrontendUrl(): string {
+        const frontendUrls = (process.env.FRONTEND_URL || "http://localhost:4200").split(",").map(url => url.trim());
+        return frontendUrls.find(url => !url.includes("localhost")) || frontendUrls[0];
+    }
+
 
     async Login(loginData: LoginParams) {
         try {
@@ -190,10 +195,11 @@ export class AuthService {
             console.log("Utente creato ", registerData.email);
 
             if (!isGoogle && verificationToken) {
-                const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+                const frontendUrl = this.getFrontendUrl();
                 const verificationLink = `${frontendUrl}/verify-email?token=${verificationToken}`;
                 await emailService.sendVerificationEmail(registerData.email, verificationLink);
             }
+
 
             return {
                 success: true
@@ -318,8 +324,9 @@ export class AuthService {
             });
 
             // Send Email
-            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+            const frontendUrl = this.getFrontendUrl();
             const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
+
 
             await emailService.sendPasswordResetEmail(user.email, resetLink);
 
