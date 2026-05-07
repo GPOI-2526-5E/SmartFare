@@ -1,52 +1,91 @@
 import nodemailer from 'nodemailer';
+import type SMTPTransport from 'nodemailer/lib/smtp-transport';
+import dns from 'dns';
+
+
+// Force IPv4 as priority for DNS resolution (critical for Render/Gmail SMTP)
+dns.setDefaultResultOrder('ipv4first');
 
 export class EmailService {
     private transporter: nodemailer.Transporter | null = null;
+    private initPromise: Promise<void> | null = null;
     
     constructor() {
-        this.init();
+        this.initPromise = this.init();
     }
     
-    private async init() {
+    public async init() {
+        if (this.transporter) return;
+
         // Usa le variabili d'ambiente in produzione, altrimenti crea un test account con Ethereal
         if (process.env.SMTP_HOST && process.env.SMTP_PORT) {
-            this.transporter = nodemailer.createTransport({
+            const port = parseInt(process.env.SMTP_PORT);
+            const options: any = {
                 host: process.env.SMTP_HOST,
-                port: parseInt(process.env.SMTP_PORT),
+                port: port,
+                secure: port === 465, // true for 465, false for other ports (587)
+                family: 4, // Force IPv4 to avoid ENETUNREACH issues on cloud providers
                 auth: {
                     user: process.env.SMTP_USER,
                     pass: process.env.SMTP_PASS,
                 },
-            });
+                tls: {
+                    // Help with some SMTP servers requiring starttls
+                    rejectUnauthorized: false
+                }
+            };
+            this.transporter = nodemailer.createTransport(options);
+            
+            try {
+                await this.transporter.verify();
+                console.log("✅ SMTP Transporter pronto e verificato");
+            } catch (err) {
+                console.error("❌ Errore durante la verifica del transporter SMTP:", err);
+            }
         } else {
             console.warn("⚠️ Nessun SMTP_HOST/PORT trovato, generazione Ethereal test account in corso...");
             try {
                 const testAccount = await nodemailer.createTestAccount();
-                this.transporter = nodemailer.createTransport({
+                const options: any = {
                     host: "smtp.ethereal.email",
                     port: 587,
-                    secure: false, // true for 465, false for other ports
+                    secure: false,
+                    family: 4,
                     auth: {
-                        user: testAccount.user, // generated ethereal user
-                        pass: testAccount.pass, // generated ethereal password
+                        user: testAccount.user,
+                        pass: testAccount.pass,
                     },
-                });
+                };
+                this.transporter = nodemailer.createTransport(options);
+
                 console.log(`✅ Ethereal test account pronto: ${testAccount.user}`);
+
             } catch (err) {
                 console.error("❌ Errore durante la creazione dell'account Ethereal", err);
             }
         }
     }
-    
-    public async sendPasswordResetEmail(to: string, resetLink: string) {
+
+
+    private async ensureTransporter() {
         if (!this.transporter) {
-            // Attendi inizializzazione o gestisci l'errore
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            if (!this.transporter) {
-                console.error("Nessun transporter configurato per inviare l'email");
-                return;
+            if (this.initPromise) {
+                await this.initPromise;
+            } else {
+                await this.init();
             }
         }
+        
+        if (!this.transporter) {
+            throw new Error("Transporter email non inizializzato");
+        }
+    }
+
+    
+    public async sendPasswordResetEmail(to: string, resetLink: string) {
+        await this.ensureTransporter();
+        if (!this.transporter) return;
+
 
         const htmlTemplate = `
         <!DOCTYPE html>
@@ -176,13 +215,9 @@ export class EmailService {
     }
 
     public async sendVerificationEmail(to: string, verificationLink: string) {
-        if (!this.transporter) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            if (!this.transporter) {
-                console.error("Nessun transporter configurato per inviare l'email");
-                return;
-            }
-        }
+        await this.ensureTransporter();
+        if (!this.transporter) return;
+
 
         const htmlTemplate = `
         <!DOCTYPE html>
