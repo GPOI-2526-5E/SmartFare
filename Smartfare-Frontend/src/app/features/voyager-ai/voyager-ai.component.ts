@@ -190,13 +190,11 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   }
 
   startFreshPlanner() {
-    this.chatService.mode.set('planner');
-    this.enterCleanLandingState();
+    this.enterCleanLandingState('planner');
   }
 
   startFreshAssistant() {
-    this.chatService.mode.set('assistant');
-    this.enterCleanLandingState();
+    this.enterCleanLandingState('assistant');
   }
 
   selectSession(session: ChatSession) {
@@ -217,7 +215,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
 
     this.chatService.deleteSession(session.id).subscribe(() => {
       if (this.chatService.activeSession()?.id === session.id) {
-        this.chatService.clearActiveConversation();
+        this.chatService.clearActiveConversation(this.chatService.mode());
       }
     });
   }
@@ -231,7 +229,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
 
     const active = this.chatService.activeSession();
     if (!active) {
-      await this.createNewChat(mode);
+      this.enterCleanLandingState(mode);
       return;
     }
 
@@ -382,8 +380,8 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
   }
 
-  private enterCleanLandingState() {
-    this.chatService.clearActiveConversation();
+  private enterCleanLandingState(mode: ChatMode = this.chatService.mode()) {
+    this.chatService.clearActiveConversation(mode);
     this.message.set('');
     this.pendingAttachmentName.set(null);
     this.router.navigate([], {

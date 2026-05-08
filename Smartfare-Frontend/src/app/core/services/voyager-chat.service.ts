@@ -213,10 +213,10 @@ export class VoyagerChatService {
     this.readyToGenerate.set(Boolean(session?.metadata?.readyToGenerate));
   }
 
-  clearActiveConversation() {
+  clearActiveConversation(mode?: ChatMode) {
     this.activeSession.set(null);
     this.messages.set([]);
-    this.mode.set('planner');
+    this.mode.set(mode || this.mode());
     this.plannerState.set(null);
     this.readyToGenerate.set(false);
   }
