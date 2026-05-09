@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth.route";
 import locationsRoutes from './routes/location.route';
 import itineraryRoutes from './routes/itinerary.route';
@@ -15,6 +17,20 @@ import { errorHandler } from "./middleware/error.middleware";
 export function createApp() {
   const app = express();
 
+  app.use(helmet({
+    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
+    crossOriginEmbedderPolicy: false
+  }));
+
+  const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minuti
+    max: 500, // limite di 500 richieste ogni 15 minuti
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Troppe richieste. Riprova più tardi.' }
+  });
+  app.use(globalLimiter);
+
   const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:4200').split(',').map(o => o.trim());
   app.use(cors({
     origin: (origin, callback) => {
@@ -27,29 +43,6 @@ export function createApp() {
     credentials: true
   }));
   app.use(express.json());
-
-  // Middleware
-  app.use("/", (req, res, next) => {
-    const parts = [`RICHIESTA: ${req.method} - ${req.url}`];
-
-    if (req.query && Object.keys(req.query).length > 0) {
-      const safeQuery = { ...req.query };
-      if (safeQuery.code) safeQuery.code = '[REDACTED]';
-      if (safeQuery.state) safeQuery.state = '[REDACTED]';
-      parts.push(`query: ${JSON.stringify(safeQuery)}`);
-    }
-
-    if (req.body && Object.keys(req.body).length > 0) {
-      const safeBody = { ...req.body };
-      if (safeBody.password) safeBody.password = '[REDACTED]';
-      if (safeBody.idToken) safeBody.idToken = '[REDACTED]';
-      if (safeBody.oauthRegistrationToken) safeBody.oauthRegistrationToken = '[REDACTED]';
-      parts.push(`body: ${JSON.stringify(safeBody)}`);
-    }
-
-    console.log(parts.join(" - "));
-    next();
-  });
 
   // Static
   app.use(express.static(path.join(process.cwd(), "/public")));

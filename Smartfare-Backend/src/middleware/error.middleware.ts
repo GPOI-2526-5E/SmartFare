@@ -5,7 +5,7 @@ export class AppError extends Error {
     constructor(
         public message: string,
         public statusCode: number = 500,
-        public details?: any
+        public details?: Record<string, unknown> | unknown[] | unknown
     ) {
         super(message);
         Object.setPrototypeOf(this, AppError.prototype);
@@ -13,7 +13,7 @@ export class AppError extends Error {
 }
 
 export const errorHandler = (
-    err: any,
+    err: unknown,
     req: Request,
     res: Response,
     next: NextFunction
@@ -22,14 +22,18 @@ export const errorHandler = (
         console.warn(`[Validation Error] ${req.method} ${req.url} - ${err.issues.map(i => i.message).join(', ')}`);
         return res.status(400).json({
             error: "Errore di validazione",
-            details: err.issues.map((e: any) => ({
+            details: err.issues.map((e) => ({
                 path: e.path.join('.'),
                 message: e.message
             }))
         });
     }
 
-    console.error(`[Error] ${err.message}`, err);
+    if (err instanceof Error) {
+        console.error(`[Error] ${err.message}`, err);
+    } else {
+        console.error(`[Error]`, err);
+    }
 
     if (err instanceof AppError) {
         return res.status(err.statusCode).json({

@@ -202,8 +202,8 @@ router.post('/sessions/:id/stream', authenticateJWT, async (req: AuthRequest, re
                 done: true,
                 error: true,
                 metadata: {
-                    code: appError.details?.code,
-                    retryAfterSeconds: appError.details?.retryAfterSeconds || null
+                    code: (appError.details as Record<string, any>)?.code,
+                    retryAfterSeconds: (appError.details as Record<string, any>)?.retryAfterSeconds || null
                 }
             })}\n\n`);
             res.end();

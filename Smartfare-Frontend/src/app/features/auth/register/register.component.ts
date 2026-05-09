@@ -9,12 +9,12 @@ import {
 } from '../../../core/auth/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
-import { GoogleLoginProvider, SocialAuthService } from '@abacritt/angularx-social-login';
+import { GoogleLoginProvider, SocialAuthService, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent, RouterModule],
+  imports: [CommonModule, FormsModule, NavbarComponent, RouterModule, GoogleSigninButtonModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -223,14 +223,6 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
 
   startGithubRegistration() {
     this.authService.startGithubAuth('register', this.returnUrl);
-  }
-
-  async startGoogleRegistration() {
-    try {
-      await this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
-    } catch (error) {
-      this.alertService.error('Errore durante l\'avvio dell\'accesso con Google');
-    }
   }
 
   async goToLogin() {

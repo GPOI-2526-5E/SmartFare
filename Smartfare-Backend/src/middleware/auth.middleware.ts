@@ -17,12 +17,12 @@ export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunct
   if (authHeader) {
     const token = authHeader.split(' ')[1];
 
-    jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+    jwt.verify(token, JWT_SECRET, (err: jwt.VerifyErrors | null, user: string | jwt.JwtPayload | undefined) => {
       if (err) {
         return res.status(403).json({ error: 'Token non valido o scaduto' });
       }
 
-      req.user = user;
+      req.user = user as AuthRequest['user'];
       next();
     });
   } else {
@@ -40,9 +40,9 @@ export const optionalAuthenticateJWT = (req: AuthRequest, _res: Response, next: 
 
   const token = authHeader.split(' ')[1];
 
-  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+  jwt.verify(token, JWT_SECRET, (err: jwt.VerifyErrors | null, user: string | jwt.JwtPayload | undefined) => {
     if (!err) {
-      req.user = user;
+      req.user = user as AuthRequest['user'];
     }
 
     next();

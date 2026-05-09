@@ -5,12 +5,12 @@ import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { AlertService } from '../../../core/services/alert.service';
 import { AuthService, PendingSocialRegistration } from '../../../core/auth/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { GoogleLoginProvider, SocialAuthService } from '@abacritt/angularx-social-login';
+import { GoogleLoginProvider, SocialAuthService, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-login.component',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, FormsModule, RouterLink],
+  imports: [CommonModule, NavbarComponent, FormsModule, RouterLink, GoogleSigninButtonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -192,14 +192,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
   startGithubLogin() {
     this.authService.startGithubAuth('login', this.returnUrl);
-  }
-
-  async startGoogleLogin() {
-    try {
-      await this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
-    } catch (error) {
-      this.alertService.error('Errore durante l\'avvio dell\'accesso con Google');
-    }
   }
 
   Login() {

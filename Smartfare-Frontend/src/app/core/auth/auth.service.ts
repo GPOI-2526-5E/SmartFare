@@ -2,7 +2,6 @@ import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthResponse } from '../models/response.model';
 import { HttpClient } from '@angular/common/http';
-import { SHA256 } from 'crypto-js';
 import { environment } from '../../../environments/environment';
 
 export type SocialProvider = 'google' | 'github';
@@ -159,8 +158,7 @@ export class AuthService {
   }
 
   Login(email: string, password: string): Observable<AuthResponse> {
-    const hashedPassword = SHA256(password).toString();
-    return this.http.post<any>(this.AUTH_URL + '/login', { email, password: hashedPassword });
+    return this.http.post<any>(this.AUTH_URL + '/login', { email, password });
   }
 
   LoginWithGoogle(idToken: string): Observable<AuthResponse> {
@@ -168,11 +166,7 @@ export class AuthService {
   }
 
   Register(data: any): Observable<any> {
-    const dataWithHashedPassword = {
-      ...data,
-      password: SHA256(data.password).toString(),
-    };
-    return this.http.post<any>(this.AUTH_URL + '/register', dataWithHashedPassword);
+    return this.http.post<any>(this.AUTH_URL + '/register', data);
   }
 
   ForgotPassword(email: string): Observable<any> {
@@ -180,8 +174,7 @@ export class AuthService {
   }
 
   ResetPassword(token: string, password: string): Observable<any> {
-    const hashedPassword = SHA256(password).toString();
-    return this.http.post<any>(`${this.AUTH_URL}/reset-password`, { token, newPassword: hashedPassword });
+    return this.http.post<any>(`${this.AUTH_URL}/reset-password`, { token, newPassword: password });
   }
 
   VerifyEmail(token: string): Observable<any> {

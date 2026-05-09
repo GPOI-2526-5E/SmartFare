@@ -487,3 +487,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.google-btn-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
