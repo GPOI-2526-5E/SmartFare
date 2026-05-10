@@ -780,3 +780,85 @@
   flex-shrink: 0;
   filter: drop-shadow(0 0 4px rgba(52, 168, 83, 0.5));
 }
+
+/* ── Mobile Responsive ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .wl-section {
+    margin: 40px auto;
+    padding: 0 16px;
+  }
+
+  .wl-section-header h2 {
+    font-size: 22px;
+    gap: 12px;
+  }
+
+  .wl-day-header-actions {
+    gap: 12px;
+  }
+
+  .wl-day-date {
+    font-size: 12px;
+  }
+
+  .wl-poi-row {
+    padding: 0 8px;
+    gap: 8px;
+  }
+
+  .wl-empty-day {
+    margin-left: 40px;
+    margin-right: 8px;
+    padding: 24px 16px;
+    font-size: 13px;
+  }
+
+  .wl-group-header-container {
+    margin-left: 40px;
+    padding: 0 8px;
+  }
+
+  .wl-group-header {
+    padding: 10px 14px;
+  }
+
+  .wl-group-title h4 {
+    font-size: 15px;
+  }
+
+  .wl-selection-action-bar {
+    width: 90%;
+    padding: 10px 16px;
+    gap: 12px;
+    bottom: 80px; /* Alza per evitare la bottom bar mobile */
+  }
+
+  .wl-btn-group, .wl-btn-delete-selection {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .wl-day-route-bar {
+    flex-direction: column;
+    margin-top: -20px;
+    padding: 0 16px;
+    gap: 10px;
+  }
+
+  .wl-day-route-info, .wl-gmaps-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wl-add-day-container {
+    margin: 30px 0 80px;
+  }
+
+  .wl-add-day-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+    font-size: 15px;
+  }
+}
+

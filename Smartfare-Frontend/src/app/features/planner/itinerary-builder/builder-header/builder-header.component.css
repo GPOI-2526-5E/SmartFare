@@ -629,15 +629,73 @@
 
 @media (max-width: 992px) {
   .top-toolbar {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    grid-template-columns: 1fr auto;
+    padding: 10px 14px;
+    min-height: 62px;
+  }
+
+  .toolbar-center {
+    display: none; /* Hide map controls on mobile to save space */
+  }
+
+  .toolbar-center.mobile-show {
+    display: flex;
+    position: absolute;
+    top: 68px; /* Below the top bar */
+    left: 12px;
+    right: 12px;
+    z-index: 100;
+  }
+
+  .toolbar-center.mobile-show .map-ctrl-group {
+    width: 100%;
+    justify-content: space-around;
+    padding: 8px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .category-bar-wrap.mobile-hide {
+    display: none;
   }
 
   .itinerary-name-container {
-    min-width: 260px;
+    min-width: 0;
+    max-width: 200px;
+    padding: 6px 10px;
+  }
+
+  .itinerary-name-input {
+    font-size: 0.85rem;
   }
 
   .toggle-label {
     display: none;
+  }
+
+  .save-cta--export {
+    display: none;
+  }
+
+  .export-dropdown {
+    display: none; /* Hide export entirely on mobile top bar */
+  }
+
+  .save-cta {
+    padding: 7px 12px;
+    font-size: 0.85rem;
+  }
+
+  .save-cta span {
+    display: none; /* Hide text, only show icon */
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
   }
 }
 

@@ -318,7 +318,11 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       setTimeout(() => previewMarker.openPopup(), 50);
     }
 
-    void this.refreshRoute();
+    // Defer route calculation to next tick to avoid ExpressionChangedAfterItHasBeenCheckedError
+    // since refreshRoute synchronously modifies template-bound properties like isRouteLoading and googleMapsUrl
+    setTimeout(() => {
+      void this.refreshRoute();
+    }, 0);
   }
 
   private async refreshRoute() {

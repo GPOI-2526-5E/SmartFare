@@ -412,3 +412,94 @@
   0% { opacity: 0; transform: translateY(-10px) scale(0.95); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* ── Mobile Responsive ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .wl-poi-left {
+    width: 40px;
+    padding-top: 12px;
+  }
+
+  .wl-poi-pin {
+    width: 26px;
+    height: 36px;
+  }
+
+  .wl-poi-pin span {
+    font-size: 11px;
+    top: 4px;
+  }
+
+  .wl-vertical-line {
+    left: 19px;
+  }
+
+  .wl-poi-card {
+    flex-direction: column-reverse;
+    min-height: auto;
+  }
+
+  .wl-poi-image {
+    flex: none;
+    height: 140px;
+    border-left: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .wl-poi-image img {
+    border-radius: 20px 20px 0 0;
+  }
+
+  .wl-poi-card-content {
+    padding: 16px;
+  }
+
+  .wl-poi-main-info {
+    gap: 12px;
+  }
+
+  .wl-poi-icon-box {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .wl-poi-title {
+    font-size: 17px;
+  }
+
+  .wl-poi-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .wl-poi-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .wl-card-pill span {
+    display: none; /* Hide text on pills to save space */
+  }
+
+  .wl-card-pill {
+    padding: 6px;
+  }
+
+  .wl-poi-notes-box {
+    margin: 10px 0;
+  }
+
+  .wl-time-pill {
+    padding: 6px 12px;
+    gap: 8px;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .wl-time-val {
+    font-size: 13px;
+  }
+}
+

@@ -166,7 +166,7 @@
 .mobile-menu {
   position: fixed;
   inset: 0;
-  width: 100vw;
+  width: 100%;
   min-height: 100dvh;
   background: linear-gradient(180deg, rgba(6, 10, 18, 0.995) 0%, rgba(8, 12, 20, 1) 100%);
   display: flex;
