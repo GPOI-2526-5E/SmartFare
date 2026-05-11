@@ -250,15 +250,42 @@ export class ChatService {
       startDate,
       transcript
     );
-    const itinerary = {
+
+    const itineraryData = {
       name: generated.name || this.suggestItineraryName(plannerState),
       description: generated.description || this.buildItineraryDescription(plannerState),
-      startDate,
-      endDate: this.buildEndDate(startDate, plannerState.days || 3),
+      startDate: new Date(startDate),
+      endDate: new Date(this.buildEndDate(startDate, plannerState.days || 3)),
       locationId: workspace.location.id,
-      location: workspace.location,
-      items: enrichedItems
+      chatSessionId: chatId,
+      userId,
+      items: {
+        create: enrichedItems.map((item: any) => ({
+          dayNumber: item.dayNumber,
+          orderInt: item.orderInt,
+          itemTypeCode: item.itemTypeCode,
+          activityId: item.activityId,
+          accommodationId: item.accommodationId,
+          note: item.note,
+          groupName: item.groupName,
+          plannedStartAt: item.plannedStartAt ? new Date(item.plannedStartAt) : null,
+          plannedEndAt: item.plannedEndAt ? new Date(item.plannedEndAt) : null
+        }))
+      }
     };
+
+    const savedItinerary = await prisma.itinerary.create({
+      data: itineraryData,
+      include: {
+        location: true,
+        items: {
+          include: {
+            activity: true,
+            accommodation: true
+          }
+        }
+      }
+    });
 
     await prisma.chatSession.update({
       where: { id: chatId },
@@ -267,12 +294,12 @@ export class ChatService {
           ...sessionMetadata,
           plannerState,
           readyToGenerate: true,
-          generatedItinerary: itinerary
+          generatedItinerary: savedItinerary
         })
       }
     });
 
-    return itinerary;
+    return savedItinerary;
   }
 
   private async getSessionOrThrow(userId: number, chatId: number) {

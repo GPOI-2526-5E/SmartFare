@@ -1,4 +1,4 @@
-// Forced rebuild      
+// Forced rebuild
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, signal, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -821,7 +821,14 @@ export class BuilderSummaryComponent {
   private withNormalizedEndDate(itin: Itinerary, items: Itinerary['items']): Itinerary {
     const safeItems = items || [];
     const maxDay = safeItems.reduce((max, item) => Math.max(max, item.dayNumber || 1), 1);
-    const start = itin.startDate ? new Date(itin.startDate) : new Date();
+    if (!itin.startDate) {
+      return {
+        ...itin,
+        items: safeItems
+      };
+    }
+
+    const start = new Date(itin.startDate);
     const end = new Date(start);
     end.setDate(end.getDate() + maxDay - 1);
 
@@ -836,8 +843,13 @@ export class BuilderSummaryComponent {
     const current = this.itinerary();
     if (!current) return;
 
+    if (!current.startDate) {
+      this.alertService.warning('Imposta prima una data di inizio per aggiungere altri giorni.');
+      return;
+    }
+
     const maxDay = this.getDaysCount();
-    const startDate = current.startDate ? new Date(current.startDate) : new Date();
+    const startDate = new Date(current.startDate);
     const newEndDate = new Date(startDate);
     newEndDate.setDate(startDate.getDate() + maxDay);
 

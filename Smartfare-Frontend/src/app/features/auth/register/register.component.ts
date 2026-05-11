@@ -49,7 +49,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state as { socialData?: PendingSocialRegistration } | undefined;
-    
+
     if (state?.socialData) {
       this.handleSocialData(state.socialData);
     }
@@ -104,7 +104,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
       this.initBackground();
       this.animate();
     });
-    
+
     window.addEventListener('resize', () => this.initBackground());
   }
 
@@ -118,10 +118,10 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     const canvas = this.canvasRef.nativeElement;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    
+
     this.nodes = [];
     const nodeCount = Math.floor((canvas.width * canvas.height) / 25000) + 15;
-    
+
     for (let i = 0; i < nodeCount; i++) {
       this.nodes.push({
         x: Math.random() * canvas.width,
@@ -158,7 +158,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       // Draw routes
       routes.forEach(r => {
         r.progress += r.speed;
@@ -228,7 +228,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
   async goToLogin() {
     try {
       await this.socialAuthService.signOut();
-    } catch (e) {}
+    } catch (e) { }
     this.authService.clearPendingSocialRegistration();
     this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl } });
   }

@@ -197,10 +197,8 @@ export class ItineraryBuilderComponent implements OnInit {
       return;
     }
 
-    const start = query['in'] || new Date().toISOString().split('T')[0];
-    // A new itinerary starts with only day 1 visible.
-    // Extra days are added progressively from the summary/header controls.
-    const end = start;
+    const start = typeof query['in'] === 'string' && query['in'] ? query['in'] : null;
+    const end = typeof query['out'] === 'string' && query['out'] ? query['out'] : start;
 
     this.itineraryService.setCurrentItinerary(
       {

@@ -34,6 +34,7 @@ type NormalizedDraftIdentity = {
     isPublished: boolean;
     visibilityCode: string;
     locationId: number | null;
+    chatSessionId: number | null;
     imageUrl: string;
 };
 
@@ -196,6 +197,7 @@ export class ItineraryService {
             isPublished: data?.isPublished === true,
             visibilityCode: data?.visibilityCode || "PRIVATE",
             locationId: data?.locationId ? Number(data.locationId) : null,
+            chatSessionId: data?.chatSessionId ? Number(data.chatSessionId) : null,
             imageUrl: data?.imageUrl || DEFAULT_ITINERARY_IMAGE_URL
         };
     }
@@ -222,7 +224,8 @@ export class ItineraryService {
             identity: {
                 ...identity,
                 startDate: identity.startDate?.toISOString() ?? null,
-                endDate: identity.endDate?.toISOString() ?? null
+                endDate: identity.endDate?.toISOString() ?? null,
+                chatSessionId: identity.chatSessionId
             },
             items: items
                 .slice()
@@ -269,20 +272,31 @@ export class ItineraryService {
                 }
 
                 const updated = await prisma.$transaction(async (tx) => {
+                    const updateData: any = {
+                        name: draftPayload.name,
+                        description: draftPayload.description,
+                        startDate: draftPayload.startDate,
+                        endDate: draftPayload.endDate,
+                        isPublished: draftPayload.isPublished,
+                        imageUrl: draftPayload.imageUrl,
+                        visibility: {
+                            connect: { code: draftPayload.visibilityCode }
+                        }
+                    };
+
+                    if (locationId) {
+                        updateData.location = { connect: { id: Number(locationId) } };
+                    } else {
+                        updateData.location = { disconnect: true };
+                    }
+
+                    if (draftPayload.chatSessionId) {
+                        updateData.chatSession = { connect: { id: draftPayload.chatSessionId } };
+                    }
+
                     await tx.itinerary.update({
                         where: { id: Number(id) },
-                        data: {
-                            name: draftPayload.name,
-                            description: draftPayload.description,
-                            startDate: draftPayload.startDate,
-                            endDate: draftPayload.endDate,
-                            isPublished: draftPayload.isPublished,
-                            imageUrl: draftPayload.imageUrl,
-                            location: locationId ? { connect: { id: Number(locationId) } } : { disconnect: true },
-                            visibility: {
-                                connect: { code: draftPayload.visibilityCode }
-                            }
-                        }
+                        data: updateData
                     });
 
                     await tx.itineraryItem.deleteMany({
@@ -321,6 +335,7 @@ export class ItineraryService {
                         isPublished: draftPayload.isPublished,
                         visibilityCode: draftPayload.visibilityCode,
                         locationId: draftPayload.locationId,
+                        chatSessionId: draftPayload.chatSessionId,
                         imageUrl: draftPayload.imageUrl
                     },
                     orderBy: { updatedAt: 'desc' },
@@ -328,22 +343,31 @@ export class ItineraryService {
                 });
 
                 if (matchingDraft) {
+                    const updateData: any = {
+                        name: draftPayload.name,
+                        description: draftPayload.description,
+                        startDate: draftPayload.startDate,
+                        endDate: draftPayload.endDate,
+                        isPublished: draftPayload.isPublished,
+                        imageUrl: draftPayload.imageUrl,
+                        visibility: {
+                            connect: { code: draftPayload.visibilityCode }
+                        }
+                    };
+
+                    if (draftPayload.locationId) {
+                        updateData.location = { connect: { id: draftPayload.locationId } };
+                    } else {
+                        updateData.location = { disconnect: true };
+                    }
+
+                    if (draftPayload.chatSessionId) {
+                        updateData.chatSession = { connect: { id: draftPayload.chatSessionId } };
+                    }
+
                     await tx.itinerary.update({
                         where: { id: matchingDraft.id },
-                        data: {
-                            name: draftPayload.name,
-                            description: draftPayload.description,
-                            startDate: draftPayload.startDate,
-                            endDate: draftPayload.endDate,
-                            isPublished: draftPayload.isPublished,
-                            imageUrl: draftPayload.imageUrl,
-                            ...(draftPayload.locationId
-                                ? { location: { connect: { id: draftPayload.locationId } } }
-                                : { location: { disconnect: true } }),
-                            visibility: {
-                                connect: { code: draftPayload.visibilityCode }
-                            }
-                        }
+                        data: updateData
                     });
 
                     await tx.itineraryItem.deleteMany({
@@ -375,13 +399,20 @@ export class ItineraryService {
                     }
                 };
 
-                // Remove visibilityCode and locationId from createData since we use relations instead
+                // Remove visibilityCode, locationId and chatSessionId from createData since we use relations instead
                 delete createData.visibilityCode;
                 delete createData.locationId;
+                delete createData.chatSessionId;
 
                 if (draftPayload.locationId) {
                     createData.location = {
                         connect: { id: draftPayload.locationId }
+                    };
+                }
+
+                if (draftPayload.chatSessionId) {
+                    createData.chatSession = {
+                        connect: { id: draftPayload.chatSessionId }
                     };
                 }
 

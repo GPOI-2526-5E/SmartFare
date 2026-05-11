@@ -60,8 +60,9 @@ model ChatSession {
   updatedAt     DateTime      @updatedAt
   messages      ChatMessage[]
 
-  user     User      @relation(fields: [userId], references: [id])
-  location Location? @relation(fields: [locationId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
+  location  Location?  @relation(fields: [locationId], references: [id])
+  itinerary Itinerary?
 
   @@index([userId])
   @@index([userId, isPinned])
@@ -200,13 +201,15 @@ model Itinerary {
   updatedAt      DateTime  @updatedAt
   userId         Int?
   locationId     Int?
+  chatSessionId  Int?      @unique
   imageUrl       String    @default("https://images.trvl-media.com/place/6046257/dfc1097b-fb0b-4d2f-96f5-15d86e72f134.jpg")
 
-  user       User?               @relation(fields: [userId], references: [id])
-  location   Location?           @relation(fields: [locationId], references: [id])
-  visibility ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
-  favorites  ItineraryFavorite[]
-  items      ItineraryItem[]
+  user         User?               @relation(fields: [userId], references: [id])
+  location     Location?           @relation(fields: [locationId], references: [id])
+  chatSession  ChatSession?        @relation(fields: [chatSessionId], references: [id])
+  visibility   ItineraryVisibility @relation(fields: [visibilityCode], references: [code])
+  favorites    ItineraryFavorite[]
+  items        ItineraryItem[]
 
   @@index([userId])
   @@index([updatedAt])

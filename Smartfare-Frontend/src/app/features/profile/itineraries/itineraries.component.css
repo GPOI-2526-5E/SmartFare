@@ -175,7 +175,7 @@
 /* --- Grid --- */
 .itineraries-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: 2rem;
 }
 
@@ -375,5 +375,22 @@
   .premium-search {
     width: 100%;
     min-width: 0;
+  }
+}
+@media (max-width: 640px) {
+  .itinerary-card {
+    min-height: auto;
+  }
+
+  .card-image-wrap {
+    height: 180px;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .itinerary-name {
+    font-size: 1.2rem;
   }
 }

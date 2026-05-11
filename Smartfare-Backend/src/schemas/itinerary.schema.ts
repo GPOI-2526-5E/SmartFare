@@ -25,5 +25,6 @@ export const itinerarySchema = z.object({
     isPublished: z.boolean().optional(),
     visibilityCode: z.string().optional(),
     locationId: z.coerce.number().int().positive().optional().nullable(),
+    chatSessionId: z.coerce.number().int().positive().optional().nullable(),
     items: z.array(itineraryItemSchema).optional(),
 });
