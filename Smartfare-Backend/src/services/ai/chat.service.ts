@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import prisma from '../../config/prisma';
 import { AppError } from '../../middleware/error.middleware';
 import { GeminiItineraryChatService } from './gemini.service';
+import { CHAT_MODES, GEMINI_MODEL_FALLBACKS, ITINERARY_ITEM_TYPES } from '../../constants/chat.constants';
 import { ChatMode, ChatStreamResponse, PlannerState } from '../../models/chat.model';
 import { ItineraryService } from '../itinerary/itinerary.service';
 
@@ -24,27 +25,25 @@ export class ChatService {
 
   private resolveModelName(rawModelName?: string): string {
     const deprecatedModelMap: Record<string, string> = {
-      'gemini-1.5-flash': 'gemini-2.5-flash',
-      'gemini-1.5-flash-latest': 'gemini-2.5-flash',
-      'gemini-1.5-pro': 'gemini-2.5-flash'
+      'gemini-1.5-flash': GEMINI_MODEL_FALLBACKS[0],
+      'gemini-1.5-flash-latest': GEMINI_MODEL_FALLBACKS[0],
+      'gemini-1.5-pro': GEMINI_MODEL_FALLBACKS[0]
     };
-    const fallbackModels = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'];
     const candidates = [
       ...(rawModelName || '')
         .split(',')
         .map((model) => deprecatedModelMap[model.trim()] || model.trim())
         .filter(Boolean),
-      ...fallbackModels
+      ...GEMINI_MODEL_FALLBACKS
     ];
 
     const validModel = candidates.find((model) => /^gemini-[a-z0-9.-]+$/i.test(model));
-    return validModel || 'gemini-2.0-flash';
+    return validModel || GEMINI_MODEL_FALLBACKS[GEMINI_MODEL_FALLBACKS.length - 1];
   }
 
   private getModelFallbacks(rawModelName?: string): string[] {
     const primary = this.resolveModelName(rawModelName);
-    const fallbackModels = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'];
-    return [primary, ...fallbackModels].filter((model, index, array) => array.indexOf(model) === index);
+    return [primary, ...GEMINI_MODEL_FALLBACKS].filter((model, index, array) => array.indexOf(model) === index);
   }
 
   async streamChatResponse(
@@ -202,11 +201,11 @@ export class ChatService {
     const sessionMetadata = this.asMetadata(session.metadata);
     const plannerState = this.normalizePlannerState(sessionMetadata.plannerState);
 
-    if (session.mode !== 'planner') {
+    if (session.mode !== CHAT_MODES.PLANNER) {
       throw new AppError('La generazione itinerario è disponibile solo in Planner Mode', 400);
     }
 
-    if (!this.isReadyToGenerate('planner', plannerState)) {
+    if (!this.isReadyToGenerate(CHAT_MODES.PLANNER as ChatMode, plannerState)) {
       throw new AppError('La chat non ha ancora raccolto abbastanza dettagli per creare l’itinerario.', 400);
     }
 

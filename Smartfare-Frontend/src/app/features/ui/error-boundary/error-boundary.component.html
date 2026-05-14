@@ -1,0 +1,31 @@
+@if(!hasError) {
+  <ng-content></ng-content>
+} @else(){
+  <div class="error-boundary-container">
+    <div class="error-card">
+      <div class="error-icon">⚠️</div>
+      <h3>Oops! Qualcosa è andato storto</h3>
+
+      @if(errorMessage){
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+
+      @if(showDetails && errorDetails){
+        <p class="error-details">
+          <code>{{ errorDetails }}</code>
+        </p>
+      }
+
+      <div class="error-actions">
+        <button class="btn btn-primary" (click)="reset()">Riprova</button>
+
+        @if(!showDetails){
+          <button class="btn btn-secondary" (click)="showDetails = true">Dettagli</button>
+        } @else(){
+          <button class="btn btn-secondary" (click)="showDetails = false">Nascondi dettagli</button>
+        }
+
+      </div>
+    </div>
+  </div>
+}

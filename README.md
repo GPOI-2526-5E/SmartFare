@@ -2,9 +2,40 @@
 
 <div align="center">
 
-# 🌍 SmartFare
+# SmartFare
 
-### 🚀 Pianificazione Intelligente di Viaggi con IA Generativa
+This repository contains the SmartFare full-stack application (Angular frontend, Express/TypeScript backend) — production-ready refactor in progress.
+
+This `README.md` is intentionally minimal. Full technical documentation, architecture notes, deployment instructions, and the complete refactoring report are available in the `docs/` folder.
+
+Primary resources:
+
+- Refactoring summary and quick navigation: [REFACTORING_SUMMARY.md](REFACTORING_SUMMARY.md)
+- Full refactoring report: [docs/REFACTORING_REPORT.md](docs/REFACTORING_REPORT.md)
+- Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Deployment guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+
+Quick start (development):
+
+Backend
+```
+cd Smartfare-Backend
+npm ci
+npm run dev
+```
+
+Frontend
+```
+cd Smartfare-Frontend
+npm ci
+npm start
+```
+
+For production deployment instructions, see `docs/DEPLOYMENT.md`.
+
+If you need the old README content, check the project history in Git.
+
+Maintainer: Nicolo' / SmartFare team
 
 **Full-Stack Web Application** | **Angular 21** | **Express.js** | **PostgreSQL** | **Google Gemini API**
 

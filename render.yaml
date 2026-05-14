@@ -3,10 +3,58 @@ services:
     name: smartfare-backend
     runtime: node
     rootDir: Smartfare-Backend
+    
+    # Build & Deployment
     buildCommand: npm ci; npm run build
     startCommand: npm start
+    
+    # Health monitoring
     healthCheckPath: /health
+    healthCheckInterval: 30
+    
+    # Auto-deployment
     autoDeploy: true
+    
+    # Environment Configuration
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 3001
+      
+      # Logging & Monitoring
+      - key: LOG_LEVEL
+        value: info
+      
+      # Database (connection pooling)
+      - key: DATABASE_POOL_MIN
+        value: 2
+      - key: DATABASE_POOL_MAX
+        value: 20
+      - key: DATABASE_POOL_TIMEOUT
+        value: 30000
+        
+      # API Limits
+      - key: REQUEST_TIMEOUT_MS
+        value: 30000
+      - key: MAX_REQUEST_SIZE
+        value: 1mb
+    
+    # Persistent disk for logs/temp files (optional)
+    # disk:
+    #   - name: logs
+    #     mountPath: /var/log/smartfare
+    #     sizeGB: 1
+    
+    # Custom domains
+    domains:
+      - smartfare-backend.onrender.com
+
+databases:
+  - name: smartfare-db
+    databaseName: smartfare
+    user: postgres
+    region: oregon  # Change to your preferred region
+    plan: standard  # free, standard, pro
+    previewPlan: standard
+    postgresMajorVersion: 14  # PostgreSQL version
