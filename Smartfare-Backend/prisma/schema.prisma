@@ -55,7 +55,7 @@ model ChatSession {
   isActive      Boolean       @default(true)
   isPinned      Boolean       @default(false)
   metadata      Json?
-  lastMessageAt DateTime? // for sorting chronologically
+  lastMessageAt DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   messages      ChatMessage[]
