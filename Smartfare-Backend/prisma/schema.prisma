@@ -54,7 +54,7 @@ model ChatSession {
   locationId    Int? // destination context for planner mode
   isActive      Boolean       @default(true)
   isPinned      Boolean       @default(false)
-  metadata      Json? // store preferences, itinerary preview, etc
+  metadata      Json?
   lastMessageAt DateTime? // for sorting chronologically
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
