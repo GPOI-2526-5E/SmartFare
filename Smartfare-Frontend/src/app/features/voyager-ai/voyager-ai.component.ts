@@ -206,6 +206,24 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     this.router.navigate(['/home']);
   }
 
+  openSettings() {
+    this.showMobileSidebar.set(false);
+    this.router.navigate(['/settings']);
+  }
+
+  updateSessionTitle(event: Event) {
+    const session = this.chatService.activeSession();
+    if (!session) return;
+    const input = event.target as HTMLInputElement;
+    const newTitle = input.value.trim();
+    if (newTitle && newTitle !== session.title) {
+      this.chatService.updateSession(session.id, { title: newTitle }).subscribe(() => {
+        // Optimistic update of the session title in the UI
+        session.title = newTitle;
+      });
+    }
+  }
+
   async createNewChat(mode: ChatMode = this.chatService.mode()) {
     const active = this.chatService.activeSession();
     const hasNoMessages = this.chatService.messages().length === 0;

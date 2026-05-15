@@ -108,53 +108,78 @@ export class ChatService {
 
     try {
       let lastError: unknown = null;
+      const ai = new GoogleGenerativeAI(this.apiKey);
+      const maxAttemptsPerModel = 3;
 
       for (const modelName of this.modelFallbacks) {
-        const ai = new GoogleGenerativeAI(this.apiKey);
-        const model = ai.getGenerativeModel({
-          model: modelName,
-          generationConfig: {
-            temperature: session.mode === 'planner' ? 0.75 : 0.6,
-            topP: 0.85,
-            topK: 40
-          },
-          systemInstruction: {
-            role: 'system',
-            parts: [{ text: this.getSystemInstruction(session.mode as ChatMode, plannerState, Boolean(bestLocation)) }]
+        let modelSucceeded = false;
+
+        for (let attempt = 1; attempt <= maxAttemptsPerModel; attempt += 1) {
+          const model = ai.getGenerativeModel({
+            model: modelName,
+            generationConfig: {
+              temperature: session.mode === 'planner' ? 0.75 : 0.6,
+              topP: 0.85,
+              topK: 40
+            },
+            systemInstruction: {
+              role: 'system',
+              parts: [{ text: this.getSystemInstruction(session.mode as ChatMode, plannerState, Boolean(bestLocation)) }]
+            }
+          });
+
+          const chat = model.startChat({
+            history: history as any
+          });
+
+          let attemptReply = '';
+
+          try {
+            const result = await chat.sendMessageStream(userMessage);
+
+            for await (const chunk of result.stream) {
+              const chunkText = chunk.text();
+              if (!chunkText) continue;
+
+              attemptReply += chunkText;
+              onChunk({
+                reply: chunkText,
+                done: false
+              });
+            }
+
+            fullReply = attemptReply;
+            lastError = null;
+            modelSucceeded = true;
+            break;
+          } catch (error) {
+            lastError = error;
+            const status = Number((error as any)?.status || (error as any)?.statusCode || 0);
+            const hasPartialReply = attemptReply.length > 0;
+            const canRetry = this.shouldRetryGeminiStreamError(error, hasPartialReply);
+
+            if (!canRetry) {
+              throw error;
+            }
+
+            if (attempt < maxAttemptsPerModel) {
+              console.warn(`Gemini stream transient error on ${modelName} (attempt ${attempt}/${maxAttemptsPerModel}), retrying...`);
+              await this.delay(Math.min(3000, 700 * attempt));
+              continue;
+            }
+
+            const reason = status === 429
+              ? 'rate limit reached'
+              : this.isTransientGeminiNetworkError(error)
+                ? 'network error'
+                : `status ${status || 'unknown'}`;
+
+            console.warn(`Gemini stream ${reason} on ${modelName}, trying fallback model...`);
           }
-        });
+        }
 
-        const chat = model.startChat({
-          history: history as any
-        });
-
-        fullReply = '';
-
-        try {
-          const result = await chat.sendMessageStream(userMessage);
-
-          for await (const chunk of result.stream) {
-            const chunkText = chunk.text();
-            if (!chunkText) continue;
-
-            fullReply += chunkText;
-            onChunk({
-              reply: chunkText,
-              done: false
-            });
-          }
-
-          lastError = null;
+        if (modelSucceeded) {
           break;
-        } catch (error) {
-          lastError = error;
-
-          const status = Number((error as any)?.status || (error as any)?.statusCode || 0);
-          if (status !== 429 || fullReply.length > 0) {
-            throw error;
-          }
-
-          console.warn(`Gemini stream rate limited on ${modelName}, retrying with fallback model...`);
         }
       }
 
@@ -765,17 +790,25 @@ export class ChatService {
     const accommodationById = new Map(workspace.accommodations.map((accommodation) => [accommodation.id, accommodation]));
 
     let items = (rawItems || [])
-      .map((item: any, index: number) => ({
-        dayNumber: Number(item.dayNumber || 1),
-        orderInt: Number(item.orderInt || index + 1),
-        itemTypeCode: item.itemTypeCode,
-        activityId: item.activityId ?? undefined,
-        accommodationId: item.accommodationId ?? undefined,
-        note: item.note ?? undefined,
-        groupName: item.groupName ?? undefined,
-        plannedStartAt: this.resolvePlannedDateTime(startDate, Number(item.dayNumber || 1), item.plannedStartAt || item.timeSlotStart),
-        plannedEndAt: this.resolvePlannedDateTime(startDate, Number(item.dayNumber || 1), item.plannedEndAt || item.timeSlotEnd)
-      }))
+      .map((item: any, index: number) => {
+        const dayNumber = Number(item.dayNumber || 1);
+        const concreteDate = item.date ? new Date(item.date) : new Date(startDate);
+        if (item.date) concreteDate.setDate(concreteDate.getDate() + (dayNumber - 1));
+
+        const dateStr = concreteDate.toISOString().split('T')[0];
+
+        return {
+          dayNumber,
+          orderInt: Number(item.orderInt || index + 1),
+          itemTypeCode: item.itemTypeCode,
+          activityId: item.activityId ?? undefined,
+          accommodationId: item.accommodationId ?? undefined,
+          note: item.note ?? undefined,
+          groupName: item.groupName ?? undefined,
+          plannedStartAt: this.resolvePlannedDateTime(dateStr, 1, item.timeSlotStart || item.plannedStartAt),
+          plannedEndAt: this.resolvePlannedDateTime(dateStr, 1, item.timeSlotEnd || item.plannedEndAt)
+        };
+      })
       .filter((item) => item.itemTypeCode === 'ACTIVITY' || item.itemTypeCode === 'ACCOMMODATION')
       .filter((item) => {
         if (item.itemTypeCode === 'ACTIVITY') {
@@ -1014,15 +1047,51 @@ export class ChatService {
     return parsed;
   }
 
+  private isTransientGeminiNetworkError(error: any): boolean {
+    const message = String(error?.message || '').toLowerCase();
+    const code = String(error?.code || '').toLowerCase();
+    const causeCode = String(error?.cause?.code || '').toLowerCase();
+
+    if (message.includes('fetch failed')) return true;
+
+    const transientCodes = [
+      'und_err_connect_timeout',
+      'und_err_headers_timeout',
+      'und_err_socket',
+      'etimedout',
+      'econnreset',
+      'eai_again',
+      'enotfound',
+      'ecanceled'
+    ];
+
+    return transientCodes.includes(code) || transientCodes.includes(causeCode);
+  }
+
+  private shouldRetryGeminiStreamError(error: any, hasPartialReply: boolean): boolean {
+    if (hasPartialReply) {
+      return false;
+    }
+
+    const status = Number(error?.status || error?.statusCode || 0);
+    return status === 429 || status === 503 || status === 504 || this.isTransientGeminiNetworkError(error);
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
   private mapGeminiStreamError(error: any): AppError {
     const status = Number(error?.status || error?.statusCode || 0);
     const retryAfterSeconds = this.extractRetryAfterSeconds(error);
 
-    if (status === 429 || status === 503) {
-      const is503 = status === 503;
-      const baseMessage = is503
-        ? 'I server di Voyager AI sono al momento sovraccarichi per l’alta richiesta.'
-        : 'Voyager AI è temporaneamente in sovraccarico.';
+    if (status === 429 || status === 503 || status === 504) {
+      const is503Family = status === 503 || status === 504;
+      const baseMessage = is503Family
+        ? 'I server di Voyager AI sono al momento sovraccarichi per l\'alta richiesta.'
+        : 'Voyager AI e temporaneamente in sovraccarico.';
 
       const retryText = retryAfterSeconds
         ? ` Riprova tra circa ${retryAfterSeconds} secondi.`
@@ -1032,8 +1101,19 @@ export class ChatService {
         `${baseMessage}${retryText}`,
         503,
         {
-          code: is503 ? 'AI_SERVICE_UNAVAILABLE' : 'AI_OVERLOADED',
+          code: is503Family ? 'AI_SERVICE_UNAVAILABLE' : 'AI_OVERLOADED',
           retryAfterSeconds
+        }
+      );
+    }
+
+    if (this.isTransientGeminiNetworkError(error)) {
+      return new AppError(
+        'Connessione temporaneamente instabile con il servizio AI. Riprova tra qualche secondo.',
+        503,
+        {
+          code: 'AI_NETWORK_ERROR',
+          retryAfterSeconds: 5
         }
       );
     }

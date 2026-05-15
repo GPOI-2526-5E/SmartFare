@@ -9,9 +9,11 @@
     <aside class="sidebar" [class.collapsed]="!chatService.isSidebarOpen()" [class.mobile-open]="showMobileSidebar()">
       <div class="sidebar-header">
         @if (chatService.isSidebarOpen()) {
-        <div class="sidebar-brand">
-          <span class="sidebar-kicker">Voyager AI</span>
-          <h2>Travel Copilot</h2>
+        <div class="sidebar-brand" style="display: flex; align-items: center; gap: 10px;">
+          <i class="bi bi-robot" style="font-size: 1.6rem; color: #6366f1;"></i>
+          <div>
+            <h2 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: white; line-height: 1.1;">SmartFare AI</h2>
+          </div>
         </div>
         }
 
@@ -30,15 +32,6 @@
               }
             </button>
           </div>
-          <button class="toggle-btn desktop-only" type="button" title="Apri o chiudi sidebar"
-            aria-label="Apri o chiudi sidebar" (click)="toggleSidebar()">
-            <i class="bi" [class.bi-layout-sidebar-inset]="chatService.isSidebarOpen()"
-              [class.bi-layout-sidebar]="!chatService.isSidebarOpen()"></i>
-          </button>
-          <button class="toggle-btn mobile-only" type="button" title="Chiudi menu" aria-label="Chiudi menu"
-            (click)="toggleMobileSidebar()">
-            <i class="bi bi-x-lg"></i>
-          </button>
         </div>
       </div>
 
@@ -130,10 +123,19 @@
       }
 
       <div class="sidebar-footer">
-        <button class="home-btn" type="button" (click)="goHome()">
-          <i class="bi bi-house-door"></i>
+        <button class="settings-btn" type="button" (click)="openSettings()">
+          <div class="user-profile-small">
+            @if (userAvatar()) {
+            <img [src]="userAvatar()" alt="User" class="avatar-img">
+            } @else {
+            <div class="avatar-fallback">{{ userInitial() }}</div>
+            }
+          </div>
           @if (chatService.isSidebarOpen()) {
-          <span>Torna alla home</span>
+          <div class="user-info-small">
+            <strong>{{ userName() }}</strong>
+            <span>Impostazioni</span>
+          </div>
           }
         </button>
       </div>
@@ -147,36 +149,33 @@
     <main class="chat-main">
       <header class="chat-header">
         <div class="header-left">
+          <!-- Desktop toggle (visible when sidebar is closed) -->
+          @if (!chatService.isSidebarOpen()) {
+          <button class="toggle-btn desktop-only" type="button" title="Apri/Chiudi menu"
+            aria-label="Apri/Chiudi menu" (click)="toggleSidebar()">
+            <i class="bi bi-list"></i>
+          </button>
+          }
+          <!-- Mobile toggle -->
           <button class="toggle-btn mobile-only" type="button" title="Apri menu conversazioni"
             aria-label="Apri menu conversazioni" (click)="toggleMobileSidebar()">
             <i class="bi bi-list"></i>
           </button>
-          <div>
+          <div class="chat-title-wrapper">
             <span class="header-kicker">{{ currentModeLabel() }}</span>
-            <h1>{{ chatService.activeSession()?.title || 'Voyager AI' }}</h1>
+            <input class="chat-title-input" [value]="chatService.activeSession()?.title || 'SmartFare AI'"
+              (blur)="updateSessionTitle($event)" (keydown.enter)="$any($event).target.blur()" />
           </div>
         </div>
 
         <div class="header-right">
-          <button class="home-link" type="button" (click)="goHome()">
-            <i class="bi bi-house-door"></i>
-            <span>Home</span>
-          </button>
-          <button class="action-btn" type="button" title="Condividi conversazione" aria-label="Condividi conversazione"
-            (click)="shareConversation()" [disabled]="!chatService.activeSession()">
-            <i class="bi bi-share"></i>
-          </button>
-          <div class="dropdown-tools">
-            <button class="action-btn action-btn--subtle" type="button" title="Altre azioni" aria-label="Altre azioni"
-              data-bs-toggle="dropdown">
-              <i class="bi bi-three-dots"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end voyager-dropdown">
-              <button class="dropdown-item" (click)="exportConversation('md')">Export Markdown</button>
-              <button class="dropdown-item" (click)="exportConversation('json')">Export JSON</button>
-              <button class="dropdown-item" (click)="createNewChat(chatService.mode())">Nuova chat</button>
+          <button class="home-branded-btn" type="button" (click)="goHome()">
+            <img src="favicon.png" alt="SmartFare Logo" style="width: 24px; height: auto;" />
+            <div class="home-text">
+              <span class="brand-name">SMARTFARE</span>
+              <span class="back-text">Torna alla home</span>
             </div>
-          </div>
+          </button>
         </div>
       </header>
 
@@ -202,7 +201,7 @@
               <div class="hero-icon">
                 <i class="bi bi-stars"></i>
               </div>
-              <h2>Benvenuto su Voyager AI</h2>
+              <h2>Benvenuto su SmartFare AI</h2>
               <p>Il tuo assistente di viaggio intelligente. Scegli come iniziare una nuova conversazione.</p>
 
               <div class="entry-choice">
@@ -320,7 +319,7 @@
           </button>
           }
 
-          <textarea [ngModel]="message()" (ngModelChange)="message.set($event)" placeholder="Messaggio a Voyager AI..."
+          <textarea [ngModel]="message()" (ngModelChange)="message.set($event)" placeholder="Messaggio a SmartFare AI..."
             (keydown.enter)="onEnter($event)" rows="1"></textarea>
 
           <button class="send-btn" type="button" title="Invia messaggio" aria-label="Invia messaggio"
@@ -331,7 +330,7 @@
         </div>
 
         <div class="footer-note">
-          Voyager AI usa memoria conversazionale e può sbagliare. Verifica le informazioni importanti prima di
+          SmartFare AI usa memoria conversazionale e può sbagliare. Verifica le informazioni importanti prima di
           finalizzare.
         </div>
   </div>
