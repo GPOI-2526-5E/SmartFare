@@ -25,7 +25,7 @@ export class EmailService {
         'yahoo.com',
         'icloud.com'
     ]);
-    
+
     constructor() {
         this.initPromise = this.init();
     }
@@ -41,7 +41,7 @@ export class EmailService {
         const domain = this.extractDomain(email);
         return !!domain && this.commonFreeEmailDomains.has(domain);
     }
-    
+
     public async init() {
         if (this.transporter) return;
 
@@ -83,7 +83,7 @@ export class EmailService {
                 }
             };
             this.transporter = nodemailer.createTransport(options);
-            
+
             try {
                 await this.transporter.verify();
                 console.log("✅ SMTP Transporter pronto e verificato");
@@ -123,21 +123,21 @@ export class EmailService {
                 await this.init();
             }
         }
-        
+
         // If SendGrid is enabled we don't require a nodemailer transporter
         if (!this.transporter && !this.useSendgrid) {
             throw new Error("Transporter email non inizializzato");
         }
     }
 
-    
+
     public async sendPasswordResetEmail(to: string, resetLink: string) {
         await this.ensureTransporter();
         if (!this.transporter && !this.useSendgrid) return;
 
-        const backendUrl = (process.env.BACKEND_URL || 'https://smartfare.nicolas-dominici.it').replace(/\/+$/,'');
+        const backendUrl = (process.env.BACKEND_URL || 'https://smartfare.nicolas-dominici.it').replace(/\/+$/, '');
         const logoUrl = `${backendUrl}/assets/logo.png`;
-        
+
         let logoDataUri: string | null = null;
         try {
             const logoPath = path.join(process.cwd(), 'public', 'assets', 'logo.png');
@@ -148,40 +148,149 @@ export class EmailService {
         } catch (e) {
             logoDataUri = null;
         }
-        
 
-        const textTemplate = `Ciao,\n\nPer azzerare la password del tuo account SmartFare, visita questo link:\n${resetLink}\n\nSe avevi già effettuato una richiesta di modifica della password, solo il link contenuto in questa email è valido.\n\nSe invece non eri tu: Il tuo account SmartFare potrebbe essere stato compromesso. Se non hai ancora aggiunto la verifica in due passaggi al tuo account, ti consigliamo di attivarla subito per migliorare la sicurezza.\n\nCordialmente,\nIl team SmartFare\n\n© 2026 SmartFare Tickets. Tutti i diritti riservati.`;
 
-        const htmlTemplate = `<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password</title>
-</head>
-<body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; background: #f4f4f4;">
-    <div style="max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border: 1px solid #e0e0e0;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-            <img src="${logoDataUri || logoUrl}" alt="SmartFare" style="height:40px; width:40px; object-fit:contain;" />
-            <h2 style="color: #000; margin: 0;">SMARTFARE</h2>
-        </div>
-        <hr style="border: none; border-top: 5px solid #666; margin: 20px 0;">
+        const textTemplate = `Ciao,
+
+        Abbiamo ricevuto una richiesta di modifica della password per il tuo account SmartFare.
         
-        <p>Ciao,</p>
+        Per scegliere una nuova password apri questo link:
         
-        <p>Per azzerare la password del tuo account SmartFare, clicca sul link qui sotto:</p>
+        ${resetLink}
         
-        <p><a href="${resetLink}" style="background: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">Reimposta Password</a></p>
+        Questo link sarà valido per 30 minuti.
         
-        <p>Se avevi già effettuato una richiesta di modifica della password, solo il link contenuto in questa email è valido.</p>
+        Se non hai richiesto questa operazione puoi ignorare questa email.
         
-        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+        SmartFare Tickets
+        support@smartfare.nicolas-dominici.it`;
+
+        const htmlTemplate = `
+        <!DOCTYPE html>
+        <html lang="it">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>SmartFare - Reimposta Password</title>
+        </head>
         
-        <p style="font-size: 12px; color: #999; margin-bottom: 0;">© 2026 SmartFare Tickets. Tutti i diritti riservati.</p>
-        <p style="font-size: 12px; color: #999; margin-top: 5px;">Se non hai richiesto il reset della password, ignora questa email.</p>
-    </div>
-</body>
-</html>`;
+        <body style="margin:0;padding:0;background-color:#f5f5f5;font-family:Arial,Helvetica,sans-serif;color:#333333;">
+        
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;padding:30px 15px;">
+            <tr>
+              <td align="center">
+        
+                <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+                  style="background-color:#ffffff;border:1px solid #e6e6e6;border-radius:8px;overflow:hidden;max-width:600px;width:100%;">
+        
+                  <!-- HEADER -->
+                  <tr>
+                    <td style="padding:30px 40px 20px 40px;">
+        
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td valign="middle">
+                            <img
+                              src="https://smartfare-56lb.onrender.com/assets/logo.png"
+                              alt="SmartFare"
+                              width="42"
+                              height="42"
+                              style="display:block;border:0;outline:none;text-decoration:none;">
+                          </td>
+        
+                          <td width="12"></td>
+        
+                          <td valign="middle">
+                            <h1 style="margin:0;font-size:24px;font-weight:700;color:#111111;letter-spacing:1px;">
+                              SMARTFARE
+                            </h1>
+                          </td>
+                        </tr>
+                      </table>
+        
+                    </td>
+                  </tr>
+        
+                  <!-- LINE -->
+                  <tr>
+                    <td>
+                      <div style="height:4px;background-color:#444444;"></div>
+                    </td>
+                  </tr>
+        
+                  <!-- CONTENT -->
+                  <tr>
+                    <td style="padding:35px 40px;">
+        
+                      <p style="margin:0 0 20px 0;font-size:16px;line-height:1.6;">
+                        Ciao,
+                      </p>
+        
+                      <p style="margin:0 0 20px 0;font-size:16px;line-height:1.6;">
+                        Abbiamo ricevuto una richiesta per modificare la password del tuo account SmartFare.
+                      </p>
+        
+                      <p style="margin:0 0 30px 0;font-size:16px;line-height:1.6;">
+                        Per scegliere una nuova password, clicca sul pulsante qui sotto:
+                      </p>
+        
+                      <!-- BUTTON -->
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:30px;">
+                        <tr>
+                          <td align="center" bgcolor="#111111" style="border-radius:6px;">
+                            <a href="${resetLink}"
+                              target="_blank"
+                              style="display:inline-block;padding:14px 26px;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:6px;">
+                              Reimposta la password
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+        
+                      <p style="margin:0 0 20px 0;font-size:15px;line-height:1.6;color:#555555;">
+                        Questo link sarà valido per 30 minuti.
+                      </p>
+        
+                      <p style="margin:0 0 12px 0;font-size:15px;line-height:1.6;">
+                        Se il pulsante non funziona, copia e incolla questo link nel browser:
+                      </p>
+        
+                      <p style="margin:0 0 25px 0;font-size:13px;line-height:1.6;color:#666666;word-break:break-all;">
+                        ${resetLink}
+                      </p>
+        
+                      <p style="margin:0;font-size:15px;line-height:1.6;color:#555555;">
+                        Se non hai richiesto questa operazione, puoi ignorare questa email.
+                        La tua password rimarrà invariata.
+                      </p>
+        
+                    </td>
+                  </tr>
+        
+                  <!-- FOOTER -->
+                  <tr>
+                    <td style="padding:25px 40px;background-color:#fafafa;border-top:1px solid #eeeeee;">
+        
+                      <p style="margin:0 0 8px 0;font-size:12px;color:#888888;">
+                        © 2026 SmartFare Tickets. Tutti i diritti riservati.
+                      </p>
+        
+                      <p style="margin:0;font-size:12px;color:#888888;">
+                        Supporto: support@smartfare.nicolas-dominici.it
+                      </p>
+        
+                    </td>
+                  </tr>
+        
+                </table>
+        
+              </td>
+            </tr>
+          </table>
+        
+        </body>
+        </html>
+        `;
 
         try {
             const smtpFrom = process.env.EMAIL_FROM || process.env.SMTP_FROM || process.env.SMTP_USER;
@@ -192,7 +301,7 @@ export class EmailService {
             if (this.useSendgrid && this.sendgridApiKey) {
                 const sgFrom = this.defaultFromEmail || 'support@smartfare.com';
                 const payload = {
-                    personalizations: [{ 
+                    personalizations: [{
                         to: [{ email: to }],
                         subject: 'Recupero Password Account - SmartFare Tickets'
                     }],
@@ -256,7 +365,7 @@ export class EmailService {
         await this.ensureTransporter();
         if (!this.transporter && !this.useSendgrid) return;
 
-        const backendUrl = (process.env.BACKEND_URL || 'https://smartfare.nicolas-dominici.it').replace(/\/+$/,'');
+        const backendUrl = (process.env.BACKEND_URL || 'https://smartfare.nicolas-dominici.it').replace(/\/+$/, '');
         const logoUrl = `${backendUrl}/assets/logo.png`;
         let logoDataUri: string | null = null;
         try {
@@ -281,7 +390,7 @@ export class EmailService {
 <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; background: #f4f4f4;">
     <div style="max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border: 1px solid #e0e0e0;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-            <img src="${logoDataUri || logoUrl}" alt="SmartFare" style="height:40px; width:40px; object-fit:contain;" />
+            <img src="https://smartfare-56lb.onrender.com/assets/logo.png" alt="SmartFare" style="height:40px; width:40px; object-fit:contain;" />
             <h2 style="color: #000; margin: 0;">SMARTFARE</h2>
         </div>
         <hr style="border: none; border-top: 5px solid #666; margin: 20px 0;">
@@ -312,7 +421,7 @@ export class EmailService {
             if (this.useSendgrid && this.sendgridApiKey) {
                 const sgFrom = this.defaultFromEmail || 'support@smartfare.com';
                 const payload = {
-                    personalizations: [{ 
+                    personalizations: [{
                         to: [{ email: to }],
                         subject: 'Verifica il tuo indirizzo email - SmartFare Tickets'
                     }],
