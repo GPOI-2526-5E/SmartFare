@@ -41,11 +41,10 @@
 </div>
 
 <!-- Featured Itineraries Section -->
-<app-featured-itineraries [itineraries]="publicItineraries()"
-  [loading]="isLoadingPublicItineraries()"></app-featured-itineraries>
+<app-featured-itineraries-wrapper [itineraries]="publicItineraries()" [loading]="isLoadingPublicItineraries()"></app-featured-itineraries-wrapper>
 
 <!-- Features Section -->
-<app-features-grid></app-features-grid>
+<app-features-grid-wrapper></app-features-grid-wrapper>
 
 <!-- CTA Section -->
 <app-cta-section></app-cta-section>

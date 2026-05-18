@@ -19,8 +19,8 @@ import { AiPromptBarComponent } from '../ai-prompt-bar/ai-prompt-bar.component';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { Itinerary } from '../../../core/models/itinerary.model';
 import { FooterComponent } from '../../ui/footer/footer.component';
-import { FeaturedItinerariesComponent } from '../featured-itineraries/featured-itineraries.component';
-import { FeaturesGridComponent } from '../features-grid/features-grid.component';
+import { FeaturedItinerariesWrapperComponent } from '../featured-itineraries/featured-itineraries-wrapper.component';
+import { FeaturesGridWrapperComponent } from '../features-grid/features-grid-wrapper.component';
 import { CtaSectionComponent } from '../cta-section/cta-section.component';
 import { AppLoaderComponent } from '../../ui/loader/loader.component';
 
@@ -32,8 +32,8 @@ import { AppLoaderComponent } from '../../ui/loader/loader.component';
     NavbarComponent,
     AiPromptBarComponent,
     FooterComponent,
-    FeaturedItinerariesComponent,
-    FeaturesGridComponent,
+  FeaturedItinerariesWrapperComponent,
+  FeaturesGridWrapperComponent,
     CtaSectionComponent,
     AppLoaderComponent
   ],

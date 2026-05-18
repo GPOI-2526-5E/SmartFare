@@ -1,0 +1,20 @@
+<section class="fg-mobile">
+  <div class="fg-mobile-inner">
+    @for (stage of stages(); track stage.id) {
+    <article class="fg-stage">
+      <img class="fg-stage-img" [src]="stage.primaryImage" [alt]="stage.eyebrow" loading="lazy">
+      <div class="fg-stage-body">
+        <div class="fg-stage-eyebrow">{{ stage.eyebrow }}</div>
+        <h3 class="fg-stage-title">{{ stage.headline }}</h3>
+        <p class="fg-stage-desc">{{ stage.description }}</p>
+        <ul class="fg-stage-bullets">
+          @for (b of stage.bullets; track b) {
+          <li><i class="bi bi-check2-circle"></i><span>{{ b }}</span></li>
+          }
+        </ul>
+        <a [routerLink]="stage.route" class="fg-stage-cta">{{ stage.cta }} <i class="bi bi-arrow-up-right"></i></a>
+      </div>
+    </article>
+    }
+  </div>
+</section>

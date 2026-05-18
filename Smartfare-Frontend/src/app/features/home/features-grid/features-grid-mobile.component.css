@@ -1,0 +1,84 @@
+.fg-mobile {
+  background: linear-gradient(180deg, #040206 0%, #07040d 100%);
+  padding: 1.25rem 0 2rem;
+}
+
+.fg-mobile-inner {
+  width: min(100%, calc(100% - 24px));
+  margin: 0 auto;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.fg-stage {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  background: rgba(12,8,24,0.6);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 0.85rem;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.fg-stage-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 0.6rem;
+  object-fit: cover;
+}
+
+.fg-stage-body {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.fg-stage-eyebrow {
+  color: #d8b4fe;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+}
+
+.fg-stage-title {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.fg-stage-desc {
+  margin: 0;
+  color: rgba(248,250,252,0.78);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.fg-stage-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.fg-stage-bullets li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: rgba(248,250,252,0.85);
+}
+
+.fg-stage-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(139,92,246,0.12);
+  border-radius: 999px;
+  color: #f8fafc;
+  text-decoration: none;
+  font-weight: 800;
+  justify-self: start;
+}
