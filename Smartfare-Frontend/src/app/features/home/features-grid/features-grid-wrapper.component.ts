@@ -1,19 +1,19 @@
 import { Component, inject, signal, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FeaturesGridComponent } from './features-grid.component';
-import { FeaturesGridMobileComponent } from './features-grid-mobile.component';
+import { FeaturesGridMobileComponent } from '../features-grid-mobile/features-grid-mobile.component';
 
 @Component({
   selector: 'app-features-grid-wrapper',
   standalone: true,
   imports: [CommonModule, FeaturesGridComponent, FeaturesGridMobileComponent],
   template: `
-    <ng-container *ngIf="isMobile() === false">
+    @if (isMobile() === false) {
       <app-features-grid></app-features-grid>
-    </ng-container>
-    <ng-container *ngIf="isMobile() === true">
+    }
+    @if (isMobile() === true) {
       <app-features-grid-mobile></app-features-grid-mobile>
-    </ng-container>
+    }
   `,
 })
 export class FeaturesGridWrapperComponent implements OnInit, OnDestroy {

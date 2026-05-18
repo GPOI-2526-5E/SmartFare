@@ -81,4 +81,6 @@
   text-decoration: none;
   font-weight: 800;
   justify-self: start;
+  pointer-events: auto;
+  z-index: 10;
 }

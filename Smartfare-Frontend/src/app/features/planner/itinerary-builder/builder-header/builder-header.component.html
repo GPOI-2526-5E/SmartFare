@@ -220,7 +220,12 @@
     <!-- Fade left -->
     <div class="cat-fade cat-fade--left" aria-hidden="true"></div>
 
-    <div class="category-bar" role="tablist" aria-label="Filtra per categoria">
+    <!-- Scroll left button -->
+    <button type="button" class="cat-scroll-btn cat-scroll-btn--left" (click)="scrollCategoryBar(-280)" aria-hidden="true">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+
+    <div class="category-bar" #categoryBar role="tablist" aria-label="Filtra per categoria">
       @for (pill of categoryPills(); track pill.key) {
         <button
           type="button"
@@ -239,6 +244,10 @@
         </button>
       }
     </div>
+    <!-- Scroll right button -->
+    <button type="button" class="cat-scroll-btn cat-scroll-btn--right" (click)="scrollCategoryBar(280)" aria-hidden="true">
+      <i class="bi bi-chevron-right"></i>
+    </button>
 
     <!-- Fade right -->
     <div class="cat-fade cat-fade--right" aria-hidden="true"></div>

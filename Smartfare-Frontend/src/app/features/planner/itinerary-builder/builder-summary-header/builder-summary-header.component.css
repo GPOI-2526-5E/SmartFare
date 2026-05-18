@@ -218,8 +218,9 @@
 
 .wl-description-row {
   width: 100%;
-  max-width: 600px;
-  margin-bottom: 0;
+  /* allow the description to expand on larger screens */
+  max-width: 920px;
+  margin: 0 auto 0 auto;
   position: relative;
   padding: 4px;
   border-radius: 20px;
@@ -257,6 +258,8 @@
   padding: 12px 20px;
   border-radius: 16px;
   transition: all 0.2s;
+  /* default: allow multiline, keep padding so text breathes */
+  word-break: break-word;
 }
 
 .wl-description.is-static {
@@ -327,6 +330,25 @@
   min-height: 120px;
   outline: none;
   text-align: center;
+}
+
+/* On larger screens let the description use more horizontal space and read left-to-right */
+@media (min-width: 992px) {
+  .wl-description-row {
+    max-width: 1100px; /* use available space inside the header card */
+  }
+
+  .wl-description,
+  .wl-description-input {
+    text-align: left;
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  /* keep the title centered but allow description to be left-aligned inside a centered container */
+  .wl-header-card {
+    text-align: center; /* title remains centered */
+  }
 }
 
 @keyframes moveGradient {

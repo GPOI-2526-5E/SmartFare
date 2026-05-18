@@ -13,7 +13,7 @@
     </div>
 
     <div class="itinerary-grid" [class.is-loading]="loading">
-      <ng-container *ngIf="loading">
+      @if (loading) {
       <div class="loader-container">
         <div class="premium-loader">
           <div class="loader-ring"></div>
@@ -23,9 +23,9 @@
         </div>
         <p class="loader-text">Esplorando mete incredibili...</p>
       </div>
-      </ng-container>
-      <ng-container *ngIf="!loading">
-      <ng-container *ngFor="let itinerary of itineraries; trackBy: trackById">
+      }
+  @if (!loading) {
+  @for (itinerary of itineraries; track itinerary.id) {
       <div class="itinerary-card">
         <div class="card-image-wrap">
           <img
@@ -35,7 +35,7 @@
         <div class="card-content">
           <span class="location-tag">{{ itinerary.location?.name?.toUpperCase() || 'ITALIA' }}</span>
           <h3>{{ itinerary.name }}</h3>
-          <p>{{ itinerary.description || 'Nessuna descrizione disponibile per questo itinerario.' }}</p>
+          <p class="fi-card-desc">{{ itinerary.description || 'Nessuna descrizione disponibile per questo itinerario.' }}</p>
 
           <div class="card-meta-row">
             <div class="card-meta-item">
@@ -51,12 +51,11 @@
           <div class="card-footer">
             <div class="card-footer-left">
               <div class="creator-avatar" [title]="getCreatorName(itinerary)">
-                <ng-container *ngIf="itinerary.user?.profile?.avatarUrl; else initials">
+                @if (itinerary.user?.profile?.avatarUrl) {
                   <img [src]="itinerary.user!.profile!.avatarUrl" [alt]="getCreatorName(itinerary)" class="creator-img">
-                </ng-container>
-                <ng-template #initials>
+                } @else {
                   <span class="creator-initials">{{ getCreatorInitials(itinerary) }}</span>
-                </ng-template>
+                }
               </div>
               <span class="days-info">
                 <i class="bi bi-clock"></i>
@@ -69,13 +68,13 @@
           </div>
         </div>
       </div>
-      </ng-container>
-      <ng-container *ngIf="!loading && (!itineraries || itineraries.length === 0)">
+      }
+      @if (!loading && (!itineraries || itineraries.length === 0)) {
       <div class="empty-state">
         <p>Nessun itinerario trovato</p>
       </div>
-      </ng-container>
-      </ng-container>
+      }
+    }
     </div>
   </div>
 </section>

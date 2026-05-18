@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output, computed, effect, inject, signal } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, computed, effect, inject, signal, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -92,6 +92,14 @@ export class BuilderHeaderComponent {
   private alertService = inject(AlertService);
   private socialAuthService = inject(SocialAuthService);
   ui = inject(UIStateService);
+
+  @ViewChild('categoryBar', { static: false }) categoryBarRef?: ElementRef<HTMLElement>;
+
+  scrollCategoryBar(amount: number) {
+    const el = this.categoryBarRef?.nativeElement;
+    if (!el) return;
+    el.scrollBy({ left: amount, behavior: 'smooth' });
+  }
 
   // Custom dropdown states
   showVisibleDayDropdown = signal(false);

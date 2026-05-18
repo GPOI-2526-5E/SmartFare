@@ -1,19 +1,13 @@
 import { Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FeaturedItinerariesComponent } from './featured-itineraries.component';
-import { FeaturedItinerariesMobileComponent } from './featured-itineraries-mobile.component';
 
 @Component({
   selector: 'app-featured-itineraries-wrapper',
   standalone: true,
-  imports: [CommonModule, FeaturedItinerariesComponent, FeaturedItinerariesMobileComponent],
+  imports: [CommonModule, FeaturedItinerariesComponent],
   template: `
-    <ng-container *ngIf="isMobile() === false">
-      <app-featured-itineraries [itineraries]="itineraries" [loading]="loading"></app-featured-itineraries>
-    </ng-container>
-    <ng-container *ngIf="isMobile() === true">
-      <app-featured-itineraries-mobile [itineraries]="itineraries" [loading]="loading"></app-featured-itineraries-mobile>
-    </ng-container>
+    <app-featured-itineraries [itineraries]="itineraries" [loading]="loading"></app-featured-itineraries>
   `,
 })
 export class FeaturedItinerariesWrapperComponent implements OnInit, OnDestroy {

@@ -141,7 +141,9 @@
     opacity 0.6s ease,
     transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
     filter 0.6s ease;
-  pointer-events: none;
+  /* Make these stacks interactive so buttons/links inside are clickable.
+     Previously pointer-events was set to none which prevented CTAs from receiving clicks. */
+  pointer-events: auto;
 }
 
 .cinema-copy {
@@ -260,6 +262,8 @@
   color: #f8fafc;
   font-weight: 800;
   text-decoration: none;
+  pointer-events: auto;
+  z-index: 10;
 }
 
 .cinema-frame {

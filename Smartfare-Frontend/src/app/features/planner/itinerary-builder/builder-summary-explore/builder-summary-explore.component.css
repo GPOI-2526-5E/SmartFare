@@ -103,6 +103,20 @@
   font-size: 0.9375rem;
   line-height: 1.6;
   margin-bottom: 24px;
+  /* clamp description to fixed number of lines and show ellipsis */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+@media (max-width: 768px) {
+  .wl-explore-info p {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
 }
 
 .wl-explore-footer {

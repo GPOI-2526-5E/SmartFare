@@ -316,8 +316,29 @@
   margin: 0;
   color: rgba(226, 232, 240, 0.68);
   font-size: 0.95rem;
-  line-height: 1.75;
+  line-height: 1.6;
   max-width: 38rem;
+  /* clamp description to a few lines with ellipsis */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3; /* desktop default: 3 lines */
+  line-clamp: 3;
+}
+
+@media (max-width: 768px) {
+  .fi-card-desc {
+    -webkit-line-clamp: 2; /* shorter on small screens */
+    line-clamp: 2;
+  }
+}
+
+@media (min-width: 1400px) {
+  .fi-card-desc {
+    -webkit-line-clamp: 4; /* allow one extra line on very wide screens */
+    line-clamp: 4;
+  }
 }
 
 .fi-card-cta {
@@ -636,6 +657,7 @@
   margin-bottom: 24px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
