@@ -1,247 +1,220 @@
-import { Component, Input, OnChanges, SimpleChanges, inject, signal, ElementRef, ViewChild, AfterViewChecked, Output, EventEmitter, computed } from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
-import { VoyagerChatService, ChatSession } from '../../../../core/services/voyager-chat.service';
-import { AlertService } from '../../../../core/services/alert.service';
-import { Activity } from '../../../../core/models/activity.model';
-import { Accommodation } from '../../../../core/models/accommodation.model';
-import { firstValueFrom } from 'rxjs';
-import { BuilderPoi } from '../../../../core/models/builder.types';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
+import { AiChatService } from '../../../../core/services/ai-chat.service';
+import { AlertService } from '../../../../core/services/alert.service';
+import { BuilderPoi } from '../../../../core/models/builder.types';
+import { ItineraryService } from '../../../../core/services/itinerary.service';
+import { AiItineraryChatAction, AiItineraryChatResponse, AiChatMessage } from '../../../../core/models/ai-chat.model';
+import { AuthService } from '../../../../core/auth/auth.service';
 
-type BuilderSuggestionAction = {
-  label: string;
-  prompt: string;
+type BuilderChatEntry = {
+  role: 'user' | 'assistant';
+  content: string;
+  suggestions?: AiItineraryChatResponse['suggestions'];
+  actions?: AiItineraryChatAction[];
+  followUpQuestions?: string[];
+  timestamp?: Date;
 };
 
 @Component({
   selector: 'app-builder-chat',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, DatePipe],
   templateUrl: './builder-chat.component.html',
-  styleUrls: ['./builder-chat.component.css']
+  styleUrls: ['./builder-chat.component.css'],
 })
-export class BuilderChatComponent implements OnChanges, AfterViewChecked {
+export class BuilderChatComponent implements AfterViewChecked {
   @Input() workspace: ItineraryWorkspace | null = null;
   @Input() itinerary: Itinerary | null = null;
   @Output() poiFocused = new EventEmitter<BuilderPoi>();
 
-  protected readonly chatService = inject(VoyagerChatService);
+  @ViewChild('scrollContainer') private scrollContainer?: ElementRef<HTMLElement>;
+
+  private readonly aiChatService = inject(AiChatService);
+  private readonly itineraryService = inject(ItineraryService);
   private readonly alertService = inject(AlertService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
+  private shouldScrollToBottom = false;
+
+  readonly message = signal('');
+  readonly isSending = signal(false);
+  readonly entries = signal<BuilderChatEntry[]>([]);
+
   readonly isAuthenticated = computed(() => this.authService.IsAuthenticated());
+  readonly hasCurrentItinerary = computed(() => Boolean(this.itineraryService.itinerary()));
+  readonly canCompose = computed(
+    () => this.isAuthenticated() && this.hasCurrentItinerary() && !this.isSending()
+  );
 
-  @ViewChild('scrollContainer') private scrollContainer?: ElementRef<HTMLDivElement>;
-
-  draftMessage = '';
-
-  readonly isBusy = computed(() => this.chatService.isLoadingSessions() || this.chatService.isLoadingMessages());
-
-  get suggestedPois(): BuilderPoi[] {
-    return this.buildSuggestedPois();
-  }
-
-  get suggestedActions(): BuilderSuggestionAction[] {
-    return this.buildSuggestedActions();
-  }
-
-  get hasContext(): boolean {
-    return !!this.workspace?.location?.id;
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['itinerary'] && this.itinerary?.chatSessionId) {
-      this.loadLinkedSession(this.itinerary.chatSessionId);
-    }
-  }
+  readonly userAvatar = computed(() => this.authService.userProfile()?.avatarUrl || null);
+  readonly userInitial = computed(() => {
+    const profile = this.authService.userProfile();
+    const name = profile?.name?.trim()?.[0] || '';
+    const surname = profile?.surname?.trim()?.[0] || '';
+    return (name + surname).toUpperCase() || 'U';
+  });
 
   ngAfterViewChecked() {
+    if (!this.shouldScrollToBottom) return;
     this.scrollToBottom();
+    this.shouldScrollToBottom = false;
   }
 
-  private async loadLinkedSession(sessionId: number) {
-    if (this.chatService.activeSession()?.id === sessionId) return;
+  async submitMessage(text?: string) {
+    if (!this.isAuthenticated()) return;
 
-    this.chatService.loadSessions().subscribe({
-      next: (sessions) => {
-        const linked = sessions.find(s => s.id === sessionId);
-        if (linked) {
-          this.chatService.setActiveSession(linked);
-          this.chatService.getSessionMessages(sessionId).subscribe();
-        }
-      }
-    });
-  }
+    const content = (text ?? this.message()).trim();
+    const currentItinerary = this.itineraryService.itinerary() || this.itinerary;
 
-  async sendMessage() {
-    if (!this.draftMessage.trim() || this.chatService.isStreaming()) return;
-
-    const content = this.draftMessage.trim();
-    this.draftMessage = '';
-
-    let active = this.chatService.activeSession();
-    if (!active) {
-      active = await firstValueFrom(
-        this.chatService.createSession({
-          mode: 'planner',
-          locationId: this.workspace?.location?.id,
-          title: `Chat Builder - ${this.workspace?.location?.name || 'Nuova'}`
-        })
-      ).catch(err => {
-        this.alertService.error('Errore creazione sessione');
-        throw err;
-      });
+    if (!content || this.isSending() || !currentItinerary) {
+      return;
     }
 
-    await this.chatService.sendMessageStreaming(active.id, content, () => { }).catch(err => {
-      this.alertService.error('Errore invio messaggio');
+    this.message.set('');
+    this.entries.update((messages) => [...messages, { role: 'user', content, timestamp: new Date() }]);
+    this.isSending.set(true);
+    this.shouldScrollToBottom = true;
+
+    const history: AiChatMessage[] = this.entries()
+      .slice(-8)
+      .map((entry) => ({ role: entry.role, content: entry.content }));
+
+    try {
+      const response = await firstValueFrom(this.aiChatService.sendMessage({
+        message: content,
+        locationId: currentItinerary.locationId || this.workspace?.location?.id || undefined,
+        itinerary: currentItinerary,
+        conversation: history,
+        preferences: {
+          style: currentItinerary.description?.slice(0, 500) || undefined,
+          interests: this.workspace?.categories?.slice(0, 6).map((category) => category.name) || [],
+        },
+      }));
+
+      if (!response) {
+        throw new Error('Risposta AI non disponibile');
+      }
+
+      this.entries.update((messages) => [...messages, {
+        role: 'assistant',
+        content: response.reply,
+        suggestions: response.suggestions,
+        actions: response.actions,
+        followUpQuestions: response.followUpQuestions,
+        timestamp: new Date(),
+      }]);
+      this.shouldScrollToBottom = true;
+
+      this.applyFocusActions(response.actions);
+
+      if (response.itinerary) {
+        const merged = this.mergeItineraryUpdate(currentItinerary, response.itinerary);
+        this.itineraryService.setCurrentItinerary(merged, { autosave: true });
+        this.alertService.success('Itinerario aggiornato con le modifiche richieste.');
+      } else if (!response.followUpQuestions?.length && !response.needsConfirmation) {
+        this.alertService.info('Nessuna modifica applicata. Prova a essere più specifico sulla tappa o sul giorno da cambiare.');
+      }
+    } catch (error) {
+      console.error('Builder AI error:', error);
+      this.alertService.error('In questo momento i servizi AI sono in sovraccarico. Riprova tra un istante.');
+    } finally {
+      this.isSending.set(false);
+      this.shouldScrollToBottom = true;
+    }
+  }
+
+  useFollowUp(question: string) {
+    void this.submitMessage(question);
+  }
+
+  focusPoiSuggestion(poiId: number | null | undefined, poiType: 'activity' | 'accommodation' | null | undefined) {
+    if (!poiId || !poiType || !this.workspace) return;
+
+    const poi = poiType === 'accommodation'
+      ? this.workspace.accommodations.find((entry) => entry.id === poiId)
+      : this.workspace.activities.find((entry) => entry.id === poiId);
+
+    if (!poi) return;
+
+    this.poiFocused.emit({
+      key: `${poiType}-${poiId}`,
+      type: poiType,
+      entityId: poiId,
+      title: poi.name,
+      subtitle: poiType === 'accommodation' ? poi.street || 'Hotel' : poi.street || 'Attività',
+      latitude: poi.latitude,
+      longitude: poi.longitude,
+      itemTypeCode: poiType === 'accommodation' ? 'ACCOMMODATION' : 'ACTIVITY',
+      imageUrl: (poi as { imageUrl?: string }).imageUrl,
+      price: (poi as { price?: number }).price,
+      rating: (poi as { stars?: number }).stars,
     });
   }
 
-  focusPoi(poi: BuilderPoi) {
-    this.poiFocused.emit(poi);
-  }
-
-  applyAction(action: BuilderSuggestionAction) {
-    this.draftMessage = action.prompt;
-    void this.sendMessage();
-  }
-
-  handleEnter(event: Event): void {
+  onEnter(event: Event) {
     const keyboardEvent = event as KeyboardEvent;
     if (keyboardEvent.shiftKey) return;
-    keyboardEvent.preventDefault();
-    this.sendMessage();
+    event.preventDefault();
+    void this.submitMessage();
   }
 
-  login() {
-    this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+  goToLogin() {
+    const returnUrl = this.authService.sanitizeReturnUrl(this.router.url);
+    void this.router.navigate(['/login'], { queryParams: { returnUrl } });
   }
 
-  formatMessage(content: string): string {
-    if (!content) return '';
-    return content
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n/g, '<br>');
+  goToRegister() {
+    const returnUrl = this.authService.sanitizeReturnUrl(this.router.url);
+    void this.router.navigate(['/register'], { queryParams: { returnUrl } });
   }
 
   private scrollToBottom() {
-    if (this.scrollContainer) {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    }
+    const element = this.scrollContainer?.nativeElement;
+    if (!element) return;
+    element.scrollTop = element.scrollHeight;
   }
 
-  private getConversationText(): string {
-    return this.chatService.messages().map((message) => message.content).join(' ');
-  }
-
-  private buildSuggestedActions(): BuilderSuggestionAction[] {
-    const context = this.getConversationText().toLowerCase();
-    const actions: BuilderSuggestionAction[] = [];
-
-    if (context.includes('giorno') || context.includes('tappe') || context.includes('itinerario')) {
-      actions.push({
-        label: 'Aggiungi un giorno ricco',
-        prompt: 'Aggiungi un giorno in più con più tappe, colazione, pausa pranzo e una chiusura serale coerente.'
-      });
-    }
-
-    if (context.includes('nostalg') || context.includes('lento') || context.includes('rilassat') || context.includes('autentic')) {
-      actions.push({
-        label: 'Crea un giorno nostalgico',
-        prompt: 'Crea un giorno nostalgico con ritmo lento, quartieri autentici, soste panoramiche e momenti tranquilli.'
-      });
-    }
-
-    if (context.includes('riordina') || context.includes('rorganizz') || context.includes('route') || context.includes('percorso')) {
-      actions.push({
-        label: 'Riorganizza le tappe',
-        prompt: 'Riorganizza le attività in un percorso più fluido, riducendo gli spostamenti inutili.'
-      });
-    }
-
-    if (context.includes('muse') || context.includes('cultura') || context.includes('arte')) {
-      actions.push({
-        label: 'Giro museale',
-        prompt: 'Propone un giro museale o culturale con tappe reali del workspace e indicami come distribuirle nella giornata.'
-      });
-    }
-
-    return actions.slice(0, 3);
-  }
-
-  private buildSuggestedPois(): BuilderPoi[] {
-    const ws = this.workspace;
-    if (!ws?.location?.id) return [];
-
-    const context = this.getConversationText().toLowerCase();
-    const categories = new Set<string>();
-
-    if (context.includes('muse') || context.includes('cultura') || context.includes('arte') || context.includes('monument')) {
-      ['Musei', 'Monumenti', 'Landmark', 'Chiese', 'Castelli', 'Punti panoramici'].forEach((value) => categories.add(value.toLowerCase()));
-    }
-
-    if (context.includes('food') || context.includes('ristor') || context.includes('cibo') || context.includes('cena') || context.includes('pranzo')) {
-      ['Ristoranti', 'Caffe', 'Panetterie', 'Bar', 'Enoteche', 'Gelaterie'].forEach((value) => categories.add(value.toLowerCase()));
-    }
-
-    if (context.includes('notte') || context.includes('night') || context.includes('aperitivo') || context.includes('bar')) {
-      ['Bar', 'Enoteche'].forEach((value) => categories.add(value.toLowerCase()));
-    }
-
-    if (context.includes('relax') || context.includes('natura') || context.includes('lento') || context.includes('nostalg')) {
-      ['Parchi', 'Punti panoramici', 'Mercati'].forEach((value) => categories.add(value.toLowerCase()));
-    }
-
-    const activityMatches = ws.activities
-      .filter((activity) => {
-        const categoryName = (activity.category?.name || '').toLowerCase();
-        const name = activity.name.toLowerCase();
-        return categories.has(categoryName) || [...categories].some((entry) => name.includes(entry.slice(0, 5)));
-      })
-      .slice(0, 3)
-      .map((activity) => this.toPoi(activity.id, 'activity'));
-
-    if (activityMatches.length > 0) return activityMatches;
-
-    return ws.activities
-      .slice(0, 3)
-      .map((activity) => this.toPoi(activity.id, 'activity'));
-  }
-
-  private toPoi(entityId: number, type: 'activity' | 'accommodation'): BuilderPoi {
-    const ws = this.workspace;
-    const source = type === 'activity'
-      ? ws?.activities.find((item) => item.id === entityId)
-      : ws?.accommodations.find((item) => item.id === entityId);
-
-    if (!source) {
-      throw new Error('POI suggestion non disponibile');
-    }
-
-    const isAccommodation = type === 'accommodation';
-    const activity = source as any as Activity;
-    const accommodation = source as any as Accommodation;
+  private mergeItineraryUpdate(current: Itinerary, update: Itinerary): Itinerary {
     return {
-      key: `${type}-${source.id}`,
-      type,
-      entityId: source.id,
-      title: source.name,
-      subtitle: isAccommodation ? 'Alloggio suggerito' : activity.category?.name || activity.street || 'Attività suggerita',
-      latitude: source.latitude,
-      longitude: source.longitude,
-      categoryId: isAccommodation ? undefined : activity.categoryId,
-      categoryName: isAccommodation ? undefined : activity.category?.name,
-      itemTypeCode: isAccommodation ? 'ACCOMMODATION' : 'ACTIVITY',
-      imageUrl: source.imageUrl,
-      rating: isAccommodation ? accommodation.stars : activity.rating,
-      price: isAccommodation ? accommodation.pricePerNight : activity.price
+      ...current,
+      ...update,
+      id: current.id ?? update.id,
+      locationId: current.locationId ?? update.locationId,
+      location: current.location ?? update.location,
+      items: update.items ?? current.items,
     };
+  }
+
+  private applyFocusActions(actions: AiItineraryChatAction[] = []) {
+    const focusAction = actions.find((action) => action.type === 'focus_poi');
+    if (!focusAction?.payload) return;
+
+    const poiId = Number(
+      focusAction.payload['poiId'] ?? focusAction.payload['activityId'] ?? focusAction.payload['accommodationId']
+    );
+    const poiType = (focusAction.payload['poiType'] ?? focusAction.payload['type']) as
+      | 'activity'
+      | 'accommodation'
+      | undefined;
+    if (!poiId || !poiType) return;
+
+    this.focusPoiSuggestion(poiId, poiType);
   }
 }

@@ -26,15 +26,67 @@ router.post('/itinerary/chat', aiLimiter, optionalAuthenticateJWT, async (req: A
     try {
         const body = aiItineraryChatSchema.parse(req.body);
         const locationId = body.locationId || body.itinerary?.locationId;
-        console.info(`[AI] itinerary chat started locationId=${locationId || 'missing'} userId=${req.user?.userId || 'guest'}`);
+        const userId = req.user?.userId ? Number(req.user.userId) : undefined;
+        console.info(`[AI] itinerary chat started locationId=${locationId || 'missing'} userId=${userId || 'guest'}`);
 
         if (!locationId) {
             throw new AppError('locationId mancante per avviare la chat IA', 400);
         }
 
-        const workspace = await itineraryService.getWorkspaceData(locationId, req.user?.userId ? Number(req.user.userId) : undefined);
+        const workspace = await itineraryService.getWorkspaceData(locationId, userId);
+        const profile = userId ? await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                profile: {
+                    select: {
+                        name: true,
+                        surname: true,
+                        bio: true,
+                        city: true,
+                        birthDate: true
+                    }
+                },
+                preference: {
+                    select: {
+                        budgetLevelCode: true,
+                        travelStyle: true,
+                        pace: true,
+                        preferredTransport: true,
+                        prefersNightlife: true,
+                        familyFriendly: true,
+                        notes: true
+                    }
+                }
+            }
+        }) : null;
 
-        const response = await geminiService.generateChatResponse(body, {
+        // Persist the user message into an itinerary-bound chat session so it can be retrieved later
+        let itineraryChatSessionId: number | null = null;
+        if (body.itinerary?.id && userId) {
+            const existingItinerary = await prisma.itinerary.findUnique({ where: { id: Number(body.itinerary.id) } });
+            if (existingItinerary) {
+                if (existingItinerary.chatSessionId) {
+                    itineraryChatSessionId = existingItinerary.chatSessionId;
+                } else {
+                    const created = await prisma.chatSession.create({
+                        data: {
+                            userId: userId,
+                            title: `Itinerary ${existingItinerary.id}`,
+                            mode: 'itinerary',
+                            locationId: existingItinerary.locationId ?? locationId,
+                            lastMessageAt: new Date()
+                        }
+                    });
+                    itineraryChatSessionId = created.id;
+                    await prisma.itinerary.update({ where: { id: existingItinerary.id }, data: { chatSessionId: created.id } });
+                }
+
+                // Save the user's message in the itinerary chat session
+                await prisma.chatMessage.create({ data: { chatId: itineraryChatSessionId, role: 'user', content: body.message } });
+            }
+        }
+
+        const workspaceContext = {
             location: workspace.location
                 ? {
                     id: workspace.location.id,
@@ -48,13 +100,26 @@ router.post('/itinerary/chat', aiLimiter, optionalAuthenticateJWT, async (req: A
             accommodations: workspace.accommodations,
             activities: workspace.activities,
             categories: workspace.categories,
-        });
+        };
 
-        res.status(200).json({
-            success: true,
-            ...response,
-        });
-        console.info(`[AI] itinerary chat completed locationId=${locationId} userId=${req.user?.userId || 'guest'}`);
+        console.info(
+            `[AI] workspace locationId=${locationId} activities=${workspace.activities.length} accommodations=${workspace.accommodations.length} message="${body.message.slice(0, 80)}"`
+        );
+
+        const response = await geminiService.generateItineraryEditResponse(body, workspaceContext);
+
+        const userContext = profile ? {
+            profile: profile.profile,
+            preference: profile.preference
+        } : null;
+
+        // Persist assistant reply into itinerary chat session when available
+        if (itineraryChatSessionId && response?.reply) {
+            await prisma.chatMessage.create({ data: { chatId: itineraryChatSessionId, role: 'assistant', content: response.reply } });
+        }
+
+        res.status(200).json({ success: true, ...response, userContext });
+        console.info(`[AI] itinerary chat completed locationId=${locationId} userId=${userId || 'guest'}`);
     } catch (error) {
         console.error(`[AI] itinerary chat failed userId=${req.user?.userId || 'guest'}`, error);
         next(error);
@@ -74,7 +139,7 @@ router.post('/itinerary/generate', aiLimiter, optionalAuthenticateJWT, async (re
         const locationId = await geminiService.identifyLocation(prompt, locations);
 
         if (!locationId) {
-            throw new AppError('Non sono riuscito a identificare una destinazione valida per la tua richiesta. Prova a specificare meglio la città.', 400);
+            throw new AppError('In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.', 400);
         }
 
         // 2. Fetch workspace data for the identified location

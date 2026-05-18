@@ -1,4 +1,5 @@
-export type ChatMode = 'planner' | 'assistant';
+export type VoyagerChatMode = 'planner' | 'assistant';
+export type ChatMode = VoyagerChatMode | 'itinerary';
 export type ChatRole = 'user' | 'assistant';
 
 export interface PlannerState {
@@ -48,7 +49,7 @@ export interface CreateChatSessionRequest {
 
 export interface SendMessageRequest {
   message: string;
-  mode?: ChatMode; // allow switching mode mid-conversation if needed
+  mode?: VoyagerChatMode; // allow switching Voyager mode mid-conversation if needed
 }
 
 export interface ChatStreamResponse {
@@ -58,6 +59,8 @@ export interface ChatStreamResponse {
     suggestedTitle?: string;
     plannerState?: PlannerState;
     readyToGenerate?: boolean;
+    plannerLocked?: boolean;
+    generatedItineraryId?: number | null;
     itineraryData?: any;
     suggestions?: Array<{
       title: string;

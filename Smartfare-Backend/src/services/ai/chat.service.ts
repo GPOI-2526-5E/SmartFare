@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import prisma from '../../config/prisma';
 import { AppError } from '../../middleware/error.middleware';
 import { GeminiItineraryChatService } from './gemini.service';
-import { ChatMode, ChatStreamResponse, PlannerState } from '../../models/chat.model';
+import { ChatMode, ChatStreamResponse, PlannerState, VoyagerChatMode } from '../../models/chat.model';
 import { ItineraryService } from '../itinerary/itinerary.service';
 
 type DbMessage = {
@@ -79,6 +79,10 @@ export class ChatService {
     return [primary, ...fallbackModels].filter((model, index, array) => array.indexOf(model) === index);
   }
 
+  private isVoyagerMode(mode: string | ChatMode): mode is VoyagerChatMode {
+    return mode === 'planner' || mode === 'assistant';
+  }
+
   async streamChatResponse(
     userId: number,
     chatId: number,
@@ -91,6 +95,15 @@ export class ChatService {
 
     const session = await this.getSessionOrThrow(userId, chatId);
     const sessionMetadata = this.asMetadata(session.metadata);
+
+    if (!this.isVoyagerMode(session.mode)) {
+      throw new AppError('Le sessioni Builder non usano lo streaming Voyager. Usa il builder dedicato per modificare l’itinerario.', 409);
+    }
+
+    if (sessionMetadata.plannerLocked || sessionMetadata.generatedItineraryId) {
+      throw new AppError('La conversazione Planner è bloccata dopo la generazione dell’itinerario.', 409);
+    }
+
     const persistedMessages = this.toDbMessages(session.messages);
 
     await prisma.chatMessage.create({
@@ -101,9 +114,10 @@ export class ChatService {
       }
     });
 
+    const voyagerMode = session.mode;
     const baseState = this.normalizePlannerState(sessionMetadata.plannerState);
     const transcript = this.buildTranscript(persistedMessages, userMessage);
-    const extractedState = await this.extractPlannerState(session.mode as ChatMode, transcript, baseState);
+    const extractedState = await this.extractPlannerState(voyagerMode, transcript, baseState);
     const bestLocation = await this.findBestLocation(extractedState.destination || userMessage);
     const plannerState = this.mergePlannerState(baseState, extractedState, bestLocation);
     const userProfileContext = await this.getUserProfileContext(userId);
@@ -129,13 +143,13 @@ export class ChatService {
           const model = ai.getGenerativeModel({
             model: modelName,
             generationConfig: {
-              temperature: session.mode === 'planner' ? 0.75 : 0.6,
+              temperature: voyagerMode === 'planner' ? 0.75 : 0.6,
               topP: 0.85,
               topK: 40
             },
             systemInstruction: {
               role: 'system',
-              parts: [{ text: this.getSystemInstruction(session.mode as ChatMode, plannerState, Boolean(bestLocation), userProfileContext) }]
+              parts: [{ text: this.getSystemInstruction(voyagerMode, plannerState, Boolean(bestLocation), userProfileContext) }]
             }
           });
 
@@ -198,7 +212,7 @@ export class ChatService {
         throw lastError;
       }
 
-      const finalState = await this.finalizePlannerState(session.mode as ChatMode, plannerState, [
+      const finalState = await this.finalizePlannerState(voyagerMode, plannerState, [
         ...persistedMessages,
         { role: 'user', content: userMessage, createdAt: new Date() },
         { role: 'assistant', content: fullReply, createdAt: new Date() }
@@ -208,21 +222,21 @@ export class ChatService {
         ? await this.itineraryService.getWorkspaceData(finalState.locationId, userId)
         : null;
       const chatHints = this.buildChatHints(
-        session.mode as ChatMode,
+        voyagerMode,
         finalState,
         transcript,
         fullReply,
         hintWorkspace
       );
 
-      const readyToGenerate = this.isReadyToGenerate(session.mode as ChatMode, finalState);
+      const readyToGenerate = this.isReadyToGenerate(voyagerMode, finalState);
       const suggestedTitle = await this.suggestTitle(
         session.title,
-        session.mode as ChatMode,
+        voyagerMode,
         finalState,
         userMessage,
         fullReply,
-        persistedMessages.length === 0
+        persistedMessages.length
       );
 
       await prisma.chatMessage.create({
@@ -237,6 +251,7 @@ export class ChatService {
         ...sessionMetadata,
         plannerState: finalState,
         readyToGenerate,
+        plannerLocked: Boolean(sessionMetadata.plannerLocked),
         suggestions: chatHints.suggestions,
         actions: chatHints.actions,
         lastUserPrompt: userMessage,
@@ -311,7 +326,7 @@ export class ChatService {
     });
 
     if (!generated || !Array.isArray(generated.items) || generated.items.length === 0) {
-      throw new AppError('Non sono riuscito a comporre un itinerario coerente. Riprova dalla chat.', 500);
+      throw new AppError('In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.', 500);
     }
 
     const startDate = this.buildStartDate(plannerState.period);
@@ -370,6 +385,8 @@ export class ChatService {
           ...sessionMetadata,
           plannerState,
           readyToGenerate: true,
+          plannerLocked: true,
+          generatedItineraryId: savedItinerary.id,
           generatedItinerary: savedItinerary
         })
       }
@@ -395,7 +412,7 @@ export class ChatService {
     return session;
   }
 
-  private getSystemInstruction(mode: ChatMode, plannerState: PlannerState, hasSupportedLocation: boolean, userCtx?: UserProfileContext | null): string {
+  private getSystemInstruction(mode: VoyagerChatMode, plannerState: PlannerState, hasSupportedLocation: boolean, userCtx?: UserProfileContext | null): string {
     const userBlock = this.buildUserProfileBlock(userCtx);
     const base = [
       'Sei Voyager AI, concierge premium di SmartFare.',
@@ -504,7 +521,7 @@ export class ChatService {
     return `${compactHistory}\nUtente: ${userMessage}`.trim();
   }
 
-  private async extractPlannerState(mode: ChatMode, transcript: string, fallback: PlannerState): Promise<Partial<PlannerState>> {
+  private async extractPlannerState(mode: VoyagerChatMode, transcript: string, fallback: PlannerState): Promise<Partial<PlannerState>> {
     if (mode !== 'planner' || !this.apiKey) {
       return {};
     }
@@ -532,7 +549,7 @@ export class ChatService {
   }
 
   private async finalizePlannerState(
-    mode: ChatMode,
+    mode: VoyagerChatMode,
     currentState: PlannerState,
     messages: DbMessage[]
   ): Promise<PlannerState> {
@@ -604,30 +621,47 @@ export class ChatService {
     return missing;
   }
 
-  private isReadyToGenerate(mode: ChatMode, state: PlannerState): boolean {
+  private isReadyToGenerate(mode: VoyagerChatMode, state: PlannerState): boolean {
     if (mode !== 'planner') return false;
     return this.getMissingPlannerFields(state).length === 0;
   }
 
   private async suggestTitle(
     currentTitle: string | null,
-    mode: ChatMode,
+    mode: VoyagerChatMode,
     state: PlannerState,
     userMessage: string,
     assistantReply: string,
-    isFirstExchange: boolean
+    persistedMessageCount: number
   ): Promise<string> {
-    if (currentTitle && currentTitle !== DEFAULT_TITLE) {
-      return currentTitle;
+    // Titles that are placeholders and should be replaced with an AI-generated one
+    const defaultTitles = [
+      DEFAULT_TITLE,
+      'Nuova sessione Planner',
+      'Nuova sessione Assistant',
+      'Voyager AI'
+    ];
+
+    const hasCustomTitle =
+      currentTitle !== null &&
+      currentTitle !== undefined &&
+      !defaultTitles.includes(currentTitle.trim());
+
+    // Keep a custom (AI-generated or user-edited) title as-is
+    if (hasCustomTitle) {
+      return currentTitle!;
     }
 
-    if (isFirstExchange) {
+    // Try AI title generation on the first two exchanges (0 or 2 persisted messages)
+    const isEarlyExchange = persistedMessageCount <= 2;
+    if (isEarlyExchange) {
       const aiTitle = await this.generateSessionTitle(mode, state, userMessage, assistantReply);
       if (aiTitle) {
         return aiTitle;
       }
     }
 
+    // State-based fallbacks (not locked — next exchange may still produce an AI title)
     if (state.destination && state.days) {
       return `${state.days} giorni a ${state.destination}`;
     }
@@ -640,7 +674,7 @@ export class ChatService {
   }
 
   private async generateSessionTitle(
-    mode: ChatMode,
+    mode: VoyagerChatMode,
     state: PlannerState,
     userMessage: string,
     assistantReply: string
@@ -716,7 +750,7 @@ export class ChatService {
   }
 
   private buildChatHints(
-    mode: ChatMode,
+    mode: VoyagerChatMode,
     plannerState: PlannerState,
     transcript: string,
     assistantReply: string,

@@ -25,9 +25,9 @@ model User {
   favorites    ItineraryFavorite[]
   chatSessions ChatSession[]
   sessions     AuthSession[]
-  
-  followers    Follow[] @relation("followers")
-  following    Follow[] @relation("following")
+
+  followers Follow[] @relation("followers")
+  following Follow[] @relation("following")
 
   @@map("User")
 }
@@ -53,7 +53,7 @@ model ChatSession {
   id            Int           @id @default(autoincrement())
   userId        Int
   title         String? // auto-generated from first message or manual
-  mode          String        @default("planner") // 'planner' | 'assistant'
+  mode          String        @default("planner") // 'planner' | 'assistant' | 'itinerary'
   locationId    Int? // destination context for planner mode
   isActive      Boolean       @default(true)
   isPinned      Boolean       @default(false)
@@ -88,20 +88,20 @@ model ChatMessage {
 }
 
 model UserProfile {
-  id        Int       @id @default(autoincrement())
-  userId    Int       @unique
-  name      String?
-  surname   String?
-  city      String?
-  street    String?
-  avatarUrl           String?
-  backgroundImageUrl  String?
-  bio                 String?
-  instagramUrl        String?
-  twitterUrl          String?
-  birthDate           DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                 Int       @id @default(autoincrement())
+  userId             Int       @unique
+  name               String?
+  surname            String?
+  city               String?
+  street             String?
+  avatarUrl          String?
+  backgroundImageUrl String?
+  bio                String?
+  instagramUrl       String?
+  twitterUrl         String?
+  birthDate          DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id])
 }
@@ -147,9 +147,9 @@ model Location {
 }
 
 model Follow {
-  follower    User @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  follower    User     @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
   followerId  Int
-  following   User @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+  following   User     @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
   followingId Int
   createdAt   DateTime @default(now())
 

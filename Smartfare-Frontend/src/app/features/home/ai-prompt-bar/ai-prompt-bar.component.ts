@@ -2,11 +2,10 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, NgZone, inject, 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AlertService } from '../../../core/services/alert.service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
 import { ItineraryService } from '../../../core/services/itinerary.service';
-import { finalize } from 'rxjs';
+import { AiChatService } from '../../../core/services/ai-chat.service';
 
 @Component({
   selector: 'app-ai-prompt-bar',
@@ -32,6 +31,7 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
   private placeholderIndex = 0;
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly ngZone = inject(NgZone);
+  private readonly aiChatService = inject(AiChatService);
   private readonly reduceMotion = typeof window !== 'undefined' && (
     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ||
     (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true
@@ -40,7 +40,6 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private alertService: AlertService,
-    private http: HttpClient,
     private itineraryService: ItineraryService
   ) { }
 
@@ -76,12 +75,30 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Redirect to Voyager AI with the prompt
-    this.router.navigate(['/voyager'], {
-      queryParams: { 
-        prompt: this.travelQuery 
+    void this.generateItineraryFromPrompt();
+  }
+
+  private async generateItineraryFromPrompt(): Promise<void> {
+    const prompt = this.travelQuery.trim();
+    if (!prompt) return;
+
+    this.isGenerating.set(true);
+
+    try {
+      const itinerary = await firstValueFrom(this.aiChatService.generateItinerary(prompt));
+
+      if (!itinerary) {
+        throw new Error('Itinerario non disponibile');
       }
-    });
+
+      this.itineraryService.setCurrentItinerary(itinerary);
+      await this.router.navigate(['/itineraries/builder']);
+    } catch (error) {
+      console.error('AI prompt generation failed:', error);
+      this.alertService.error('In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.');
+    } finally {
+      this.isGenerating.set(false);
+    }
   }
 
   onManualCreate(): void {

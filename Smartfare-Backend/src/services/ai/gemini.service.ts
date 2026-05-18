@@ -3,12 +3,21 @@ import { AppError } from '../../middleware/error.middleware';
 import {
     AiItineraryChatRequest,
     AiItineraryChatResponse,
+    AiItineraryItemSnapshot,
     AiItineraryWorkspaceContext,
 } from '../../models/ai.model';
 
 type GeminiTextPart = {
     text?: string;
 };
+
+const PROMPT_STOP_WORDS = new Set([
+    'aggiungi', 'aggiungere', 'inserisci', 'metti', 'mettere', 'rimuovi', 'togli', 'elimina',
+    'come', 'prima', 'tappa', 'tappe', 'giorno', 'giorni', 'percorso', 'itinerario', 'viaggio',
+    'della', 'dello', 'delle', 'dei', 'degli', 'dell', 'nel', 'nella', 'nello', 'nelle', 'nei',
+    'una', 'uno', 'dei', 'che', 'con', 'per', 'alla', 'alle', 'allo', 'agli', 'deve', 'essere',
+    'stazione', 'stazioni', 'ferroviaria', 'ferroviario',
+]);
 
 export class GeminiItineraryChatService {
     private readonly apiKey = process.env.GEMINI_API_KEY;
@@ -33,17 +42,99 @@ export class GeminiItineraryChatService {
         return validModel || 'gemini-2.0-flash';
     }
 
-    private async callGeminiWithRetry(model: any, prompt: string, retries = 2): Promise<any> {
-        for (let i = 0; i <= retries; i++) {
+    private async sleep(ms: number) {
+        return new Promise((res) => setTimeout(res, ms));
+    }
+
+    private parseRetryDelayFromError(error: any): number | null {
+        try {
+            const details = error?.errorDetails || error?.error_details || [];
+            for (const d of details) {
+                if (d['@type'] && d['@type'].includes('RetryInfo') && d.retryDelay) {
+                    // retryDelay might be like '41s' or '00:00:41'
+                    const rd = d.retryDelay;
+                    const match = String(rd).match(/(\d+)(?:s)?$/i);
+                    if (match) return parseInt(match[1], 10) * 1000;
+                    const isoMatch = String(rd).match(/(\d+):(\d+):(\d+)/);
+                    if (isoMatch) {
+                        const h = parseInt(isoMatch[1], 10);
+                        const m = parseInt(isoMatch[2], 10);
+                        const s = parseInt(isoMatch[3], 10);
+                        return ((h * 3600) + (m * 60) + s) * 1000;
+                    }
+                }
+            }
+        } catch (e) {
+            // ignore
+        }
+        return null;
+    }
+
+    private parseQuotaFailureIsTokenRelated(error: any): boolean {
+        try {
+            const details = error?.errorDetails || error?.error_details || [];
+            for (const d of details) {
+                if (d['@type'] && d['@type'].includes('QuotaFailure') && Array.isArray(d.violations)) {
+                    for (const v of d.violations) {
+                        const metric = String(v.quotaMetric || v.quotaId || '').toLowerCase();
+                        if (metric.includes('token') || metric.includes('tokens') || metric.includes('generate_content_tokens')) {
+                            return true;
+                        }
+                        // some providers include 'generate_content_free_tier_requests' for requests, skip
+                    }
+                }
+            }
+        } catch (e) {
+            // ignore
+        }
+        return false;
+    }
+
+    private jitterDelay(baseMs: number) {
+        // Add +/- 30% jitter
+        const jitter = Math.floor(baseMs * 0.3);
+        const delta = Math.floor(Math.random() * (jitter * 2 + 1)) - jitter;
+        return Math.max(0, baseMs + delta);
+    }
+
+    private async callGeminiWithRetry(model: any, prompt: string, retries = 3): Promise<any> {
+        for (let attempt = 0; attempt <= retries; attempt++) {
             try {
                 return await model.generateContent(prompt);
             } catch (error: any) {
                 const isNetworkError = error?.message?.includes('fetch failed') || error?.code === 'UND_ERR_CONNECT_TIMEOUT';
-                if (isNetworkError && i < retries) {
-                    console.log(`Gemini API Fetch failed (attempt ${i + 1}/${retries + 1}), retrying...`);
-                    await new Promise(res => setTimeout(res, 1000 * (i + 1))); // Exponential backoff
+
+                // If API returns RetryInfo (rate limit), honor it
+                const retryDelayMs = this.parseRetryDelayFromError(error);
+                if (retryDelayMs != null) {
+                    const waitMs = this.jitterDelay(retryDelayMs);
+                    console.warn(`Gemini rate-limit / retry requested: waiting ${waitMs}ms before retry (attempt ${attempt + 1}/${retries + 1})`);
+                    if (attempt < retries) {
+                        await this.sleep(waitMs);
+                        continue;
+                    }
+                    // no attempts left, rethrow so caller can fallback
+                    throw error;
+                }
+
+                if (isNetworkError && attempt < retries) {
+                    // exponential base of 800ms
+                    const base = 800 * Math.pow(2, attempt);
+                    const wait = this.jitterDelay(base);
+                    console.log(`Gemini API network error (attempt ${attempt + 1}/${retries + 1}), retrying in ${wait}ms...`);
+                    await this.sleep(wait);
                     continue;
                 }
+
+                // For 429 without RetryInfo, do a short backoff if attempts remain
+                if ((error?.status === 429 || String(error?.message || '').includes('429')) && attempt < retries) {
+                    const base = 1500 * Math.pow(2, attempt);
+                    const wait = this.jitterDelay(base);
+                    console.warn(`Gemini returned 429 (attempt ${attempt + 1}/${retries + 1}), retrying in ${wait}ms...`);
+                    await this.sleep(wait);
+                    continue;
+                }
+
                 throw error;
             }
         }
@@ -68,10 +159,24 @@ export class GeminiItineraryChatService {
             return this.parseResponse(responseText);
         } catch (error: any) {
             console.error("Gemini API Error:", error);
+            // If the error indicates token-quota exhaustion, give a clear message including wait time
+            if (this.parseQuotaFailureIsTokenRelated(error)) {
+                const retryMs = this.parseRetryDelayFromError(error);
+                const waitSeconds = retryMs ? Math.ceil(retryMs / 1000) : 60;
+                return {
+                    reply: `IA in sovraccarico (token esauriti). Riprova tra circa ${waitSeconds} secondi.`,
+                    suggestions: [],
+                    actions: [],
+                    followUpQuestions: ["Vuoi riprovare tra un istante?"],
+                    needsConfirmation: false
+                };
+            }
 
             if (error?.status === 429 || error?.message?.includes('429')) {
+                const retryMs = this.parseRetryDelayFromError(error);
+                const waitSeconds = retryMs ? Math.ceil(retryMs / 1000) : 60;
                 return {
-                    reply: "Il sistema è temporaneamente sovraccarico (limite quota raggiunto). Riprova tra circa un minuto.",
+                    reply: `Il sistema è temporaneamente sovraccarico (limite quota raggiunto). Riprova tra circa ${waitSeconds} secondi.`,
                     suggestions: [],
                     actions: [],
                     followUpQuestions: ["Vuoi riprovare tra un istante?"],
@@ -80,6 +185,68 @@ export class GeminiItineraryChatService {
             }
 
             throw error;
+        }
+    }
+
+    async generateItineraryEditResponse(
+        userInput: AiItineraryChatRequest,
+        workspace: AiItineraryWorkspaceContext
+    ): Promise<AiItineraryChatResponse> {
+        if (!this.apiKey) {
+            throw new AppError('GEMINI_API_KEY mancante', 500);
+        }
+
+        const ai = new GoogleGenerativeAI(this.apiKey);
+        const model = ai.getGenerativeModel({ model: this.modelName });
+        const currentItinerary = userInput.itinerary || workspace.itinerary || null;
+        const directEdit = this.tryDirectItineraryEdit(userInput.message, currentItinerary, workspace);
+        if (directEdit) {
+            return directEdit;
+        }
+
+        const prompt = this.buildEditPrompt(userInput, workspace);
+
+        try {
+            const result = await this.callGeminiWithRetry(model, prompt);
+            const responseText = this.extractText(result.response.candidates?.[0]?.content?.parts ?? []);
+            const parsed = this.parseResponse(responseText);
+            const rawItinerary = parsed.itinerary || this.tryParseItinerary(responseText);
+            const normalized = rawItinerary
+                ? this.normalizeEditedItinerary(rawItinerary, currentItinerary, workspace)
+                : null;
+            const itineraryChanged = normalized && this.itineraryChanged(currentItinerary, normalized);
+
+            return {
+                ...parsed,
+                reply: itineraryChanged
+                    ? parsed.reply
+                    : (parsed.reply || 'Non ho potuto applicare la modifica. Prova a essere più specifico, ad esempio: "Aggiungi il museo al giorno 2" o "Rimuovi la cena del primo giorno".'),
+                needsConfirmation: itineraryChanged ? Boolean(parsed.needsConfirmation) : false,
+                itinerary: itineraryChanged ? normalized : null,
+            };
+        } catch (error: any) {
+            console.error('Gemini itinerary edit Error:', error);
+            if (this.parseQuotaFailureIsTokenRelated(error)) {
+                const retryMs = this.parseRetryDelayFromError(error);
+                const waitSeconds = retryMs ? Math.ceil(retryMs / 1000) : 60;
+                return {
+                    reply: `IA in sovraccarico (token esauriti). Riprova tra circa ${waitSeconds} secondi.`,
+                    suggestions: [],
+                    actions: [],
+                    followUpQuestions: [],
+                    needsConfirmation: false,
+                    itinerary: userInput.itinerary || workspace.itinerary || null
+                };
+            }
+
+            return {
+                reply: 'In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.',
+                suggestions: [],
+                actions: [],
+                followUpQuestions: [],
+                needsConfirmation: false,
+                itinerary: userInput.itinerary || workspace.itinerary || null
+            };
         }
     }
 
@@ -144,16 +311,193 @@ export class GeminiItineraryChatService {
                 actions: Array.isArray(parsed.actions) ? parsed.actions : [],
                 followUpQuestions: Array.isArray(parsed.followUpQuestions) ? parsed.followUpQuestions : [],
                 needsConfirmation: Boolean(parsed.needsConfirmation),
+                itinerary: parsed.itinerary || null,
             };
         }
 
         return {
-            reply: text || 'Non sono riuscito a generare una risposta strutturata.',
+            reply: text || 'In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.',
             suggestions: [],
             actions: [],
             followUpQuestions: [],
             needsConfirmation: false,
+            itinerary: null,
         };
+    }
+
+    private buildEditPrompt(userInput: AiItineraryChatRequest, workspace: AiItineraryWorkspaceContext): string {
+        const currentItinerary = userInput.itinerary || workspace.itinerary;
+        const conversation = (userInput.conversation || []).slice(-6);
+
+        const messageMatches = this.findMatchingActivitiesForMessage(userInput.message, workspace.activities || []);
+        const activities = this.buildActivitiesForPrompt(userInput.message, workspace.activities || []);
+        const accommodations = (workspace.accommodations || [])
+            .slice(0, 20)
+            .map(acc => ({ id: acc.id, name: acc.name, stars: acc.stars }));
+
+        return [
+            'Sei l’editor AI del builder itinerari di SmartFare.',
+            'L’utente sta già guardando un itinerario e vuole modificarlo in tempo reale.',
+            'REGOLE OPERATIVE:',
+            '1. Se la richiesta è un’operazione concreta (aggiungi, rimuovi, sposta, sostituisci, ottimizza, aggiungi giorno), APPLICA subito la modifica nell’itinerary e spiega in reply cosa hai fatto in 1-2 frasi dirette (es. "Ho aggiunto Genova Piazza Principe come prima tappa del giorno 1").',
+            '2. Il catalogo POI include TUTTE le categorie: stazioni, musei, ristoranti, monumenti, parchi, ecc. Non dire che un luogo non esiste se compare in "POI corrispondenti alla richiesta" o nella lista POI.',
+            '3. Non rispondere in modo vago. Se il POI è nella lista, usalo con il suo activityId.',
+            '4. Chiedi chiarimento SOLO se ci sono più POI plausibili e la richiesta non permette di scegliere. Altrimenti applica la modifica.',
+            '5. Usa solo activityId e accommodationId presenti nelle liste. Non inventare POI.',
+            '6. Mantieni il massimo possibile delle tappe esistenti; modifica solo ciò che serve.',
+            'Restituisci SOLO JSON valido con i campi reply, suggestions, actions, followUpQuestions, needsConfirmation e itinerary.',
+            'L’itinerary deve essere SEMPRE l’itinerario completo aggiornato (tutti i giorni e tutte le tappe), non un diff parziale.',
+            'Conserva gli id numerici delle tappe esistenti quando non le modifichi.',
+            'Per ogni tappa usa: dayNumber, orderInt, itemTypeCode (ACTIVITY o ACCOMMODATION), activityId o accommodationId, groupName, timeSlotStart, timeSlotEnd (HH:mm).',
+            'Formato JSON richiesto:',
+            '{"reply":"Ho spostato la colazione al giorno 2 alle 09:00.","suggestions":[],"actions":[],"followUpQuestions":[],"needsConfirmation":false,"itinerary":{"name":"Titolo","description":"Desc","items":[{"id":1,"dayNumber":1,"orderInt":1,"itemTypeCode":"ACTIVITY","activityId":123,"groupName":"Mattina","timeSlotStart":"10:00","timeSlotEnd":"11:00"}]}}',
+            '',
+            `Messaggio utente: ${userInput.message}`,
+            userInput.preferences ? `Preferenze utente: ${JSON.stringify(userInput.preferences)}` : 'Preferenze utente: non fornite',
+            `Location: ${JSON.stringify(workspace.location)}`,
+            `Itinerario corrente: ${JSON.stringify(currentItinerary)}`,
+            messageMatches.length > 0
+                ? `POI corrispondenti alla richiesta (PRIORITÀ — usa questi activityId): ${JSON.stringify(messageMatches)}`
+                : 'POI corrispondenti alla richiesta: nessun match testuale automatico; cerca nel catalogo POI.',
+            `Alloggi disponibili: ${JSON.stringify(accommodations)}`,
+            `Catalogo POI disponibili (attività, stazioni, ristoranti, ecc.): ${JSON.stringify(activities)}`,
+            `Categorie: ${JSON.stringify(workspace.categories)}`,
+            conversation.length > 0 ? `Storico conversazione: ${JSON.stringify(conversation)}` : 'Storico conversazione: vuoto'
+        ].join('\n');
+    }
+
+    private tryParseItinerary(text: string): AiItineraryWorkspaceContext['itinerary'] | null {
+        const parsed = this.tryParseJson(text);
+        if (!parsed || !parsed.itinerary) return null;
+        return parsed.itinerary;
+    }
+
+    private normalizeEditedItinerary(
+        raw: NonNullable<AiItineraryWorkspaceContext['itinerary']>,
+        current: AiItineraryWorkspaceContext['itinerary'] | null,
+        workspace: AiItineraryWorkspaceContext
+    ): NonNullable<AiItineraryWorkspaceContext['itinerary']> {
+        const activityIds = new Set((workspace.activities || []).map((activity) => activity.id));
+        const accommodationIds = new Set((workspace.accommodations || []).map((acc) => acc.id));
+        const startDate = raw.startDate || current?.startDate || new Date().toISOString().split('T')[0];
+        const currentItems = current?.items || [];
+
+        const items = (raw.items || [])
+            .map((item: any, index: number) => {
+                const dayNumber = Number(item.dayNumber || 1);
+                const dateStr = this.resolveItemDate(item, startDate, dayNumber);
+                const existing = this.findMatchingItem(item, currentItems);
+
+                return {
+                    id: existing?.id ?? item.id,
+                    dayNumber,
+                    orderInt: Number(item.orderInt || index + 1),
+                    itemTypeCode: item.itemTypeCode,
+                    activityId: item.activityId ?? undefined,
+                    accommodationId: item.accommodationId ?? undefined,
+                    note: item.note ?? undefined,
+                    groupName: item.groupName ?? undefined,
+                    plannedStartAt: this.resolvePlannedDateTime(dateStr, dayNumber, item.timeSlotStart || item.plannedStartAt),
+                    plannedEndAt: this.resolvePlannedDateTime(dateStr, dayNumber, item.timeSlotEnd || item.plannedEndAt),
+                };
+            })
+            .filter((item) => item.itemTypeCode === 'ACTIVITY' || item.itemTypeCode === 'ACCOMMODATION')
+            .filter((item) => {
+                if (item.itemTypeCode === 'ACTIVITY') {
+                    return Boolean(item.activityId && activityIds.has(item.activityId));
+                }
+                return Boolean(item.accommodationId && accommodationIds.has(item.accommodationId));
+            })
+            .sort((left, right) => {
+                if (left.dayNumber !== right.dayNumber) return left.dayNumber - right.dayNumber;
+                return (left.orderInt || 0) - (right.orderInt || 0);
+            });
+
+        const maxDay = items.reduce((max, item) => Math.max(max, item.dayNumber), 1);
+        const endDate = raw.endDate || current?.endDate || this.addDaysToDate(startDate, maxDay - 1);
+
+        return {
+            id: current?.id ?? raw.id,
+            name: raw.name || current?.name || 'Itinerario',
+            startDate,
+            endDate,
+            locationId: current?.locationId ?? workspace.location?.id ?? raw.locationId ?? null,
+            items: items.length > 0 ? items : currentItems,
+        };
+    }
+
+    private findMatchingItem(
+        item: { id?: number; dayNumber?: number; activityId?: number | null; accommodationId?: number | null; itemTypeCode?: string },
+        currentItems: NonNullable<AiItineraryWorkspaceContext['itinerary']>['items']
+    ) {
+        if (!currentItems?.length) return null;
+        if (item.id) {
+            const byId = currentItems.find((entry) => entry.id === item.id);
+            if (byId) return byId;
+        }
+        return currentItems.find((entry) =>
+            entry.dayNumber === Number(item.dayNumber || 1) &&
+            entry.itemTypeCode === item.itemTypeCode &&
+            (item.itemTypeCode === 'ACTIVITY'
+                ? entry.activityId === item.activityId
+                : entry.accommodationId === item.accommodationId)
+        ) || null;
+    }
+
+    private resolveItemDate(item: { date?: string }, startDate: string, dayNumber: number): string {
+        if (item.date && /^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
+            return item.date;
+        }
+        return this.addDaysToDate(startDate, Math.max(0, dayNumber - 1));
+    }
+
+    private addDaysToDate(startDate: string, daysToAdd: number): string {
+        const base = new Date(startDate);
+        base.setDate(base.getDate() + daysToAdd);
+        return base.toISOString().split('T')[0];
+    }
+
+    private resolvePlannedDateTime(startDate: string, dayNumber: number, value?: string | null) {
+        if (!value) return undefined;
+
+        const timeMatch = String(value).match(/(\d{2}):(\d{2})/);
+        if (!timeMatch) {
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+        }
+
+        const base = new Date(startDate);
+        base.setDate(base.getDate() + Math.max(0, dayNumber - 1));
+        base.setHours(Number(timeMatch[1]), Number(timeMatch[2]), 0, 0);
+        return base.toISOString();
+    }
+
+    private itineraryChanged(
+        before: AiItineraryWorkspaceContext['itinerary'] | null,
+        after: NonNullable<AiItineraryWorkspaceContext['itinerary']>
+    ): boolean {
+        return this.serializeItineraryItems(before?.items) !== this.serializeItineraryItems(after.items);
+    }
+
+    private serializeItineraryItems(items?: AiItineraryItemSnapshot[] | null) {
+        const normalized = (items || [])
+            .map((item) => ({
+                dayNumber: item.dayNumber,
+                orderInt: item.orderInt,
+                itemTypeCode: item.itemTypeCode,
+                activityId: item.activityId ?? null,
+                accommodationId: item.accommodationId ?? null,
+                groupName: item.groupName ?? null,
+                note: item.note ?? null,
+                plannedStartAt: item.plannedStartAt ?? null,
+                plannedEndAt: item.plannedEndAt ?? null,
+            }))
+            .sort((left, right) => {
+                if (left.dayNumber !== right.dayNumber) return left.dayNumber - right.dayNumber;
+                return (left.orderInt || 0) - (right.orderInt || 0);
+            });
+
+        return JSON.stringify(normalized);
     }
 
     private tryParseJson(text: string): any {
@@ -289,16 +633,210 @@ export class GeminiItineraryChatService {
         }
     }
 
+    private buildActivitiesForPrompt(
+        message: string,
+        activities: AiItineraryWorkspaceContext['activities']
+    ) {
+        const matchedSummaries = this.findMatchingActivitiesForMessage(message, activities);
+        const matchedIds = new Set(matchedSummaries.map((entry) => entry.id));
+        const matchedActivities = matchedSummaries
+            .map((entry) => activities.find((activity) => activity.id === entry.id))
+            .filter((activity): activity is AiItineraryWorkspaceContext['activities'][number] => Boolean(activity));
+        const ranked = this.rankActivitiesForPrompt(message, activities);
+        const merged = [
+            ...matchedActivities,
+            ...ranked.filter((activity) => !matchedIds.has(activity.id)),
+        ].slice(0, 80);
+
+        return merged.map((activity) => ({
+            id: activity.id,
+            name: activity.name,
+            category: activity.category?.name,
+        }));
+    }
+
+    private findMatchingActivitiesForMessage(
+        message: string,
+        activities: AiItineraryWorkspaceContext['activities']
+    ) {
+        const lowerMessage = message.toLowerCase();
+        const tokens = this.extractPromptTokens(lowerMessage);
+
+        return activities
+            .map((activity) => ({
+                activity,
+                score: this.scoreActivityMatch(activity, lowerMessage, tokens),
+            }))
+            .filter((entry) => entry.score >= 70)
+            .sort((left, right) => right.score - left.score)
+            .slice(0, 8)
+            .map((entry) => ({
+                id: entry.activity.id,
+                name: entry.activity.name,
+                category: entry.activity.category?.name,
+                matchScore: entry.score,
+            }));
+    }
+
+    private extractPromptTokens(message: string): string[] {
+        return message
+            .split(/[^a-zàèéìòù0-9]+/i)
+            .map((token) => token.trim())
+            .filter((token) => token.length >= 3 && !PROMPT_STOP_WORDS.has(token));
+    }
+
+    private scoreActivityMatch(
+        activity: AiItineraryWorkspaceContext['activities'][number],
+        lowerMessage: string,
+        tokens: string[]
+    ): number {
+        let score = 0;
+        const name = activity.name.toLowerCase();
+        const category = activity.category?.name?.toLowerCase() || '';
+
+        if (lowerMessage.length >= 5 && name.includes(lowerMessage)) {
+            score += 320;
+        }
+
+        for (const token of tokens) {
+            if (name.includes(token)) score += 95;
+            if (category.includes(token)) score += 55;
+        }
+
+        if (/stazion|ferroviar|binari|treno/.test(lowerMessage)) {
+            if (category.includes('stazion') || name.includes('stazion') || name.includes('piazza')) {
+                score += 140;
+            }
+        }
+
+        if (tokens.some((token) => name.includes(token)) && category.includes('stazion')) {
+            score += 100;
+        }
+
+        return score;
+    }
+
+    private tryDirectItineraryEdit(
+        message: string,
+        currentItinerary: AiItineraryWorkspaceContext['itinerary'] | null,
+        workspace: AiItineraryWorkspaceContext
+    ): AiItineraryChatResponse | null {
+        if (!currentItinerary?.items?.length) return null;
+
+        const lowerMessage = message.toLowerCase();
+        const matches = this.findMatchingActivitiesForMessage(message, workspace.activities || []);
+        if (matches.length === 0) return null;
+
+        const top = matches[0];
+        const second = matches[1];
+        if (second && top.matchScore - second.matchScore < 25) {
+            return null;
+        }
+
+        const activity = workspace.activities.find((entry) => entry.id === top.id);
+        if (!activity) return null;
+
+        if (this.isAddAsFirstStopIntent(lowerMessage)) {
+            const updated = this.insertActivityAsFirstStop(currentItinerary, activity);
+            const normalized = this.normalizeEditedItinerary(updated, currentItinerary, workspace);
+            if (!this.itineraryChanged(currentItinerary, normalized)) return null;
+
+            return {
+                reply: `Ho aggiunto ${activity.name} come prima tappa del giorno 1.`,
+                suggestions: [{
+                    title: activity.name,
+                    description: activity.category?.name || 'Tappa',
+                    type: 'poi',
+                    poiId: activity.id,
+                    poiType: 'activity',
+                }],
+                actions: [{ type: 'focus_poi', payload: { poiId: activity.id, poiType: 'activity' } }],
+                followUpQuestions: [],
+                needsConfirmation: false,
+                itinerary: normalized,
+            };
+        }
+
+        if (this.isRemoveIntent(lowerMessage)) {
+            const updated = this.removeActivityFromItinerary(currentItinerary, activity.id);
+            const normalized = this.normalizeEditedItinerary(updated, currentItinerary, workspace);
+            if (!this.itineraryChanged(currentItinerary, normalized)) return null;
+
+            return {
+                reply: `Ho rimosso ${activity.name} dall'itinerario.`,
+                suggestions: [],
+                actions: [],
+                followUpQuestions: [],
+                needsConfirmation: false,
+                itinerary: normalized,
+            };
+        }
+
+        return null;
+    }
+
+    private isAddAsFirstStopIntent(message: string): boolean {
+        return /(aggiung|inserisc|mett|includ)/.test(message) &&
+            /(prima tappa|primo|inizio|all'inizio|come prima)/.test(message);
+    }
+
+    private isRemoveIntent(message: string): boolean {
+        return /(rimuov|togl|elimin|cancel)/.test(message);
+    }
+
+    private insertActivityAsFirstStop(
+        itinerary: NonNullable<AiItineraryWorkspaceContext['itinerary']>,
+        activity: AiItineraryWorkspaceContext['activities'][number]
+    ): NonNullable<AiItineraryWorkspaceContext['itinerary']> {
+        const startDate = itinerary.startDate || new Date().toISOString().split('T')[0];
+        const withoutDuplicate = (itinerary.items || []).filter((item) => item.activityId !== activity.id);
+        const dayOneItems = withoutDuplicate
+            .filter((item) => item.dayNumber === 1)
+            .map((item) => ({ ...item, orderInt: (item.orderInt || 1) + 1 }));
+        const otherItems = withoutDuplicate.filter((item) => item.dayNumber !== 1);
+
+        const newItem = {
+            dayNumber: 1,
+            orderInt: 1,
+            itemTypeCode: 'ACTIVITY' as const,
+            activityId: activity.id,
+            groupName: activity.category?.name || 'Arrivo',
+            note: activity.name,
+            plannedStartAt: this.resolvePlannedDateTime(startDate, 1, '09:00'),
+            plannedEndAt: this.resolvePlannedDateTime(startDate, 1, '10:00'),
+        };
+
+        return {
+            ...itinerary,
+            items: [newItem, ...dayOneItems, ...otherItems],
+        };
+    }
+
+    private removeActivityFromItinerary(
+        itinerary: NonNullable<AiItineraryWorkspaceContext['itinerary']>,
+        activityId: number
+    ): NonNullable<AiItineraryWorkspaceContext['itinerary']> {
+        return {
+            ...itinerary,
+            items: (itinerary.items || []).filter((item) => item.activityId !== activityId),
+        };
+    }
+
     private rankActivitiesForPrompt(prompt: string, activities: AiItineraryWorkspaceContext['activities']) {
         const lowerPrompt = prompt.toLowerCase();
+        const tokens = this.extractPromptTokens(lowerPrompt);
 
         return [...activities].sort((left, right) => {
-            return this.scoreActivityForPrompt(right, lowerPrompt) - this.scoreActivityForPrompt(left, lowerPrompt);
+            return this.scoreActivityForPrompt(right, lowerPrompt, tokens) - this.scoreActivityForPrompt(left, lowerPrompt, tokens);
         });
     }
 
-    private scoreActivityForPrompt(activity: AiItineraryWorkspaceContext['activities'][number], prompt: string): number {
-        let score = 0;
+    private scoreActivityForPrompt(
+        activity: AiItineraryWorkspaceContext['activities'][number],
+        prompt: string,
+        tokens: string[] = []
+    ): number {
+        let score = this.scoreActivityMatch(activity, prompt, tokens);
         const name = activity.name.toLowerCase();
         const category = activity.category?.name?.toLowerCase() || '';
 
@@ -309,9 +847,20 @@ export class GeminiItineraryChatService {
         if (prompt.includes('autentic') && ['mercati', 'artigianato locale', 'chiese', 'landmark'].includes(category)) score += 70;
         if (prompt.includes('rilassat') && ['parchi', 'punti panoramici', 'caffe', 'ristoranti'].includes(category)) score += 55;
 
+        const isCoffeeQuery = prompt.match(/caffe|caffè|colazione|bar|cappuccino|pausa/i);
+        if (isCoffeeQuery && (category.includes('caffe') || category.includes('bar') || category.includes('panetteri') || name.includes('caffe') || name.includes('caffè') || name.includes('bar'))) {
+            score += 150;
+        }
+
+        const isFoodQuery = prompt.match(/ristorant|pranzo|cena|mangiare|cibo|food/i);
+        if (isFoodQuery && (category.includes('ristorant') || category.includes('trattori') || category.includes('osteri') || category.includes('pizzeri') || category.includes('street food'))) {
+            score += 150;
+        }
+
         if (['musei', 'monumenti', 'landmark', 'chiese', 'castelli', 'punti panoramici'].includes(category)) score += 60;
         if (['ristoranti', 'caffe', 'panetterie', 'bar', 'enoteche', 'gelaterie'].includes(category)) score += 45;
         if (['mercati', 'artigianato locale'].includes(category)) score += 35;
+        if (['stazioni'].includes(category)) score += 25;
         if (['fermate bus', 'parcheggi', 'farmacie', 'benzinai'].includes(category)) score -= 80;
 
         return score;

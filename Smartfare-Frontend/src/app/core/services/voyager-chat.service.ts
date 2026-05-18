@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { Itinerary } from '../models/itinerary.model';
 import { AuthService } from '../auth/auth.service';
 
-export type ChatMode = 'planner' | 'assistant';
+export type ChatMode = 'planner' | 'assistant' | 'itinerary';
 
 export interface PlannerState {
   destination: string | null;
@@ -33,6 +33,8 @@ export interface ChatSession {
     plannerState?: PlannerState;
     readyToGenerate?: boolean;
     generatedItinerary?: Itinerary;
+    plannerLocked?: boolean;
+    generatedItineraryId?: number | null;
     suggestions?: Array<{
       title: string;
       description?: string;
@@ -82,7 +84,9 @@ export class VoyagerChatService {
     return this.http.get<ChatSession[]>(`${this.apiUrl}/sessions`).pipe(
       tap({
         next: (sessions) => {
-          this.sessions.set(sessions);
+          // Exclude itinerary-scoped sessions from the main Planner sidebar
+          const visible = sessions.filter(s => s.mode !== 'itinerary');
+          this.sessions.set(visible);
           this.isLoadingSessions.set(false);
         },
         error: () => {

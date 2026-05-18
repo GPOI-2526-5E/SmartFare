@@ -105,6 +105,5 @@ export function createApp() {
   // Global Error handling
   app.use(errorHandler);
 
-
   return app;
 }

@@ -19,9 +19,11 @@ const chatWriteLimiter = rateLimit({
     }
 });
 
+const chatModeSchema = z.enum(['planner', 'assistant', 'itinerary']);
+
 const createSessionSchema = z.object({
     title: z.string().trim().min(1).max(120).optional(),
-    mode: z.enum(['planner', 'assistant']).optional(),
+    mode: chatModeSchema.optional(),
     locationId: z.coerce.number().int().positive().nullable().optional()
 });
 
@@ -30,7 +32,7 @@ const updateSessionSchema = z
         title: z.string().trim().min(1).max(120).optional(),
         isPinned: z.boolean().optional(),
         isActive: z.boolean().optional(),
-        mode: z.enum(['planner', 'assistant']).optional()
+        mode: chatModeSchema.optional()
     })
     .refine((body) => Object.keys(body).length > 0, {
         message: 'Payload di aggiornamento vuoto'
@@ -111,7 +113,9 @@ router.post('/sessions', chatWriteLimiter, authenticateJWT, async (req: AuthRequ
                         preferredTransport: null,
                         hotelStyle: null
                     },
-                    readyToGenerate: false
+                    readyToGenerate: false,
+                    plannerLocked: false,
+                    generatedItineraryId: null
                 }
             }
         });

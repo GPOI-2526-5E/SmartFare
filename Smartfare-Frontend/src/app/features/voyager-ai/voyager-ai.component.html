@@ -143,7 +143,7 @@
     }
 
     <!-- MAIN CHAT AREA -->
-    <main class="chat-main">
+    <main class="chat-main" [class.chat-locked]="isPlannerLocked()">
       <header class="chat-header">
         <div class="header-left">
           <!-- Desktop toggle (visible when sidebar is closed) -->
@@ -161,7 +161,8 @@
           <div class="chat-title-wrapper">
             <span class="header-kicker">{{ currentModeLabel() }}</span>
             <input class="chat-title-input" [value]="chatService.activeSession()?.title || 'SmartFare AI'"
-              (blur)="updateSessionTitle($event)" (keydown.enter)="$any($event).target.blur()" />
+              (blur)="updateSessionTitle($event)" (keydown.enter)="$any($event).target.blur()"
+              aria-label="Titolo della conversazione" title="Titolo della conversazione" />
           </div>
         </div>
 
@@ -176,7 +177,7 @@
         </div>
       </header>
 
-      <section class="messages-viewport" #scrollContainer>
+      <section class="messages-viewport" [class.content-blurred]="isPlannerLocked()" #scrollContainer>
         <div class="messages-list">
           @if (isSessionLoading()) {
           <div class="session-loading-card">
@@ -267,16 +268,31 @@
             </div>
             <div class="card-body">
               <h3>Il tuo viaggio è pronto!</h3>
-              <p>Ho raccolto tutti i dettagli necessari. Vuoi generare l'itinerario completo nel builder?</p>
-              <button class="generate-btn" (click)="generateItinerary()" [disabled]="isGeneratingItinerary()">
-                <i class="bi" [class.bi-hourglass-split]="isGeneratingItinerary()"
-                  [class.bi-magic]="!isGeneratingItinerary()"></i>
-                @if (!isGeneratingItinerary()) {
-                <span>Genera Itinerario</span>
-                } @else {
-                <span>Preparazione...</span>
-                }
-              </button>
+              <p>Ho raccolto tutti i dettagli necessari.</p>
+              @if (!isGeneratingItinerary()) {
+              <div class="generate-actions">
+                <p>Vuoi generare l'itinerario completo nel builder?</p>
+                <button class="generate-btn" (click)="generateItinerary()" [disabled]="isGeneratingItinerary()">
+                  <i class="bi bi-magic"></i>
+                  <span>Genera Itinerario</span>
+                </button>
+              </div>
+              } @else {
+              <div class="generate-loading">
+                <div class="spinner"></div>
+                <div class="loading-text">Preparazione...</div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+
+          @if (isPlannerLocked()) {
+          <div class="planner-locked-card">
+            <i class="bi bi-lock-fill"></i>
+            <div>
+              <strong>Itinerario generato</strong>
+              <p>La chat Planner è bloccata. Le modifiche adesso passano dal builder.</p>
             </div>
           </div>
           }
@@ -284,46 +300,116 @@
       </section>
 
       <!-- INPUT AREA -->
-      <footer class="chat-footer">
+      <footer class="chat-footer" [class.content-blurred]="isPlannerLocked()">
         <div class="chat-input-container">
 
-        @if (pendingAttachmentName()) {
-        <div class="attachment-chip">
-          <span>{{ pendingAttachmentName() }}</span>
-          <button type="button" title="Rimuovi allegato" aria-label="Rimuovi allegato" (click)="clearAttachment()"><i
-              class="bi bi-x-lg"></i></button>
-        </div>
-        }
-
-        <div class="input-wrapper">
-          <label class="action-btn attach-btn">
-            <i class="bi bi-paperclip"></i>
-            <input type="file" hidden (change)="attachPlaceholder($event)">
-          </label>
-
-          @if (isVoiceSupported()) {
-          <button class="action-btn" type="button" title="Attiva o disattiva input vocale"
-            aria-label="Attiva o disattiva input vocale" (click)="toggleVoiceInput()" [class.active]="isListening()">
-            <i class="bi" [class.bi-stop-fill]="isListening()" [class.bi-mic]="!isListening()"></i>
-          </button>
+          @if (pendingAttachmentName()) {
+          <div class="attachment-chip">
+            <span>{{ pendingAttachmentName() }}</span>
+            <button type="button" title="Rimuovi allegato" aria-label="Rimuovi allegato" (click)="clearAttachment()"><i
+                class="bi bi-x-lg"></i></button>
+          </div>
           }
 
-          <textarea [ngModel]="message()" (ngModelChange)="message.set($event)"
-            placeholder="Messaggio a SmartFare AI..." (keydown.enter)="onEnter($event)" rows="1"></textarea>
+          <div class="input-wrapper">
+            <label class="action-btn attach-btn">
+              <i class="bi bi-paperclip"></i>
+              <input type="file" hidden (change)="attachPlaceholder($event)">
+            </label>
 
-          <button class="send-btn" type="button" title="Invia messaggio" aria-label="Invia messaggio"
-            [disabled]="!message().trim() || chatService.isStreaming()" (click)="sendMessage()">
-            <i class="bi" [class.bi-hourglass-split]="chatService.isStreaming()"
-              [class.bi-arrow-up-short]="!chatService.isStreaming()"></i>
-          </button>
-        </div>
+            @if (isVoiceSupported()) {
+            <button class="action-btn" type="button" title="Attiva o disattiva input vocale"
+              aria-label="Attiva o disattiva input vocale" (click)="toggleVoiceInput()" [class.active]="isListening()">
+              <i class="bi" [class.bi-stop-fill]="isListening()" [class.bi-mic]="!isListening()"></i>
+            </button>
+            }
 
-        <div class="footer-note">
-          SmartFare AI usa memoria conversazionale e può sbagliare. Verifica le informazioni importanti prima di
-          finalizzare.
+            <textarea [ngModel]="message()" (ngModelChange)="message.set($event)"
+              placeholder="Messaggio a SmartFare AI..." (keydown.enter)="onEnter($event)" [disabled]="isPlannerLocked()"
+              rows="1"></textarea>
+
+            <button class="send-btn" type="button" title="Invia messaggio" aria-label="Invia messaggio"
+              [disabled]="!message().trim() || chatService.isStreaming() || isPlannerLocked()" (click)="sendMessage()">
+              <i class="bi" [class.bi-hourglass-split]="chatService.isStreaming()"
+                [class.bi-arrow-up-short]="!chatService.isStreaming()"></i>
+            </button>
+          </div>
+
+          <div class="footer-note">
+            SmartFare AI usa memoria conversazionale e può sbagliare. Verifica le informazioni importanti prima di
+            finalizzare.
+          </div>
         </div>
+      </footer>
+
+      <!-- LOCKED OVERLAY: shown when this session already has a generated itinerary -->
+      @if (isPlannerLocked()) {
+      <div class="locked-overlay">
+        <div class="locked-modal" (click)="$event.stopPropagation()">
+          <div class="locked-modal__badge">
+            <i class="bi bi-shield-check"></i>
+            <span>Itinerario già creato</span>
+          </div>
+
+          @if (modalItineraryPreview()) {
+          <div class="locked-modal__hero">
+            @if (modalItineraryImages().length > 0) {
+            <div class="locked-modal__gallery">
+              @for (img of modalItineraryImages().slice(0,3); track $index) {
+              <div class="locked-modal__thumb">
+                <img [src]="img" alt="Foto itinerario" />
+              </div>
+              }
+            </div>
+            }
+          </div>
+
+          <div class="locked-modal__body">
+            <h2 class="locked-modal__title">{{ modalItineraryPreview().name }}</h2>
+            @if (modalItineraryPreview().description) {
+            <p class="locked-modal__desc">{{ modalItineraryPreview().description }}</p>
+            }
+            <div class="locked-modal__meta">
+              @if (modalItineraryPreview().durationDays) {
+              <span class="meta-chip">
+                <i class="bi bi-calendar3"></i>
+                {{ modalItineraryPreview().durationDays }} giorni
+              </span>
+              }
+              @if (modalItineraryPreview()._count?.items) {
+              <span class="meta-chip">
+                <i class="bi bi-geo-alt"></i>
+                {{ modalItineraryPreview()._count.items }} tappe
+              </span>
+              }
+              @if (modalItineraryPreview().location?.name) {
+              <span class="meta-chip">
+                <i class="bi bi-map"></i>
+                {{ modalItineraryPreview().location.name }}
+              </span>
+              }
+            </div>
+          </div>
+          } @else {
+          <div class="locked-modal__body locked-modal__body--empty">
+            <div class="locked-modal__icon-wrap">
+              <i class="bi bi-globe-europe-africa"></i>
+            </div>
+            <h2 class="locked-modal__title">Itinerario già generato</h2>
+            <p class="locked-modal__desc">Questo piano di viaggio è stato già creato. Apri il builder per visualizzarlo e modificarlo.</p>
+          </div>
+          }
+
+          <div class="locked-modal__actions">
+            <button class="locked-cta" (click)="openGeneratedItinerary()">
+              <i class="bi bi-arrow-right-circle-fill"></i>
+              Apri nel builder
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+
+    </main>
   </div>
-  </footer>
-  </main>
-</div>
 </div>

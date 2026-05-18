@@ -39,6 +39,7 @@ export interface AiItineraryChatResponse {
     actions: AiItineraryChatAction[];
     followUpQuestions: string[];
     needsConfirmation: boolean;
+    itinerary?: Itinerary | null;
 }
 
 export interface AiChatEntry {
