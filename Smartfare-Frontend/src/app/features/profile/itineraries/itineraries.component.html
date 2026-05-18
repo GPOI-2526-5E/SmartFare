@@ -82,7 +82,7 @@
         @for (group of groupedItineraries(); track group.locationName) {
         <div class="itinerary-group">
           <h2 class="group-title">{{ group.locationName }}</h2>
-          
+
           <div class="itineraries-grid">
             <!-- Iterate over the limited items in the group -->
             @for (itinerary of group.items.slice(0, getLimit(group.locationName)); track itinerary.id) {
@@ -105,17 +105,26 @@
                   <i class="bi bi-calendar3"></i>
                   <span>{{ formatDateRange(itinerary) }}</span>
                 </div>
-                
+
                 <!-- Bottom row with Avatar and Action -->
                 <div class="card-bottom-row">
                   <div class="user-avatar-small">
-                    @if (userAvatar()) {
-                      <img [src]="userAvatar()" alt="User Avatar" referrerpolicy="no-referrer">
+                    <!-- Prefer owner avatar; fallback to owner's initial; if owner missing, fall back to current user -->
+                    @if (itinerary.user?.profile?.avatarUrl) {
+                      <img [src]="itinerary.user?.profile?.avatarUrl" alt="Creator Avatar" referrerpolicy="no-referrer">
                     } @else {
-                      <div class="avatar-placeholder">{{ userInitial() }}</div>
+                      @if (itinerary.user?.profile?.name || itinerary.user?.profile?.surname) {
+                        <div class="avatar-placeholder">{{ getOwnerInitial(itinerary) }}</div>
+                      } @else {
+                        @if (userAvatar()) {
+                          <img [src]="userAvatar()" alt="User Avatar" referrerpolicy="no-referrer">
+                        } @else {
+                          <div class="avatar-placeholder">{{ userInitial() }}</div>
+                        }
+                      }
                     }
                   </div>
-                  
+
                   <button class="btn-quick-edit" (click)="editItinerary(itinerary, $event)" title="Modifica">
                     <i class="bi bi-pencil-fill"></i> Modifica
                   </button>
@@ -124,7 +133,7 @@
 
             </div>
             }
-            
+
             <!-- New trip in this location card -->
             @if (group.locationName !== 'Altre Destinazioni') {
             <div class="itinerary-card new-in-group-card" (click)="createNewTripInLocation(group.locationName)">

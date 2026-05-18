@@ -195,5 +195,12 @@ export class ItinerariesComponent implements OnInit {
     return `${startStr} – ${end.toLocaleDateString('it-IT', opts)}`;
   }
 
+  // Return the owner's initial (first letter of name or surname) for avatar fallback
+  getOwnerInitial(itinerary: Itinerary): string {
+    const name = itinerary.user?.profile?.name || itinerary.user?.profile?.surname || '';
+    return (name.charAt(0) || 'U').toUpperCase();
+  }
+
+
 
 }

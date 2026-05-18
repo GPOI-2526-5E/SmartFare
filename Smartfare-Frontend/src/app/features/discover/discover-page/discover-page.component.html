@@ -4,14 +4,14 @@
   <app-loader [show]="isLoading()"></app-loader>
 
   <main class="discover-content flex-grow-1" [class.content-ready]="!isLoading()">
-    
+
     <!-- 1. Hero Search Bar -->
     <section class="hero-search-section">
       <div class="hero-overlay"></div>
       <div class="container hero-content">
         <h1 class="search-title">Esplora il Mondo</h1>
         <p class="search-subtitle">Cerca itinerari, destinazioni e creatori eccezionali</p>
-        
+
         <div class="search-tabs">
           <button class="search-tab" [class.active]="activeFilter() === 'all'" (click)="setFilter('all')">
             Tutto
@@ -26,10 +26,10 @@
 
         <div class="search-input-container">
           <i class="bi bi-search search-icon"></i>
-          <input 
-            type="text" 
-            class="hero-search-input" 
-            placeholder="Cerca viaggi, luoghi o esploratori..." 
+          <input
+            type="text"
+            class="hero-search-input"
+            placeholder="Cerca viaggi, luoghi o esploratori..."
             [value]="searchQuery()"
             (input)="onSearchChange($event)"
           >
@@ -46,7 +46,7 @@
     @if (searchQuery().length >= 2) {
       <section class="search-results-section container mt-4">
         <h2 class="section-title">Risultati per "{{ searchQuery() }}"</h2>
-        
+
         @if (isSearching()) {
           <div class="d-flex justify-content-center py-5">
             <div class="spinner-border text-primary" role="status"></div>
@@ -99,7 +99,7 @@
           }
         }
       </section>
-    } 
+    }
     <!-- DEFAULT DISCOVER VIEW -->
     @else {
       <!-- 2. Featured Mix (Magazine Style) -->
@@ -127,7 +127,7 @@
             <h2 class="section-title">In Tendenza Ora</h2>
             <p class="section-subtitle">I viaggi più amati dalla community</p>
           </div>
-          
+
           <div class="carousel-container">
             <div class="itinerary-row">
               @for (itin of trendingItineraries(); track itin.id) {
@@ -190,7 +190,7 @@
             <h2 class="section-title"><i class="bi bi-geo-alt-fill text-primary"></i> Vicino ai tuoi viaggi recenti</h2>
             <p class="section-subtitle">Scopri cosa hanno creato gli altri nella zona della tua ultima meta</p>
           </div>
-          
+
           <div class="itinerary-grid">
             @for (itin of nearYourTrips().slice(0, 4); track itin.id) {
               <div class="itinerary-card" [routerLink]="['/itineraries/preview']" [queryParams]="{ itineraryId: itin.id }">
