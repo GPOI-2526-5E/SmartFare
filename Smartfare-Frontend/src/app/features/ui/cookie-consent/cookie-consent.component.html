@@ -1,28 +1,31 @@
 <!-- ─── BANNER ─────────────────────────────────────────────── -->
-<div class="sf-banner" *ngIf="visible" role="region" aria-label="Consenso cookie">
-  <div class="sf-banner-inner">
-    <div class="sf-banner-icon" aria-hidden="true">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-        stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
-        <path d="M8.5 8.5v.01" />
-        <path d="M16 15.5v.01" />
-        <path d="M12 12v.01" />
-      </svg>
-    </div>
-    <p class="sf-banner-text">
-      Utilizziamo i cookie per migliorare la tua esperienza.
-      <button class="sf-link" (click)="openModal()">Gestisci preferenze</button>
-    </p>
-    <div class="sf-banner-actions">
-      <button class="sf-btn sf-btn--ghost" (click)="rejectAll()">Rifiuta</button>
-      <button class="sf-btn sf-btn--primary" (click)="acceptAll()">Accetta tutto</button>
-    </div>
-  </div>
-</div>
+ @if(visible){
+   <div class="sf-banner" role="region" aria-label="Consenso cookie">
+     <div class="sf-banner-inner">
+       <div class="sf-banner-icon" aria-hidden="true">
+         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+           stroke-linecap="round" stroke-linejoin="round">
+           <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
+           <path d="M8.5 8.5v.01" />
+           <path d="M16 15.5v.01" />
+           <path d="M12 12v.01" />
+         </svg>
+       </div>
+       <p class="sf-banner-text">
+         Utilizziamo i cookie per migliorare la tua esperienza.
+         <button class="sf-link" (click)="openModal()">Gestisci preferenze</button>
+       </p>
+       <div class="sf-banner-actions">
+         <button class="sf-btn sf-btn--ghost" (click)="rejectAll()">Rifiuta</button>
+         <button class="sf-btn sf-btn--primary" (click)="acceptAll()">Accetta tutto</button>
+       </div>
+     </div>
+   </div>
+ }
 
 <!-- ─── MODAL ──────────────────────────────────────────────── -->
-<div class="sf-overlay" *ngIf="modalOpen" (click)="onOverlayClick($event)">
+@if(modalOpen){
+<div class="sf-overlay" (click)="onOverlayClick($event)">
   <div class="sf-modal" role="dialog" aria-modal="true" aria-labelledby="sf-modal-title">
 
     <!-- Header -->
@@ -43,7 +46,8 @@
     <div class="sf-modal-body">
 
       <!-- TAB: INFORMATIVA -->
-      <div *ngIf="tab === 'info'" class="sf-prose">
+       @if(tab === 'info'){
+        <div class="sf-prose">
         <h2 id="sf-modal-title">Informativa sulla privacy</h2>
         <p>Questa informativa descrive come <strong>SmartFare</strong> raccoglie, utilizza e condivide i tuoi dati
           personali nell'ambito dell'applicazione.</p>
@@ -80,9 +84,10 @@
         <p>Puoi richiedere accesso, rettifica o cancellazione dei tuoi dati contattando il titolare del trattamento
           tramite le impostazioni dell'app o il supporto.</p>
       </div>
-
-      <!-- TAB: PREFERENZE -->
-      <div *ngIf="tab === 'prefs'" class="sf-prefs">
+       }
+       @if(tab === 'prefs'){
+         <!-- TAB: PREFERENZE -->
+      <div class="sf-prefs">
         <p class="sf-prefs-intro">Scegli quali categorie di cookie abilitare. I cookie necessari non possono essere
           disattivati.</p>
 
@@ -134,6 +139,7 @@
       </div>
 
     </div>
+       }
 
     <!-- Footer -->
     <div class="sf-modal-footer">
@@ -146,3 +152,4 @@
 
   </div>
 </div>
+}
