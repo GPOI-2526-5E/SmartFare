@@ -236,6 +236,10 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
   }
 
+  private isValidLatLng(lat: number, lng: number): boolean {
+    return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+  }
+
   private refreshLayers(recenterForLocation = false) {
     if (!this.map) return;
 
@@ -246,12 +250,17 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.routeLayer.clearLayers();
     this.endpointLayer.clearLayers();
 
-    if (this.location && recenterForLocation) {
+    if (
+      this.location &&
+      recenterForLocation &&
+      this.isValidLatLng(this.location.latitude, this.location.longitude)
+    ) {
       this.map.setView([this.location.latitude, this.location.longitude], 13);
     }
 
     const availableMarkers: L.Marker[] = [];
     for (const poi of this.availablePois) {
+      if (!this.isValidLatLng(poi.latitude, poi.longitude)) continue;
       const icon = this.createCategoryIcon(poi.categoryName, poi.type);
       const marker = L.marker([poi.latitude, poi.longitude], { icon });
 
@@ -273,6 +282,8 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     const visibleDay = this.ui.visibleDayRoute();
 
     for (const poi of this.savedPois) {
+      if (!this.isValidLatLng(poi.latitude, poi.longitude)) continue;
+
       const day = poi.dayNumber || 1;
       // Filter by visible day if not 'all'
       if (visibleDay !== 'all' && day !== visibleDay) continue;
@@ -313,7 +324,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.savedLayer.addLayer(marker);
     }
 
-    if (this.previewPoi) {
+    if (this.previewPoi && this.isValidLatLng(this.previewPoi.latitude, this.previewPoi.longitude)) {
       const icon = this.createCategoryIcon(this.previewPoi.categoryName, this.previewPoi.type);
       const previewMarker = L.marker([this.previewPoi.latitude, this.previewPoi.longitude], {
         icon: icon,
@@ -328,11 +339,19 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       setTimeout(() => previewMarker.openPopup(), 50);
     }
 
-    // If no route but we have saved POIs, zoom to them
-    if (this.savedPois.length > 0 && this.ui.visibleDayRoute() === 'all') {
-      const bounds = L.latLngBounds(this.savedPois.map(p => [p.latitude, p.longitude]));
+    const validSavedPois = this.savedPois.filter((poi) =>
+      this.isValidLatLng(poi.latitude, poi.longitude)
+    );
+
+    if (validSavedPois.length > 0 && this.ui.visibleDayRoute() === 'all') {
+      const bounds = L.latLngBounds(validSavedPois.map((p) => [p.latitude, p.longitude] as [number, number]));
       this.map.fitBounds(bounds.pad(0.2));
-    } else if (this.savedPois.length === 0 && this.location && recenterForLocation) {
+    } else if (
+      validSavedPois.length === 0 &&
+      this.location &&
+      recenterForLocation &&
+      this.isValidLatLng(this.location.latitude, this.location.longitude)
+    ) {
       this.map.setView([this.location.latitude, this.location.longitude], 13);
     }
 

@@ -91,7 +91,9 @@
   font-size: 0.86rem;
   font-weight: 800;
   letter-spacing: 0.18em;
-  transition: color 0.3s ease, transform 0.3s ease;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .cinema-progress span.is-active {
@@ -117,7 +119,9 @@
   line-height: 0.9;
   letter-spacing: -0.06em;
   color: rgba(255, 255, 255, 0.05);
-  transition: color 0.35s ease, transform 0.35s ease;
+  transition:
+    color 0.35s ease,
+    transform 0.35s ease;
 }
 
 .cinema-word-stack span.is-highlight {

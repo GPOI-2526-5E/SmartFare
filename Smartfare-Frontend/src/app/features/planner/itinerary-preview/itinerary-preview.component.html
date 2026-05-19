@@ -1,52 +1,49 @@
-<div class="preview-shell">
-
-  <!-- ── Atmospheric glow (same as builder) ── -->
-  <div class="preview-atmosphere" aria-hidden="true">
-    <span class="glow glow-a"></span>
-    <span class="glow glow-b"></span>
-    <span class="glow glow-c"></span>
+<div class="trip-preview">
+  <div class="trip-preview__bg" aria-hidden="true">
+    <span class="trip-preview__orb trip-preview__orb--a"></span>
+    <span class="trip-preview__orb trip-preview__orb--b"></span>
   </div>
 
-  <!-- ══════════════════ HEADER BAR ══════════════════ -->
-  <header class="preview-header">
-    <div class="hdr-left">
-      <button class="hdr-home-btn" type="button" [routerLink]="['/home']">
-        <div class="hdr-home-logo-wrap">
-          <img src="favicon.png" alt="SmartFare" class="hdr-home-logo" />
-        </div>
-        <div class="hdr-home-text d-none d-sm-flex">
-          <span class="hdr-home-brand">SmartFare</span>
-          <span class="hdr-home-sub">Torna alla home</span>
-        </div>
-      </button>
-
-      <div class="hdr-divider d-none d-md-block"></div>
-
-      <div class="hdr-mode-badge d-none d-md-flex">
-        <i class="bi bi-globe-europe-africa"></i>
-        <span>Anteprima</span>
-      </div>
-
-      <div class="hdr-title-group">
-        <h1 class="hdr-title-text">{{ itinerary()?.name || 'Caricamento itinerario...' }}</h1>
-      </div>
+  <header class="trip-preview__topbar">
+    <div class="trip-preview__brand">
+      <a routerLink="/home" class="trip-preview__home">
+        <img src="favicon.png" alt="SmartFare" width="28" height="28" />
+        <span class="trip-preview__home-text">
+          <strong>SmartFare</strong>
+          <small>Home</small>
+        </span>
+      </a>
+      <span class="trip-preview__badge">
+        <i class="bi bi-eye"></i>
+        Anteprima
+      </span>
     </div>
 
-    <div class="hdr-right">
-      @if (!isLoading() && itinerary()) {
-      <button class="hdr-btn hdr-btn--favorite" [class.is-favorited]="isFavorite()" (click)="toggleFavorite()"
-        [disabled]="isSaving() || isCopying()" id="preview-favorite-btn">
-        <i [class]="isFavorite() ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
-        <span class="d-none d-md-inline">{{ isFavorite() ? 'Preferito' : 'Salva' }}</span>
-      </button>
+    <h1 class="trip-preview__title">{{ itinerary()?.name || 'Caricamento…' }}</h1>
 
-      <button class="hdr-btn hdr-btn--primary" (click)="isOwner() ? editItinerary() : copyItinerary()"
-        [disabled]="isSaving() || isCopying()" id="preview-save-btn">
+    <div class="trip-preview__actions">
+      @if (!isLoading() && itinerary()) {
+      <button
+        type="button"
+        class="trip-preview__btn trip-preview__btn--ghost"
+        [class.is-active]="isFavorite()"
+        (click)="toggleFavorite()"
+        [disabled]="isSaving() || isCopying()"
+      >
+        <i [class]="isFavorite() ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+        <span>{{ isFavorite() ? 'Preferito' : 'Salva' }}</span>
+      </button>
+      <button
+        type="button"
+        class="trip-preview__btn trip-preview__btn--primary"
+        (click)="primaryAction()"
+        [disabled]="isSaving() || isCopying()"
+      >
         @if (isOwner()) {
         <i class="bi bi-pencil-square"></i>
         <span>Modifica</span>
         } @else {
-        <i [class]="isCopying() ? 'bi bi-hourglass-split' : 'bi bi-check-circle'"></i>
+        <i [class]="isCopying() ? 'bi bi-hourglass-split' : 'bi bi-box-arrow-in-down'"></i>
         <span>{{ isCopying() ? 'Salvataggio…' : 'Incorpora' }}</span>
         }
       </button>
@@ -54,55 +51,157 @@
     </div>
   </header>
 
-  <!-- ══════════════════ WORKSPACE ══════════════════ -->
   @if (isLoading()) {
-  <div class="preview-loading">
-    <div class="preview-spinner"></div>
+  <div class="trip-preview__loading">
+    <div class="trip-preview__spinner"></div>
     <p>Caricamento itinerario…</p>
   </div>
-  } @else if (itinerary()) {
+  } @else if (!itinerary()) {
+  <div class="trip-preview__empty">
+    <i class="bi bi-inbox"></i>
+    <h2>Itinerario non trovato</h2>
+    <button type="button" class="trip-preview__btn trip-preview__btn--primary" (click)="goBack()">Torna indietro</button>
+  </div>
+  } @else {
+  <div class="trip-preview__body">
+    <section
+      class="trip-preview__plan"
+      [class.trip-preview__plan--visible]="mobileTab() === 'plan'"
+    >
+      <article class="trip-hero" [class.trip-hero--has-image]="!!coverImage()">
+        @if (coverImage()) {
+        <img class="trip-hero__img" [src]="coverImage()!" [alt]="itinerary()!.name" />
+        } @else {
+        <div class="trip-hero__placeholder" aria-hidden="true">
+          <i class="bi bi-image"></i>
+        </div>
+        }
+        <div class="trip-hero__overlay">
+          <span class="trip-hero__chip">
+            <i class="bi bi-calendar3"></i>
+            {{ durationLabel() }}
+          </span>
+          <h2 class="trip-hero__destination">{{ locationLabel() }}</h2>
+          <p class="trip-hero__desc">
+            {{ itinerary()?.description?.trim() || 'Nessuna descrizione aggiunta per questo viaggio.' }}
+          </p>
+        </div>
+      </article>
 
-  <main class="preview-workspace">
+      @if (!hasStops()) {
+      <div class="trip-preview__no-stops">
+        <i class="bi bi-signpost-split"></i>
+        <p>Questo itinerario non ha ancora tappe da mostrare.</p>
+      </div>
+      } @else {
+      @for (day of previewDays(); track day.dayNumber) {
+      <section class="trip-day">
+        <header class="trip-day__head">
+          <div>
+            <h3>{{ day.title }}</h3>
+            @if (day.dateLabel) {
+            <p>{{ day.dateLabel }}</p>
+            }
+          </div>
+          <span class="trip-day__count">{{ day.stops.length }} tappe</span>
+        </header>
 
-    <!-- Summary panel (left on desktop) -->
-    <section class="preview-panel preview-panel--summary" [class.panel-active]="mobileActivePanel() === 'summary'">
-      <!-- No workspace passed when null — summary still renders from service signal -->
-      <app-builder-summary [workspace]="workspace()" [previewItineraryInput]="itinerary()" [isPreviewInput]="true">
-      </app-builder-summary>
+        <ol class="trip-day__list">
+          @for (stop of day.stops; track stop.key) {
+          <li class="trip-stop">
+            <div class="trip-stop__rail">
+              <span class="trip-stop__num">{{ stop.order }}</span>
+            </div>
+
+            <article class="trip-stop__card">
+              <div class="trip-stop__main">
+                <div class="trip-stop__icon" [class.trip-stop__icon--stay]="stop.type === 'accommodation'">
+                  <i class="bi" [class]="stop.iconClass"></i>
+                </div>
+
+                <div class="trip-stop__copy">
+                  <span class="trip-stop__category">{{ stop.categoryLabel }}</span>
+                  <h4 class="trip-stop__name">{{ stop.title }}</h4>
+                  <p class="trip-stop__location">
+                    <i class="bi bi-geo-alt"></i>
+                    {{ stop.locationLine }}
+                  </p>
+
+                  @if (stop.timeRange) {
+                  <p class="trip-stop__time">
+                    <i class="bi bi-clock"></i>
+                    {{ stop.timeRange }}
+                  </p>
+                  }
+
+                  @if (stop.note) {
+                  <p class="trip-stop__note">{{ stop.note }}</p>
+                  }
+
+                  @if (stop.mapsUrl) {
+                  <a class="trip-stop__maps" [href]="stop.mapsUrl" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-map"></i>
+                    Apri in Maps
+                  </a>
+                  }
+                </div>
+
+                @if (stop.imageUrl) {
+                <div class="trip-stop__thumb">
+                  <img [src]="stop.imageUrl" [alt]="stop.title" loading="lazy" />
+                </div>
+                }
+              </div>
+            </article>
+          </li>
+          }
+        </ol>
+      </section>
+      }
+      }
     </section>
 
-    <!-- Resizable divider (desktop only) -->
-    <div class="preview-resize-handle d-none d-lg-block" (mousedown)="onResizeStart($event)"
-      [class.resizing]="isResizing()"></div>
-
-    <!-- Map panel (right on desktop) -->
-    <section class="preview-panel preview-panel--map" [class.panel-active]="mobileActivePanel() === 'map'">
-      <app-builder-map [itinerary]="itinerary()" [isPreview]="true" [location]="previewLocation()"
-        [savedPois]="previewSavedPois()" [routePois]="previewSavedPois()" [availablePois]="[]">
-      </app-builder-map>
+    <section
+      class="trip-preview__map"
+      [class.trip-preview__map--visible]="mobileTab() === 'map'"
+    >
+      @if (mapCanRender()) {
+      <app-builder-map
+        [itinerary]="itinerary()"
+        [isPreview]="true"
+        [location]="mapLocation()"
+        [savedPois]="mapPois()"
+        [routePois]="mapPois()"
+        [availablePois]="[]"
+      />
+      } @else {
+      <div class="trip-preview__map-fallback">
+        <i class="bi bi-map"></i>
+        <p>Mappa in caricamento…</p>
+      </div>
+      }
     </section>
+  </div>
 
-  </main>
-
-  <!-- Mobile bottom nav -->
-  <nav class="preview-mobile-bar d-lg-none">
-    <button class="mobile-tab-btn" [class.active]="mobileActivePanel() === 'summary'"
-      (click)="setMobilePanel('summary')">
+  <nav class="trip-preview__tabs" aria-label="Vista anteprima">
+    <button
+      type="button"
+      class="trip-preview__tab"
+      [class.is-active]="mobileTab() === 'plan'"
+      (click)="setMobileTab('plan')"
+    >
       <i class="bi bi-list-ul"></i>
-      <span>Riepilogo</span>
+      Itinerario
     </button>
-    <button class="mobile-tab-btn" [class.active]="mobileActivePanel() === 'map'" (click)="setMobilePanel('map')">
+    <button
+      type="button"
+      class="trip-preview__tab"
+      [class.is-active]="mobileTab() === 'map'"
+      (click)="setMobileTab('map')"
+    >
       <i class="bi bi-map"></i>
-      <span>Mappa</span>
+      Mappa
     </button>
   </nav>
-
-  } @else {
-  <div class="preview-empty">
-    <i class="bi bi-inbox"></i>
-    <p>Itinerario non trovato</p>
-    <button class="hdr-btn hdr-btn--primary" (click)="goBack()">Torna indietro</button>
-  </div>
   }
-
 </div>

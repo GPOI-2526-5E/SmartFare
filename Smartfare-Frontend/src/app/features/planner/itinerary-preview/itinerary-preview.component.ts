@@ -1,36 +1,57 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  OnInit,
   OnDestroy,
-  signal,
+  OnInit,
   computed,
   inject,
-  ChangeDetectionStrategy
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Subject, takeUntil, firstValueFrom } from 'rxjs';
+import { Subject, firstValueFrom, takeUntil } from 'rxjs';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
-import { Itinerary, ItineraryWorkspace } from '../../../core/models/itinerary.model';
+import { Itinerary, ItineraryItem, ItineraryWorkspace } from '../../../core/models/itinerary.model';
 import Location from '../../../core/models/location.model';
 import { BuilderPoi } from '../../../core/models/builder.types';
 import { BuilderMapComponent } from '../itinerary-builder/builder-map/builder-map.component';
-import { BuilderSummaryComponent } from '../itinerary-builder/builder-summary/builder-summary.component';
+
+export type PreviewStop = {
+  key: string;
+  order: number;
+  dayNumber: number;
+  title: string;
+  locationLine: string;
+  categoryLabel: string;
+  note: string | null;
+  timeRange: string | null;
+  type: 'activity' | 'accommodation';
+  imageUrl: string | null;
+  mapsUrl: string | null;
+  iconClass: string;
+};
+
+export type PreviewDay = {
+  dayNumber: number;
+  title: string;
+  dateLabel: string;
+  stops: PreviewStop[];
+};
 
 @Component({
   selector: 'app-itinerary-preview',
   standalone: true,
-  imports: [CommonModule, RouterModule, BuilderMapComponent, BuilderSummaryComponent],
+  imports: [CommonModule, RouterModule, BuilderMapComponent],
   templateUrl: './itinerary-preview.component.html',
   styleUrl: './itinerary-preview.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItineraryPreviewComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  readonly itineraryService = inject(ItineraryService);
+  private readonly itineraryService = inject(ItineraryService);
   readonly authService = inject(AuthService);
   private readonly alertService = inject(AlertService);
   private readonly destroy$ = new Subject<void>();
@@ -41,105 +62,97 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
   readonly isFavorite = signal(false);
   readonly isSaving = signal(false);
   readonly isCopying = signal(false);
-  readonly mobileActivePanel = signal<'map' | 'summary'>('summary');
+  readonly mobileTab = signal<'plan' | 'map'>('plan');
 
-  // Resizable panel
-  readonly summaryPanelWidth = signal<number>(0);
-  readonly isResizing = signal(false);
-  private resizeStartX = 0;
-  private resizeStartWidth = 0;
-
-  private readonly currentUserData = signal<any>(null);
+  private readonly currentUser = signal<{ userId?: number } | null>(null);
 
   readonly isOwner = computed(() => {
     const itin = this.itinerary();
-    const user = this.currentUserData();
-    return !!(itin && user && itin.userId === user.userId);
+    const user = this.currentUser();
+    return !!(itin?.userId && user?.userId && itin.userId === user.userId);
   });
 
-  readonly previewSavedPois = computed<BuilderPoi[]>(() => {
+  readonly durationLabel = computed(() => {
+    const days = this.dayCount();
+    if (days <= 0) return 'Itinerario';
+    return days === 1 ? '1 giorno' : `${days} giorni`;
+  });
+
+  readonly coverImage = computed(() => {
     const itin = this.itinerary();
-    const ws = this.workspace();
+    if (itin?.imageUrl) return itin.imageUrl;
+    const firstWithImage = this.previewStops().find((stop) => stop.imageUrl);
+    return firstWithImage?.imageUrl || null;
+  });
+
+  readonly locationLabel = computed(() => {
+    return (
+      this.workspace()?.location?.name ||
+      this.itinerary()?.location?.name ||
+      'Destinazione'
+    );
+  });
+
+  readonly previewDays = computed(() => this.buildPreviewDays());
+  readonly previewStops = computed(() => this.previewDays().flatMap((day) => day.stops));
+  readonly hasStops = computed(() => this.previewStops().length > 0);
+
+  readonly mapPois = computed<BuilderPoi[]>(() => {
+    const itin = this.itinerary();
     if (!itin?.items?.length) return [];
 
-    const poiByKey = new Map<string, any>();
-    ws?.accommodations.forEach((acc) => poiByKey.set(`accommodation-${acc.id}`, { ...acc, type: 'accommodation' as const }));
-    ws?.activities.forEach((act) => poiByKey.set(`activity-${act.id}`, { ...act, type: 'activity' as const }));
-
-    return itin.items
-      .slice()
+    return [...itin.items]
       .sort((a, b) => {
         if ((a.dayNumber || 1) !== (b.dayNumber || 1)) return (a.dayNumber || 1) - (b.dayNumber || 1);
         return (a.orderInt || 0) - (b.orderInt || 0);
       })
-      .map((item) => {
-        const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
-        const fallbackFromItem = item.accommodation
-          ? { ...item.accommodation, type: 'accommodation' as const }
-          : item.activity
-            ? { ...item.activity, type: 'activity' as const }
-            : null;
-        const base = poiByKey.get(key) || fallbackFromItem;
-        if (!base) return null;
-
-        return {
-          key,
-          type: base.type,
-          entityId: base.id,
-          title: base.name || 'Senza nome',
-          subtitle: base.street || (base.type === 'accommodation' ? 'Hotel' : base.category?.name || 'Attivita'),
-          latitude: base.latitude,
-          longitude: base.longitude,
-          categoryId: base.categoryId,
-          categoryName: base.category?.name,
-          itemTypeCode: base.type === 'accommodation' ? 'ACCOMMODATION' : 'ACTIVITY',
-          dayNumber: item.dayNumber || 1,
-          note: item.note,
-          plannedStartAt: item.plannedStartAt || null,
-          plannedEndAt: item.plannedEndAt || null,
-          groupName: item.groupName || null,
-          groupStartAt: item.groupStartAt || null,
-          groupEndAt: item.groupEndAt || null,
-          imageUrl: base.imageUrl,
-          price: base.price ?? base.pricePerNight,
-          rating: base.rating ?? base.stars,
-          orderInt: item.orderInt || 0
-        } as BuilderPoi;
-      })
+      .map((item, index) => this.itemToPoi(item, index + 1))
       .filter((poi): poi is BuilderPoi => !!poi);
   });
 
-  readonly previewLocation = computed<Location | null>(() => {
-    const wsLocation = this.workspace()?.location;
-    if (wsLocation) return wsLocation;
+  readonly mapLocation = computed<Location | null>(() => {
+    const wsLoc = this.workspace()?.location;
+    if (wsLoc && this.hasValidCoords(wsLoc.latitude, wsLoc.longitude)) {
+      return wsLoc;
+    }
 
-    const itineraryLocation = this.itinerary()?.location;
-    if (itineraryLocation) return itineraryLocation;
+    const itinLoc = this.itinerary()?.location;
+    if (itinLoc && this.hasValidCoords(itinLoc.latitude, itinLoc.longitude)) {
+      return itinLoc;
+    }
 
-    const firstPoi = this.previewSavedPois()[0];
-    if (!firstPoi) return null;
+    const first = this.mapPois()[0];
+    if (!first) return null;
 
     return {
       id: -1,
-      name: this.itinerary()?.name || 'Destinazione',
+      name: this.locationLabel(),
       province: '',
       cap: '',
-      latitude: firstPoi.latitude,
-      longitude: firstPoi.longitude
+      latitude: first.latitude,
+      longitude: first.longitude,
     };
   });
 
+  readonly mapCanRender = computed(() => {
+    if (this.isLoading()) return false;
+    const itin = this.itinerary();
+    if (!itin) return false;
+    if (itin.locationId && !this.workspace()) return false;
+    return Boolean(this.mapLocation()) || this.mapPois().length > 0;
+  });
+
   ngOnInit() {
-    this.currentUserData.set(this.authService.getUserData());
-    this.route.queryParams
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((params) => {
-        const itineraryId = parseInt(params['itineraryId'], 10);
-        if (itineraryId) {
-          this.loadItinerary(itineraryId);
-          this.checkIfFavorite(itineraryId);
-        }
-      });
+    this.currentUser.set(this.authService.getUserData());
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const itineraryId = Number.parseInt(params['itineraryId'], 10);
+      if (Number.isFinite(itineraryId)) {
+        this.loadItinerary(itineraryId);
+        this.checkFavorite(itineraryId);
+      } else {
+        this.isLoading.set(false);
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -147,60 +160,8 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private loadItinerary(itineraryId: number) {
-    this.isLoading.set(true);
-    this.itineraryService
-      .getItineraryById(itineraryId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          if (data) {
-            this.itinerary.set(data);
-            // Carica il workspace per la mappa e il summary
-            if (data.locationId) {
-              this.loadWorkspace(data.locationId);
-            } else {
-              this.isLoading.set(false);
-            }
-          } else {
-            this.alertService.error('Itinerario non trovato');
-            this.router.navigate(['/home']);
-            this.isLoading.set(false);
-          }
-        },
-        error: () => {
-          this.alertService.error("Non riesco a caricare l'itinerario");
-          this.isLoading.set(false);
-          this.router.navigate(['/home']);
-        }
-      });
-  }
-
-  private loadWorkspace(locationId: number) {
-    this.itineraryService
-      .getWorkspace(locationId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (ws) => {
-          this.workspace.set(ws);
-          this.isLoading.set(false);
-        },
-        error: () => {
-          // Workspace non fondamentale — mostriamo comunque
-          this.isLoading.set(false);
-        }
-      });
-  }
-
-  private checkIfFavorite(itineraryId: number) {
-    if (!this.authService.IsAuthenticated()) return;
-    this.itineraryService
-      .isItineraryFavorite(itineraryId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (isFav) => this.isFavorite.set(isFav),
-        error: () => { }
-      });
+  setMobileTab(tab: 'plan' | 'map') {
+    this.mobileTab.set(tab);
   }
 
   async toggleFavorite() {
@@ -220,7 +181,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
       } else {
         await firstValueFrom(this.itineraryService.addToFavorites(itin.id));
         this.isFavorite.set(true);
-        this.alertService.success('Aggiunto ai preferiti!');
+        this.alertService.success('Aggiunto ai preferiti');
       }
     } catch {
       this.alertService.error('Errore durante la modifica dei preferiti');
@@ -229,19 +190,11 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  async editItinerary() {
-    const itin = this.itinerary();
-    if (!itin) return;
-    this.isSaving.set(true);
-    try {
-      this.itineraryService.setCurrentItinerary(itin, { autosave: false });
-      await this.router.navigate(['/itineraries/builder'], {
-        queryParams: { itineraryId: itin.id }
-      });
-    } catch {
-      this.alertService.error('Errore durante la navigazione al builder');
-    } finally {
-      this.isSaving.set(false);
+  async primaryAction() {
+    if (this.isOwner()) {
+      await this.openInBuilder();
+    } else {
+      await this.copyItinerary();
     }
   }
 
@@ -249,79 +202,252 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      this.router.navigate(['/profile/itineraries']);
+      void this.router.navigate(['/profile/itineraries']);
     }
   }
 
-  setMobilePanel(panel: 'map' | 'summary') {
-    this.mobileActivePanel.set(panel);
-  }
-
-  // Resize handlers for the summary panel
-  onResizeStart(event: MouseEvent) {
-    if (window.matchMedia('(max-width: 1024px)').matches) return; // Disable on mobile/tablet
-    event.preventDefault();
-    this.isResizing.set(true);
-    this.resizeStartX = event.clientX;
-
-    const workspaceEl = document.querySelector('.preview-workspace') as HTMLElement;
-    if (workspaceEl) {
-      this.resizeStartWidth = workspaceEl.querySelector('.preview-panel--summary')?.clientWidth || 0;
-    }
-
-    // Listen to mouse move and mouse up globally
-    document.addEventListener('mousemove', this.onResizeMove.bind(this));
-    document.addEventListener('mouseup', this.onResizeEnd.bind(this));
-  }
-
-  private onResizeMove(event: MouseEvent) {
-    if (!this.isResizing()) return;
-
-    const delta = event.clientX - this.resizeStartX;
-    const newWidth = Math.max(280, Math.min(600, this.resizeStartWidth + delta)); // Min 280px, Max 600px
-
-    this.summaryPanelWidth.set(newWidth);
-
-    // Apply width to the DOM
-    const summaryPanel = document.querySelector('.preview-panel--summary') as HTMLElement;
-    if (summaryPanel) {
-      summaryPanel.style.width = `${newWidth}px`;
-    }
-  }
-
-  private onResizeEnd(event: MouseEvent) {
-    this.isResizing.set(false);
-    document.removeEventListener('mousemove', this.onResizeMove.bind(this));
-    document.removeEventListener('mouseup', this.onResizeEnd.bind(this));
-  }
-
-  // Copy itinerary to user's collection
-  async copyItinerary() {
+  private async openInBuilder() {
     const itin = this.itinerary();
     if (!itin) return;
+    this.isSaving.set(true);
+    try {
+      this.itineraryService.setCurrentItinerary(itin, { autosave: false });
+      await this.router.navigate(['/itineraries/builder'], { queryParams: { itineraryId: itin.id } });
+    } catch {
+      this.alertService.error('Impossibile aprire il builder');
+    } finally {
+      this.isSaving.set(false);
+    }
+  }
 
+  private async copyItinerary() {
+    const itin = this.itinerary();
+    if (!itin) return;
     if (!this.authService.IsAuthenticated()) {
-      this.alertService.warning('Devi essere loggato per incorporare un itinerario');
+      this.alertService.warning('Accedi per incorporare questo itinerario');
       await this.router.navigate(['/login']);
       return;
     }
-
     this.isCopying.set(true);
     try {
       const copied = await firstValueFrom(this.itineraryService.copyItinerary(itin));
-      if (copied && copied.id) {
-        this.alertService.success(`Itinerario "${copied.name}" salvato!`);
-        await this.router.navigate(['/itineraries/builder'], {
-          queryParams: { itineraryId: copied.id }
-        });
+      if (copied?.id) {
+        this.alertService.success(`Itinerario "${copied.name}" salvato`);
+        await this.router.navigate(['/itineraries/builder'], { queryParams: { itineraryId: copied.id } });
       } else {
-        this.alertService.error('Errore durante il salvataggio dell\'itinerario');
+        this.alertService.error('Errore durante il salvataggio');
       }
-    } catch (err) {
-      this.alertService.error('Errore durante il salvataggio dell\'itinerario');
-      console.error('Error copying itinerary:', err);
+    } catch {
+      this.alertService.error('Errore durante il salvataggio');
     } finally {
       this.isCopying.set(false);
     }
+  }
+
+  private loadItinerary(id: number) {
+    this.isLoading.set(true);
+    this.itineraryService.getItineraryById(id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (data) => {
+        if (!data) {
+          this.alertService.error('Itinerario non trovato');
+          void this.router.navigate(['/home']);
+          this.isLoading.set(false);
+          return;
+        }
+        this.itinerary.set(data);
+        if (data.locationId) {
+          this.loadWorkspace(data.locationId);
+        } else {
+          this.isLoading.set(false);
+        }
+      },
+      error: () => {
+        this.alertService.error('Impossibile caricare l\'itinerario');
+        this.isLoading.set(false);
+        void this.router.navigate(['/home']);
+      },
+    });
+  }
+
+  private loadWorkspace(locationId: number) {
+    this.itineraryService.getWorkspace(locationId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (ws) => {
+        this.workspace.set(ws);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false),
+    });
+  }
+
+  private checkFavorite(itineraryId: number) {
+    if (!this.authService.IsAuthenticated()) return;
+    this.itineraryService.isItineraryFavorite(itineraryId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (isFav) => this.isFavorite.set(isFav),
+      error: () => undefined,
+    });
+  }
+
+  private dayCount(): number {
+    const items = this.itinerary()?.items || [];
+    if (!items.length) return this.itinerary()?.durationDays || 0;
+    return Math.max(...items.map((item) => item.dayNumber || 1));
+  }
+
+  private buildPreviewDays(): PreviewDay[] {
+    const itin = this.itinerary();
+    if (!itin?.items?.length) return [];
+
+    const byDay = new Map<number, PreviewStop[]>();
+
+    [...itin.items]
+      .sort((a, b) => {
+        if ((a.dayNumber || 1) !== (b.dayNumber || 1)) return (a.dayNumber || 1) - (b.dayNumber || 1);
+        return (a.orderInt || 0) - (b.orderInt || 0);
+      })
+      .forEach((item, index) => {
+        const stop = this.itemToPreviewStop(item, index + 1);
+        if (!stop) return;
+        const day = item.dayNumber || 1;
+        if (!byDay.has(day)) byDay.set(day, []);
+        byDay.get(day)!.push(stop);
+      });
+
+    return [...byDay.entries()]
+      .sort(([a], [b]) => a - b)
+      .map(([dayNumber, stops]) => ({
+        dayNumber,
+        title: `Giornata ${dayNumber}`,
+        dateLabel: this.formatDayDate(itin.startDate, dayNumber),
+        stops,
+      }));
+  }
+
+  private hasValidCoords(lat: number, lng: number): boolean {
+    return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+  }
+
+  private resolveEntity(item: ItineraryItem): Record<string, unknown> | null {
+    const ws = this.workspace();
+    const isAcc = item.itemTypeCode === 'ACCOMMODATION' || !!item.accommodationId;
+    const id = isAcc ? item.accommodationId : item.activityId;
+    if (!id) return null;
+
+    const embedded = (isAcc ? item.accommodation : item.activity) as Record<string, unknown> | undefined;
+    const fromWs = isAcc
+      ? ws?.accommodations.find((entry) => entry.id === id)
+      : ws?.activities.find((entry) => entry.id === id);
+
+    const wsRecord = fromWs ? (fromWs as unknown as Record<string, unknown>) : null;
+
+    if (embedded && wsRecord) {
+      const embLat = Number(embedded['latitude']);
+      const embLng = Number(embedded['longitude']);
+      const wsLat = Number(wsRecord['latitude']);
+      const wsLng = Number(wsRecord['longitude']);
+
+      if (!this.hasValidCoords(embLat, embLng) && this.hasValidCoords(wsLat, wsLng)) {
+        return wsRecord;
+      }
+    }
+
+    return embedded || wsRecord || null;
+  }
+
+  private itemToPreviewStop(item: ItineraryItem, order: number): PreviewStop | null {
+    const isAcc = item.itemTypeCode === 'ACCOMMODATION' || !!item.accommodationId;
+    const type: 'activity' | 'accommodation' = isAcc ? 'accommodation' : 'activity';
+    const id = isAcc ? item.accommodationId : item.activityId;
+    if (!id) return null;
+
+    const entity = this.resolveEntity(item);
+    if (!entity) return null;
+
+    const name = String(entity['name'] || 'Tappa senza nome');
+    const street = String(entity['street'] || '');
+    const lat = Number(entity['latitude']);
+    const lng = Number(entity['longitude']);
+    const category = (entity['category'] as { name?: string } | undefined)?.name;
+
+    const mapsUrl =
+      Number.isFinite(lat) && Number.isFinite(lng)
+        ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+        : street
+          ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${street}`)}`
+          : null;
+
+    return {
+      key: `${type}-${id}`,
+      order,
+      dayNumber: item.dayNumber || 1,
+      title: name,
+      locationLine: street || this.locationLabel(),
+      categoryLabel: isAcc ? 'Alloggio' : category || 'Attività',
+      note: item.note?.trim() || null,
+      timeRange: this.formatTimeRange(item.plannedStartAt, item.plannedEndAt),
+      type,
+      imageUrl: (entity['imageUrl'] as string) || null,
+      mapsUrl,
+      iconClass: isAcc ? 'bi-building' : this.iconForCategory(category),
+    };
+  }
+
+  private itemToPoi(item: ItineraryItem, order: number): BuilderPoi | null {
+    const stop = this.itemToPreviewStop(item, order);
+    if (!stop) return null;
+
+    const entity = this.resolveEntity(item);
+    if (!entity) return null;
+
+    const latitude = Number(entity['latitude']);
+    const longitude = Number(entity['longitude']);
+    if (!this.hasValidCoords(latitude, longitude)) return null;
+
+    return {
+      key: stop.key,
+      type: stop.type,
+      entityId: Number(entity['id'] ?? (stop.type === 'accommodation' ? item.accommodationId : item.activityId)),
+      title: stop.title,
+      subtitle: stop.locationLine,
+      latitude,
+      longitude,
+      itemTypeCode: stop.type === 'accommodation' ? 'ACCOMMODATION' : 'ACTIVITY',
+      dayNumber: stop.dayNumber,
+      note: stop.note,
+      plannedStartAt: item.plannedStartAt,
+      plannedEndAt: item.plannedEndAt,
+      groupName: item.groupName,
+      imageUrl: stop.imageUrl,
+      orderInt: item.orderInt || order,
+    } as BuilderPoi;
+  }
+
+  private formatDayDate(startDate: string | null | undefined, dayNumber: number): string {
+    if (!startDate) return '';
+    const base = new Date(startDate);
+    if (Number.isNaN(base.getTime())) return '';
+    base.setDate(base.getDate() + Math.max(0, dayNumber - 1));
+    return base.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
+  private formatTimeRange(start?: string | null, end?: string | null): string | null {
+    const startTime = this.extractTime(start);
+    const endTime = this.extractTime(end);
+    if (startTime && endTime) return `${startTime} – ${endTime}`;
+    return startTime || endTime || null;
+  }
+
+  private extractTime(value?: string | null): string | null {
+    if (!value) return null;
+    const match = value.match(/(\d{2}):(\d{2})/);
+    return match ? `${match[1]}:${match[2]}` : null;
+  }
+
+  private iconForCategory(category?: string): string {
+    const c = (category || '').toLowerCase();
+    if (c.includes('ristor') || c.includes('food') || c.includes('bar')) return 'bi-cup-hot';
+    if (c.includes('muse')) return 'bi-bank';
+    if (c.includes('stazion')) return 'bi-train-front';
+    if (c.includes('hotel') || c.includes('allogg')) return 'bi-building';
+    return 'bi-geo-alt';
   }
 }
