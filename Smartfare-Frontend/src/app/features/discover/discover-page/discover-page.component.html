@@ -23,7 +23,7 @@
           per vedere subito il percorso sulla mappa.
         </p>
 
-        <form class="discover-search" role="search" (ngSubmit)="submitSearch()">
+        <form class="discover-search" role="search" (submit)="$event.preventDefault(); submitSearch()">
           <i class="bi bi-search"></i>
           <input
             type="search"
@@ -268,12 +268,6 @@
       [activeTab]="activeSearchTab()"
       [trips]="searchResultTrips()"
       [users]="searchUsers()"
-      [places]="searchPlaces()"
-      [mapLocation]="mapLocation()"
-      [zoneLoading]="zoneLoading()"
-      [zonePois]="filteredZonePois()"
-      [zonePills]="zoneCategoryPills()"
-      [activeZonePillKey]="zoneActivePillKey()"
       (back)="backToVetrina()"
       (searchTermChange)="searchControl.setValue($event)"
       (search)="submitSearch()"
@@ -283,8 +277,6 @@
       (preview)="openPreview($event.trip, $event.event)"
       (profileOpen)="openProfile($event)"
       (followToggle)="toggleFollow($event.user, $event.event)"
-      (placeSelect)="openZoneForLocation($event)"
-      (zonePillSelect)="selectZonePill($event)"
       (authorOpen)="openAuthorProfile($event.trip, $event.event)"
     />
   }

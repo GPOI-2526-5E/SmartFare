@@ -56,6 +56,7 @@
   width: min(1120px, calc(100% - 2rem));
   margin: 0 auto;
   padding: clamp(6rem, 12vh, 8rem) 0 5rem;
+  text-align: center;
 }
 
 .discover-kicker,
@@ -72,16 +73,17 @@
 }
 
 .discover-hero h1 {
-  max-width: 760px;
-  margin: 0.8rem 0 0.85rem;
-  font-size: clamp(2.6rem, 7vw, 5.8rem);
-  line-height: 0.98;
+  max-width: 14ch;
+  margin: 0.8rem auto 0.85rem;
+  font-size: clamp(2.35rem, 5.4vw, 5rem);
+  line-height: 1;
   font-weight: 900;
+  text-wrap: balance;
 }
 
 .discover-hero p {
   max-width: 620px;
-  margin: 0 0 1.7rem;
+  margin: 0 auto 1.7rem;
   color: #dbe3ef;
   font-size: clamp(1rem, 1.8vw, 1.18rem);
   line-height: 1.65;
@@ -92,6 +94,7 @@
   align-items: center;
   gap: 0.7rem;
   width: min(850px, 100%);
+  margin: 0 auto;
   padding: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
@@ -177,6 +180,7 @@
   text-align: left;
   cursor: pointer;
   backdrop-filter: blur(12px);
+  justify-self: center;
 }
 
 .discover-place-cta span,
@@ -741,6 +745,15 @@
 @media (max-width: 680px) {
   .discover-hero {
     min-height: 620px;
+  }
+
+  .discover-hero__content {
+    padding-top: 5.25rem;
+  }
+
+  .discover-hero h1 {
+    max-width: 12ch;
+    font-size: clamp(2.1rem, 12vw, 3.2rem);
   }
 
   .discover-search {

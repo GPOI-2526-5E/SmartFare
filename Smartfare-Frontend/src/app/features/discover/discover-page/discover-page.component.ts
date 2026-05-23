@@ -94,7 +94,7 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
   readonly zoneFilterType = signal<'all' | 'accommodation' | 'activity'>('all');
   readonly zoneFilterCategory = signal<number | 'all'>('all');
 
-  readonly searchTerm = computed(() => this.searchControl.value.trim());
+  readonly searchTerm = computed(() => this.searchControl.value);
   readonly isLoggedIn = computed(() => this.authService.IsAuthenticated());
 
   readonly selectedTrip = computed(() => {
@@ -354,24 +354,21 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
 
     forkJoin({
       trips: this.itineraryService.getPublicItineraries({ q: term }),
-      users: this.profileService.searchUsers(term, 12),
-      places: this.locationService.getLocations(term).pipe(catchError(() => of([] as Location[])))
+      users: this.profileService.searchUsers(term, 50)
     })
       .pipe(
         catchError(() =>
-          of({ trips: [] as Itinerary[], users: [] as UserProfileFull[], places: [] as Location[] })
+          of({ trips: [] as Itinerary[], users: [] as UserProfileFull[] })
         ),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(({ trips, users, places }) => {
+      .subscribe(({ trips, users }) => {
         this.searchResultTrips.set(trips ?? []);
         this.searchUsers.set(users ?? []);
-        this.searchPlaces.set(places ?? []);
+        this.searchPlaces.set([]);
 
-        if ((places?.length ?? 0) > 0) {
-          this.activeSearchTab.set('luoghi');
-          this.openZoneForLocation(places[0]);
-        } else if ((trips?.length ?? 0) === 0 && (users?.length ?? 0) > 0) {
+        // Auto-select best tab: prefer itinerari, fall back to utenti
+        if ((trips?.length ?? 0) === 0 && (users?.length ?? 0) > 0) {
           this.activeSearchTab.set('utenti');
         } else {
           this.activeSearchTab.set('itinerari');
@@ -422,9 +419,6 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
 
   setSearchTab(tab: SearchTab): void {
     this.activeSearchTab.set(tab);
-    if (tab === 'luoghi' && this.searchPlaces()[0]) {
-      this.openZoneForLocation(this.searchPlaces()[0]);
-    }
   }
 
   selectTrip(trip: Itinerary): void {

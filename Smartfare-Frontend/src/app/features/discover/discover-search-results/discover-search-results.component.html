@@ -1,109 +1,268 @@
-<main class="search-page">
-  <header class="search-head">
-    <button type="button" class="search-back" (click)="back.emit()">
+<main class="sr-page">
+
+  <!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
+  <header class="sr-head">
+    <button type="button" class="sr-back" (click)="back.emit()" id="sr-back-btn">
       <i class="bi bi-arrow-left"></i>
-      Torna alla Discover
+      <span>Discover</span>
     </button>
-    <div>
-      <span>Ricerca</span>
-      <h2>{{ searchTitle }}</h2>
+
+    <div class="sr-head__title">
+      <span class="sr-kicker"><i class="bi bi-search"></i> Ricerca</span>
+      <h1>{{ searchTitle }}</h1>
     </div>
   </header>
 
-  <form class="search-box" role="search" (ngSubmit)="search.emit()">
-    <i class="bi bi-search"></i>
+  <!-- ══ SEARCH BAR ══════════════════════════════════════════════════════════ -->
+  <form class="sr-searchbar" role="search" (submit)="$event.preventDefault(); search.emit()" id="sr-search-form">
+    <i class="bi bi-search sr-searchbar__icon"></i>
     <input
+      id="sr-search-input"
       type="search"
       [value]="searchTerm"
-      placeholder="Cerca Genova, un itinerario o un viaggiatore"
+      placeholder="Cerca itinerari, utenti, città…"
       autocomplete="off"
       aria-label="Cerca in Discover"
       (input)="searchTermChange.emit($any($event.target).value)"
       (keyup.enter)="search.emit()"
     />
     @if (searchTerm) {
-      <button type="button" class="search-box__clear" (click)="clearSearch.emit()" aria-label="Cancella ricerca">
+      <button type="button" class="sr-searchbar__clear" (click)="clearSearch.emit()" aria-label="Cancella">
         <i class="bi bi-x-lg"></i>
       </button>
     }
-    <button type="button" class="search-box__submit" (click)="search.emit()">
+    <button type="button" class="sr-searchbar__submit" (click)="search.emit()" id="sr-search-submit">
       <i class="bi bi-arrow-right"></i>
       <span>Cerca</span>
     </button>
   </form>
 
-  <nav class="search-tabs" aria-label="Categorie ricerca">
-    <button type="button" [class.is-active]="activeTab === 'itinerari'" (click)="tabChange.emit('itinerari')">
-      <i class="bi bi-signpost-2-fill"></i>
-      Itinerari
-      <span>{{ trips.length }}</span>
-    </button>
-    <button type="button" [class.is-active]="activeTab === 'utenti'" (click)="tabChange.emit('utenti')">
-      <i class="bi bi-person-circle"></i>
-      Utenti
-      <span>{{ users.length }}</span>
-    </button>
-    <button type="button" [class.is-active]="activeTab === 'luoghi'" (click)="tabChange.emit('luoghi')">
-      <i class="bi bi-geo-alt-fill"></i>
-      Luoghi
-      <span>{{ places.length }}</span>
-    </button>
-  </nav>
+  <!-- ══ TABS + FILTER TOGGLE ════════════════════════════════════════════════ -->
+  <div class="sr-toolbar">
+    <nav class="sr-tabs" aria-label="Categorie ricerca">
+      <button
+        id="sr-tab-itinerari"
+        type="button"
+        [class.is-active]="activeTab === 'itinerari'"
+        (click)="tabChange.emit('itinerari')"
+      >
+        <i class="bi bi-signpost-2-fill"></i>
+        Itinerari
+        <span class="sr-tab__count">{{ trips.length }}</span>
+      </button>
+      <button
+        id="sr-tab-utenti"
+        type="button"
+        [class.is-active]="activeTab === 'utenti'"
+        (click)="tabChange.emit('utenti')"
+      >
+        <i class="bi bi-person-circle"></i>
+        Utenti
+        <span class="sr-tab__count">{{ users.length }}</span>
+      </button>
+    </nav>
 
+    <button
+      type="button"
+      class="sr-filter-toggle"
+      [class.has-filters]="activeFilterCount() > 0"
+      (click)="toggleFilters()"
+      id="sr-filter-toggle-btn"
+      aria-expanded="{{ showFilters() }}"
+    >
+      <i class="bi bi-sliders"></i>
+      Filtri
+      @if (activeFilterCount() > 0) {
+        <span class="sr-filter-badge">{{ activeFilterCount() }}</span>
+      }
+    </button>
+  </div>
+
+  <!-- ══ FILTER DRAWER ════════════════════════════════════════════════════════ -->
+  @if (showFilters()) {
+    <section class="sr-filters" aria-label="Filtri ricerca">
+
+      @if (activeTab === 'itinerari') {
+        <!-- Trip filters -->
+        <div class="sr-filter-group">
+          <p class="sr-filter-group__label"><i class="bi bi-signpost-2"></i> Ordina itinerari</p>
+          <div class="sr-chips">
+            <button type="button" [class.is-active]="tripSort() === 'default'" (click)="setTripSort('default')">
+              <i class="bi bi-grid"></i> Rilevanza
+            </button>
+            <button type="button" [class.is-active]="tripSort() === 'likes'" (click)="setTripSort('likes')">
+              <i class="bi bi-heart-fill"></i> Più apprezzati
+            </button>
+            <button type="button" [class.is-active]="tripSort() === 'recent'" (click)="setTripSort('recent')">
+              <i class="bi bi-clock"></i> Più recenti
+            </button>
+            <button type="button" [class.is-active]="tripSort() === 'duration_asc'" (click)="setTripSort('duration_asc')">
+              <i class="bi bi-sort-numeric-down"></i> Durata ↑
+            </button>
+            <button type="button" [class.is-active]="tripSort() === 'duration_desc'" (click)="setTripSort('duration_desc')">
+              <i class="bi bi-sort-numeric-up"></i> Durata ↓
+            </button>
+          </div>
+        </div>
+
+        <div class="sr-filter-group">
+          <p class="sr-filter-group__label"><i class="bi bi-calendar3-range"></i> Durata (giorni)</p>
+          <div class="sr-range-row">
+            <label class="sr-range-label">
+              <span>Da</span>
+              <input
+                type="number"
+                min="1"
+                placeholder="1"
+                [value]="tripMinDays() ?? ''"
+                (input)="onMinDaysInput($any($event.target).value)"
+                class="sr-range-input"
+                id="sr-filter-min-days"
+              />
+            </label>
+            <span class="sr-range-sep">—</span>
+            <label class="sr-range-label">
+              <span>A</span>
+              <input
+                type="number"
+                min="1"
+                placeholder="∞"
+                [value]="tripMaxDays() ?? ''"
+                (input)="onMaxDaysInput($any($event.target).value)"
+                class="sr-range-input"
+                id="sr-filter-max-days"
+              />
+            </label>
+          </div>
+        </div>
+      }
+
+      @if (activeTab === 'utenti') {
+        <!-- User filters -->
+        <div class="sr-filter-group">
+          <p class="sr-filter-group__label"><i class="bi bi-people"></i> Ordina utenti</p>
+          <div class="sr-chips">
+            <button type="button" [class.is-active]="userSort() === 'default'" (click)="setUserSort('default')">
+              <i class="bi bi-grid"></i> Rilevanza
+            </button>
+            <button type="button" [class.is-active]="userSort() === 'followers'" (click)="setUserSort('followers')">
+              <i class="bi bi-person-check"></i> Più seguiti
+            </button>
+            <button type="button" [class.is-active]="userSort() === 'itineraries'" (click)="setUserSort('itineraries')">
+              <i class="bi bi-map"></i> Più itinerari
+            </button>
+          </div>
+        </div>
+
+        <div class="sr-filter-group">
+          <p class="sr-filter-group__label"><i class="bi bi-geo-alt"></i> Filtra per città / residenza</p>
+          <div class="sr-city-row">
+            <i class="bi bi-search"></i>
+            <input
+              type="text"
+              placeholder="es. Genova, Milano…"
+              [value]="userCityFilter()"
+              (input)="onUserCityInput($any($event.target).value)"
+              class="sr-city-input"
+              id="sr-filter-city"
+            />
+            @if (userCityFilter()) {
+              <button type="button" class="sr-city-clear" (click)="onUserCityInput('')" aria-label="Rimuovi filtro città">
+                <i class="bi bi-x"></i>
+              </button>
+            }
+          </div>
+          <p class="sr-filter-hint">
+            Cerca per nome utente <strong>o</strong> città di residenza
+          </p>
+        </div>
+      }
+
+      <div class="sr-filter-actions">
+        <button type="button" class="sr-filter-reset" (click)="resetFilters()" id="sr-filter-reset-btn">
+          <i class="bi bi-arrow-counterclockwise"></i> Reimposta
+        </button>
+        <button type="button" class="sr-filter-close" (click)="toggleFilters()" id="sr-filter-close-btn">
+          Chiudi <i class="bi bi-chevron-up"></i>
+        </button>
+      </div>
+    </section>
+  }
+
+  <!-- ══ RESULTS ══════════════════════════════════════════════════════════════ -->
   @if (pending) {
-    <div class="search-loading">
-      <span class="search-spinner"></span>
-      <p>Ricerca in corso...</p>
+    <div class="sr-loading">
+      <span class="sr-spinner"></span>
+      <p>Ricerca in corso…</p>
     </div>
   } @else {
+
+    <!-- ── Itinerari ──────────────────────────────────────────────────────── -->
     @if (activeTab === 'itinerari') {
-      @if (trips.length === 0) {
-        <div class="search-empty">
-          <i class="bi bi-map"></i>
-          <p>Nessun itinerario trovato.</p>
+      @if (filteredTrips().length === 0) {
+        <div class="sr-empty">
+          <div class="sr-empty__icon"><i class="bi bi-map"></i></div>
+          <h3>Nessun itinerario trovato</h3>
+          <p>Prova con un termine diverso o rimuovi i filtri attivi.</p>
+          @if (activeFilterCount() > 0) {
+            <button type="button" class="sr-empty__reset" (click)="resetFilters()">
+              <i class="bi bi-arrow-counterclockwise"></i> Rimuovi filtri
+            </button>
+          }
         </div>
       } @else {
-        <section class="result-strip-grid">
-          @for (trip of trips; track trip.id) {
-            <article class="result-trip" (click)="tripSelect.emit(trip)" role="button" tabindex="0">
-              <div class="result-trip__media">
+        <p class="sr-result-count">
+          <strong>{{ filteredTrips().length }}</strong> itinerar{{ filteredTrips().length === 1 ? 'io' : 'i' }} trovat{{ filteredTrips().length === 1 ? 'o' : 'i' }}
+        </p>
+        <section class="sr-trip-grid" aria-label="Risultati itinerari">
+          @for (trip of filteredTrips(); track trip.id) {
+            <article class="sr-trip" (click)="tripSelect.emit(trip)" role="button" tabindex="0" [attr.aria-label]="trip.name">
+              <div class="sr-trip__media">
                 <img [src]="tripCover(trip)" [alt]="trip.name" loading="lazy" />
-                <span><i class="bi bi-heart-fill"></i> {{ likeCount(trip) }}</span>
+                <div class="sr-trip__media-overlay"></div>
+                <span class="sr-trip__likes"><i class="bi bi-heart-fill"></i> {{ likeCount(trip) }}</span>
+                <span class="sr-trip__place"><i class="bi bi-geo-alt-fill"></i> {{ placeLabel(trip) }}</span>
               </div>
-              <div class="result-trip__body">
-                <small>{{ placeLabel(trip) }}</small>
-                <h3>{{ trip.name }}</h3>
-                <p>{{ trip.description || ('Creato da ' + authorName(trip)) }}</p>
-                <div class="result-trip__creator">
-                  <button
-                    type="button"
-                    class="mini-avatar"
-                    [disabled]="!trip.user?.id"
-                    (click)="authorOpen.emit({ trip, event: $event })"
-                    [attr.aria-label]="'Apri profilo di ' + authorName(trip)"
-                  >
-                    @if (creatorAvatarUrl(trip); as avatar) {
-                      <img [src]="avatar" [alt]="authorName(trip)" loading="lazy" />
-                    } @else {
-                      <span>{{ creatorInitials(trip) }}</span>
-                    }
-                  </button>
-                  <button
-                    type="button"
-                    class="author-link"
-                    [disabled]="!trip.user?.id"
-                    (click)="authorOpen.emit({ trip, event: $event })"
-                  >
-                    {{ authorName(trip) }}
-                  </button>
+
+              <div class="sr-trip__body">
+                <div class="sr-trip__top">
+                  <h2 class="sr-trip__name">{{ trip.name }}</h2>
+                  @if (trip.description) {
+                    <p class="sr-trip__desc">{{ trip.description }}</p>
+                  }
                 </div>
-                <div class="result-trip__meta">
+
+                <div class="sr-trip__meta">
                   <span><i class="bi bi-clock"></i> {{ durationLabel(trip) }}</span>
                   <span><i class="bi bi-pin-map"></i> {{ stopCount(trip) }} tappe</span>
                 </div>
-                <button type="button" class="preview-link" (click)="preview.emit({ trip, event: $event })">
-                  Anteprima <i class="bi bi-arrow-right"></i>
-                </button>
+
+                <div class="sr-trip__footer">
+                  <button
+                    type="button"
+                    class="sr-trip__author"
+                    [disabled]="!trip.user?.id"
+                    (click)="authorOpen.emit({ trip, event: $event })"
+                    [attr.aria-label]="'Profilo di ' + authorName(trip)"
+                  >
+                    <span class="sr-trip__avatar">
+                      @if (creatorAvatarUrl(trip); as av) {
+                        <img [src]="av" [alt]="authorName(trip)" loading="lazy" />
+                      } @else {
+                        <span>{{ creatorInitials(trip) }}</span>
+                      }
+                    </span>
+                    <span class="sr-trip__author-name">{{ authorName(trip) }}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="sr-trip__preview"
+                    (click)="preview.emit({ trip, event: $event })"
+                  >
+                    Anteprima <i class="bi bi-arrow-right"></i>
+                  </button>
+                </div>
               </div>
             </article>
           }
@@ -111,31 +270,71 @@
       }
     }
 
+    <!-- ── Utenti ─────────────────────────────────────────────────────────── -->
     @if (activeTab === 'utenti') {
-      @if (users.length === 0) {
-        <div class="search-empty">
-          <i class="bi bi-people"></i>
-          <p>Nessun utente trovato.</p>
+      @if (filteredUsers().length === 0) {
+        <div class="sr-empty">
+          <div class="sr-empty__icon"><i class="bi bi-people"></i></div>
+          <h3>Nessun utente trovato</h3>
+          <p>
+            @if (userCityFilter()) {
+              Nessun utente si chiama <strong>"{{ userCityFilter() }}"</strong> o risiede in questa città.
+            } @else {
+              Prova con un termine diverso.
+            }
+          </p>
+          @if (activeFilterCount() > 0) {
+            <button type="button" class="sr-empty__reset" (click)="resetFilters()">
+              <i class="bi bi-arrow-counterclockwise"></i> Rimuovi filtri
+            </button>
+          }
         </div>
       } @else {
-        <section class="search-users">
-          @for (person of users; track person.id) {
-            <article class="search-user" (click)="profileOpen.emit(person)" role="button" tabindex="0">
-              <button type="button" class="search-user__avatar" aria-label="Apri profilo">
-                @if (avatarUrl(person); as src) {
-                  <img [src]="src" [alt]="personName(person)" loading="lazy" />
-                } @else {
-                  <span>{{ personInitials(person) }}</span>
+        <p class="sr-result-count">
+          <strong>{{ filteredUsers().length }}</strong> utent{{ filteredUsers().length === 1 ? 'e' : 'i' }} trovat{{ filteredUsers().length === 1 ? 'o' : 'i' }}
+        </p>
+        <section class="sr-user-grid" aria-label="Risultati utenti">
+          @for (person of filteredUsers(); track person.id) {
+            <article
+              class="sr-user"
+              (click)="profileOpen.emit(person)"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="'Profilo di ' + personName(person)"
+            >
+              <div class="sr-user__avatar-wrap">
+                <span class="sr-user__avatar">
+                  @if (avatarUrl(person); as src) {
+                    <img [src]="src" [alt]="personName(person)" loading="lazy" />
+                  } @else {
+                    <span class="sr-user__initials">{{ personInitials(person) }}</span>
+                  }
+                </span>
+              </div>
+
+              <div class="sr-user__body">
+                <h2 class="sr-user__name">{{ personName(person) }}</h2>
+
+                @if (userCityLabel(person)) {
+                  <p class="sr-user__city">
+                    <i class="bi bi-geo-alt"></i> {{ userCityLabel(person) }}
+                  </p>
                 }
-              </button>
-              <h3>{{ personName(person) }}</h3>
-              <p>{{ person.publicItinerariesCount ?? 0 }} itinerari / {{ person.followersCount ?? 0 }} follower</p>
+
+                <div class="sr-user__stats">
+                  <span><i class="bi bi-person-check"></i> {{ person.followersCount ?? 0 }} follower</span>
+                  <span><i class="bi bi-map"></i> {{ person.publicItinerariesCount ?? 0 }} itinerari</span>
+                </div>
+              </div>
+
               <button
                 type="button"
-                class="follow-btn"
+                class="sr-follow-btn"
                 [class.is-following]="person.isFollowing"
                 (click)="followToggle.emit({ user: person, event: $event })"
+                [attr.aria-label]="person.isFollowing ? 'Smetti di seguire' : 'Segui'"
               >
+                <i class="bi {{ person.isFollowing ? 'bi-person-check-fill' : 'bi-person-plus' }}"></i>
                 {{ person.isFollowing ? 'Seguito' : 'Segui' }}
               </button>
             </article>
@@ -144,61 +343,5 @@
       }
     }
 
-    @if (activeTab === 'luoghi') {
-      @if (places.length === 0) {
-        <div class="search-empty">
-          <i class="bi bi-geo-alt"></i>
-          <p>Nessun luogo trovato.</p>
-        </div>
-      } @else {
-        <section class="place-search-layout">
-          <div class="place-list">
-            @for (place of places; track place.id) {
-              <button type="button" class="place-row" (click)="placeSelect.emit(place)">
-                @if (place.image) {
-                  <img [src]="place.image" [alt]="place.name" loading="lazy" />
-                } @else {
-                  <span class="place-row__fallback"><i class="bi bi-geo-alt-fill"></i></span>
-                }
-                <span>
-                  <strong>{{ place.name }}</strong>
-                  <small>{{ placeSubtitle(place) }}</small>
-                </span>
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            }
-          </div>
-
-          <aside class="place-map">
-            <div class="place-map__head">
-              <div>
-                <span>Mappa luogo</span>
-                <h3>{{ mapLocation?.name || 'Zona selezionata' }}</h3>
-                <p>{{ zonePois.length }} attivita e hotel in zona</p>
-              </div>
-            </div>
-            <div class="zone-filter">
-              @for (pill of zonePills; track pill.key) {
-                <button
-                  type="button"
-                  [class.is-active]="activeZonePillKey === pill.key"
-                  (click)="zonePillSelect.emit(pill)"
-                >
-                  <i class="bi {{ pill.icon }}"></i>
-                  {{ pill.label }}
-                </button>
-              }
-            </div>
-            <div class="place-map__frame">
-              @if (zoneLoading) {
-                <div class="map-loading"><span class="search-spinner"></span></div>
-              } @else {
-                <app-discover-zone-map [location]="mapLocation" [pois]="zonePois" />
-              }
-            </div>
-          </aside>
-        </section>
-      }
-    }
   }
 </main>
