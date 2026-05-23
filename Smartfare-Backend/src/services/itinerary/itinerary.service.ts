@@ -211,6 +211,11 @@ export class ItineraryService {
         };
     }
 
+    private buildCopiedItineraryName(sourceName: string, creator?: { name?: string | null; surname?: string | null; email?: string | null } | null): string {
+        const creatorName = [creator?.name, creator?.surname].filter(Boolean).join(' ').trim() || creator?.email || 'Community SmartFare';
+        return `${sourceName} by ${creatorName}`;
+    }
+
     /**
      * Enriches the draft payload with an image from Location.image (cached)
      * If Location.image is null, fetches from Unsplash and caches it
@@ -368,6 +373,11 @@ export class ItineraryService {
                             ]
                         },
                         include: {
+                            user: {
+                                include: {
+                                    profile: true
+                                }
+                            },
                             items: {
                                 orderBy: [
                                     { dayNumber: 'asc' as const },
@@ -382,7 +392,7 @@ export class ItineraryService {
                     }
 
                     const sourceIdentity = this.normalizeDraftIdentity({
-                        name: data?.name || `${source.name} (Copia)`,
+                        name: data?.name || this.buildCopiedItineraryName(source.name, source.user?.profile ?? source.user),
                         description: data?.description ?? source.description,
                         startDate: data?.startDate ?? source.startDate,
                         endDate: data?.endDate ?? source.endDate,
@@ -643,6 +653,11 @@ export class ItineraryService {
                         ]
                     },
                     include: {
+                    user: {
+                        include: {
+                            profile: true
+                        }
+                    },
                         items: {
                             orderBy: [
                                 { dayNumber: 'asc' as const },
@@ -658,7 +673,7 @@ export class ItineraryService {
 
                 // Build the new itinerary data
                 const createData: any = {
-                    name: `${source.name} (Copia)`,
+                    name: this.buildCopiedItineraryName(source.name, source.user?.profile ?? source.user),
                     description: source.description,
                     startDate: source.startDate,
                     endDate: source.endDate,

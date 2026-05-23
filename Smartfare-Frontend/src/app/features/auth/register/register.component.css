@@ -6,7 +6,7 @@
   position: relative;
   overflow: hidden;
   background-color: #020617;
-  padding: 20px;
+  padding: clamp(90px, 13vh, 160px) clamp(12px, 2vw, 24px) clamp(16px, 3vh, 32px);
 }
 
 .background-canvas-container {
@@ -66,8 +66,8 @@
   z-index: 10;
   display: flex;
   width: 100%;
-  max-width: 1000px;
-  min-height: 600px;
+  max-width: 960px;
+  min-height: auto;
   background: var(--bg-color-alt);
   border-radius: 24px;
   overflow: hidden;
@@ -156,7 +156,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 60px;
+  padding: 30px 40px;
   position: relative;
   background: var(--bg-color-alt);
 }
@@ -166,11 +166,11 @@
 }
 
 .auth-header {
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 }
 
 .logo-container {
-  margin-bottom: 16px;
+  margin-bottom: 6px;
 }
 
 .logo-text {
@@ -184,9 +184,9 @@
 }
 
 .welcome-text {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: white;
 }
 
@@ -412,7 +412,7 @@
 .auth-footer {
   text-align: center;
   font-size: 0.9rem;
-  margin-top: 20px;
+  margin-top: 12px;
   color: var(--text-color-muted);
 }
 
@@ -471,16 +471,20 @@
 
 @media (max-width: 480px) {
   .auth-page {
-    padding: 80px 0 0; /* Space for fixed navbar */
+    padding: 76px 0 16px;
   }
   
   .auth-wrapper {
-    border-radius: 0;
-    min-height: 100vh;
+    border-radius: 16px;
+    min-height: auto;
+  }
+
+  .auth-content {
+    padding: 24px 20px;
   }
   
   .welcome-text {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
   }
   
   .form-row {

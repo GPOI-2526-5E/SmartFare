@@ -38,6 +38,8 @@ interface GitHubEmailResponse {
 interface AuthTokenUser {
     id: number;
     email: string;
+    name?: string | null;
+    surname?: string | null;
     avatarUrl?: string | null;
 }
 
@@ -85,6 +87,8 @@ export class AuthService {
                 email: user.email,
                 username: user.email,
                 sessionId,
+                name: user.name,
+                surname: user.surname,
                 avatarUrl: user.avatarUrl
             },
             JWT_SECRET,
@@ -193,6 +197,8 @@ export class AuthService {
                 email: true,
                 profile: {
                     select: {
+                            name: true,
+                            surname: true,
                         avatarUrl: true
                     }
                 }
@@ -212,6 +218,8 @@ export class AuthService {
         const token = await this.issueSessionToken({
             id: user.id,
             email: user.email,
+            name: user.profile?.name,
+            surname: user.profile?.surname,
             avatarUrl: user.profile?.avatarUrl || profile.avatarUrl
         });
 
@@ -403,6 +411,8 @@ export class AuthService {
                     isEmailVerified: true,
                     profile: {
                         select: {
+                            name: true,
+                            surname: true,
                             avatarUrl: true
                         }
                     }
@@ -442,6 +452,8 @@ export class AuthService {
             const token = await this.issueSessionToken({
                 id: user.id,
                 email: user.email,
+                name: user.profile?.name,
+                surname: user.profile?.surname,
                 avatarUrl: user.profile?.avatarUrl
             });
 
@@ -746,7 +758,11 @@ export class AuthService {
                     emailVerificationExpires: true,
                     isEmailVerified: true,
                     profile: {
-                        select: { avatarUrl: true }
+                        select: {
+                            name: true,
+                            surname: true,
+                            avatarUrl: true
+                        }
                     }
                 }
             });
@@ -794,6 +810,8 @@ export class AuthService {
                     {
                         id: user.id,
                         email: user.email,
+                        name: user.profile?.name,
+                        surname: user.profile?.surname,
                         avatarUrl: user.profile?.avatarUrl
                     },
                     session.id

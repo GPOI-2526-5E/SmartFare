@@ -125,9 +125,15 @@
                     }
                   </div>
 
-                  <button class="btn-quick-edit" (click)="editItinerary(itinerary, $event)" title="Modifica">
-                    <i class="bi bi-pencil-fill"></i> Modifica
-                  </button>
+                  @if (activeTab() === 'favorites') {
+                    <button class="btn-quick-edit" (click)="previewItinerary(itinerary, $event)" title="Anteprima">
+                      <i class="bi bi-eye-fill"></i> Anteprima
+                    </button>
+                  } @else {
+                    <button class="btn-quick-edit" (click)="editItinerary(itinerary, $event)" title="Modifica">
+                      <i class="bi bi-pencil-fill"></i> Modifica
+                    </button>
+                  }
                 </div>
               </div>
 
@@ -181,9 +187,9 @@
           <i class="bi bi-heart"></i>
           <h3>Nessun preferito</h3>
           <p>Salva gli itinerari che ami per ritrovarli qui.</p>
-          <button class="btn-action btn-primary" (click)="setTab('itineraries')">
-            Sfoglia i miei itinerari
-          </button>
+          <a [routerLink]="['/discover']" class="btn-explore-discover">
+            <i class="bi bi-compass"></i> Esplora il Discover
+          </a>
         </div>
         }
 

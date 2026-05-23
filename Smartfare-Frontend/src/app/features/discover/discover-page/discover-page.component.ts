@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, finalize, forkJoin, of } from 'rxjs';
+import { catchError, finalize, forkJoin, of, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
 import { FooterComponent } from '../../ui/footer/footer.component';
 import { AppLoaderComponent } from '../../ui/loader/loader.component';
@@ -84,6 +84,10 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
   readonly searchPlaces = signal<Location[]>([]);
   readonly searchSubmitted = signal(false);
   readonly activeSearchTab = signal<SearchTab>('itinerari');
+
+  // Autocomplete Signals
+  readonly filteredLocations = signal<Location[]>([]);
+  readonly showSuggestions = signal(false);
 
   readonly selectedTripId = signal<number | null>(null);
   readonly routePoints = signal<DiscoverRoutePoint[]>([]);
@@ -221,6 +225,16 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadVetrina();
     this.startCarousel();
+
+    this.searchControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(q => q.length < 2 ? of([]) : this.locationService.getLocations(q)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe((locs) => {
+      this.filteredLocations.set(locs ?? []);
+      this.showSuggestions.set((locs ?? []).length > 0);
+    });
   }
 
   ngOnDestroy(): void {
@@ -350,6 +364,7 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
 
     this.searchPending.set(true);
     this.searchSubmitted.set(true);
+    this.showSuggestions.set(false);
     this.scrollToTop();
 
     forkJoin({
@@ -376,6 +391,13 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
 
         this.searchPending.set(false);
       });
+  }
+
+  selectSuggestion(loc: Location): void {
+    this.searchControl.setValue(loc.name);
+    this.showSuggestions.set(false);
+    this.filteredLocations.set([]);
+    this.submitSearch();
   }
 
   onSearchInput(): void {

@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { AuthResponse } from '../models/response.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { UserProfile } from '../models/user-profile.model';
 
 export type SocialProvider = 'google' | 'github';
 export type SocialAuthMode = 'login' | 'register';
@@ -25,7 +26,7 @@ export class AuthService {
   private readonly PENDING_SOCIAL_REGISTRATION_KEY = 'pendingSocialRegistration';
 
   private readonly tokenSignal = signal<string | null>(null);
-  readonly userProfile = signal<any | null>(null);
+  readonly userProfile = signal<UserProfile | null>(null);
 
   private AUTH_URL = `${environment.apiUrl}/auth`;
 
@@ -50,6 +51,15 @@ export class AuthService {
       },
       error: () => this.userProfile.set(null)
     });
+  }
+
+  updateCachedProfile(profile: Partial<UserProfile> | null): void {
+    if (!profile) return;
+
+    this.userProfile.update((current) => ({
+      ...(current ?? {}),
+      ...profile
+    }));
   }
 
   saveAuth(token: string): void {
@@ -152,7 +162,13 @@ export class AuthService {
       }
 
       const decoded = JSON.parse(atob(base64));
-      return decoded;
+      const cachedProfile = this.userProfile();
+
+      return {
+        ...decoded,
+        avatarUrl: cachedProfile?.avatarUrl ?? decoded.avatarUrl,
+        backgroundImageUrl: cachedProfile?.backgroundImageUrl ?? decoded.backgroundImageUrl
+      };
     } catch (error) {
       console.error('Error decoding token:', error);
       return null;

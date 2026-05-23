@@ -4,16 +4,18 @@
 
   @if (!pageLoading() && !searchSubmitted()) {
     <section class="discover-hero" aria-roledescription="carousel">
-      @for (place of carouselPlaces(); track place.id; let i = $index) {
-        <div
-          class="discover-hero__slide"
-          [class.discover-hero__slide--active]="activeSlide() === i"
-          [style.background-image]="'url(' + carouselImage(place) + ')'"
-          [attr.aria-hidden]="activeSlide() !== i"
-        ></div>
-      }
-
-      <div class="discover-hero__shade"></div>
+      <!-- Background layer: overflow:hidden applied here to clip slide images -->
+      <div class="discover-hero__bg">
+        @for (place of carouselPlaces(); track place.id; let i = $index) {
+          <div
+            class="discover-hero__slide"
+            [class.discover-hero__slide--active]="activeSlide() === i"
+            [style.background-image]="'url(' + carouselImage(place) + ')'"
+            [attr.aria-hidden]="activeSlide() !== i"
+          ></div>
+        }
+        <div class="discover-hero__shade"></div>
+      </div>
 
       <div class="discover-hero__content">
         <span class="discover-kicker"><i class="bi bi-compass-fill"></i> Discover</span>
@@ -23,27 +25,44 @@
           per vedere subito il percorso sulla mappa.
         </p>
 
-        <form class="discover-search" role="search" (submit)="$event.preventDefault(); submitSearch()">
-          <i class="bi bi-search"></i>
-          <input
-            type="search"
-            [formControl]="searchControl"
-            placeholder="Cerca Genova, un itinerario o un viaggiatore"
-            autocomplete="off"
-            aria-label="Cerca in Discover"
-            (input)="onSearchInput()"
-            (keyup.enter)="submitSearch()"
-          />
-          @if (searchTerm()) {
-            <button type="button" class="discover-search__clear" (click)="closeSearch()" aria-label="Cancella ricerca">
-              <i class="bi bi-x-lg"></i>
+        <div class="discover-search-wrap">
+          <form class="discover-search" role="search" (submit)="$event.preventDefault(); submitSearch()">
+            <i class="bi bi-search"></i>
+            <input
+              type="search"
+              [formControl]="searchControl"
+              placeholder="Cerca Genova, un itinerario o un viaggiatore"
+              autocomplete="off"
+              aria-label="Cerca in Discover"
+              (input)="onSearchInput()"
+              (keyup.enter)="submitSearch()"
+            />
+            @if (searchTerm()) {
+              <button type="button" class="discover-search__clear" (click)="closeSearch()" aria-label="Cancella ricerca">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            }
+            <button type="button" class="discover-search__submit" (click)="submitSearch()">
+              <i class="bi bi-arrow-right"></i>
+              <span>Cerca</span>
             </button>
+          </form>
+
+          <!-- Autocomplete dropdown placed OUTSIDE the form to escape overflow clipping -->
+          @if (showSuggestions()) {
+            <div class="hero-autocomplete-overlay">
+              @for (loc of filteredLocations(); track loc.id) {
+                <div class="autocomplete-item" (click)="selectSuggestion(loc)">
+                  <div class="autocomplete-item__icon"><i class="bi bi-geo-alt-fill"></i></div>
+                  <div class="autocomplete-item__text">
+                    <span class="autocomplete-item__name">{{ loc.name }}</span>
+                    <span class="autocomplete-item__prov">{{ loc.province }} &bull; CAP {{ loc.cap }}</span>
+                  </div>
+                </div>
+              }
+            </div>
           }
-          <button type="button" class="discover-search__submit" (click)="submitSearch()">
-            <i class="bi bi-arrow-right"></i>
-            <span>Cerca</span>
-          </button>
-        </form>
+        </div>
 
         @if (activeCarouselPlace(); as place) {
           <button type="button" class="discover-place-cta" (click)="filterByCarouselPlace()">
@@ -214,8 +233,24 @@
                     <h3>{{ trip.name }}</h3>
                     <p>{{ trip.description || ('Pubblicato da ' + authorName(trip)) }}</p>
                     <div class="discover-itinerary-card__footer">
-                      <span><i class="bi bi-collection"></i> {{ stopCount(trip) }} tappe</span>
-                      <span><i class="bi bi-heart-fill"></i> Trending</span>
+                      <button
+                        type="button"
+                        class="discover-itinerary-card__author"
+                        [disabled]="!trip.user?.id"
+                        (click)="openAuthorProfile(trip, $event)"
+                      >
+                        <span class="discover-itinerary-card__avatar">
+                          @if (creatorAvatarUrl(trip); as avatar) {
+                            <img [src]="avatar" [alt]="authorName(trip)" loading="lazy" />
+                          } @else {
+                            <span>{{ creatorInitials(trip) }}</span>
+                          }
+                        </span>
+                        <span>di {{ authorName(trip) }}</span>
+                      </button>
+                      <button type="button" class="discover-itinerary-card__preview" (click)="openPreview(trip, $event)">
+                        Anteprima <i class="bi bi-arrow-right"></i>
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -248,8 +283,24 @@
                     <h3>{{ trip.name }}</h3>
                     <p>{{ trip.description || ('Creato da ' + authorName(trip)) }}</p>
                     <div class="discover-itinerary-card__footer">
-                      <span><i class="bi bi-collection"></i> {{ stopCount(trip) }} tappe</span>
-                      <span><i class="bi bi-heart-fill"></i> Trending</span>
+                      <button
+                        type="button"
+                        class="discover-itinerary-card__author"
+                        [disabled]="!trip.user?.id"
+                        (click)="openAuthorProfile(trip, $event)"
+                      >
+                        <span class="discover-itinerary-card__avatar">
+                          @if (creatorAvatarUrl(trip); as avatar) {
+                            <img [src]="avatar" [alt]="authorName(trip)" loading="lazy" />
+                          } @else {
+                            <span>{{ creatorInitials(trip) }}</span>
+                          }
+                        </span>
+                        <span>di {{ authorName(trip) }}</span>
+                      </button>
+                      <button type="button" class="discover-itinerary-card__preview" (click)="openPreview(trip, $event)">
+                        Anteprima <i class="bi bi-arrow-right"></i>
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -269,6 +320,9 @@
       [trips]="searchResultTrips()"
       [users]="searchUsers()"
       (back)="backToVetrina()"
+      [filteredLocations]="filteredLocations()"
+      [showSuggestions]="showSuggestions()"
+      (locationSelect)="selectSuggestion($event)"
       (searchTermChange)="searchControl.setValue($event)"
       (search)="submitSearch()"
       (clearSearch)="backToVetrina()"

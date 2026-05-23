@@ -22,8 +22,16 @@
 .discover-hero {
   position: relative;
   min-height: clamp(540px, 74vh, 720px);
+  /* No overflow:hidden so the autocomplete dropdown can overflow below the hero */
+  /* No isolation:isolate so the dropdown z-index is not trapped inside this context */
+}
+
+.discover-hero__bg {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  isolation: isolate;
+  z-index: 0;
+  border-radius: 0;
 }
 
 .discover-hero__slide {
@@ -52,7 +60,7 @@
 
 .discover-hero__content {
   position: relative;
-  z-index: 2;
+  z-index: 10;
   width: min(1120px, calc(100% - 2rem));
   margin: 0 auto;
   padding: clamp(6rem, 12vh, 8rem) 0 5rem;
@@ -93,14 +101,15 @@
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  width: min(850px, 100%);
-  margin: 0 auto;
+  width: 100%;
   padding: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   background: rgba(18, 14, 34, 0.78);
   box-shadow: var(--sf-shadow);
   backdrop-filter: blur(18px);
+  position: relative;
+  z-index: 100;
 }
 
 .discover-search > i {
@@ -166,6 +175,88 @@
   filter: brightness(1.06);
 }
 
+/* Autocomplete Dropdown – hero version (outside form, inside content) */
+.hero-autocomplete-overlay {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: rgba(10, 7, 20, 0.97);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 18px;
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(139, 92, 246, 0.12);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 9999;
+  max-height: 380px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem;
+  animation: acDropIn 160ms ease;
+}
+
+@keyframes acDropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Also style discover-search with relative positioning for anchor */
+.discover-search-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: min(850px, 100%);
+  margin: 0 auto;
+  z-index: 200;
+}
+
+.autocomplete-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+  text-align: left;
+}
+.autocomplete-item:hover {
+  background: rgba(139, 92, 246, 0.15);
+  transform: translateX(3px);
+}
+
+.autocomplete-item__icon {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: rgba(20, 184, 166, 0.15);
+  color: var(--sf-teal);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.autocomplete-item__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.autocomplete-item__name {
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.autocomplete-item__prov {
+  color: var(--sf-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .discover-place-cta {
   display: inline-grid;
   grid-template-columns: auto 1fr auto;
@@ -195,7 +286,7 @@
 
 .discover-hero__dots {
   position: absolute;
-  z-index: 3;
+  z-index: 4;
   left: 50%;
   bottom: 1.35rem;
   transform: translateX(-50%);
@@ -1083,22 +1174,80 @@
   gap: 1rem;
   padding-top: 1.1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
-  color: #cbd5e1;
-  font-weight: 750;
 }
 
-.discover-itinerary-card__footer span {
+.discover-itinerary-card__author {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 0;
+  background: transparent;
+  color: var(--sf-muted);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 750;
+  padding: 0;
+  cursor: pointer;
+}
+
+.discover-itinerary-card__author:hover {
+  color: #fff;
+}
+
+.discover-itinerary-card__author:disabled {
+  cursor: default;
+  color: var(--sf-muted);
+}
+
+.discover-itinerary-card__author > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.discover-itinerary-card__avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #8b5cf6, #14b8a6);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.discover-itinerary-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.discover-itinerary-card__preview {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  min-height: 2.2rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 850;
+  cursor: pointer;
+  transition: background 180ms ease;
 }
 
-.discover-itinerary-card__footer i {
-  color: #fb4d64;
-}
-
-.discover-itinerary-card__footer span:first-child i {
-  color: #cbd5e1;
+.discover-itinerary-card__preview:hover {
+  background: rgba(20, 184, 166, 0.2);
 }
 
 .home-trip-card {

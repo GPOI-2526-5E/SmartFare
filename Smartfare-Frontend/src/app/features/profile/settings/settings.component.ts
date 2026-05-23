@@ -150,6 +150,7 @@ export class SettingsComponent implements OnInit {
     this.profileService.updateProfile(payload).subscribe(res => {
       this.isSavingProfile.set(false);
       if (res?.success) {
+        this.authService.fetchProfile();
         this.alertService.success('Profilo aggiornato con successo!');
       } else {
         this.alertService.error('Errore durante il salvataggio del profilo.');
@@ -186,6 +187,8 @@ export class SettingsComponent implements OnInit {
       this.isUploadingAvatar.set(false);
       if (res?.url) {
         this.avatarUrl.set(res.url);
+        this.authService.updateCachedProfile({ avatarUrl: res.url });
+        this.authService.fetchProfile();
         this.alertService.success('Foto profilo aggiornata!');
       } else {
         this.alertService.error('Errore upload avatar.');

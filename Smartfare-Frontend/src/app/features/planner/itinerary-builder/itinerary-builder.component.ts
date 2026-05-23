@@ -158,6 +158,14 @@ export class ItineraryBuilderComponent implements OnInit {
   ngOnInit(): void {
     const current = this.itineraryService.itinerary();
     if (current) {
+      if (current.userId) {
+        const currentUserData = this.authService.getUserData();
+        if (currentUserData && current.userId !== currentUserData.userId) {
+          this.alertService.error('Non hai i permessi per modificare questo itinerario.');
+          this.router.navigate(['/home']);
+          return;
+        }
+      }
       this.bootstrapWorkspace(current);
       return;
     }
@@ -175,6 +183,14 @@ export class ItineraryBuilderComponent implements OnInit {
     this.itineraryService.loadLatestFromBackend().subscribe(() => {
       const resolved = this.itineraryService.itinerary();
       if (resolved) {
+        if (resolved.userId) {
+          const currentUserData = this.authService.getUserData();
+          if (currentUserData && resolved.userId !== currentUserData.userId) {
+            this.alertService.error('Non hai i permessi per modificare questo itinerario.');
+            this.router.navigate(['/home']);
+            return;
+          }
+        }
         this.bootstrapWorkspace(resolved);
         return;
       }

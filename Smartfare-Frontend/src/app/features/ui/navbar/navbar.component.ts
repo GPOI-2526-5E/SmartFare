@@ -79,8 +79,8 @@ export class NavbarComponent implements AfterViewInit {
 
   get userName() {
     const profile = this.authService.userProfile();
-    if (profile?.name) {
-      return `${profile.name} ${profile.surname || ''}`.trim();
+    if (profile?.name || profile?.surname) {
+      return `${profile.name || ''} ${profile.surname || ''}`.trim();
     }
 
     const data = this.authService.getUserData();
@@ -94,8 +94,6 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   get userEmail() {
-    const profile = this.authService.userProfile();
-    if (profile?.email) return profile.email;
     return this.authService.getUserData()?.email;
   }
 

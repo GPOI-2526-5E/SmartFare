@@ -139,7 +139,10 @@ router.post('/itinerary/generate', aiLimiter, optionalAuthenticateJWT, async (re
         const locationId = await geminiService.identifyLocation(prompt, locations);
 
         if (!locationId) {
-            throw new AppError('In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.', 400);
+            throw new AppError(
+                'Non riesco a capire la destinazione del viaggio. Indica una città, una regione o un paese più chiaro e riprova.',
+                400
+            );
         }
 
         // 2. Fetch workspace data for the identified location

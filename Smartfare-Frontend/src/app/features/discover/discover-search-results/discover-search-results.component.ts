@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Itinerary } from '../../../core/models/itinerary.model';
 import { UserProfileFull } from '../../../core/models/user-profile.model';
 import type { SearchTab } from '../discover-page/discover-page.component';
+import Location from '../../../core/models/location.model';
 
 const FALLBACK_COVER =
   'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80';
@@ -25,6 +26,8 @@ export class DiscoverSearchResultsComponent implements OnChanges {
   @Input() activeTab: SearchTab = 'itinerari';
   @Input() trips: Itinerary[] = [];
   @Input() users: UserProfileFull[] = [];
+  @Input() filteredLocations: Location[] = [];
+  @Input() showSuggestions = false;
 
   @Output() back = new EventEmitter<void>();
   @Output() searchTermChange = new EventEmitter<string>();
@@ -36,6 +39,11 @@ export class DiscoverSearchResultsComponent implements OnChanges {
   @Output() profileOpen = new EventEmitter<UserProfileFull>();
   @Output() followToggle = new EventEmitter<{ user: UserProfileFull; event: MouseEvent }>();
   @Output() authorOpen = new EventEmitter<{ trip: Itinerary; event: MouseEvent }>();
+  @Output() locationSelect = new EventEmitter<Location>();
+
+  // ── internal signals for inputs ─────────────────────────────────────────────
+  readonly trips$ = signal<Itinerary[]>([]);
+  readonly users$ = signal<UserProfileFull[]>([]);
 
   // ── filter state ────────────────────────────────────────────────────────────
   readonly showFilters = signal(false);
@@ -51,7 +59,7 @@ export class DiscoverSearchResultsComponent implements OnChanges {
 
   // ── derived lists ────────────────────────────────────────────────────────────
   readonly filteredTrips = computed(() => {
-    let list = [...this.trips];
+    let list = [...this.trips$()];
 
     // filter by duration range
     const minD = this.tripMinDays();
@@ -82,7 +90,7 @@ export class DiscoverSearchResultsComponent implements OnChanges {
   });
 
   readonly filteredUsers = computed(() => {
-    let list = [...this.users];
+    let list = [...this.users$()];
 
     // filter by city keyword (matches name or city of residence)
     const cityKw = this.userCityFilter().trim().toLowerCase();
@@ -118,6 +126,12 @@ export class DiscoverSearchResultsComponent implements OnChanges {
   });
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['trips']) {
+      this.trips$.set(changes['trips'].currentValue || []);
+    }
+    if (changes['users']) {
+      this.users$.set(changes['users'].currentValue || []);
+    }
     // reset filter panel when a new search arrives
     if (changes['searchTerm'] && !changes['searchTerm'].firstChange) {
       this.resetFilters();
@@ -149,8 +163,34 @@ export class DiscoverSearchResultsComponent implements OnChanges {
     this.tripMaxDays.set(isNaN(n) ? null : n);
   }
 
+  incrementMinDays(): void {
+    const curr = this.tripMinDays() ?? 0;
+    this.tripMinDays.set(curr + 1);
+  }
+
+  decrementMinDays(): void {
+    const curr = this.tripMinDays() ?? 1;
+    if (curr > 1) this.tripMinDays.set(curr - 1);
+    else this.tripMinDays.set(null);
+  }
+
+  incrementMaxDays(): void {
+    const curr = this.tripMaxDays() ?? 0;
+    this.tripMaxDays.set(curr + 1);
+  }
+
+  decrementMaxDays(): void {
+    const curr = this.tripMaxDays();
+    if (curr != null && curr > 1) this.tripMaxDays.set(curr - 1);
+    else if (curr === 1) this.tripMaxDays.set(null);
+  }
+
   onUserCityInput(value: string): void {
     this.userCityFilter.set(value);
+  }
+
+  selectSuggestion(loc: Location): void {
+    this.locationSelect.emit(loc);
   }
 
   // ── helpers ─────────────────────────────────────────────────────────────────

@@ -523,12 +523,31 @@ export class GeminiItineraryChatService {
     async identifyLocation(prompt: string, locations: { id: number, name: string }[]): Promise<number | null> {
         if (!this.apiKey) throw new AppError('GEMINI_API_KEY mancante', 500);
 
+        const normalizeText = (value: string) =>
+            value
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
         // --- FALLBACK: Local Matching ---
         const promptLower = prompt.toLowerCase();
+        const normalizedPrompt = normalizeText(prompt);
         for (const loc of locations) {
             const locNameLower = loc.name.toLowerCase();
             const regex = new RegExp(`\\b${locNameLower}\\b`, 'i');
             if (regex.test(promptLower)) {
+                return loc.id;
+            }
+
+            const normalizedLocation = normalizeText(loc.name);
+            if (
+                normalizedPrompt === normalizedLocation ||
+                normalizedPrompt.includes(normalizedLocation) ||
+                normalizedLocation.includes(normalizedPrompt)
+            ) {
                 return loc.id;
             }
         }
@@ -554,11 +573,24 @@ export class GeminiItineraryChatService {
             if (text.toLowerCase().includes('null')) return null;
 
             const identifiedName = text.trim().toLowerCase();
-            const found = locations.find(l => l.name.toLowerCase() === identifiedName || identifiedName.includes(l.name.toLowerCase()));
+            const normalizedIdentified = normalizeText(identifiedName);
+            const found = locations.find((l) => {
+                const normalizedLocation = normalizeText(l.name);
+                return (
+                    l.name.toLowerCase() === identifiedName ||
+                    identifiedName.includes(l.name.toLowerCase()) ||
+                    normalizedIdentified === normalizedLocation ||
+                    normalizedIdentified.includes(normalizedLocation) ||
+                    normalizedLocation.includes(normalizedIdentified)
+                );
+            });
             return found ? found.id : null;
         } catch (error: any) {
             console.error("Gemini identifyLocation Error:", error);
-            const broadMatch = locations.find(l => promptLower.includes(l.name.toLowerCase()));
+            const broadMatch = locations.find((l) => {
+                const normalizedLocation = normalizeText(l.name);
+                return promptLower.includes(l.name.toLowerCase()) || normalizedPrompt.includes(normalizedLocation);
+            });
             if (broadMatch) return broadMatch.id;
             return null;
         }

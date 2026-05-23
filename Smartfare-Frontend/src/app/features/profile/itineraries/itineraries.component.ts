@@ -31,8 +31,23 @@ export class ItinerariesComponent implements OnInit {
   // Pagination limits per group
   limitByGroup = signal<Record<string, number>>({});
 
-  userAvatar = signal<string | null>(null);
-  userInitial = signal<string>('U');
+  userAvatar = computed(() => {
+    const profile = this.authService.userProfile();
+    if (profile?.avatarUrl) return profile.avatarUrl;
+    return this.authService.getUserData()?.avatarUrl || null;
+  });
+
+  userInitial = computed(() => {
+    const profile = this.authService.userProfile();
+    if (profile?.name || profile?.surname) {
+      return (profile.name || profile.surname || 'U').charAt(0).toUpperCase();
+    }
+    const userData = this.authService.getUserData();
+    if (userData) {
+      return (userData.name || userData.email || 'U').charAt(0).toUpperCase();
+    }
+    return 'U';
+  });
 
   searchQuery = signal('');
 
@@ -97,11 +112,7 @@ export class ItinerariesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const userData = this.authService.getUserData();
-    if (userData) {
-      this.userAvatar.set(userData.avatarUrl || null);
-      this.userInitial.set((userData.name || userData.email || 'U').charAt(0).toUpperCase());
-    }
+    // Initial values are now handled by computed signals
 
     this.route.queryParams.subscribe(params => {
       if (params['tab'] === 'favorites') {

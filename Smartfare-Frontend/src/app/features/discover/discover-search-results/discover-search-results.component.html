@@ -14,7 +14,7 @@
   </header>
 
   <!-- ══ SEARCH BAR ══════════════════════════════════════════════════════════ -->
-  <form class="sr-searchbar" role="search" (submit)="$event.preventDefault(); search.emit()" id="sr-search-form">
+  <form class="sr-searchbar position-relative" role="search" (submit)="$event.preventDefault(); search.emit()" id="sr-search-form">
     <i class="bi bi-search sr-searchbar__icon"></i>
     <input
       id="sr-search-input"
@@ -27,10 +27,25 @@
       (keyup.enter)="search.emit()"
     />
     @if (searchTerm) {
-      <button type="button" class="sr-searchbar__clear" (click)="clearSearch.emit()" aria-label="Cancella">
+      <button type="button" class="sr-searchbar__clear" (click)="clearSearch.emit()" aria-label="Cancella ricerca">
         <i class="bi bi-x-lg"></i>
       </button>
     }
+
+    @if (showSuggestions) {
+      <div class="discover-autocomplete-dropdown">
+        @for (loc of filteredLocations; track loc.id) {
+          <div class="autocomplete-item" (click)="selectSuggestion(loc)">
+            <div class="autocomplete-item__icon"><i class="bi bi-geo-alt-fill"></i></div>
+            <div class="autocomplete-item__text">
+              <span class="autocomplete-item__name">{{ loc.name }}</span>
+              <span class="autocomplete-item__prov">{{ loc.province }} • CAP {{ loc.cap }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
     <button type="button" class="sr-searchbar__submit" (click)="search.emit()" id="sr-search-submit">
       <i class="bi bi-arrow-right"></i>
       <span>Cerca</span>
@@ -110,28 +125,48 @@
           <div class="sr-range-row">
             <label class="sr-range-label">
               <span>Da</span>
-              <input
-                type="number"
-                min="1"
-                placeholder="1"
-                [value]="tripMinDays() ?? ''"
-                (input)="onMinDaysInput($any($event.target).value)"
-                class="sr-range-input"
-                id="sr-filter-min-days"
-              />
+              <div class="sr-number-wrap">
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="1"
+                  [value]="tripMinDays() ?? ''"
+                  (input)="onMinDaysInput($any($event.target).value)"
+                  class="sr-range-input"
+                  id="sr-filter-min-days"
+                />
+                <div class="sr-number-spinners">
+                  <button type="button" class="sr-spin-up" (click)="incrementMinDays()" aria-label="Aumenta min">
+                    <i class="bi bi-chevron-up"></i>
+                  </button>
+                  <button type="button" class="sr-spin-down" (click)="decrementMinDays()" aria-label="Diminuisci min">
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                </div>
+              </div>
             </label>
             <span class="sr-range-sep">—</span>
             <label class="sr-range-label">
               <span>A</span>
-              <input
-                type="number"
-                min="1"
-                placeholder="∞"
-                [value]="tripMaxDays() ?? ''"
-                (input)="onMaxDaysInput($any($event.target).value)"
-                class="sr-range-input"
-                id="sr-filter-max-days"
-              />
+              <div class="sr-number-wrap">
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="∞"
+                  [value]="tripMaxDays() ?? ''"
+                  (input)="onMaxDaysInput($any($event.target).value)"
+                  class="sr-range-input"
+                  id="sr-filter-max-days"
+                />
+                <div class="sr-number-spinners">
+                  <button type="button" class="sr-spin-up" (click)="incrementMaxDays()" aria-label="Aumenta max">
+                    <i class="bi bi-chevron-up"></i>
+                  </button>
+                  <button type="button" class="sr-spin-down" (click)="decrementMaxDays()" aria-label="Diminuisci max">
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                </div>
+              </div>
             </label>
           </div>
         </div>

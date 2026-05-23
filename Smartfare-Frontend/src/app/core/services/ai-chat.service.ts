@@ -30,8 +30,7 @@ export class AiChatService {
 
     generateItinerary(prompt: string): Observable<Itinerary | null> {
         return this.http.post<{ success?: boolean; itinerary?: Itinerary }>(this.GENERATE_URL, { prompt }).pipe(
-            map((response) => response.itinerary || null),
-            catchError(() => of(null))
+            map((response) => response.itinerary || null)
         );
     }
 }
