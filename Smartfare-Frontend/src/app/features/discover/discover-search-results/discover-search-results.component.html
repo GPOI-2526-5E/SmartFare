@@ -1,0 +1,204 @@
+<main class="search-page">
+  <header class="search-head">
+    <button type="button" class="search-back" (click)="back.emit()">
+      <i class="bi bi-arrow-left"></i>
+      Torna alla Discover
+    </button>
+    <div>
+      <span>Ricerca</span>
+      <h2>{{ searchTitle }}</h2>
+    </div>
+  </header>
+
+  <form class="search-box" role="search" (ngSubmit)="search.emit()">
+    <i class="bi bi-search"></i>
+    <input
+      type="search"
+      [value]="searchTerm"
+      placeholder="Cerca Genova, un itinerario o un viaggiatore"
+      autocomplete="off"
+      aria-label="Cerca in Discover"
+      (input)="searchTermChange.emit($any($event.target).value)"
+      (keyup.enter)="search.emit()"
+    />
+    @if (searchTerm) {
+      <button type="button" class="search-box__clear" (click)="clearSearch.emit()" aria-label="Cancella ricerca">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    }
+    <button type="button" class="search-box__submit" (click)="search.emit()">
+      <i class="bi bi-arrow-right"></i>
+      <span>Cerca</span>
+    </button>
+  </form>
+
+  <nav class="search-tabs" aria-label="Categorie ricerca">
+    <button type="button" [class.is-active]="activeTab === 'itinerari'" (click)="tabChange.emit('itinerari')">
+      <i class="bi bi-signpost-2-fill"></i>
+      Itinerari
+      <span>{{ trips.length }}</span>
+    </button>
+    <button type="button" [class.is-active]="activeTab === 'utenti'" (click)="tabChange.emit('utenti')">
+      <i class="bi bi-person-circle"></i>
+      Utenti
+      <span>{{ users.length }}</span>
+    </button>
+    <button type="button" [class.is-active]="activeTab === 'luoghi'" (click)="tabChange.emit('luoghi')">
+      <i class="bi bi-geo-alt-fill"></i>
+      Luoghi
+      <span>{{ places.length }}</span>
+    </button>
+  </nav>
+
+  @if (pending) {
+    <div class="search-loading">
+      <span class="search-spinner"></span>
+      <p>Ricerca in corso...</p>
+    </div>
+  } @else {
+    @if (activeTab === 'itinerari') {
+      @if (trips.length === 0) {
+        <div class="search-empty">
+          <i class="bi bi-map"></i>
+          <p>Nessun itinerario trovato.</p>
+        </div>
+      } @else {
+        <section class="result-strip-grid">
+          @for (trip of trips; track trip.id) {
+            <article class="result-trip" (click)="tripSelect.emit(trip)" role="button" tabindex="0">
+              <div class="result-trip__media">
+                <img [src]="tripCover(trip)" [alt]="trip.name" loading="lazy" />
+                <span><i class="bi bi-heart-fill"></i> {{ likeCount(trip) }}</span>
+              </div>
+              <div class="result-trip__body">
+                <small>{{ placeLabel(trip) }}</small>
+                <h3>{{ trip.name }}</h3>
+                <p>{{ trip.description || ('Creato da ' + authorName(trip)) }}</p>
+                <div class="result-trip__creator">
+                  <button
+                    type="button"
+                    class="mini-avatar"
+                    [disabled]="!trip.user?.id"
+                    (click)="authorOpen.emit({ trip, event: $event })"
+                    [attr.aria-label]="'Apri profilo di ' + authorName(trip)"
+                  >
+                    @if (creatorAvatarUrl(trip); as avatar) {
+                      <img [src]="avatar" [alt]="authorName(trip)" loading="lazy" />
+                    } @else {
+                      <span>{{ creatorInitials(trip) }}</span>
+                    }
+                  </button>
+                  <button
+                    type="button"
+                    class="author-link"
+                    [disabled]="!trip.user?.id"
+                    (click)="authorOpen.emit({ trip, event: $event })"
+                  >
+                    {{ authorName(trip) }}
+                  </button>
+                </div>
+                <div class="result-trip__meta">
+                  <span><i class="bi bi-clock"></i> {{ durationLabel(trip) }}</span>
+                  <span><i class="bi bi-pin-map"></i> {{ stopCount(trip) }} tappe</span>
+                </div>
+                <button type="button" class="preview-link" (click)="preview.emit({ trip, event: $event })">
+                  Anteprima <i class="bi bi-arrow-right"></i>
+                </button>
+              </div>
+            </article>
+          }
+        </section>
+      }
+    }
+
+    @if (activeTab === 'utenti') {
+      @if (users.length === 0) {
+        <div class="search-empty">
+          <i class="bi bi-people"></i>
+          <p>Nessun utente trovato.</p>
+        </div>
+      } @else {
+        <section class="search-users">
+          @for (person of users; track person.id) {
+            <article class="search-user" (click)="profileOpen.emit(person)" role="button" tabindex="0">
+              <button type="button" class="search-user__avatar" aria-label="Apri profilo">
+                @if (avatarUrl(person); as src) {
+                  <img [src]="src" [alt]="personName(person)" loading="lazy" />
+                } @else {
+                  <span>{{ personInitials(person) }}</span>
+                }
+              </button>
+              <h3>{{ personName(person) }}</h3>
+              <p>{{ person.publicItinerariesCount ?? 0 }} itinerari / {{ person.followersCount ?? 0 }} follower</p>
+              <button
+                type="button"
+                class="follow-btn"
+                [class.is-following]="person.isFollowing"
+                (click)="followToggle.emit({ user: person, event: $event })"
+              >
+                {{ person.isFollowing ? 'Seguito' : 'Segui' }}
+              </button>
+            </article>
+          }
+        </section>
+      }
+    }
+
+    @if (activeTab === 'luoghi') {
+      @if (places.length === 0) {
+        <div class="search-empty">
+          <i class="bi bi-geo-alt"></i>
+          <p>Nessun luogo trovato.</p>
+        </div>
+      } @else {
+        <section class="place-search-layout">
+          <div class="place-list">
+            @for (place of places; track place.id) {
+              <button type="button" class="place-row" (click)="placeSelect.emit(place)">
+                @if (place.image) {
+                  <img [src]="place.image" [alt]="place.name" loading="lazy" />
+                } @else {
+                  <span class="place-row__fallback"><i class="bi bi-geo-alt-fill"></i></span>
+                }
+                <span>
+                  <strong>{{ place.name }}</strong>
+                  <small>{{ placeSubtitle(place) }}</small>
+                </span>
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            }
+          </div>
+
+          <aside class="place-map">
+            <div class="place-map__head">
+              <div>
+                <span>Mappa luogo</span>
+                <h3>{{ mapLocation?.name || 'Zona selezionata' }}</h3>
+                <p>{{ zonePois.length }} attivita e hotel in zona</p>
+              </div>
+            </div>
+            <div class="zone-filter">
+              @for (pill of zonePills; track pill.key) {
+                <button
+                  type="button"
+                  [class.is-active]="activeZonePillKey === pill.key"
+                  (click)="zonePillSelect.emit(pill)"
+                >
+                  <i class="bi {{ pill.icon }}"></i>
+                  {{ pill.label }}
+                </button>
+              }
+            </div>
+            <div class="place-map__frame">
+              @if (zoneLoading) {
+                <div class="map-loading"><span class="search-spinner"></span></div>
+              } @else {
+                <app-discover-zone-map [location]="mapLocation" [pois]="zonePois" />
+              }
+            </div>
+          </aside>
+        </section>
+      }
+    }
+  }
+</main>

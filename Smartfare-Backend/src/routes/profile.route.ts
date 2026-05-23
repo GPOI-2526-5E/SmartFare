@@ -154,6 +154,110 @@ router.get('/top-creators', optionalAuthenticateJWT, async (req: AuthRequest, re
     }
 });
 
+// ─── GET /api/profile/featured-explorers ─────────────────────────────────────
+// Esploratori con almeno un itinerario pubblico, ordinati per ultima pubblicazione.
+router.get('/featured-explorers', optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const limit = Math.min(Math.max(Number(req.query.limit) || 4, 1), 12);
+        const currentUserId = req.user?.userId ? Number(req.user.userId) : undefined;
+
+        const publicItineraryWhere = {
+            userId: { not: null },
+            OR: [
+                { isPublished: true },
+                { visibilityCode: 'PUBLIC' }
+            ]
+        };
+
+        const ranked = await prisma.itinerary.groupBy({
+            by: ['userId'],
+            where: publicItineraryWhere,
+            _max: { updatedAt: true },
+            orderBy: { _max: { updatedAt: 'desc' } },
+            take: limit
+        });
+
+        const userIds = ranked
+            .map((row) => row.userId)
+            .filter((id): id is number => id != null);
+
+        if (userIds.length === 0) {
+            return res.json([]);
+        }
+
+        const lastPublishedByUser = new Map(
+            ranked.map((row) => [row.userId!, row._max.updatedAt])
+        );
+
+        const users = await prisma.user.findMany({
+            where: {
+                id: { in: userIds },
+                profile: { isNot: null }
+            },
+            select: {
+                id: true,
+                email: true,
+                authProvider: true,
+                profile: true,
+                _count: {
+                    select: {
+                        followers: true,
+                        following: true,
+                        itineraries: {
+                            where: {
+                                OR: [
+                                    { isPublished: true },
+                                    { visibilityCode: 'PUBLIC' }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const usersById = new Map(users.map((u) => [u.id, u]));
+
+        const result = await Promise.all(
+            userIds.map(async (userId) => {
+                const u = usersById.get(userId);
+                if (!u) return null;
+
+                let isFollowing = false;
+                if (currentUserId) {
+                    const follow = await prisma.follow.findUnique({
+                        where: {
+                            followerId_followingId: {
+                                followerId: currentUserId,
+                                followingId: userId
+                            }
+                        }
+                    });
+                    isFollowing = !!follow;
+                }
+
+                const lastPublishedAt = lastPublishedByUser.get(userId);
+
+                return {
+                    id: u.id,
+                    email: u.email,
+                    authProvider: u.authProvider,
+                    profile: u.profile,
+                    followersCount: u._count.followers,
+                    followingCount: u._count.following,
+                    publicItinerariesCount: u._count.itineraries,
+                    isFollowing,
+                    lastPublishedAt: lastPublishedAt ? lastPublishedAt.toISOString() : null
+                };
+            })
+        );
+
+        return res.json(result.filter(Boolean));
+    } catch (error) {
+        next(error);
+    }
+});
+
 // ─── GET /api/profile/search ──────────────────────────────────────────────────
 router.get('/search', optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {

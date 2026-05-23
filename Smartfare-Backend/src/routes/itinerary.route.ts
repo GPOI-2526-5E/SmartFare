@@ -49,6 +49,34 @@ router.get("/public", optionalAuthenticateJWT, async (req: AuthRequest, res: Res
     }
 });
 
+// GET /api/itineraries/public/nearby - Itinerari nella zona dell'ultimo viaggio dell'utente
+router.get("/public/nearby", authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = Number(req.user?.userId);
+        if (!userId || Number.isNaN(userId)) return res.status(401).json({ error: "Unauthorized" });
+
+        const result = await itineraryService.getNearbyPublicItineraries(userId);
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// GET /api/itineraries/public/:id/route - Coordinate percorso per mappa discover
+router.get("/public/:id/route", optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const id = Number(req.params.id);
+        if (!id || Number.isNaN(id)) return res.status(400).json({ error: "ID non valido" });
+
+        const route = await itineraryService.getPublicItineraryRoute(id);
+        if (!route) return res.status(404).json({ error: "Itinerario non trovato" });
+
+        res.status(200).json(route);
+    } catch (error) {
+        next(error);
+    }
+});
+
 // GET /api/itineraries/public/:id - Get a single public itinerary by ID
 router.get("/public/:id", optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {

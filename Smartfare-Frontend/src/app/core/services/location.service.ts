@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable, shareReplay, catchError, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import Location from '../models/location.model';
 import { environment } from '../../../environments/environment';
@@ -31,4 +31,11 @@ export class LocationService {
     return this.locationsRequest$;
   }
 
+  getCarouselLocations(limit = 3): Observable<Location[]> {
+    return this.http
+      .get<Location[]>(`${this.APIENDPOINT}/locations/carousel`, {
+        params: { limit: limit.toString() }
+      })
+      .pipe(catchError(() => of([])));
+  }
 }

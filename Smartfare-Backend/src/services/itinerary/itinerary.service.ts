@@ -798,6 +798,152 @@ export class ItineraryService {
         }
     }
 
+    private haversineKm(
+        lat1: number,
+        lon1: number,
+        lat2: number,
+        lon2: number
+    ): number {
+        const toRad = (deg: number) => (deg * Math.PI) / 180;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+        return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    async getNearbyPublicItineraries(userId: number) {
+        try {
+            const anchorItinerary = await prisma.itinerary.findFirst({
+                where: { userId, locationId: { not: null } },
+                orderBy: { updatedAt: 'desc' },
+                include: { location: true }
+            });
+
+            if (!anchorItinerary?.location) {
+                return { anchorLocation: null, itineraries: [] };
+            }
+
+            const anchor = anchorItinerary.location;
+            const allLocations = await prisma.location.findMany();
+
+            const nearbyLocationIds = allLocations
+                .filter((loc) => {
+                    if (
+                        anchor.province &&
+                        loc.province &&
+                        loc.province.toLowerCase() === anchor.province.toLowerCase()
+                    ) {
+                        return true;
+                    }
+                    return (
+                        this.haversineKm(
+                            anchor.latitude,
+                            anchor.longitude,
+                            loc.latitude,
+                            loc.longitude
+                        ) <= 120
+                    );
+                })
+                .map((loc) => loc.id);
+
+            if (nearbyLocationIds.length === 0) {
+                return { anchorLocation: anchor, itineraries: [] };
+            }
+
+            const publicWhere = {
+                locationId: { in: nearbyLocationIds },
+                userId: { not: userId },
+                OR: [{ isPublished: true }, { visibilityCode: 'PUBLIC' }]
+            };
+
+            const itineraries = await prisma.itinerary.findMany({
+                where: publicWhere,
+                orderBy: { updatedAt: 'desc' },
+                include: {
+                    location: true,
+                    user: { include: { profile: true } },
+                    items: { select: { dayNumber: true } },
+                    _count: { select: { items: true, favorites: true } }
+                }
+            });
+
+            const mapped = itineraries.map((itin) => {
+                const maxDay =
+                    itin.items.length > 0
+                        ? Math.max(...itin.items.map((i) => i.dayNumber))
+                        : null;
+                return { ...itin, durationDays: maxDay };
+            });
+
+            return { anchorLocation: anchor, itineraries: mapped };
+        } catch (error) {
+            console.error('Errore recupero itinerari vicini:', error);
+            throw error;
+        }
+    }
+
+    async getPublicItineraryRoute(id: number) {
+        try {
+            const itinerary = await prisma.itinerary.findFirst({
+                where: {
+                    id,
+                    OR: [{ isPublished: true }, { visibilityCode: 'PUBLIC' }]
+                },
+                include: {
+                    location: true,
+                    items: {
+                        orderBy: [{ dayNumber: 'asc' }, { orderInt: 'asc' }],
+                        include: {
+                            activity: {
+                                select: { latitude: true, longitude: true, name: true }
+                            },
+                            accommodation: {
+                                select: { latitude: true, longitude: true, name: true }
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (!itinerary) return null;
+
+            const points: Array<{ lat: number; lng: number; label?: string }> = [];
+
+            for (const item of itinerary.items) {
+                const poi = item.activity ?? item.accommodation;
+                if (
+                    poi &&
+                    Number.isFinite(poi.latitude) &&
+                    Number.isFinite(poi.longitude)
+                ) {
+                    points.push({
+                        lat: poi.latitude,
+                        lng: poi.longitude,
+                        label: poi.name
+                    });
+                }
+            }
+
+            if (points.length === 0 && itinerary.location) {
+                points.push({
+                    lat: itinerary.location.latitude,
+                    lng: itinerary.location.longitude,
+                    label: itinerary.location.name
+                });
+            }
+
+            return {
+                location: itinerary.location,
+                points
+            };
+        } catch (error) {
+            console.error('Errore recupero percorso itinerario:', error);
+            throw error;
+        }
+    }
+
     async getPublicItineraries(locationId?: number, excludeUserId?: number, query?: string, trending?: boolean) {
         try {
             let whereClause: any = {
@@ -847,7 +993,7 @@ export class ItineraryService {
                         select: { dayNumber: true }
                     },
                     _count: {
-                        select: { items: true }
+                        select: { items: true, favorites: true }
                     }
                 }
             });

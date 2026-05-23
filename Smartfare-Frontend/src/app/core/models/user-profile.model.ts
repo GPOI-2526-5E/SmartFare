@@ -33,4 +33,5 @@ export interface UserProfileFull {
   followingCount?: number;
   publicItinerariesCount?: number;
   isFollowing?: boolean;
+  lastPublishedAt?: string | null;
 }

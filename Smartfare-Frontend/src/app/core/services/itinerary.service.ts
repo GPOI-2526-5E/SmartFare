@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, catchError, debounceTime, of, switchMap, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Itinerary, ItineraryWorkspace } from '../models/itinerary.model';
+import Location from '../models/location.model';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({
@@ -204,6 +205,29 @@ export class ItineraryService {
     return this.http.get<Itinerary>(`${this.API_URL}/public/${id}`).pipe(
       catchError(() => of(null))
     );
+  }
+
+  getNearbyPublicItineraries(): Observable<{
+    anchorLocation: Location | null;
+    itineraries: Itinerary[];
+  }> {
+    if (!this.authService.IsAuthenticated()) {
+      return of({ anchorLocation: null, itineraries: [] });
+    }
+    return this.http
+      .get<{ anchorLocation: Location | null; itineraries: Itinerary[] }>(`${this.API_URL}/public/nearby`)
+      .pipe(catchError(() => of({ anchorLocation: null, itineraries: [] })));
+  }
+
+  getPublicItineraryRoute(id: number): Observable<{
+    location: Location | null;
+    points: Array<{ lat: number; lng: number; label?: string }>;
+  } | null> {
+    return this.http
+      .get<{ location: Location | null; points: Array<{ lat: number; lng: number; label?: string }> }>(
+        `${this.API_URL}/public/${id}/route`
+      )
+      .pipe(catchError(() => of(null)));
   }
 
   getMyItineraries(): Observable<Itinerary[]> {

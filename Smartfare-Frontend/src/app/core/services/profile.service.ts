@@ -40,6 +40,14 @@ export class ProfileService {
     );
   }
 
+  getFeaturedExplorers(limit: number = 4): Observable<UserProfileFull[]> {
+    return this.http.get<UserProfileFull[]>(`${this.API_URL}/featured-explorers`, {
+      params: { limit: limit.toString() }
+    }).pipe(
+      catchError(() => of([]))
+    );
+  }
+
   getRandomLocationImage(): Observable<{ imageUrl: string } | null> {
     return this.http.get<{ imageUrl: string }>(`${environment.apiUrl}/api/locations/random-image`).pipe(
       catchError(() => of(null))

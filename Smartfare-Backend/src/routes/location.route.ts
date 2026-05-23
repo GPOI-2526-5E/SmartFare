@@ -35,6 +35,51 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
+const publicItineraryWhere = {
+    OR: [
+        { isPublished: true },
+        { visibilityCode: 'PUBLIC' }
+    ]
+};
+
+// ─── GET /api/locations/carousel ───────────────────────────────────────
+router.get('/carousel', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const limit = Math.min(Math.max(Number(req.query.limit) || 3, 1), 10);
+
+        const locations = await prisma.location.findMany({
+            where: { image: { not: null } },
+            include: {
+                _count: {
+                    select: {
+                        itineraries: { where: publicItineraryWhere }
+                    }
+                }
+            }
+        });
+
+        if (locations.length === 0) {
+            return res.json([]);
+        }
+
+        const shuffled = [...locations].sort(() => Math.random() - 0.5);
+        const picked = shuffled.slice(0, limit).map((loc) => ({
+            id: loc.id,
+            name: loc.name,
+            province: loc.province,
+            cap: loc.cap,
+            latitude: loc.latitude,
+            longitude: loc.longitude,
+            image: loc.image,
+            publicItineraryCount: loc._count.itineraries
+        }));
+
+        res.json(picked);
+    } catch (error) {
+        next(error);
+    }
+});
+
 // ─── GET /api/locations/random-image ──────────────────────────────────
 router.get('/random-image', async (req: Request, res: Response, next: NextFunction) => {
     try {

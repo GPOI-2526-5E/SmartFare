@@ -18,6 +18,7 @@ export interface Itinerary {
     isPublished?: boolean;
     imageUrl?: string | null;
     user?: {
+        id?: number;
         profile?: {
             name?: string;
             surname?: string;
@@ -26,6 +27,7 @@ export interface Itinerary {
     };
     _count?: {
         items?: number;
+        favorites?: number;
     };
     durationDays?: number | null;
 }
