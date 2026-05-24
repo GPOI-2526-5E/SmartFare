@@ -38,9 +38,18 @@
                     @for (poi of dayGroup.items; track poi.key) {
                     <div class="poi-card">
                         <div class="poi-card-header" (click)="onPreviewClick(poi)">
-                            <div class="poi-type-icon">
-                                {{ poi.type === 'accommodation' ? '🏨' : '⭐' }}
-                            </div>
+                                            <div class="poi-type-icon">
+                                                @if (getCategoryMeta(poi.categoryId)) {
+                                                    <span class="poi-swatch" [style.background]="getCategoryMeta(poi.categoryId)?.color || 'transparent'"></span>
+                                                    @if (getCategoryMeta(poi.categoryId)?.iconUrl) {
+                                                        <img src="{{getCategoryMeta(poi.categoryId)?.iconUrl}}" alt="" class="poi-cat-img" />
+                                                    } @else {
+                                                        <i [class]="'bi ' + (getCategoryMeta(poi.categoryId)?.icon || 'bi-geo-alt')"></i>
+                                                    }
+                                                } @else {
+                                                    {{ poi.type === 'accommodation' ? '🏨' : '⭐' }}
+                                                }
+                                            </div>
                             <div class="poi-info">
                                 <h4 class="poi-title">{{ poi.title }}</h4>
                                 <small class="poi-subtitle">{{ poi.subtitle }}</small>

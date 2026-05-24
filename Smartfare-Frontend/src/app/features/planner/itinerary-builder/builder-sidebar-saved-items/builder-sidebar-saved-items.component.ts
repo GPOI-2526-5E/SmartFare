@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, Output, computed, inject, signal } from
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UIStateService } from '../../../../core/services/ui-state.service';
+import { ActivityService } from '../../../../core/services/activity.service';
+import { categoryVisuals, colorFromId } from '../../../interactive-map/utils/map-category.util';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../../../../core/models/builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
@@ -21,7 +23,14 @@ export class BuilderSidebarSavedItemsComponent {
 
     itineraryService = inject(ItineraryService);
     ui = inject(UIStateService);
+    activityService = inject(ActivityService);
+    categoryMeta = new Map<number, { icon?: string; iconUrl?: string; color?: string }>();
     expandedDay = signal<number | null>(null);
+
+    getCategoryMeta(id?: number) {
+        if (!id) return undefined;
+        return this.categoryMeta.get(id);
+    }
 
     savedByDay = computed(() => {
         const grouped = new Map<number, BuilderPoi[]>();
@@ -41,6 +50,19 @@ export class BuilderSidebarSavedItemsComponent {
 
     toggleDay(day: number) {
         this.expandedDay.update(curr => curr === day ? null : day);
+    }
+
+    constructor() {
+        // load categories metadata
+        this.activityService.getCategories().subscribe({
+            next: (res) => {
+                for (const c of res?.categories ?? []) {
+                    const visuals = categoryVisuals(c.name, 'activity');
+                    const color = colorFromId(c.id);
+                    this.categoryMeta.set(c.id, { icon: visuals.icon, iconUrl: c.iconUrl, color });
+                }
+            }
+        });
     }
 
     onEditClick(poi: BuilderPoi, event: Event) {

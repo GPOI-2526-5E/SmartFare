@@ -53,7 +53,12 @@
               [class.im-filter--active]="activeFilter() === cat.id"
               (click)="setFilter(cat.id)"
             >
-              <i class="bi" [ngClass]="cat.icon"></i>
+              <span class="im-filter__swatch" [style.background]="cat.color"></span>
+              @if (cat.iconUrl) {
+                <img src="{{cat.iconUrl}}" alt="{{cat.name}}" class="im-filter__img" />
+              } @else {
+                <i [class]="'bi ' + cat.icon"></i>
+              }
               <span>{{ cat.name }}</span>
             </button>
           }

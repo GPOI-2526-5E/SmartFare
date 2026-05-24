@@ -25,7 +25,7 @@ import {
   MapMarkerKind
 } from './models/map-marker.model';
 import { BboxTileCache } from './utils/bbox-tile-cache';
-import { categoryIcon, categoryVisuals } from './utils/map-category.util';
+import { categoryIcon, categoryVisuals, colorFromId } from './utils/map-category.util';
 
 interface BboxRequest {
   minLat: number;
@@ -307,11 +307,20 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          const used = (res?.categories ?? []).map((c) => ({
-            id: c.id,
-            name: c.name,
-            icon: categoryIcon(c.name)
-          }));
+          const used = (res?.categories ?? []).map((c) => {
+            const provided = c.iconUrl ?? '';
+            const visuals = categoryVisuals(c.name, 'activity');
+            const color = colorFromId(c.id);
+            // Determine icon and iconUrl: backend may provide a URL (http or /) or a class name (bi-...)
+            if (provided) {
+              if (provided.startsWith('http') || provided.startsWith('/')) {
+                return { id: c.id, name: c.name, icon: visuals.icon, iconUrl: provided, color };
+              }
+              // treat provided as a bootstrap-icons class
+              return { id: c.id, name: c.name, icon: provided, color };
+            }
+            return { id: c.id, name: c.name, icon: visuals.icon, color };
+          });
           this.categories.set(used);
           this.hasHotels.set(res?.hasHotels ?? false);
         },
@@ -426,14 +435,28 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
 
       if (this.leafletMarkers.has(poi.key)) continue;
 
-      const visuals =
+      let visuals =
         poi.kind === 'hotel'
           ? categoryVisuals(undefined, 'hotel')
           : categoryVisuals(poi.categoryName, 'activity');
 
+      // If we have a category id, prefer the category metadata loaded earlier
+      if (typeof poi.categoryId === 'number') {
+        const cat = this.categories().find((x) => x.id === poi.categoryId);
+        if (cat) {
+          visuals = { icon: cat.icon || visuals.icon, color: cat.color || visuals.color } as any;
+        }
+      }
+
+      // Build marker HTML: if category provides an image URL, use <img>, otherwise use <i>
+      const innerHtml =
+        (visuals as any).iconUrl && ((visuals as any).iconUrl.startsWith('http') || (visuals as any).iconUrl.startsWith('/'))
+          ? `<img src="${(visuals as any).iconUrl}" alt="" style="width:60%;height:60%;object-fit:contain;border-radius:6px;" />`
+          : `<i class="bi ${visuals.icon}"></i>`;
+
       const icon = L.divIcon({
         className: 'im-poi',
-        html: `<div class="im-poi__dot" style="background:${visuals.color}"><i class="bi ${visuals.icon}"></i></div>`,
+        html: `<div class="im-poi__dot" style="background:${visuals.color}">${innerHtml}</div>`,
         iconSize: [30, 30],
         iconAnchor: [15, 15]
       });

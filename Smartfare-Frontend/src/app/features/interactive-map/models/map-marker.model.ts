@@ -20,4 +20,6 @@ export interface MapCategoryOption {
   id: number;
   name: string;
   icon: string;
+  iconUrl?: string;
+  color?: string;
 }

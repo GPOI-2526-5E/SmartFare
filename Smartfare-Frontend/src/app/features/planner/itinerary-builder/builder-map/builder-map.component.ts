@@ -20,6 +20,8 @@ import Location from '../../../../core/models/location.model';
 import { Itinerary } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../../../../core/models/builder.types';
 import { UIStateService } from '../../../../core/services/ui-state.service';
+import { ActivityService } from '../../../../core/services/activity.service';
+import { categoryVisuals, colorFromId } from '../../../interactive-map/utils/map-category.util';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -56,7 +58,9 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private routeRequestId = 0;
   private resizeObserver?: ResizeObserver;
   private readonly ui = inject(UIStateService);
+  private readonly activityService = inject(ActivityService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private categoryMeta = new Map<number, { icon?: string; iconUrl?: string; color?: string }>();
   private readonly defaultDayPalette = ['#f97316', '#22c55e', '#8b5cf6', '#eab308', '#ef4444', '#a855f7', '#14b8a6'];
   private displayRoutePois: BuilderPoi[] = [];
   private lastRouteFingerprint = '';
@@ -96,6 +100,21 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   ngAfterViewInit(): void {
     this.initializeLayers();
+
+    // Load categories metadata so builder can use backend-provided iconUrl and a deterministic color
+    this.activityService.getCategories().subscribe({
+      next: (res) => {
+        for (const c of res?.categories ?? []) {
+          const visuals = categoryVisuals(c.name, 'activity');
+          const color = colorFromId(c.id);
+          this.categoryMeta.set(c.id, {
+            icon: visuals.icon,
+            color,
+            iconUrl: c.iconUrl
+          });
+        }
+      }
+    });
 
     this.map = L.map(this.mapRoot.nativeElement, {
       zoomControl: false,
@@ -261,7 +280,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     const availableMarkers: L.Marker[] = [];
     for (const poi of this.availablePois) {
       if (!this.isValidLatLng(poi.latitude, poi.longitude)) continue;
-      const icon = this.createCategoryIcon(poi.categoryName, poi.type);
+      const icon = this.createCategoryIcon(poi.categoryId, poi.categoryName, poi.type);
       const marker = L.marker([poi.latitude, poi.longitude], { icon });
 
       marker.bindPopup(this.createPopupHtml(poi), { autoClose: false, closeOnClick: false, closeButton: false });
@@ -325,7 +344,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     }
 
     if (this.previewPoi && this.isValidLatLng(this.previewPoi.latitude, this.previewPoi.longitude)) {
-      const icon = this.createCategoryIcon(this.previewPoi.categoryName, this.previewPoi.type);
+      const icon = this.createCategoryIcon(this.previewPoi.categoryId, this.previewPoi.categoryName, this.previewPoi.type);
       const previewMarker = L.marker([this.previewPoi.latitude, this.previewPoi.longitude], {
         icon: icon,
         title: `Anteprima: ${this.previewPoi.title}`,
@@ -813,11 +832,37 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     return { icon: 'bi-geo-alt-fill', color: '#10b981' }; // emerald
   }
 
-  private createCategoryIcon(categoryName: string | undefined, type: 'accommodation' | 'activity'): L.DivIcon {
-    const { icon, color } = this.getCategoryVisuals(categoryName, type);
+  private createCategoryIcon(
+    categoryId: number | undefined,
+    categoryName: string | undefined,
+    type: 'accommodation' | 'activity'
+  ): L.DivIcon {
+    // Base visuals from heuristics
+    let { icon, color } = this.getCategoryVisuals(categoryName, type);
+
+    // If we have metadata loaded from backend for this category, prefer it
+    if (typeof categoryId === 'number') {
+      const meta = this.categoryMeta.get(categoryId);
+      if (meta) {
+        icon = meta.icon || icon;
+        color = meta.color || color;
+      }
+    }
+
+    // If backend provided an iconUrl for this category, use an <img> inside the dot
+    let imgUrl: string | undefined;
+    if (typeof categoryId === 'number') {
+      const meta = this.categoryMeta.get(categoryId);
+      if (meta && meta.iconUrl) imgUrl = meta.iconUrl;
+    }
+
+    const inner = imgUrl
+      ? `<img src="${imgUrl}" alt="" style="width:60%;height:60%;object-fit:contain;border-radius:6px;" />`
+      : `<i class="bi ${icon}"></i>`;
+
     return L.divIcon({
       className: 'poi-category-icon',
-      html: `<div style="width:28px;height:28px;border-radius:50%;background:${color};border:2px solid #ffffff;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:0.875rem;"><i class="bi ${icon}"></i></div>`,
+      html: `<div style="width:28px;height:28px;border-radius:50%;background:${color};border:2px solid #ffffff;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:0.875rem;">${inner}</div>`,
       iconSize: [28, 28],
       iconAnchor: [14, 14]
     });
