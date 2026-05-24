@@ -19,9 +19,8 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
   protected readonly currentPlaceholder = signal('');
 
   private placeholders: string[] = [
-    "Es: Organizza un viaggio on the road in California...",
     "Es: Cerco una vacanza rilassante al mare in Puglia...",
-    "Es: Portami a scoprire l'aurora boreale in Islanda..."
+    "Es: Portami a scoprire il museo egizio a Torino..."
   ];
 
   isGenerating = signal(false);

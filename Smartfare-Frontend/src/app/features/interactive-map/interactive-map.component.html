@@ -68,6 +68,20 @@
 
   <main class="im-main">
     <div class="im-toolbar">
+      <form class="im-search" (submit)="$event.preventDefault(); searchPlace()">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          [value]="placeQuery()"
+          (input)="onPlaceQueryInput(($any($event.target).value))"
+          placeholder="Cerca un luogo, città o indirizzo"
+          aria-label="Cerca un luogo"
+        />
+        <button type="submit" [disabled]="isSearchingPlace()">
+          {{ isSearchingPlace() ? '...' : 'Vai' }}
+        </button>
+      </form>
+
       @if (!sidebarOpen()) {
         <button type="button" class="im-toolbar__btn" (click)="toggleSidebar()">
           <i class="bi bi-layout-sidebar-inset"></i>

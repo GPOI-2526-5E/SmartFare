@@ -16,6 +16,7 @@ import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import { NavbarComponent } from '../ui/navbar/navbar.component';
 import { ActivityService } from '../../core/services/activity.service';
+import { GeocodingService } from '../../core/services/geocoding.service';
 import { environment } from '../../../environments/environment';
 import {
   MapCategoryFilter,
@@ -32,6 +33,10 @@ interface BboxRequest {
   minLng: number;
   maxLng: number;
   zoom: number;
+  zoomBucket: string;
+  force: boolean;
+  scope: string;
+  categoryId?: number;
 }
 
 @Component({
@@ -45,6 +50,7 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mapHost', { static: true }) mapHost!: ElementRef<HTMLDivElement>;
 
   private readonly activityService = inject(ActivityService);
+  private readonly geocodingService = inject(GeocodingService);
   private readonly destroyRef = inject(DestroyRef);
 
   private map?: L.Map;
@@ -64,6 +70,8 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
   readonly isFetching = signal(false);
   readonly fetchError = signal<string | null>(null);
   readonly totalLoaded = signal(0);
+  readonly placeQuery = signal('');
+  readonly isSearchingPlace = signal(false);
 
   readonly visibleCount = computed(() => {
     const filter = this.activeFilter();
@@ -103,10 +111,56 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
     this.mobileSidebarOpen.update((v) => !v);
   }
 
+  onPlaceQueryInput(value: string): void {
+    this.placeQuery.set(value);
+  }
+
+  searchPlace(): void {
+    const query = this.placeQuery().trim();
+    if (!query || !this.map) return;
+
+    this.isSearchingPlace.set(true);
+    this.fetchError.set(null);
+
+    this.geocodingService
+      .search(query)
+      .pipe(
+        finalize(() => this.isSearchingPlace.set(false)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: (results) => {
+          const first = results[0];
+          if (!first) {
+            this.fetchError.set('Nessun luogo trovato. Prova con un nome più preciso.');
+            return;
+          }
+
+          const lat = Number(first.lat);
+          const lng = Number(first.lon);
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            this.fetchError.set('Coordinate non valide restituite dalla ricerca.');
+            return;
+          }
+
+          this.runWithoutMoveEnd(() => {
+            this.map?.flyTo([lat, lng], 15, { animate: true, duration: 0.8 });
+          });
+          this.queueViewportLoad(true);
+          this.mobileSidebarOpen.set(false);
+        },
+        error: () => {
+          this.fetchError.set('Errore durante la ricerca del luogo. Riprova tra poco.');
+        }
+      });
+  }
+
   setFilter(filter: MapCategoryFilter): void {
     this.activeFilter.set(filter);
     this.syncMarkersOnMap();
     this.mobileSidebarOpen.set(false);
+
+    this.queueViewportLoad(true);
   }
 
   locateMe(): void {
@@ -192,12 +246,25 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
             a.maxLat === b.maxLat &&
             a.minLng === b.minLng &&
             a.maxLng === b.maxLng &&
-            a.zoom === b.zoom
+            a.zoom === b.zoom &&
+            a.zoomBucket === b.zoomBucket &&
+            a.force === b.force &&
+            a.scope === b.scope &&
+            a.categoryId === b.categoryId
         ),
         switchMap((bbox) => {
-          const missing = this.tileCache.getMissingKeys(bbox.minLat, bbox.maxLat, bbox.minLng, bbox.maxLng);
-          if (missing.length === 0) {
-            return of({ bbox, skipped: true as const });
+          const shouldBypassCache = bbox.scope.startsWith('cat-');
+          if (!shouldBypassCache) {
+            const missing = this.tileCache.getMissingKeys(
+              bbox.minLat,
+              bbox.maxLat,
+              bbox.minLng,
+              bbox.maxLng,
+              bbox.zoomBucket
+            );
+            if (missing.length === 0 && !bbox.force) {
+              return of({ bbox, skipped: true as const });
+            }
           }
 
           const limit = this.limitForZoom(bbox.zoom);
@@ -205,7 +272,7 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
           this.fetchError.set(null);
 
           return this.activityService
-            .getPoisInArea(bbox.minLat, bbox.maxLat, bbox.minLng, bbox.maxLng, limit)
+            .getPoisInArea(bbox.minLat, bbox.maxLat, bbox.minLng, bbox.maxLng, limit, bbox.categoryId)
             .pipe(
               catchError(() => {
                 this.fetchError.set('Errore nel caricamento dei punti. Riprova tra poco.');
@@ -221,7 +288,15 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
         if (result.skipped) return;
 
         const markers = this.parseApiResponse(result.data);
-        this.tileCache.markLoaded(result.bbox.minLat, result.bbox.maxLat, result.bbox.minLng, result.bbox.maxLng);
+        if (result.bbox.scope === 'all') {
+          this.tileCache.markLoaded(
+            result.bbox.minLat,
+            result.bbox.maxLat,
+            result.bbox.minLng,
+            result.bbox.maxLng,
+            result.bbox.zoomBucket
+          );
+        }
         this.mergeMarkers(markers);
       });
   }
@@ -253,9 +328,13 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
     const sw = bounds.getSouthWest();
     const ne = bounds.getNorthEast();
     const zoom = this.map.getZoom();
+    const filter = this.activeFilter();
+    const categoryId = typeof filter === 'number' ? filter : undefined;
+    const scope = filter === 'hotel' ? 'hotel' : typeof filter === 'number' ? `cat-${filter}` : 'all';
+    const zoomBucket = this.zoomBucketFor(zoom);
 
     if (!force) {
-      const missing = this.tileCache.getMissingKeys(sw.lat, ne.lat, sw.lng, ne.lng);
+      const missing = this.tileCache.getMissingKeys(sw.lat, ne.lat, sw.lng, ne.lng, zoomBucket);
       if (missing.length === 0) return;
     }
 
@@ -264,8 +343,20 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
       maxLat: ne.lat,
       minLng: sw.lng,
       maxLng: ne.lng,
-      zoom
+      zoom,
+      zoomBucket,
+      force,
+      scope,
+      categoryId
     });
+  }
+
+  private zoomBucketFor(zoom: number): string {
+    if (zoom < 7) return 'z0-6';
+    if (zoom < 9) return 'z7-8';
+    if (zoom < 11) return 'z9-10';
+    if (zoom < 13) return 'z11-12';
+    return 'z13plus';
   }
 
   private limitForZoom(zoom: number): number {
