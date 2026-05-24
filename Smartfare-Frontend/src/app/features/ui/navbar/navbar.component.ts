@@ -52,7 +52,8 @@ export class NavbarComponent implements AfterViewInit {
     { icon: 'bi bi-house-door', label: 'Home', route: '/home' },
     { icon: 'bi bi-compass', label: 'Esplora', route: '/discover' },
     { icon: 'bi bi-journal-bookmark', label: 'Crea', route: '/itineraries/new' },
-    { icon: 'bi bi-magic', label: 'AI Planner', route: '/voyager' }
+    { icon: 'bi bi-magic', label: 'AI Planner', route: '/voyager' },
+    { icon: 'bi bi-map', label: 'Interactive Map', route: '/interactive-map' }
   ];
 
   mobileMenuOpen = false;

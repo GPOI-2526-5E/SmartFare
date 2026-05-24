@@ -118,7 +118,10 @@ export class ChatService {
     const baseState = this.normalizePlannerState(sessionMetadata.plannerState);
     const transcript = this.buildTranscript(persistedMessages, userMessage);
     const extractedState = await this.extractPlannerState(voyagerMode, transcript, baseState);
-    const bestLocation = await this.findBestLocation(extractedState.destination || userMessage);
+    const destinationCandidate = this.sanitizeDestinationCandidate(extractedState.destination);
+    const bestLocation = destinationCandidate
+      ? await this.findBestLocation(destinationCandidate)
+      : null;
     const plannerState = this.mergePlannerState(baseState, extractedState, bestLocation);
     const userProfileContext = await this.getUserProfileContext(userId);
 
@@ -433,6 +436,7 @@ export class ChatService {
     }
 
     const missingFields = this.getMissingPlannerFields(plannerState);
+    const needsDestination = missingFields.includes('destinazione');
     const supportedLocationNote = hasSupportedLocation
       ? 'La destinazione è supportata dal builder SmartFare.'
       : 'Se la destinazione non è supportata dal builder SmartFare, spiega con tatto che per generare l’itinerario finale serve una destinazione presente nel catalogo.';
@@ -440,12 +444,17 @@ export class ChatService {
     return [
       ...base,
       'Sei in Planner Mode: il tuo obiettivo è raccogliere i dettagli essenziali e preparare un itinerario da inviare al builder.',
-      'Raccogli in modo conversazionale: destinazione, giorni, travel type, viaggiatori, interessi, ritmo, stile, periodo, mezzi preferiti, hotel style.',
+      'PRIORITÀ ASSOLUTA: se manca la destinazione, fai UNA sola domanda per capire dove vuole andare. Non chiedere giorni, viaggiatori, interessi o stile finché la destinazione non è chiara e confermata dall’utente.',
+      'Se l’utente saluta, chiede se sei operativo o fa domande generiche, rispondi in 1-2 frasi e riportalo gentilmente alla pianificazione chiedendo la destinazione.',
+      'Dopo la destinazione raccogli in ordine: giorni, tipo di viaggio, viaggiatori, interessi, ritmo, stile/periodo, mezzi preferiti, hotel style.',
       'Fai una sola domanda principale per volta, salvo quando mancano solo 1-2 dettagli molto collegati.',
+      'Non assumere mai una destinazione se l’utente non l’ha detta esplicitamente.',
       'Quando hai abbastanza dati, dillo esplicitamente con una frase simile a: "Il tuo itinerario è pronto".',
       'Quando l’utente chiede musei, food, notte, natura o percorsi, proponi tappe reali, concrete e immediatamente utilizzabili.',
-      'Se è utile, accompagna la risposta con una piccola azione pratica come aggiungere un giorno, riordinare le tappe o rendere il percorso più nostalgico.',
       'Non inventare disponibilità reali o prezzi.',
+      needsDestination
+        ? 'Oggi il primo passo è SOLO la destinazione: non proporre ancora durata o dettagli secondari.'
+        : 'La destinazione è già nota: puoi raccogliere i dettagli mancanti elencati sotto.',
       `Stato strutturato corrente: ${JSON.stringify(plannerState)}`,
       `Campi ancora mancanti: ${missingFields.join(', ') || 'nessuno'}`,
       supportedLocationNote
@@ -533,6 +542,9 @@ export class ChatService {
       'Restituisci SOLO JSON valido.',
       'Non inserire budget o prezzi.',
       'Se un dato non è chiaro, usa null o array vuoto.',
+      'IMPORTANTE: estrai "destination" SOLO se l’utente nomina esplicitamente una città/località di viaggio.',
+      'NON usare come destinazione: saluti, "sei operativo", "funziona", parole comuni o sottostringhe casuali (es. "operativo" NON è "Opera").',
+      'Se l’utente non ha indicato dove vuole andare, destination deve essere null.',
       'Schema JSON:',
       '{"destination":null,"days":null,"travelType":null,"travelers":null,"interests":[],"pace":null,"style":null,"period":null,"departureAirport":null,"preferredTransport":null,"hotelStyle":null}',
       `Fallback corrente: ${JSON.stringify(fallback)}`,
@@ -563,7 +575,12 @@ export class ChatService {
       .join('\n');
 
     const extracted = await this.extractPlannerState(mode, transcript, currentState);
-    const location = await this.findBestLocation(extracted.destination || currentState.destination || '');
+    const destinationCandidate = this.sanitizeDestinationCandidate(
+      extracted.destination || currentState.destination
+    );
+    const location = destinationCandidate
+      ? await this.findBestLocation(destinationCandidate)
+      : null;
     return this.mergePlannerState(currentState, extracted, location);
   }
 
@@ -576,9 +593,21 @@ export class ChatService {
       new Set([...(baseState.interests || []), ...((nextState.interests as string[] | undefined) || [])].filter(Boolean))
     );
 
+    const explicitDestination = this.sanitizeDestinationCandidate(
+      nextState.destination || baseState.destination
+    );
+    const resolvedLocation =
+      explicitDestination && matchedLocation
+        ? matchedLocation
+        : explicitDestination
+          ? null
+          : matchedLocation && baseState.locationId === matchedLocation.id
+            ? matchedLocation
+            : null;
+
     return {
-      destination: nextState.destination || baseState.destination || matchedLocation?.name || null,
-      locationId: matchedLocation?.id || nextState.locationId || baseState.locationId || null,
+      destination: explicitDestination || (resolvedLocation?.name ?? null),
+      locationId: resolvedLocation?.id || baseState.locationId || null,
       days: this.normalizeNumber(nextState.days) || baseState.days || null,
       travelType: nextState.travelType || baseState.travelType || null,
       travelers: nextState.travelers || baseState.travelers || null,
@@ -1241,19 +1270,62 @@ export class ChatService {
     return Number.isFinite(seconds) ? seconds : null;
   }
 
+  private sanitizeDestinationCandidate(value?: string | null): string | null {
+    const cleaned = value?.trim();
+    if (!cleaned) return null;
+
+    const lowered = cleaned.toLowerCase();
+    const blocked = new Set([
+      'operativo',
+      'ciao',
+      'salve',
+      'grazie',
+      'ok',
+      'okay',
+      'si',
+      'sì',
+      'no',
+      'help',
+      'aiuto'
+    ]);
+
+    if (blocked.has(lowered) || lowered.length < 3) {
+      return null;
+    }
+
+    return cleaned;
+  }
+
+  private escapeRegex(value: string): string {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   private async findBestLocation(sourceText: string) {
-    const text = sourceText?.trim().toLowerCase();
+    const text = this.sanitizeDestinationCandidate(sourceText)?.toLowerCase();
     if (!text) return null;
 
     const locations = await prisma.location.findMany({
       select: { id: true, name: true }
     });
 
-    const exact = locations.find((location) => text === location.name.toLowerCase());
+    const sorted = [...locations].sort((a, b) => b.name.length - a.name.length);
+
+    const exact = sorted.find((location) => text === location.name.toLowerCase());
     if (exact) return exact;
 
-    const contains = locations.find((location) => text.includes(location.name.toLowerCase()));
-    if (contains) return contains;
+    for (const location of sorted) {
+      const name = location.name.toLowerCase();
+      if (name.length < 3) continue;
+
+      const boundaryPattern = new RegExp(
+        `(?:^|[\\s,.:;!?()\\[\\]'\"«»\\-])${this.escapeRegex(name)}(?:$|[\\s,.:;!?()\\[\\]'\"«»\\-])`,
+        'i'
+      );
+
+      if (boundaryPattern.test(text)) {
+        return location;
+      }
+    }
 
     return null;
   }

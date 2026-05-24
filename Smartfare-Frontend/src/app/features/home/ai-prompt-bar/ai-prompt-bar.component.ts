@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertService } from '../../../core/services/alert.service';
+import { resolveVoyagerModeFromPrompt } from '../../../core/utils/voyager-prompt.util';
 
 @Component({
   selector: 'app-ai-prompt-bar',
@@ -71,10 +72,12 @@ export class AiPromptBarComponent implements OnInit, OnDestroy {
     }
 
     const prompt = this.travelQuery.trim();
+    const mode = resolveVoyagerModeFromPrompt(prompt);
     this.isGenerating.set(true);
     void this.router.navigate(['/voyager'], {
       queryParams: {
-        prompt
+        prompt,
+        mode
       }
     }).finally(() => this.isGenerating.set(false));
   }

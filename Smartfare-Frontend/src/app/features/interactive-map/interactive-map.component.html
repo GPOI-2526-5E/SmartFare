@@ -1,0 +1,102 @@
+<div class="im-layout">
+  <header class="im-layout__nav">
+    <app-navbar></app-navbar>
+  </header>
+
+  <div class="im-page">
+  @if (sidebarOpen()) {
+    <aside class="im-sidebar" [class.im-sidebar--mobile-open]="mobileSidebarOpen()">
+      <header class="im-sidebar__head">
+        <div>
+          <h1>Mappa interattiva</h1>
+          <p>{{ visibleCount() }} punti visibili · {{ totalLoaded() }} caricati</p>
+        </div>
+        <button
+          type="button"
+          class="im-sidebar__close"
+          (click)="toggleSidebar()"
+          aria-label="Chiudi pannello categorie"
+        >
+          <i class="bi bi-chevron-left"></i>
+        </button>
+      </header>
+
+      <div class="im-sidebar__scroll">
+        <p class="im-sidebar__label">Categorie</p>
+        <div class="im-filters">
+          <button
+            type="button"
+            class="im-filter"
+            [class.im-filter--active]="activeFilter() === 'all'"
+            (click)="setFilter('all')"
+          >
+            <i class="bi bi-grid-3x3-gap-fill"></i>
+            <span>Tutti</span>
+          </button>
+
+          @if (hasHotels()) {
+            <button
+              type="button"
+              class="im-filter"
+              [class.im-filter--active]="activeFilter() === 'hotel'"
+              (click)="setFilter('hotel')"
+            >
+              <i class="bi bi-building"></i>
+              <span>Hotel e alloggi</span>
+            </button>
+          }
+
+          @for (cat of categories(); track cat.id) {
+            <button
+              type="button"
+              class="im-filter"
+              [class.im-filter--active]="activeFilter() === cat.id"
+              (click)="setFilter(cat.id)"
+            >
+              <i class="bi" [ngClass]="cat.icon"></i>
+              <span>{{ cat.name }}</span>
+            </button>
+          }
+        </div>
+
+        <p class="im-sidebar__hint">
+          I punti si caricano automaticamente mentre esplori la mappa (lazy loading per area visibile).
+        </p>
+      </div>
+    </aside>
+  }
+
+  <main class="im-main">
+    <div class="im-toolbar">
+      @if (!sidebarOpen()) {
+        <button type="button" class="im-toolbar__btn" (click)="toggleSidebar()">
+          <i class="bi bi-layout-sidebar-inset"></i>
+          <span>Categorie</span>
+        </button>
+      }
+
+      @if (isFetching()) {
+        <span class="im-toolbar__status">
+          <span class="im-toolbar__spinner"></span>
+          Caricamento punti…
+        </span>
+      }
+
+      @if (fetchError(); as err) {
+        <span class="im-toolbar__error">{{ err }}</span>
+      }
+    </div>
+
+    <div #mapHost class="im-map-host"></div>
+
+    <button type="button" class="im-locate" (click)="locateMe()" title="La mia posizione">
+      <i class="bi bi-crosshair"></i>
+    </button>
+
+    <button type="button" class="im-mobile-filters" (click)="toggleMobileSidebar()">
+      <i class="bi" [ngClass]="mobileSidebarOpen() ? 'bi-x-lg' : 'bi-funnel'"></i>
+      <span>{{ mobileSidebarOpen() ? 'Chiudi' : 'Filtri' }}</span>
+    </button>
+  </main>
+  </div>
+</div>

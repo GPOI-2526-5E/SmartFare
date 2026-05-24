@@ -29,5 +29,7 @@ export const APP_ROUTES: Routes = [
   },
   { path: 'settings', loadComponent: () => import('./features/profile/settings/settings.component').then((s) => s.SettingsComponent), canActivate: [authGuard] },
   { path: 'discover', loadComponent: () => import('./features/discover/discover-page/discover-page.component').then((c) => c.DiscoverPageComponent) },
+  { path: 'interactive-map', loadComponent: () => import('./features/interactive-map/interactive-map.component').then((c) => c.InteractiveMapComponent) },
+    { path: 'italia-map', redirectTo: 'interactive-map', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];
