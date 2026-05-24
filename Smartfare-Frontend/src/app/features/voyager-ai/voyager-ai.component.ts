@@ -60,6 +60,8 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   readonly message = signal('');
   readonly pendingAttachmentName = signal<string | null>(null);
   readonly isGeneratingItinerary = signal(false);
+  readonly generationFailed = signal(false);
+  readonly generationError = signal<string | null>(null);
   readonly isVoiceSupported = signal(false);
   readonly isListening = signal(false);
   readonly showMobileSidebar = signal(false);
@@ -514,12 +516,21 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
       // Navigate to builder and include itinerary id in query for shareable URL
       await this.router.navigate(['/itineraries/builder'], { queryParams: { itineraryId: response.itinerary.id } });
     } catch (error: any) {
-      this.handleChatAccessError(error);
-      const message = error?.error?.message || 'In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.';
-      this.alertService.error(message);
+      if (this.handleChatAccessError(error)) return;
+      const message =
+        error?.error?.message ||
+        'I servizi Voyager AI sono momentaneamente in sovraccarico. Riprova tra qualche istante.';
+      this.generationError.set(message);
+      this.generationFailed.set(true);
     } finally {
       this.isGeneratingItinerary.set(false);
     }
+  }
+
+  async retryGeneration() {
+    this.generationFailed.set(false);
+    this.generationError.set(null);
+    await this.generateItinerary();
   }
 
   exportConversation(format: 'md' | 'json') {

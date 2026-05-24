@@ -1,4 +1,4 @@
-<div class="voyager-shell" [class.sidebar-closed]="!chatService.isSidebarOpen()">
+<div class="voyager-shell fullscreen" [class.sidebar-closed]="!chatService.isSidebarOpen()">
   <div class="ambient-bg">
     <div class="glow glow-1"></div>
     <div class="glow glow-2"></div>
@@ -305,7 +305,30 @@
             <div class="card-body">
               <h3>Il tuo viaggio è pronto!</h3>
               <p>Ho raccolto tutti i dettagli necessari.</p>
-              @if (!isGeneratingItinerary()) {
+              @if (isGeneratingItinerary()) {
+              <div class="generation-overlay">
+                <div class="generation-globe">
+                  <div class="generation-orbit"></div>
+                  <div class="generation-orbit generation-orbit--2"></div>
+                  <i class="bi bi-globe-europe-africa generation-globe-icon"></i>
+                </div>
+                <div class="generation-steps">
+                  <div class="generation-step generation-step--active">
+                    <span class="step-dot"></span>
+                    <span>Analisi preferenze viaggio</span>
+                  </div>
+                  <div class="generation-step generation-step--active">
+                    <span class="step-dot"></span>
+                    <span>Selezione attività e monumenti</span>
+                  </div>
+                  <div class="generation-step generation-step--pulse">
+                    <span class="step-dot"></span>
+                    <span>Costruzione itinerario nel builder...</span>
+                  </div>
+                </div>
+                <p class="generation-tagline">Voyager AI sta creando il tuo viaggio perfetto</p>
+              </div>
+              } @else if (!generationFailed()) {
               <div class="generate-actions">
                 <p>Vuoi generare l'itinerario completo nel builder?</p>
                 <button class="generate-btn" (click)="generateItinerary()" [disabled]="isGeneratingItinerary()">
@@ -313,14 +336,26 @@
                   <span>Genera Itinerario</span>
                 </button>
               </div>
-              } @else {
-              <div class="generate-loading">
-                <div class="spinner"></div>
-                <div class="loading-text">Preparazione...</div>
-              </div>
               }
             </div>
           </div>
+
+          <!-- RETRY CARD: mostrata solo in caso di errore di generazione -->
+          @if (generationFailed()) {
+          <div class="retry-card">
+            <div class="retry-card__icon">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div class="retry-card__body">
+              <strong>Generazione non riuscita</strong>
+              <p>{{ generationError() ?? 'I servizi Voyager AI sono momentaneamente in sovraccarico.' }}</p>
+            </div>
+            <button class="retry-btn" (click)="retryGeneration()" [disabled]="isGeneratingItinerary()">
+              <i class="bi bi-arrow-clockwise"></i>
+              <span>Riprova</span>
+            </button>
+          </div>
+          }
           }
 
           @if (isPlannerLocked()) {

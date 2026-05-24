@@ -10,6 +10,16 @@
   position: relative;
 }
 
+/* When in planner mode, lock the component to viewport to avoid page scroll */
+.voyager-shell.fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  overflow: hidden;
+}
+
 .voyager-content {
   flex: 1;
   display: flex;
@@ -1914,3 +1924,205 @@ textarea {
 .skeleton-line--long   { width: 80%; }
 .skeleton-line--medium { width: 60%; }
 .skeleton-line--short  { width: 40%; height: 8px; }
+
+/* ─── GENERATION OVERLAY ───────────────────────────────────── */
+.generation-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 0 4px;
+}
+
+/* Animated globe with orbiting rings */
+.generation-globe {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.generation-globe-icon {
+  font-size: 2rem;
+  color: #818cf8;
+  z-index: 1;
+  animation: globePulse 2s ease-in-out infinite;
+}
+
+.generation-orbit {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: rgba(99, 102, 241, 0.8);
+  border-right-color: rgba(99, 102, 241, 0.3);
+  animation: orbitSpin 1.6s linear infinite;
+}
+
+.generation-orbit--2 {
+  inset: 10px;
+  border-top-color: rgba(14, 165, 233, 0.7);
+  border-right-color: transparent;
+  border-bottom-color: rgba(14, 165, 233, 0.3);
+  animation: orbitSpin 2.4s linear infinite reverse;
+}
+
+/* Step list */
+.generation-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.generation-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  opacity: 0;
+  animation: stepFadeIn 0.5s ease forwards;
+}
+
+.generation-step:nth-child(1) { animation-delay: 0s; }
+.generation-step:nth-child(2) { animation-delay: 0.6s; }
+.generation-step:nth-child(3) { animation-delay: 1.2s; }
+
+.generation-step--active {
+  color: #c7d2fe;
+}
+
+.generation-step--pulse {
+  color: #a5f3fc;
+}
+
+.step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4f46e5;
+  flex-shrink: 0;
+}
+
+.generation-step--active .step-dot {
+  background: #818cf8;
+  box-shadow: 0 0 6px rgba(129, 140, 248, 0.6);
+}
+
+.generation-step--pulse .step-dot {
+  background: #22d3ee;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.7);
+  animation: dotPulse 1s ease-in-out infinite;
+}
+
+.generation-tagline {
+  font-size: 0.78rem;
+  color: #64748b;
+  text-align: center;
+  margin: 0;
+  font-style: italic;
+  animation: stepFadeIn 0.5s ease 1.8s both;
+}
+
+/* ─── RETRY CARD ─────────────────────────────────────────────── */
+.retry-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  animation: stepFadeIn 0.35s ease forwards;
+}
+
+.retry-card__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fca5a5;
+  font-size: 1rem;
+}
+
+.retry-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.retry-card__body strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #fecaca;
+  margin-bottom: 3px;
+}
+
+.retry-card__body p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.retry-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.35), rgba(239, 68, 68, 0.2));
+  border-color: rgba(239, 68, 68, 0.55);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+}
+
+.retry-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.retry-btn i {
+  font-size: 0.9rem;
+}
+
+/* ─── KEYFRAMES ──────────────────────────────────────────────── */
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes globePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.75; transform: scale(1.08); }
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.7); }
+}
+
+@keyframes stepFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
