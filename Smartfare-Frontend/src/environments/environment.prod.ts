@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://smartfare-56lb.onrender.com'
+  apiUrl: 'https://smartfare-backend.onrender.com'
 };
