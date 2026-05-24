@@ -184,19 +184,7 @@
           </p>
 
           <div class="pref-grid-two">
-            <div class="pref-group">
-              <label for="budgetLevel"><i class="bi bi-wallet2"></i> Budget indicativo</label>
-              <div class="custom-select">
-                <span class="custom-select__icon"><i class="bi" [ngClass]="selectedBudgetIcon()"></i></span>
-                <select id="budgetLevel" class="custom-select__native"
-                        [ngModel]="budgetLevelCode()" (ngModelChange)="budgetLevelCode.set($event)">
-                  @for (option of BUDGET_OPTIONS; track option.value) {
-                    <option [value]="option.value">{{ option.label }}</option>
-                  }
-                </select>
-                <span class="custom-select__chevron"><i class="bi bi-chevron-down"></i></span>
-              </div>
-            </div>
+
 
             <div class="pref-group">
               <label for="paceSelect"><i class="bi bi-speedometer2"></i> Ritmo del viaggio</label>
@@ -236,7 +224,7 @@
                   <label class="check-card check-card--compact" [class.selected]="isInterestSelected(category.id)">
                     <input type="checkbox" [checked]="isInterestSelected(category.id)"
                            (change)="toggleInterestCategory(category.id)">
-                    <i class="bi check-card__icon" [ngClass]="getCategoryIcon(category.name)"></i>
+                    <i class="bi check-card__icon" [ngClass]="category.iconUrl"></i>
                     <span>{{ category.name }}</span>
                   </label>
                 }
@@ -245,24 +233,46 @@
           }
 
           <div class="pref-group">
-            <label><i class="bi bi-sliders"></i> Opzioni</label>
+            <label><i class="bi bi-people"></i> Con chi viaggi di solito?</label>
             <div class="option-list">
               <label class="option-row">
-                <span class="option-row__icon"><i class="bi bi-moon-stars"></i></span>
-                <input type="checkbox" [checked]="likesEveningOut()"
-                       (change)="likesEveningOut.set($any($event.target).checked)">
+                <span class="option-row__icon"><i class="bi bi-person"></i></span>
+                <input type="radio" name="travelCompanion" value="SOLO"
+                       [checked]="travelCompanion() === 'SOLO'"
+                       (change)="travelCompanion.set('SOLO')">
                 <div>
-                  <strong>Serate e locali</strong>
-                  <small>Bar, locali e attività serali quando l'IA pianifica liberamente</small>
+                  <strong>Da solo</strong>
+                  <small>Viaggio in solitaria, flessibilità totale e ritmi personali</small>
                 </div>
               </label>
               <label class="option-row">
-                <span class="option-row__icon"><i class="bi bi-people"></i></span>
-                <input type="checkbox" [checked]="travelsWithFamily()"
-                       (change)="travelsWithFamily.set($any($event.target).checked)">
+                <span class="option-row__icon"><i class="bi bi-balloon-heart"></i></span>
+                <input type="radio" name="travelCompanion" value="COUPLE"
+                       [checked]="travelCompanion() === 'COUPLE'"
+                       (change)="travelCompanion.set('COUPLE')">
                 <div>
-                  <strong>Viaggio in famiglia</strong>
-                  <small>Attività adatte a bambini e famiglie nelle proposte automatiche</small>
+                  <strong>In coppia</strong>
+                  <small>Esperienze romantiche o da condividere in due</small>
+                </div>
+              </label>
+              <label class="option-row">
+                <span class="option-row__icon"><i class="bi bi-house-heart"></i></span>
+                <input type="radio" name="travelCompanion" value="FAMILY"
+                       [checked]="travelCompanion() === 'FAMILY'"
+                       (change)="travelCompanion.set('FAMILY')">
+                <div>
+                  <strong>In famiglia</strong>
+                  <small>Attività adatte a bambini e percorsi family-friendly</small>
+                </div>
+              </label>
+              <label class="option-row">
+                <span class="option-row__icon"><i class="bi bi-people-fill"></i></span>
+                <input type="radio" name="travelCompanion" value="GROUP"
+                       [checked]="travelCompanion() === 'GROUP'"
+                       (change)="travelCompanion.set('GROUP')">
+                <div>
+                  <strong>In gruppo</strong>
+                  <small>Attività adatte a gruppi numerosi e amici</small>
                 </div>
               </label>
             </div>
@@ -305,16 +315,10 @@
                 <span>{{ email() }}</span>
               </div>
             </div>
-            <div class="info-row">
-              <i class="bi bi-person-badge-fill"></i>
-              <div>
-                <label>Metodo di accesso</label>
-                <span class="provider-badge">{{ authProvider() === 'local' ? 'Email e Password' : authProvider() }}</span>
-              </div>
-            </div>
+
           </div>
 
-          @if (isLocalAuth()) {
+
             <div class="security-block password-reset-panel">
               <div class="security-block__header">
                 <span class="security-block__badge"><i class="bi bi-shield-lock"></i></span>
@@ -383,12 +387,7 @@
                 </div>
               }
             </div>
-          } @else {
-            <div class="security-block security-block--muted">
-              <h3><i class="bi bi-shield-check"></i> Accesso social</h3>
-              <p>Il tuo account usa {{ authProvider() }}. La password si gestisce dal provider di accesso.</p>
-            </div>
-          }
+
 
           <div class="danger-zone">
             <h3><i class="bi bi-exclamation-triangle-fill"></i> Zona di uscita</h3>

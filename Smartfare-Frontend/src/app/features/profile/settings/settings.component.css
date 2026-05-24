@@ -541,6 +541,14 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
   color: rgba(255, 255, 255, 0.75);
   font-size: 0.9rem;
   font-weight: 500;
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.2;
+}
+
+.check-card span {
+  flex: 1;
 }
 
 .check-card__icon {

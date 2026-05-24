@@ -1,10 +1,6 @@
 import prisma from '../config/prisma';
 
-export const BUDGET_LEVEL_LABELS: Record<string, string> = {
-  LOW: 'Economico',
-  MEDIUM: 'Medio',
-  HIGH: 'Premium',
-};
+
 
 export const AI_PREFERENCE_PRIORITY_RULE = [
   'REGOLE PRIORITÀ PREFERENZE (obbligatorio):',
@@ -15,12 +11,10 @@ export const AI_PREFERENCE_PRIORITY_RULE = [
 
 export type UserPreferenceForAi = {
   age: number | null;
-  budgetLevelCode: string | null;
+  travelCompanion: string | null;
   travelStyles: string[];
   pace: string | null;
   interestCategories: string[];
-  likesEveningOut: boolean | null;
-  travelsWithFamily: boolean | null;
   notes: string | null;
 };
 
@@ -40,20 +34,19 @@ export function buildUserPreferencePromptBlock(ctx: UserPreferenceForAi | null):
 
   const parts: string[] = [];
   if (ctx.age) parts.push(`- Età approssimativa: ${ctx.age} anni`);
-  if (ctx.budgetLevelCode) {
-    const label = BUDGET_LEVEL_LABELS[ctx.budgetLevelCode] || ctx.budgetLevelCode;
-    parts.push(`- Budget: ${label}`);
+  if (ctx.travelCompanion) {
+    const map: Record<string, string> = {
+      'SOLO': 'Da solo',
+      'COUPLE': 'In coppia',
+      'FAMILY': 'In famiglia (con bambini)',
+      'GROUP': 'In gruppo',
+    };
+    parts.push(`- Compagnia di viaggio: ${map[ctx.travelCompanion] || ctx.travelCompanion}`);
   }
   if (ctx.travelStyles.length) parts.push(`- Stili di viaggio: ${ctx.travelStyles.join(', ')}`);
   if (ctx.pace) parts.push(`- Ritmo preferito: ${ctx.pace}`);
   if (ctx.interestCategories.length) {
     parts.push(`- Interessi principali: ${ctx.interestCategories.join(', ')}`);
-  }
-  if (ctx.likesEveningOut !== null && ctx.likesEveningOut !== undefined) {
-    parts.push(`- Serate e locali: ${ctx.likesEveningOut ? 'sì, includerle quando possibile' : 'no, evitarle di default'}`);
-  }
-  if (ctx.travelsWithFamily !== null && ctx.travelsWithFamily !== undefined) {
-    parts.push(`- Viaggio in famiglia: ${ctx.travelsWithFamily ? 'sì, attività adatte a bambini' : 'no vincolo famiglia'}`);
   }
   if (ctx.notes?.trim()) parts.push(`- Note personali: "${ctx.notes.trim()}"`);
 
@@ -87,11 +80,9 @@ export async function loadUserPreferenceForAi(userId: number): Promise<UserPrefe
         profile: { select: { birthDate: true } },
         preference: {
           select: {
-            budgetLevelCode: true,
+            travelCompanion: true,
             travelStyle: true,
             pace: true,
-            prefersNightlife: true,
-            familyFriendly: true,
             notes: true,
             userPreferenceInterests: {
               select: { activityCategoryId: true },
@@ -106,12 +97,10 @@ export async function loadUserPreferenceForAi(userId: number): Promise<UserPrefe
       if (!ageOnly) return null;
       return {
         age: ageOnly,
-        budgetLevelCode: null,
+        travelCompanion: null,
         travelStyles: [],
         pace: null,
         interestCategories: [],
-        likesEveningOut: null,
-        travelsWithFamily: null,
         notes: null,
       };
     }
@@ -126,12 +115,10 @@ export async function loadUserPreferenceForAi(userId: number): Promise<UserPrefe
 
     return {
       age: computeAge(user.profile?.birthDate),
-      budgetLevelCode: user.preference.budgetLevelCode ?? null,
+      travelCompanion: user.preference.travelCompanion ?? null,
       travelStyles: parseTravelStyles(user.preference.travelStyle),
       pace: user.preference.pace ?? null,
       interestCategories: categories.map((category) => category.name).filter(Boolean) as string[],
-      likesEveningOut: user.preference.prefersNightlife ?? null,
-      travelsWithFamily: user.preference.familyFriendly ?? null,
       notes: user.preference.notes ?? null,
     };
   } catch {

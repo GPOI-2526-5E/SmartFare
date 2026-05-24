@@ -35,22 +35,7 @@ const PACE_OPTIONS: LabeledOption[] = [
   { value: 'Intenso', label: 'Intenso', icon: 'bi-lightning-charge-fill' },
 ];
 
-const BUDGET_OPTIONS: LabeledOption[] = [
-  { value: 'LOW', label: 'Economico', icon: 'bi-piggy-bank' },
-  { value: 'MEDIUM', label: 'Medio', icon: 'bi-wallet2' },
-  { value: 'HIGH', label: 'Premium', icon: 'bi-gem' },
-];
 
-const CATEGORY_ICON_RULES: Array<{ match: RegExp; icon: string }> = [
-  { match: /muse|monument|chies|castell|landmark|cultural/i, icon: 'bi-bank' },
-  { match: /ristorant|caff|bar|food|gelat|enotec|panett/i, icon: 'bi-cup-hot' },
-  { match: /parco|natur|spiagg|panoram/i, icon: 'bi-tree' },
-  { match: /shop|negoz|mercat/i, icon: 'bi-bag' },
-  { match: /hotel|allogg|soggiorn/i, icon: 'bi-house-door' },
-  { match: /notte|discotec|club/i, icon: 'bi-moon-stars' },
-  { match: /sport|palestr/i, icon: 'bi-trophy' },
-  { match: /stazion|trasport/i, icon: 'bi-train-front' },
-];
 
 @Component({
   selector: 'app-settings',
@@ -68,7 +53,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   readonly TRAVEL_STYLES = TRAVEL_STYLES;
   readonly PACE_OPTIONS = PACE_OPTIONS;
-  readonly BUDGET_OPTIONS = BUDGET_OPTIONS;
 
   activeTab = signal<SettingsTab>('profile');
   isLoading = signal(true);
@@ -92,12 +76,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
   twitterUrl = signal('');
   pageBackground = signal('');
 
-  budgetLevelCode = signal<'LOW' | 'MEDIUM' | 'HIGH'>('MEDIUM');
   selectedTravelStyles = signal<string[]>([]);
   pace = signal('');
   interestCategoryIds = signal<number[]>([]);
-  likesEveningOut = signal(false);
-  travelsWithFamily = signal(false);
+  travelCompanion = signal('');
   notes = signal('');
   activityCategories = signal<ActivityCategory[]>([]);
 
@@ -131,9 +113,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
     return age > 0 ? age : null;
   });
 
-  selectedBudgetIcon = computed(() =>
-    BUDGET_OPTIONS.find((o) => o.value === this.budgetLevelCode())?.icon ?? 'bi-wallet2'
-  );
 
   selectedPaceIcon = computed(() =>
     PACE_OPTIONS.find((o) => o.value === this.pace())?.icon ?? 'bi-speedometer2'
@@ -163,10 +142,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
     if (this.resendTimerId) clearInterval(this.resendTimerId);
   }
 
-  getCategoryIcon(name: string): string {
-    const rule = CATEGORY_ICON_RULES.find((entry) => entry.match.test(name));
-    return rule?.icon ?? 'bi-geo-alt';
-  }
 
   getTravelStyleIcon(style: string): string {
     return TRAVEL_STYLES.find((entry) => entry.value === style)?.icon ?? 'bi-signpost-2';
@@ -194,10 +169,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
     const pref = data.preference;
     if (pref) {
-      const budget = pref.budgetLevelCode;
-      if (budget === 'LOW' || budget === 'MEDIUM' || budget === 'HIGH') {
-        this.budgetLevelCode.set(budget);
-      }
       this.selectedTravelStyles.set(
         pref.travelStyles?.length
           ? [...pref.travelStyles]
@@ -206,13 +177,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
             : []
       );
       this.pace.set(pref.pace ?? '');
+      this.travelCompanion.set(pref.travelCompanion ?? '');
       this.interestCategoryIds.set(
         pref.interestCategoryIds?.length
           ? [...pref.interestCategoryIds]
           : pref.interestCategories?.map((category) => category.id) ?? []
       );
-      this.likesEveningOut.set(pref.likesEveningOut ?? pref.prefersNightlife ?? false);
-      this.travelsWithFamily.set(pref.travelsWithFamily ?? pref.familyFriendly ?? false);
       this.notes.set(pref.notes ?? '');
     }
   }
@@ -277,11 +247,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
       travelStyles?: string[];
       interestCategoryIds?: number[];
     } = {
-      budgetLevelCode: this.budgetLevelCode(),
       travelStyles: this.selectedTravelStyles(),
       pace: this.pace() || null,
-      likesEveningOut: this.likesEveningOut(),
-      travelsWithFamily: this.travelsWithFamily(),
+      travelCompanion: this.travelCompanion() || null,
       notes: this.notes().trim() || null,
       interestCategoryIds: this.interestCategoryIds(),
     };
@@ -408,5 +376,4 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
-  isLocalAuth = computed(() => this.authProvider() === 'local');
 }

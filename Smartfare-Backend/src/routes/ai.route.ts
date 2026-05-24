@@ -49,12 +49,10 @@ router.post('/itinerary/chat', aiLimiter, optionalAuthenticateJWT, async (req: A
                 },
                 preference: {
                     select: {
-                        budgetLevelCode: true,
+                        travelCompanion: true,
                         travelStyle: true,
                         pace: true,
                         preferredTransport: true,
-                        prefersNightlife: true,
-                        familyFriendly: true,
                         notes: true
                     }
                 }

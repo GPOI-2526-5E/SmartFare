@@ -109,12 +109,10 @@ model UserProfile {
 model UserPreference {
   id                 Int      @id @default(autoincrement())
   userId             Int      @unique
-  budgetLevelCode    String   @default("MEDIUM")
   travelStyle        String?
   pace               String?
   preferredTransport String?
-  prefersNightlife   Boolean?
-  familyFriendly     Boolean?
+  travelCompanion    String?
   notes              String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt

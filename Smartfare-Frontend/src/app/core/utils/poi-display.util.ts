@@ -3,10 +3,23 @@ import { Activity } from '../models/activity.model';
 import { BuilderPoi } from '../models/builder.types';
 
 export function buildGoogleSearchQuery(poi: Pick<BuilderPoi, 'title' | 'locationName' | 'street' | 'subtitle'>): string {
-  return [poi.title, poi.locationName, poi.street || poi.subtitle]
-    .filter((part) => !!part && String(part).trim().length > 0)
-    .join(' ')
-    .trim();
+  let query = (poi.title || '').trim();
+  
+  if (poi.locationName && !query.toLowerCase().includes(poi.locationName.toLowerCase())) {
+    query += ` di ${poi.locationName.trim()}`;
+  }
+  
+  if (poi.street) {
+    const sLower = poi.street.toLowerCase().trim();
+    const hasPrefix = ['via ', 'viale ', 'corso ', 'piazza ', 'piazzale ', 'vicolo ', 'strada '].some(p => sLower.startsWith(p));
+    if (hasPrefix) {
+      query += ` in ${poi.street.trim()}`;
+    } else {
+      query += ` in via ${poi.street.trim()}`;
+    }
+  }
+
+  return query.trim() || 'Punto di interesse';
 }
 
 export function buildGoogleSearchUrl(poi: Pick<BuilderPoi, 'title' | 'locationName' | 'street' | 'subtitle'>): string {

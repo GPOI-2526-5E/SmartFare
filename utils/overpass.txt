@@ -1,3 +1,4 @@
+attività
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -22,7 +23,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+natura
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -46,7 +47,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+parcheggio
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -62,7 +63,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+ristoranti
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -81,7 +82,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+soggiorni
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -95,7 +96,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+cultura
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -108,7 +109,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+shop
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -121,7 +122,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+chiese
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -132,7 +133,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+turismo
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -146,7 +147,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+night life
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (
@@ -156,7 +157,7 @@ area["name"="Piemonte"]->.searchArea;
 );
 out center;
 
-
+utilis
 [out:json][timeout:60];
 area["name"="Piemonte"]->.searchArea;
 (

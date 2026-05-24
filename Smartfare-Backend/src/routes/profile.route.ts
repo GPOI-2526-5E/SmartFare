@@ -50,21 +50,17 @@ const updatePreferencesSchema = z.object({
     travelStyle: z.string().trim().max(200).optional().nullable(),
     travelStyles: z.array(z.string().trim().min(1).max(40)).max(8).optional(),
     pace: z.string().trim().max(50).optional().nullable(),
-    budgetLevelCode: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional(),
+    travelCompanion: z.enum(['SOLO', 'COUPLE', 'FAMILY', 'GROUP']).optional().nullable(),
     notes: z.string().trim().max(1000).optional().nullable(),
-    likesEveningOut: z.boolean().optional().nullable(),
-    travelsWithFamily: z.boolean().optional().nullable(),
     interestCategoryIds: z.array(z.coerce.number().int().positive()).max(24).optional(),
 });
 
 async function formatPreferenceResponse(preference: {
     id: number;
     userId: number;
-    budgetLevelCode: string;
+    travelCompanion: string | null;
     travelStyle: string | null;
     pace: string | null;
-    prefersNightlife: boolean | null;
-    familyFriendly: boolean | null;
     notes: string | null;
     createdAt: Date;
     updatedAt: Date;
@@ -86,8 +82,7 @@ async function formatPreferenceResponse(preference: {
         travelStyles: parseTravelStyles(preference.travelStyle),
         interestCategoryIds: interestCategories.map((category) => category.id),
         interestCategories,
-        likesEveningOut: preference.prefersNightlife,
-        travelsWithFamily: preference.familyFriendly,
+        travelCompanion: preference.travelCompanion,
     };
 }
 
@@ -484,10 +479,8 @@ router.patch('/preferences', writeLimiter, authenticateJWT, async (req: AuthRequ
         const {
             travelStyles,
             interestCategoryIds,
-            likesEveningOut,
-            travelsWithFamily,
+            travelCompanion,
             travelStyle,
-            budgetLevelCode,
             pace,
             notes,
         } = data;
@@ -495,17 +488,13 @@ router.patch('/preferences', writeLimiter, authenticateJWT, async (req: AuthRequ
         const prismaData: {
             travelStyle?: string | null;
             pace?: string | null;
-            budgetLevelCode?: string;
+            travelCompanion?: string | null;
             notes?: string | null;
-            prefersNightlife?: boolean | null;
-            familyFriendly?: boolean | null;
         } = {};
 
-        if (budgetLevelCode !== undefined) prismaData.budgetLevelCode = budgetLevelCode;
+        if (travelCompanion !== undefined) prismaData.travelCompanion = travelCompanion;
         if (pace !== undefined) prismaData.pace = pace;
         if (notes !== undefined) prismaData.notes = notes;
-        if (likesEveningOut !== undefined) prismaData.prefersNightlife = likesEveningOut;
-        if (travelsWithFamily !== undefined) prismaData.familyFriendly = travelsWithFamily;
         if (travelStyles !== undefined) {
             prismaData.travelStyle = serializeTravelStyles(travelStyles);
         } else if (travelStyle !== undefined) {
@@ -517,7 +506,6 @@ router.patch('/preferences', writeLimiter, authenticateJWT, async (req: AuthRequ
                 where: { userId },
                 create: {
                     userId,
-                    budgetLevelCode: prismaData.budgetLevelCode ?? 'MEDIUM',
                     ...prismaData,
                 },
                 update: prismaData,
