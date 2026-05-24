@@ -36,11 +36,22 @@ export class DiscoverZoneMapComponent implements AfterViewInit, OnChanges, OnDes
   private readonly defaultZoom = 6;
 
   ngAfterViewInit(): void {
-    this.poiLayer = L.markerClusterGroup({
-      showCoverageOnHover: false,
-      maxClusterRadius: 48,
-      spiderfyOnMaxZoom: true
-    });
+    let clusterFn: any = (L as any).markerClusterGroup || (L as any).MarkerClusterGroup;
+
+    if (!clusterFn && typeof window !== 'undefined' && (window as any).L) {
+      clusterFn = (window as any).L.markerClusterGroup || (window as any).L.MarkerClusterGroup;
+    }
+
+    if (clusterFn) {
+      this.poiLayer = clusterFn({
+        showCoverageOnHover: false,
+        maxClusterRadius: 48,
+        spiderfyOnMaxZoom: true
+      });
+    } else {
+      console.warn('MarkerClusterGroup not found, falling back to LayerGroup');
+      this.poiLayer = L.layerGroup() as any;
+    }
 
     this.map = L.map(this.mapHost.nativeElement, {
       zoomControl: true,

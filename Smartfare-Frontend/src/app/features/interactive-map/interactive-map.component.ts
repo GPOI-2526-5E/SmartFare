@@ -138,24 +138,35 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.clusterGroup = L.markerClusterGroup({
-      chunkedLoading: true,
-      chunkInterval: 80,
-      maxClusterRadius: 56,
-      spiderfyOnMaxZoom: true,
-      showCoverageOnHover: false,
-      iconCreateFunction: (cluster) => {
-        const count = cluster.getChildCount();
-        const label = count > 999 ? '999+' : count > 99 ? '99+' : String(count);
+    let clusterFn: any = (L as any).markerClusterGroup || (L as any).MarkerClusterGroup;
 
-        return L.divIcon({
-          className: 'im-cluster',
-          html: `<div class="im-cluster__bubble">${label}</div>`,
-          iconSize: [48, 48],
-          iconAnchor: [24, 24]
-        });
-      }
-    });
+    if (!clusterFn && typeof window !== 'undefined' && (window as any).L) {
+      clusterFn = (window as any).L.markerClusterGroup || (window as any).L.MarkerClusterGroup;
+    }
+
+    if (clusterFn) {
+      this.clusterGroup = clusterFn({
+        chunkedLoading: true,
+        chunkInterval: 80,
+        maxClusterRadius: 56,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        iconCreateFunction: (cluster: any) => {
+          const count = cluster.getChildCount();
+          const label = count > 999 ? '999+' : count > 99 ? '99+' : String(count);
+
+          return L.divIcon({
+            className: 'im-cluster',
+            html: `<div class="im-cluster__bubble">${label}</div>`,
+            iconSize: [48, 48],
+            iconAnchor: [24, 24]
+          });
+        }
+      });
+    } else {
+      console.warn('MarkerClusterGroup not found, falling back to LayerGroup');
+      this.clusterGroup = L.layerGroup() as any;
+    }
     this.clusterGroup.addTo(this.map);
 
     this.map.on('moveend', () => {
