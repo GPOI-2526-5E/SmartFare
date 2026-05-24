@@ -236,7 +236,8 @@
           (click)="selectPill(pill)"
           [title]="pill.label"
         >
-          <i class="bi {{ pill.icon }} cat-pill-icon"></i>
+          <span class="cat-pill-swatch" [style.background]="pill.color"></span>
+          <i [class]="'bi ' + pill.iconClass + ' cat-pill-icon'"></i>
           <span class="cat-pill-label">{{ pill.label }}</span>
           @if (activePillKey() === pill.key) {
             <span class="cat-pill-dot" aria-hidden="true"></span>

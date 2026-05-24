@@ -41,11 +41,7 @@
                                             <div class="poi-type-icon">
                                                 @if (getCategoryMeta(poi.categoryId)) {
                                                     <span class="poi-swatch" [style.background]="getCategoryMeta(poi.categoryId)?.color || 'transparent'"></span>
-                                                    @if (getCategoryMeta(poi.categoryId)?.iconUrl) {
-                                                        <img src="{{getCategoryMeta(poi.categoryId)?.iconUrl}}" alt="" class="poi-cat-img" />
-                                                    } @else {
-                                                        <i [class]="'bi ' + (getCategoryMeta(poi.categoryId)?.icon || 'bi-geo-alt')"></i>
-                                                    }
+                                                    <i [class]="'bi ' + (getCategoryMeta(poi.categoryId)?.iconClass || 'bi-geo-alt')"></i>
                                                 } @else {
                                                     {{ poi.type === 'accommodation' ? '🏨' : '⭐' }}
                                                 }

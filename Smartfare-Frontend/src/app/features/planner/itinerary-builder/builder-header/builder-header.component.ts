@@ -10,11 +10,13 @@ import { UIStateService } from '../../../../core/services/ui-state.service';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { colorFromId } from '../../../interactive-map/utils/map-category.util';
 
 type CategoryPill = {
   key: string;
   label: string;
-  icon: string;
+  iconClass: string;
+  color: string;
   type: 'all' | 'accommodation' | 'activity';
   categoryId: number | 'all';
 };
@@ -41,14 +43,21 @@ export class BuilderHeaderComponent {
   readonly categoryPills = computed((): CategoryPill[] => {
     const ws = this.workspaceSignal();
     const pills: CategoryPill[] = [
-      { key: 'all',   label: 'Tutto', icon: 'bi-grid-3x3-gap-fill', type: 'all', categoryId: 'all' },
-      { key: 'hotel', label: 'Hotel', icon: 'bi-building',           type: 'accommodation', categoryId: 'all' }
+      { key: 'all', label: 'Tutto', iconClass: 'bi-grid-3x3-gap-fill', color: '#0ea5e9', type: 'all', categoryId: 'all' },
+      { key: 'hotel', label: 'Hotel', iconClass: 'bi-building', color: '#8b5cf6', type: 'accommodation', categoryId: 'all' }
     ];
     if (!ws) return pills;
     const usedCatIds = new Set(ws.activities.map(a => a.categoryId));
     for (const cat of ws.categories || []) {
       if (usedCatIds.has(cat.id)) {
-        pills.push({ key: `cat-${cat.id}`, label: cat.name, icon: this.catIcon(cat.name), type: 'activity', categoryId: cat.id });
+        pills.push({
+          key: `cat-${cat.id}`,
+          label: cat.name,
+          iconClass: cat.iconUrl || this.catIcon(cat.name),
+          color: colorFromId(cat.id),
+          type: 'activity',
+          categoryId: cat.id
+        });
       }
     }
     return pills;

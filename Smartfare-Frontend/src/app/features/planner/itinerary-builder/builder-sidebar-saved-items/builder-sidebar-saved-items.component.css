@@ -225,13 +225,6 @@
   vertical-align: middle;
 }
 
-.poi-cat-img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  vertical-align: middle;
-}
-
 .poi-info {
   flex: 1;
   min-width: 0;

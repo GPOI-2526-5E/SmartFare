@@ -60,7 +60,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private readonly ui = inject(UIStateService);
   private readonly activityService = inject(ActivityService);
   private readonly cdr = inject(ChangeDetectorRef);
-  private categoryMeta = new Map<number, { icon?: string; iconUrl?: string; color?: string }>();
+  private categoryMeta = new Map<number, { iconClass?: string; color?: string }>();
   private readonly defaultDayPalette = ['#f97316', '#22c55e', '#8b5cf6', '#eab308', '#ef4444', '#a855f7', '#14b8a6'];
   private displayRoutePois: BuilderPoi[] = [];
   private lastRouteFingerprint = '';
@@ -108,9 +108,8 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           const visuals = categoryVisuals(c.name, 'activity');
           const color = colorFromId(c.id);
           this.categoryMeta.set(c.id, {
-            icon: visuals.icon,
-            color,
-            iconUrl: c.iconUrl
+            iconClass: c.iconUrl || visuals.icon,
+            color
           });
         }
       }
@@ -844,21 +843,12 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     if (typeof categoryId === 'number') {
       const meta = this.categoryMeta.get(categoryId);
       if (meta) {
-        icon = meta.icon || icon;
+        icon = meta.iconClass || icon;
         color = meta.color || color;
       }
     }
 
-    // If backend provided an iconUrl for this category, use an <img> inside the dot
-    let imgUrl: string | undefined;
-    if (typeof categoryId === 'number') {
-      const meta = this.categoryMeta.get(categoryId);
-      if (meta && meta.iconUrl) imgUrl = meta.iconUrl;
-    }
-
-    const inner = imgUrl
-      ? `<img src="${imgUrl}" alt="" style="width:60%;height:60%;object-fit:contain;border-radius:6px;" />`
-      : `<i class="bi ${icon}"></i>`;
+    const inner = `<i class="bi ${icon}"></i>`;
 
     return L.divIcon({
       className: 'poi-category-icon',

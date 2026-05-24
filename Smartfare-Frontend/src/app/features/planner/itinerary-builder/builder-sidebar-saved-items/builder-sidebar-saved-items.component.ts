@@ -24,7 +24,7 @@ export class BuilderSidebarSavedItemsComponent {
     itineraryService = inject(ItineraryService);
     ui = inject(UIStateService);
     activityService = inject(ActivityService);
-    categoryMeta = new Map<number, { icon?: string; iconUrl?: string; color?: string }>();
+    categoryMeta = new Map<number, { iconClass?: string; color?: string }>();
     expandedDay = signal<number | null>(null);
 
     getCategoryMeta(id?: number) {
@@ -59,7 +59,7 @@ export class BuilderSidebarSavedItemsComponent {
                 for (const c of res?.categories ?? []) {
                     const visuals = categoryVisuals(c.name, 'activity');
                     const color = colorFromId(c.id);
-                    this.categoryMeta.set(c.id, { icon: visuals.icon, iconUrl: c.iconUrl, color });
+                        this.categoryMeta.set(c.id, { iconClass: c.iconUrl || visuals.icon, color });
                 }
             }
         });
