@@ -48,7 +48,7 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
 
   private map?: L.Map;
-  private clusterGroup?: L.MarkerClusterGroup;
+  private clusterGroup!: L.LayerGroup;
   private resizeObserver?: ResizeObserver;
   private readonly tileCache = new BboxTileCache(0.35);
   private readonly poiByKey = new Map<string, MapMarker>();
