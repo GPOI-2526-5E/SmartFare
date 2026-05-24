@@ -2,6 +2,7 @@ import { createHash } from "crypto";
 import prisma from "../../config/prisma";
 import { ImageService } from "../image/image.service";
 import { EmailService } from "../email/email.service";
+import { applyGroupLevelTiming } from "./itinerary-item-timing.util";
 
 type DraftItemPayload = {
     itemTypeCode: string;
@@ -80,19 +81,39 @@ export class ItineraryService {
         };
     }
 
+    private toDateOrNull(value: string | Date | null | undefined): Date | null {
+        if (!value) return null;
+        const date = value instanceof Date ? value : new Date(value);
+        return Number.isNaN(date.getTime()) ? null : date;
+    }
+
     private buildItemData(data: any): DraftItemPayload[] {
-        return (data?.items || []).map((item: any): DraftItemPayload => ({
-            itemTypeCode: item.itemTypeCode,
+        const mapped = (data?.items || []).map((item: any) => ({
+            itemTypeCode: String(item.itemTypeCode ?? 'ACTIVITY'),
             dayNumber: Number(item.dayNumber || 1),
             orderInt: Number(item.orderInt || 1),
             note: item.note || null,
-            plannedStartAt: item.plannedStartAt ? new Date(item.plannedStartAt) : null,
-            plannedEndAt: item.plannedEndAt ? new Date(item.plannedEndAt) : null,
+            plannedStartAt: item.plannedStartAt ?? null,
+            plannedEndAt: item.plannedEndAt ?? null,
             groupName: item.groupName || null,
-            groupStartAt: item.groupStartAt ? new Date(item.groupStartAt) : null,
-            groupEndAt: item.groupEndAt ? new Date(item.groupEndAt) : null,
+            groupStartAt: item.groupStartAt ?? null,
+            groupEndAt: item.groupEndAt ?? null,
             activityId: item.activityId ? Number(item.activityId) : null,
             accommodationId: item.accommodationId ? Number(item.accommodationId) : null
+        }));
+
+        return applyGroupLevelTiming(mapped).map((item) => ({
+            itemTypeCode: item.itemTypeCode,
+            dayNumber: item.dayNumber,
+            orderInt: item.orderInt,
+            note: item.note,
+            plannedStartAt: this.toDateOrNull(item.plannedStartAt),
+            plannedEndAt: this.toDateOrNull(item.plannedEndAt),
+            groupName: item.groupName,
+            groupStartAt: this.toDateOrNull(item.groupStartAt),
+            groupEndAt: this.toDateOrNull(item.groupEndAt),
+            activityId: item.activityId,
+            accommodationId: item.accommodationId
         }));
     }
 

@@ -1,18 +1,56 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
 import { ProfileService } from '../../../core/services/profile.service';
+import { ActivityService } from '../../../core/services/activity.service';
 import { AlertService } from '../../../core/services/alert.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserProfile, UserPreference, UserProfileFull } from '../../../core/models/user-profile.model';
+import { ActivityCategory } from '../../../core/models/activity.model';
 
 type SettingsTab = 'profile' | 'preferences' | 'account';
 
-const TRAVEL_STYLES = ['Culturale', 'Avventura', 'Relax', 'Gastronomico', 'Romantico', 'Sportivo', 'Lusso', 'Backpacking'];
-const PACES = ['Lento', 'Moderato', 'Intenso'];
-const TRANSPORTS = ['Auto', 'Treno', 'Aereo', 'Barca', 'Bus', 'Bicicletta', 'A piedi'];
+interface LabeledOption {
+  value: string;
+  label: string;
+  icon: string;
+}
+
+const TRAVEL_STYLES: LabeledOption[] = [
+  { value: 'Culturale', label: 'Culturale', icon: 'bi-bank' },
+  { value: 'Avventura', label: 'Avventura', icon: 'bi-compass' },
+  { value: 'Relax', label: 'Relax', icon: 'bi-umbrella' },
+  { value: 'Gastronomico', label: 'Gastronomico', icon: 'bi-cup-hot' },
+  { value: 'Romantico', label: 'Romantico', icon: 'bi-heart' },
+  { value: 'Sportivo', label: 'Sportivo', icon: 'bi-bicycle' },
+  { value: 'Lusso', label: 'Lusso', icon: 'bi-gem' },
+  { value: 'Backpacking', label: 'Backpacking', icon: 'bi-backpack' },
+];
+
+const PACE_OPTIONS: LabeledOption[] = [
+  { value: 'Lento', label: 'Lento', icon: 'bi-cup-hot' },
+  { value: 'Moderato', label: 'Moderato', icon: 'bi-bicycle' },
+  { value: 'Intenso', label: 'Intenso', icon: 'bi-lightning-charge-fill' },
+];
+
+const BUDGET_OPTIONS: LabeledOption[] = [
+  { value: 'LOW', label: 'Economico', icon: 'bi-piggy-bank' },
+  { value: 'MEDIUM', label: 'Medio', icon: 'bi-wallet2' },
+  { value: 'HIGH', label: 'Premium', icon: 'bi-gem' },
+];
+
+const CATEGORY_ICON_RULES: Array<{ match: RegExp; icon: string }> = [
+  { match: /muse|monument|chies|castell|landmark|cultural/i, icon: 'bi-bank' },
+  { match: /ristorant|caff|bar|food|gelat|enotec|panett/i, icon: 'bi-cup-hot' },
+  { match: /parco|natur|spiagg|panoram/i, icon: 'bi-tree' },
+  { match: /shop|negoz|mercat/i, icon: 'bi-bag' },
+  { match: /hotel|allogg|soggiorn/i, icon: 'bi-house-door' },
+  { match: /notte|discotec|club/i, icon: 'bi-moon-stars' },
+  { match: /sport|palestr/i, icon: 'bi-trophy' },
+  { match: /stazion|trasport/i, icon: 'bi-train-front' },
+];
 
 @Component({
   selector: 'app-settings',
@@ -21,15 +59,16 @@ const TRANSPORTS = ['Auto', 'Treno', 'Aereo', 'Barca', 'Bus', 'Bicicletta', 'A p
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
   private profileService = inject(ProfileService);
+  private activityService = inject(ActivityService);
   private alertService = inject(AlertService);
   private authService = inject(AuthService);
   private router = inject(Router);
 
   readonly TRAVEL_STYLES = TRAVEL_STYLES;
-  readonly PACES = PACES;
-  readonly TRANSPORTS = TRANSPORTS;
+  readonly PACE_OPTIONS = PACE_OPTIONS;
+  readonly BUDGET_OPTIONS = BUDGET_OPTIONS;
 
   activeTab = signal<SettingsTab>('profile');
   isLoading = signal(true);
@@ -38,11 +77,9 @@ export class SettingsComponent implements OnInit {
   isUploadingAvatar = signal(false);
   isUploadingBackground = signal(false);
 
-  // Data
   email = signal('');
   authProvider = signal('');
 
-  // Profile form
   name = signal('');
   surname = signal('');
   city = signal('');
@@ -55,15 +92,26 @@ export class SettingsComponent implements OnInit {
   twitterUrl = signal('');
   pageBackground = signal('');
 
-  // Preferences form
-  travelStyle = signal('');
+  budgetLevelCode = signal<'LOW' | 'MEDIUM' | 'HIGH'>('MEDIUM');
+  selectedTravelStyles = signal<string[]>([]);
   pace = signal('');
-  preferredTransport = signal('');
-  prefersNightlife = signal<boolean>(false);
-  familyFriendly = signal<boolean>(false);
+  interestCategoryIds = signal<number[]>([]);
+  likesEveningOut = signal(false);
+  travelsWithFamily = signal(false);
   notes = signal('');
+  activityCategories = signal<ActivityCategory[]>([]);
 
-  // Computed display name
+  passwordCodeSent = signal(false);
+  isSendingCode = signal(false);
+  isResettingPassword = signal(false);
+  verificationCode = signal('');
+  newPassword = signal('');
+  confirmPassword = signal('');
+  showNewPassword = signal(false);
+  resendSeconds = signal(0);
+
+  private resendTimerId: ReturnType<typeof setInterval> | null = null;
+
   displayName = computed(() => {
     const n = this.name();
     const s = this.surname();
@@ -71,7 +119,6 @@ export class SettingsComponent implements OnInit {
     return this.email() || 'Il tuo profilo';
   });
 
-  // Age computed from birthDate
   age = computed(() => {
     const d = this.birthDate();
     if (!d) return null;
@@ -84,7 +131,20 @@ export class SettingsComponent implements OnInit {
     return age > 0 ? age : null;
   });
 
+  selectedBudgetIcon = computed(() =>
+    BUDGET_OPTIONS.find((o) => o.value === this.budgetLevelCode())?.icon ?? 'bi-wallet2'
+  );
+
+  selectedPaceIcon = computed(() =>
+    PACE_OPTIONS.find((o) => o.value === this.pace())?.icon ?? 'bi-speedometer2'
+  );
+
   ngOnInit() {
+    this.activityService.getCategories().subscribe((result) => {
+      const sorted = [...(result?.categories ?? [])].sort((a, b) => a.name.localeCompare(b.name, 'it'));
+      this.activityCategories.set(sorted);
+    });
+
     this.profileService.getMyProfile().subscribe(data => {
       if (data) this.hydrateFromData(data);
       this.isLoading.set(false);
@@ -97,6 +157,19 @@ export class SettingsComponent implements OnInit {
         this.pageBackground.set(this.backgroundImageUrl());
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.resendTimerId) clearInterval(this.resendTimerId);
+  }
+
+  getCategoryIcon(name: string): string {
+    const rule = CATEGORY_ICON_RULES.find((entry) => entry.match.test(name));
+    return rule?.icon ?? 'bi-geo-alt';
+  }
+
+  getTravelStyleIcon(style: string): string {
+    return TRAVEL_STYLES.find((entry) => entry.value === style)?.icon ?? 'bi-signpost-2';
   }
 
   private hydrateFromData(data: UserProfileFull) {
@@ -121,17 +194,57 @@ export class SettingsComponent implements OnInit {
 
     const pref = data.preference;
     if (pref) {
-      this.travelStyle.set(pref.travelStyle ?? '');
+      const budget = pref.budgetLevelCode;
+      if (budget === 'LOW' || budget === 'MEDIUM' || budget === 'HIGH') {
+        this.budgetLevelCode.set(budget);
+      }
+      this.selectedTravelStyles.set(
+        pref.travelStyles?.length
+          ? [...pref.travelStyles]
+          : pref.travelStyle
+            ? pref.travelStyle.split(',').map((part) => part.trim()).filter(Boolean)
+            : []
+      );
       this.pace.set(pref.pace ?? '');
-      this.preferredTransport.set(pref.preferredTransport ?? '');
-      this.prefersNightlife.set(pref.prefersNightlife ?? false);
-      this.familyFriendly.set(pref.familyFriendly ?? false);
+      this.interestCategoryIds.set(
+        pref.interestCategoryIds?.length
+          ? [...pref.interestCategoryIds]
+          : pref.interestCategories?.map((category) => category.id) ?? []
+      );
+      this.likesEveningOut.set(pref.likesEveningOut ?? pref.prefersNightlife ?? false);
+      this.travelsWithFamily.set(pref.travelsWithFamily ?? pref.familyFriendly ?? false);
       this.notes.set(pref.notes ?? '');
     }
   }
 
   setTab(tab: SettingsTab) {
     this.activeTab.set(tab);
+  }
+
+  isTravelStyleSelected(style: string): boolean {
+    return this.selectedTravelStyles().includes(style);
+  }
+
+  toggleTravelStyle(style: string) {
+    const current = this.selectedTravelStyles();
+    if (current.includes(style)) {
+      this.selectedTravelStyles.set(current.filter((entry) => entry !== style));
+    } else {
+      this.selectedTravelStyles.set([...current, style]);
+    }
+  }
+
+  isInterestSelected(categoryId: number): boolean {
+    return this.interestCategoryIds().includes(categoryId);
+  }
+
+  toggleInterestCategory(categoryId: number) {
+    const current = this.interestCategoryIds();
+    if (current.includes(categoryId)) {
+      this.interestCategoryIds.set(current.filter((id) => id !== categoryId));
+    } else {
+      this.interestCategoryIds.set([...current, categoryId]);
+    }
   }
 
   saveProfile() {
@@ -160,23 +273,101 @@ export class SettingsComponent implements OnInit {
 
   savePreferences() {
     this.isSavingPreferences.set(true);
-    const payload: Partial<UserPreference> = {
-      travelStyle: this.travelStyle() || null,
+    const payload: Partial<UserPreference> & {
+      travelStyles?: string[];
+      interestCategoryIds?: number[];
+    } = {
+      budgetLevelCode: this.budgetLevelCode(),
+      travelStyles: this.selectedTravelStyles(),
       pace: this.pace() || null,
-      preferredTransport: this.preferredTransport() || null,
-      prefersNightlife: this.prefersNightlife(),
-      familyFriendly: this.familyFriendly(),
-      notes: this.notes() || null,
+      likesEveningOut: this.likesEveningOut(),
+      travelsWithFamily: this.travelsWithFamily(),
+      notes: this.notes().trim() || null,
+      interestCategoryIds: this.interestCategoryIds(),
     };
 
     this.profileService.updatePreferences(payload).subscribe(res => {
       this.isSavingPreferences.set(false);
       if (res?.success) {
         this.alertService.success('Preferenze salvate!');
+        if (res.preference) {
+          const pref = res.preference;
+          this.selectedTravelStyles.set(pref.travelStyles ?? []);
+          this.interestCategoryIds.set(pref.interestCategoryIds ?? []);
+        }
       } else {
         this.alertService.error('Errore durante il salvataggio delle preferenze.');
       }
     });
+  }
+
+  sendPasswordCode() {
+    if (this.resendSeconds() > 0 || this.isSendingCode()) return;
+
+    this.isSendingCode.set(true);
+    this.profileService.sendPasswordChangeCode().subscribe((res) => {
+      this.isSendingCode.set(false);
+      if (res?.success) {
+        this.passwordCodeSent.set(true);
+        this.alertService.success(`Codice inviato a ${this.email()}`);
+        this.startResendCooldown();
+      } else {
+        this.alertService.error(res?.message || 'Impossibile inviare il codice.');
+      }
+    });
+  }
+
+  resetPasswordWithCode() {
+    const code = this.verificationCode().trim();
+    const pwd = this.newPassword();
+    const confirm = this.confirmPassword();
+
+    if (!/^\d{6}$/.test(code)) {
+      this.alertService.error('Inserisci il codice a 6 cifre ricevuto via email.');
+      return;
+    }
+    if (pwd.length < 8) {
+      this.alertService.error('La password deve avere almeno 8 caratteri.');
+      return;
+    }
+    if (pwd !== confirm) {
+      this.alertService.error('Le password non corrispondono.');
+      return;
+    }
+
+    this.isResettingPassword.set(true);
+    this.profileService.resetPasswordWithCode(code, pwd).subscribe((res) => {
+      this.isResettingPassword.set(false);
+      if (res?.success) {
+        this.alertService.success('Password aggiornata! Accedi di nuovo con la nuova password.');
+        this.authService.Logout();
+        this.router.navigate(['/login']);
+      } else {
+        this.alertService.error(res?.message || 'Codice non valido o scaduto.');
+      }
+    });
+  }
+
+  cancelPasswordReset() {
+    this.passwordCodeSent.set(false);
+    this.verificationCode.set('');
+    this.newPassword.set('');
+    this.confirmPassword.set('');
+  }
+
+  private startResendCooldown() {
+    if (this.resendTimerId) clearInterval(this.resendTimerId);
+    this.resendSeconds.set(60);
+    this.resendTimerId = setInterval(() => {
+      const next = this.resendSeconds() - 1;
+      if (next <= 0) {
+        this.resendSeconds.set(0);
+        if (this.resendTimerId) clearInterval(this.resendTimerId);
+        this.resendTimerId = null;
+      } else {
+        this.resendSeconds.set(next);
+      }
+    }, 1000);
   }
 
   onAvatarFileSelected(event: Event) {

@@ -8,6 +8,9 @@ export interface BuilderPoi {
     entityId: number;
     title: string;
     subtitle?: string;
+    street?: string;
+    description?: string;
+    locationName?: string;
     latitude: number;
     longitude: number;
     categoryId?: number;

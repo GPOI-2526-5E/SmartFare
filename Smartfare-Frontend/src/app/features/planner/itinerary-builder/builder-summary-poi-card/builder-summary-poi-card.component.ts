@@ -4,6 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BuilderPoi } from '../../../../core/models/builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
+import {
+  buildGoogleSearchUrl,
+  isAccommodationPoi,
+  poiEndTimeLabel,
+  poiStartTimeLabel,
+} from '../../../../core/utils/poi-display.util';
 
 @Component({
   selector: 'app-builder-summary-poi-card',
@@ -57,6 +63,22 @@ export class BuilderSummaryPoiCardComponent {
 
   encode(str: string): string {
     return encodeURIComponent(str);
+  }
+
+  googleSearchUrl(poi: BuilderPoi): string {
+    return buildGoogleSearchUrl(poi);
+  }
+
+  startTimeLabel(poi: BuilderPoi): string {
+    return poiStartTimeLabel(poi);
+  }
+
+  endTimeLabel(poi: BuilderPoi): string {
+    return poiEndTimeLabel(poi);
+  }
+
+  isHotel(poi: BuilderPoi): boolean {
+    return isAccommodationPoi(poi);
   }
 
   onToggleSelection(event: Event) {

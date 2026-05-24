@@ -72,6 +72,14 @@ export class BuilderHeaderComponent {
     return 'all';
   });
 
+  /** Mostra cambia-colore solo con un giorno specifico selezionato nel percorso. */
+  readonly showDayColorPicker = computed(() => this.ui.visibleDayRoute() !== 'all');
+
+  readonly colorPickerDay = computed(() => {
+    const route = this.ui.visibleDayRoute();
+    return typeof route === 'number' ? route : this.ui.selectedDay();
+  });
+
   selectPill(pill: CategoryPill) {
     this.ui.setType(pill.type);
     this.ui.setCategory(pill.categoryId);
@@ -112,7 +120,6 @@ export class BuilderHeaderComponent {
 
   // Custom dropdown states
   showVisibleDayDropdown = signal(false);
-  showActiveDayDropdown = signal(false);
   showExportDropdown = signal(false);
   selectedExportFormat = signal<'pdf' | 'html' | 'json'>('pdf');
 
@@ -256,7 +263,6 @@ export class BuilderHeaderComponent {
     event.stopPropagation();
     this.showExportDropdown.update(v => !v);
     this.showVisibleDayDropdown.set(false);
-    this.showActiveDayDropdown.set(false);
   }
 
   selectExportFormat(format: 'pdf' | 'html' | 'json') {
@@ -267,7 +273,7 @@ export class BuilderHeaderComponent {
 
   onDayColorChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.ui.setDayColor(this.ui.selectedDay(), input.value);
+    this.ui.setDayColor(this.colorPickerDay(), input.value);
     this.ui.setActiveSurface('map');
   }
 
@@ -293,13 +299,6 @@ export class BuilderHeaderComponent {
   toggleVisibleDayDropdown(event: Event) {
     event.stopPropagation();
     this.showVisibleDayDropdown.update(v => !v);
-    this.showActiveDayDropdown.set(false);
-  }
-
-  toggleActiveDayDropdown(event: Event) {
-    event.stopPropagation();
-    this.showActiveDayDropdown.update(v => !v);
-    this.showVisibleDayDropdown.set(false);
   }
 
   selectVisibleDay(day: number | 'all') {
@@ -308,17 +307,11 @@ export class BuilderHeaderComponent {
     this.ui.setActiveSurface('map');
   }
 
-  selectActiveDay(day: number) {
-    this.ui.setSelectedDay(day);
-    this.showActiveDayDropdown.set(false);
-  }
-
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (!target.closest('.custom-dropdown')) {
       this.showVisibleDayDropdown.set(false);
-      this.showActiveDayDropdown.set(false);
       this.showExportDropdown.set(false);
     }
   }

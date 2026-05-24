@@ -66,6 +66,18 @@ export class ProfileService {
     );
   }
 
+  sendPasswordChangeCode(): Observable<{ success: boolean; message?: string } | null> {
+    return this.http.post<{ success: boolean; message?: string }>(`${this.API_URL}/password/send-code`, {}).pipe(
+      catchError((err) => of({ success: false, message: err.error?.error || err.error?.message }))
+    );
+  }
+
+  resetPasswordWithCode(code: string, newPassword: string): Observable<{ success: boolean; message?: string } | null> {
+    return this.http.post<{ success: boolean; message?: string }>(`${this.API_URL}/password/reset`, { code, newPassword }).pipe(
+      catchError((err) => of({ success: false, message: err.error?.error || err.error?.message }))
+    );
+  }
+
   uploadAvatar(file: File): Observable<{ success: boolean; url: string } | null> {
     const formData = new FormData();
     formData.append('image', file);

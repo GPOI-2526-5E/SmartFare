@@ -406,6 +406,32 @@
   text-overflow: ellipsis;
 }
 
+.sb-card-address {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: rgba(148, 163, 184, 0.95);
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  line-height: 1.35;
+}
+
+.sb-card-address i {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.sb-card-desc {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(226, 232, 240, 0.72);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .sb-card-price-wrap {
   margin-top: 2px;
 }

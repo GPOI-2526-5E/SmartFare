@@ -49,6 +49,12 @@
                             <div class="poi-info">
                                 <h4 class="poi-title">{{ poi.title }}</h4>
                                 <small class="poi-subtitle">{{ poi.subtitle }}</small>
+                                @if (poi.street) {
+                                <small class="poi-street">{{ poi.street }}</small>
+                                }
+                                @if (poi.description) {
+                                <p class="poi-desc">{{ poi.description }}</p>
+                                }
                             </div>
                         </div>
 

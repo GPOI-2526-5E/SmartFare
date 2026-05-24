@@ -12,15 +12,26 @@ export interface UserProfile {
   birthDate?: string | null;
 }
 
+export interface UserPreferenceInterestCategory {
+  id: number;
+  name: string;
+}
+
 export interface UserPreference {
   id?: number;
   travelStyle?: string | null;
+  travelStyles?: string[];
   pace?: string | null;
-  preferredTransport?: string | null;
-  prefersNightlife?: boolean | null;
-  familyFriendly?: boolean | null;
   budgetLevelCode?: string | null;
   notes?: string | null;
+  likesEveningOut?: boolean | null;
+  travelsWithFamily?: boolean | null;
+  interestCategoryIds?: number[];
+  interestCategories?: UserPreferenceInterestCategory[];
+  /** @deprecated legacy DB field */
+  prefersNightlife?: boolean | null;
+  /** @deprecated legacy DB field */
+  familyFriendly?: boolean | null;
 }
 
 export interface UserProfileFull {

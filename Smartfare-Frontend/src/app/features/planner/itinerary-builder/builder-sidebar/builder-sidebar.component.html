@@ -118,13 +118,19 @@
                     }
                   </div>
                   <p class="sb-card-sub">{{ poi.subtitle }}</p>
+                  @if (poi.street) {
+                    <p class="sb-card-address"><i class="bi bi-geo-alt"></i> {{ poi.street }}</p>
+                  }
+                  @if (poi.description) {
+                    <p class="sb-card-desc">{{ poi.description }}</p>
+                  }
 
                   <!-- Actions -->
                   <div class="sb-card-actions-grid">
                     <button class="sb-btn-pill sb-btn-pill--info" (click)="onPreview(poi)">
                       <i class="bi bi-info-circle"></i> Mostra
                     </button>
-                    <a class="sb-btn-pill sb-btn-pill--google" href="https://www.google.com/search?q={{poi.title}} {{poi.subtitle}}" target="_blank" (click)="$event.stopPropagation()">
+                    <a class="sb-btn-pill sb-btn-pill--google" [href]="googleSearchUrl(poi)" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()">
                       <i class="bi bi-google"></i> Google
                     </a>
                     <a class="sb-btn-pill sb-btn-pill--maps" href="https://www.google.com/maps/search/?api=1&query={{poi.latitude}},{{poi.longitude}}" target="_blank" (click)="$event.stopPropagation()">

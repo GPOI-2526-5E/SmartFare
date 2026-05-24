@@ -18,6 +18,12 @@ import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary
 import { AiChatService } from '../../../../core/services/ai-chat.service';
 import { AlertService } from '../../../../core/services/alert.service';
 import { BuilderPoi } from '../../../../core/models/builder.types';
+import { Accommodation } from '../../../../core/models/accommodation.model';
+import { Activity } from '../../../../core/models/activity.model';
+import {
+  mapAccommodationToBuilderPoi,
+  mapActivityToBuilderPoi,
+} from '../../../../core/utils/poi-display.util';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { AiItineraryChatAction, AiItineraryChatResponse, AiChatMessage } from '../../../../core/models/ai-chat.model';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -102,10 +108,6 @@ export class BuilderChatComponent implements AfterViewChecked {
         locationId: currentItinerary.locationId || this.workspace?.location?.id || undefined,
         itinerary: currentItinerary,
         conversation: history,
-        preferences: {
-          style: currentItinerary.description?.slice(0, 500) || undefined,
-          interests: this.workspace?.categories?.slice(0, 6).map((category) => category.name) || [],
-        },
       }));
 
       if (!response) {
@@ -153,19 +155,13 @@ export class BuilderChatComponent implements AfterViewChecked {
 
     if (!poi) return;
 
-    this.poiFocused.emit({
-      key: `${poiType}-${poiId}`,
-      type: poiType,
-      entityId: poiId,
-      title: poi.name,
-      subtitle: poiType === 'accommodation' ? poi.street || 'Hotel' : poi.street || 'Attività',
-      latitude: poi.latitude,
-      longitude: poi.longitude,
-      itemTypeCode: poiType === 'accommodation' ? 'ACCOMMODATION' : 'ACTIVITY',
-      imageUrl: (poi as { imageUrl?: string }).imageUrl,
-      price: (poi as { price?: number }).price,
-      rating: (poi as { stars?: number }).stars,
-    });
+    const locationName = this.workspace.location?.name;
+    const builderPoi =
+      poiType === 'accommodation'
+        ? mapAccommodationToBuilderPoi(poi as Accommodation, locationName)
+        : mapActivityToBuilderPoi(poi as Activity, locationName);
+
+    this.poiFocused.emit(builderPoi);
   }
 
   onEnter(event: Event) {

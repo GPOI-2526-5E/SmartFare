@@ -61,6 +61,11 @@
         <div class="custom-dropdown" [class.open]="showVisibleDayDropdown()">
           <div class="map-ctrl-btn" (click)="toggleVisibleDayDropdown($event)">
             <i class="bi bi-map"></i>
+            @if (showDayColorPicker()) {
+              <span class="day-color-dot"
+                [style.background]="ui.dayRouteColors()[colorPickerDay()] || ui.getDefaultDayColor(colorPickerDay())">
+              </span>
+            }
             <span>{{ ui.visibleDayRoute() === 'all' ? 'Tutti i giorni' : 'Percorso G' + ui.visibleDayRoute() }}</span>
             <i class="bi bi-chevron-down" style="font-size:0.6rem; opacity:0.45;"></i>
           </div>
@@ -73,47 +78,28 @@
               @for (day of availableDays(); track day) {
                 <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === day"
                   (click)="selectVisibleDay(day)">
-                  <i class="bi bi-calendar-event"></i> Percorso G{{ day }}
-                </div>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Active day selector + color -->
-        <div class="custom-dropdown" [class.open]="showActiveDayDropdown()">
-          <div class="map-ctrl-btn map-ctrl-btn--day" (click)="toggleActiveDayDropdown($event)">
-            <span class="day-color-dot"
-              [style.background]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())">
-            </span>
-            <span>G{{ ui.selectedDay() }}</span>
-            <i class="bi bi-chevron-down" style="font-size:0.6rem; opacity:0.45;"></i>
-          </div>
-          @if (showActiveDayDropdown()) {
-            <div class="dropdown-menu-custom glass-effect">
-              @for (day of availableDays(); track day) {
-                <div class="dropdown-item-custom" [class.active]="ui.selectedDay() === day"
-                  (click)="selectActiveDay(day)">
                   <span class="day-color-dot"
                     [style.background]="ui.dayRouteColors()[day] || ui.getDefaultDayColor(day)">
                   </span>
-                  Giorno {{ day }}
+                  Percorso G{{ day }}
                 </div>
               }
             </div>
           }
         </div>
 
-        <!-- Color picker for active day -->
-        <label class="color-swatch-label" title="Colore percorso giorno {{ ui.selectedDay() }}">
-          <input type="color"
-            [value]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())"
-            (input)="onDayColorChange($event)" class="hidden-color-input">
-          <span class="color-swatch"
-            [style.background-color]="ui.dayRouteColors()[ui.selectedDay()] || ui.getDefaultDayColor(ui.selectedDay())">
-            <i class="bi bi-brush color-swatch-icon"></i>
-          </span>
-        </label>
+        <!-- Cambia colore percorso (solo con giorno specifico) -->
+        @if (showDayColorPicker()) {
+          <label class="color-swatch-label" title="Colore percorso giorno {{ colorPickerDay() }}">
+            <input type="color"
+              [value]="ui.dayRouteColors()[colorPickerDay()] || ui.getDefaultDayColor(colorPickerDay())"
+              (input)="onDayColorChange($event)" class="hidden-color-input">
+            <span class="color-swatch"
+              [style.background-color]="ui.dayRouteColors()[colorPickerDay()] || ui.getDefaultDayColor(colorPickerDay())">
+              <i class="bi bi-brush color-swatch-icon"></i>
+            </span>
+          </label>
+        }
 
         <div class="map-ctrl-separator d-none d-lg-block"></div>
 

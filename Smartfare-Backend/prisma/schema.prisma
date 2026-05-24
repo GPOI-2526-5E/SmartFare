@@ -128,7 +128,10 @@ model UserPreferenceInterest {
   activityCategoryId Int
   preferenceId       Int
 
-  preference UserPreference @relation(fields: [preferenceId], references: [id])
+  preference UserPreference   @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
+  category   ActivityCategory @relation(fields: [activityCategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([preferenceId, activityCategoryId])
 }
 
 model Location {
@@ -178,7 +181,8 @@ model ActivityCategory {
   description String?
   iconUrl     String?
 
-  activities Activity[]
+  activities            Activity[]
+  preferenceInterests   UserPreferenceInterest[]
 }
 
 model Activity {

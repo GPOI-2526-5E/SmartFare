@@ -4,6 +4,11 @@ import rateLimit from 'express-rate-limit';
 import { authenticateJWT, AuthRequest, optionalAuthenticateJWT } from '../middleware/auth.middleware';
 import { upload } from '../config/cloudinary';
 import prisma from '../config/prisma';
+import { parseTravelStyles, serializeTravelStyles } from '../utils/user-preference.util';
+import { AuthService } from '../services/auth/auth.service';
+import { AppError } from '../middleware/error.middleware';
+
+const authService = new AuthService();
 
 const router = Router();
 
@@ -13,6 +18,19 @@ const writeLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: 'Troppe richieste. Riprova tra un minuto.' }
+});
+
+const passwordCodeLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Troppi tentativi. Riprova tra 15 minuti.' },
+});
+
+const changePasswordWithCodeSchema = z.object({
+    code: z.string().regex(/^\d{6}$/, 'Il codice deve essere di 6 cifre'),
+    newPassword: z.string().min(8, 'La password deve avere almeno 8 caratteri'),
 });
 
 const updateProfileSchema = z.object({
@@ -29,14 +47,49 @@ const updateProfileSchema = z.object({
 });
 
 const updatePreferencesSchema = z.object({
-    travelStyle: z.string().trim().max(100).optional().nullable(),
+    travelStyle: z.string().trim().max(200).optional().nullable(),
+    travelStyles: z.array(z.string().trim().min(1).max(40)).max(8).optional(),
     pace: z.string().trim().max(50).optional().nullable(),
-    preferredTransport: z.string().trim().max(80).optional().nullable(),
-    prefersNightlife: z.boolean().optional().nullable(),
-    familyFriendly: z.boolean().optional().nullable(),
     budgetLevelCode: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional(),
     notes: z.string().trim().max(1000).optional().nullable(),
+    likesEveningOut: z.boolean().optional().nullable(),
+    travelsWithFamily: z.boolean().optional().nullable(),
+    interestCategoryIds: z.array(z.coerce.number().int().positive()).max(24).optional(),
 });
+
+async function formatPreferenceResponse(preference: {
+    id: number;
+    userId: number;
+    budgetLevelCode: string;
+    travelStyle: string | null;
+    pace: string | null;
+    prefersNightlife: boolean | null;
+    familyFriendly: boolean | null;
+    notes: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+}) {
+    const interests = await prisma.userPreferenceInterest.findMany({
+        where: { preferenceId: preference.id },
+        select: {
+            activityCategoryId: true,
+            category: { select: { id: true, name: true } },
+        },
+    });
+
+    const interestCategories = interests
+        .map((row) => row.category)
+        .filter((category): category is { id: number; name: string } => Boolean(category));
+
+    return {
+        ...preference,
+        travelStyles: parseTravelStyles(preference.travelStyle),
+        interestCategoryIds: interestCategories.map((category) => category.id),
+        interestCategories,
+        likesEveningOut: preference.prefersNightlife,
+        travelsWithFamily: preference.familyFriendly,
+    };
+}
 
 // ─── GET /api/profile/me ──────────────────────────────────────────────────────
 router.get('/me', authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -74,7 +127,9 @@ router.get('/me', authenticateJWT, async (req: AuthRequest, res: Response, next:
             email: user.email,
             authProvider: user.authProvider,
             profile: user.profile ?? null,
-            preference: user.preference ?? null,
+            preference: user.preference
+                ? await formatPreferenceResponse(user.preference)
+                : null,
             followersCount,
             followingCount,
             publicItinerariesCount
@@ -426,18 +481,100 @@ router.patch('/preferences', writeLimiter, authenticateJWT, async (req: AuthRequ
     try {
         const userId = Number(req.user!.userId);
         const data = updatePreferencesSchema.parse(req.body);
+        const {
+            travelStyles,
+            interestCategoryIds,
+            likesEveningOut,
+            travelsWithFamily,
+            travelStyle,
+            budgetLevelCode,
+            pace,
+            notes,
+        } = data;
 
-        const preference = await prisma.userPreference.upsert({
-            where: { userId },
-            create: {
-                userId,
-                budgetLevelCode: data.budgetLevelCode ?? 'MEDIUM',
-                ...data,
-            },
-            update: data,
+        const prismaData: {
+            travelStyle?: string | null;
+            pace?: string | null;
+            budgetLevelCode?: string;
+            notes?: string | null;
+            prefersNightlife?: boolean | null;
+            familyFriendly?: boolean | null;
+        } = {};
+
+        if (budgetLevelCode !== undefined) prismaData.budgetLevelCode = budgetLevelCode;
+        if (pace !== undefined) prismaData.pace = pace;
+        if (notes !== undefined) prismaData.notes = notes;
+        if (likesEveningOut !== undefined) prismaData.prefersNightlife = likesEveningOut;
+        if (travelsWithFamily !== undefined) prismaData.familyFriendly = travelsWithFamily;
+        if (travelStyles !== undefined) {
+            prismaData.travelStyle = serializeTravelStyles(travelStyles);
+        } else if (travelStyle !== undefined) {
+            prismaData.travelStyle = travelStyle;
+        }
+
+        const preference = await prisma.$transaction(async (tx) => {
+            const pref = await tx.userPreference.upsert({
+                where: { userId },
+                create: {
+                    userId,
+                    budgetLevelCode: prismaData.budgetLevelCode ?? 'MEDIUM',
+                    ...prismaData,
+                },
+                update: prismaData,
+            });
+
+            if (interestCategoryIds !== undefined) {
+                await tx.userPreferenceInterest.deleteMany({ where: { preferenceId: pref.id } });
+                if (interestCategoryIds.length > 0) {
+                    await tx.userPreferenceInterest.createMany({
+                        data: interestCategoryIds.map((activityCategoryId) => ({
+                            preferenceId: pref.id,
+                            activityCategoryId,
+                        })),
+                    });
+                }
+            }
+
+            return pref;
         });
 
-        return res.json({ success: true, preference });
+        return res.json({
+            success: true,
+            preference: await formatPreferenceResponse(preference),
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// ─── POST /api/profile/password/send-code ─────────────────────────────────────
+router.post('/password/send-code', passwordCodeLimiter, authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = Number(req.user!.userId);
+        const result = await authService.RequestPasswordChangeCode(userId);
+
+        if (!result.success) {
+            throw new AppError(result.message || 'Impossibile inviare il codice', 400);
+        }
+
+        return res.json({ success: true, message: result.message });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// ─── POST /api/profile/password/reset ─────────────────────────────────────────
+router.post('/password/reset', writeLimiter, authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = Number(req.user!.userId);
+        const { code, newPassword } = changePasswordWithCodeSchema.parse(req.body);
+        const result = await authService.ResetPasswordWithCode(userId, code, newPassword);
+
+        if (!result.success) {
+            throw new AppError(result.message || 'Codice non valido', 400);
+        }
+
+        return res.json({ success: true, message: result.message });
     } catch (error) {
         next(error);
     }

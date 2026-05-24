@@ -5,6 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, CdkDragEnd, CdkDragMove, CdkDragStart, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../../../../core/models/builder.types';
+import {
+  mapAccommodationToBuilderPoi,
+  mapActivityToBuilderPoi,
+} from '../../../../core/utils/poi-display.util';
+import { applyGroupLevelTimingToItems } from '../../../../core/utils/itinerary-item-timing.util';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { AlertService } from '../../../../core/services/alert.service';
@@ -117,10 +122,14 @@ export class BuilderSummaryComponent {
     const ws = this.workspace();
     if (!itin || !ws) return [];
 
-    // Crea un indice di tutti i POI disponibili nel workspace per un accesso rapido
-    const poiIndex = new Map<string, any>();
-    ws.accommodations.forEach(a => poiIndex.set(`accommodation-${a.id}`, { ...a, type: 'accommodation', itemTypeCode: 'ACCOMMODATION' }));
-    ws.activities.forEach(a => poiIndex.set(`activity-${a.id}`, { ...a, type: 'activity', itemTypeCode: 'ACTIVITY' }));
+    const locationName = ws.location?.name;
+    const poiIndex = new Map<string, BuilderPoi>();
+    ws.accommodations.forEach((a) =>
+      poiIndex.set(`accommodation-${a.id}`, mapAccommodationToBuilderPoi(a, locationName))
+    );
+    ws.activities.forEach((a) =>
+      poiIndex.set(`activity-${a.id}`, mapActivityToBuilderPoi(a, locationName))
+    );
 
     return (itin.items || []).map(item => {
       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
@@ -128,18 +137,9 @@ export class BuilderSummaryComponent {
 
       if (!basePoi) return null;
 
-      // Unisce i dati statici del POI con i dati dinamici dell'itinerario (note, orari, ecc.)
       return {
-        key,
-        type: basePoi.type,
-        entityId: basePoi.id,
-        title: basePoi.name || basePoi.title || 'Senza nome',
-        subtitle: basePoi.street || (basePoi.type === 'accommodation' ? 'Hotel' : basePoi.category?.name || 'Attività'),
+        ...basePoi,
         imageUrl: basePoi.imageUrl || '/assets/home-section.avif',
-        price: basePoi.price || basePoi.pricePerNight,
-        rating: basePoi.stars || basePoi.rating,
-        categoryName: basePoi.category?.name,
-        // Dati itinerario
         dayNumber: item.dayNumber || 1,
         note: item.note,
         plannedStartAt: item.plannedStartAt,
@@ -147,7 +147,9 @@ export class BuilderSummaryComponent {
         groupName: item.groupName,
         groupStartAt: item.groupStartAt,
         groupEndAt: item.groupEndAt,
-        orderInt: item.orderInt || 0
+        orderInt: item.orderInt || 0,
+        latitude: basePoi.latitude,
+        longitude: basePoi.longitude,
       } as BuilderPoi;
     }).filter((p): p is BuilderPoi => p !== null);
   });
@@ -313,6 +315,9 @@ export class BuilderSummaryComponent {
     const updatedItems = current.items.map((item) => {
       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
       if (key === poi.key) {
+        if (item.groupName && (updates.plannedStartAt !== undefined || updates.plannedEndAt !== undefined)) {
+          return item;
+        }
         return { ...item, ...updates };
       }
       return item;
@@ -320,7 +325,7 @@ export class BuilderSummaryComponent {
 
     this.itineraryService.setCurrentItinerary({
       ...current,
-      items: updatedItems
+      items: applyGroupLevelTimingToItems(updatedItems)
     });
   }
 
@@ -652,7 +657,9 @@ export class BuilderSummaryComponent {
           orderInt: position?.order || 0,
           groupName: groupName,
           groupStartAt: null,
-          groupEndAt: null
+          groupEndAt: null,
+          plannedStartAt: null,
+          plannedEndAt: null,
         };
       }
 
@@ -663,9 +670,11 @@ export class BuilderSummaryComponent {
       return item;
     });
 
+    const normalizedItems = applyGroupLevelTimingToItems(updatedItems);
+
     this.itineraryService.setCurrentItinerary({
-      ...this.withNormalizedEndDate(current, updatedItems),
-      items: updatedItems
+      ...this.withNormalizedEndDate(current, normalizedItems),
+      items: normalizedItems
     });
 
     this.clearSelection();
@@ -789,8 +798,18 @@ export class BuilderSummaryComponent {
     const orderMap = this.buildOrderMap(dayMap);
     const existingGroupName = targetPoi.groupName || movedPoi.groupName;
     const groupName = existingGroupName || `Gruppo Giorno ${targetDay}`;
-    const groupStartAt = targetPoi.groupStartAt || movedPoi.groupStartAt || null;
-    const groupEndAt = targetPoi.groupEndAt || movedPoi.groupEndAt || null;
+    const groupStartAt =
+      targetPoi.groupStartAt ||
+      movedPoi.groupStartAt ||
+      targetPoi.plannedStartAt ||
+      movedPoi.plannedStartAt ||
+      null;
+    const groupEndAt =
+      targetPoi.groupEndAt ||
+      movedPoi.groupEndAt ||
+      targetPoi.plannedEndAt ||
+      movedPoi.plannedEndAt ||
+      null;
 
     const updatedItems = current.items.map((item) => {
       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
@@ -804,15 +823,19 @@ export class BuilderSummaryComponent {
           ? {
             groupName,
             groupStartAt,
-            groupEndAt
+            groupEndAt,
+            plannedStartAt: null,
+            plannedEndAt: null,
           }
           : {})
       };
     });
 
+    const normalizedItems = applyGroupLevelTimingToItems(updatedItems);
+
     this.itineraryService.setCurrentItinerary({
-      ...this.withNormalizedEndDate(current, updatedItems),
-      items: updatedItems
+      ...this.withNormalizedEndDate(current, normalizedItems),
+      items: normalizedItems
     });
 
     this.alertService.success(`Gruppo "${groupName}" creato. Ora puoi modificarne nome e orari.`);

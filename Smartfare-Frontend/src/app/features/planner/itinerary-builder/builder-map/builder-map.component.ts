@@ -19,6 +19,13 @@ import 'leaflet.markercluster';
 import Location from '../../../../core/models/location.model';
 import { Itinerary } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../../../../core/models/builder.types';
+import {
+  buildGoogleSearchUrl,
+  escapeHtmlForPopup,
+  isAccommodationPoi,
+  poiEndTimeLabel,
+  poiStartTimeLabel,
+} from '../../../../core/utils/poi-display.util';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { ActivityService } from '../../../../core/services/activity.service';
 import { categoryVisuals, colorFromId } from '../../../interactive-map/utils/map-category.util';
@@ -659,9 +666,9 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   private createPopupHtml(poi: BuilderPoi, label?: string, labelColor?: string): string {
-    const isHotel = poi.itemTypeCode === 'ACCOMMODATION' || poi.type === 'accommodation';
-    const startLabel = isHotel ? 'Check-in' : 'Inizio';
-    const endLabel = isHotel ? 'Check-out' : 'Fine';
+    const isHotel = isAccommodationPoi(poi);
+    const startLabel = poiStartTimeLabel(poi);
+    const endLabel = poiEndTimeLabel(poi);
 
     const formatDate = (dateStr?: string | null) => {
       if (!dateStr) return null;
@@ -681,7 +688,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     const formattedGroupEnd = formatDate(poi.groupEndAt);
 
     const gMapsLink = `https://www.google.com/maps/search/?api=1&query=${poi.latitude},${poi.longitude}`;
-    const gSearchLink = `https://www.google.com/search?q=${encodeURIComponent(poi.title + ' ' + (poi.subtitle || ''))}`;
+    const gSearchLink = buildGoogleSearchUrl(poi);
 
     const isSaved = this.savedPois.some(p => p.key === poi.key);
 
@@ -705,8 +712,10 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           <div class="popup-image" style="background-image: url('${finalImageUrl}')"></div>
         ` : ''}
         <div class="popup-content">
-          <h5 class="popup-title">${poi.title}</h5>
-          ${poi.subtitle ? `<div class="popup-subtitle"><i class="bi bi-geo-alt"></i> ${poi.subtitle}</div>` : ''}
+          <h5 class="popup-title">${escapeHtmlForPopup(poi.title)}</h5>
+          ${poi.subtitle ? `<div class="popup-subtitle"><i class="bi bi-tag"></i> ${escapeHtmlForPopup(poi.subtitle)}</div>` : ''}
+          ${poi.street ? `<div class="popup-subtitle"><i class="bi bi-geo-alt"></i> ${escapeHtmlForPopup(poi.street)}</div>` : ''}
+          ${poi.description ? `<p class="popup-description">${escapeHtmlForPopup(poi.description)}</p>` : ''}
           
           <div class="popup-meta" style="display: flex; gap: 12px; margin-bottom: 10px; font-size: 0.75rem; font-weight: 600;">
             ${poi.rating ? `

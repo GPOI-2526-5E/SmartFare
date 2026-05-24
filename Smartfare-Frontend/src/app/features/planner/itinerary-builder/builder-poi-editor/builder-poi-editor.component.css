@@ -124,6 +124,13 @@
   color: rgba(11, 9, 20, 0.6);
 }
 
+.poi-description {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: rgba(11, 9, 20, 0.75);
+}
+
 .poi-details {
   display: flex;
   gap: 8px;

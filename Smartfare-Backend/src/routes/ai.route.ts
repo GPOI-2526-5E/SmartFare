@@ -7,6 +7,7 @@ import { aiItineraryGenerateSchema } from '../schemas/ai-generate.schema';
 import { ItineraryService } from '../services/itinerary/itinerary.service';
 import { GeminiItineraryChatService } from '../services/ai/gemini.service';
 import { AppError } from '../middleware/error.middleware';
+import { buildUserPreferencePromptBlock, loadUserPreferenceForAi } from '../utils/user-preference.util';
 
 const router = Router();
 const itineraryService = new ItineraryService();
@@ -86,6 +87,9 @@ router.post('/itinerary/chat', aiLimiter, optionalAuthenticateJWT, async (req: A
             }
         }
 
+        const savedPreferences = userId ? await loadUserPreferenceForAi(userId) : null;
+        const userPreferencePrompt = buildUserPreferencePromptBlock(savedPreferences);
+
         const workspaceContext = {
             location: workspace.location
                 ? {
@@ -100,6 +104,7 @@ router.post('/itinerary/chat', aiLimiter, optionalAuthenticateJWT, async (req: A
             accommodations: workspace.accommodations,
             activities: workspace.activities,
             categories: workspace.categories,
+            userPreferencePrompt,
         };
 
         console.info(
@@ -148,6 +153,10 @@ router.post('/itinerary/generate', aiLimiter, optionalAuthenticateJWT, async (re
         // 2. Fetch workspace data for the identified location
         const workspace = await itineraryService.getWorkspaceData(locationId, req.user?.userId ? Number(req.user.userId) : undefined);
 
+        const userId = req.user?.userId ? Number(req.user.userId) : undefined;
+        const savedPreferences = userId ? await loadUserPreferenceForAi(userId) : null;
+        const userPreferencePrompt = buildUserPreferencePromptBlock(savedPreferences);
+
         // 3. Generate the initial itinerary
         const response = await geminiService.generateInitialItinerary(prompt, {
             location: workspace.location
@@ -163,6 +172,7 @@ router.post('/itinerary/generate', aiLimiter, optionalAuthenticateJWT, async (re
             accommodations: workspace.accommodations,
             activities: workspace.activities,
             categories: workspace.categories,
+            userPreferencePrompt,
         });
 
         if (!response) {

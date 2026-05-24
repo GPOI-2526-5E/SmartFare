@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AppError } from '../../middleware/error.middleware';
+import { applyGroupLevelTiming } from '../itinerary/itinerary-item-timing.util';
 import {
     AiItineraryChatRequest,
     AiItineraryChatResponse,
@@ -276,6 +277,7 @@ export class GeminiItineraryChatService {
             'Usa solo i POI presenti nel workspace fornito.',
             'Non inventare luoghi, hotel o attività che non esistono nel contesto.',
             'Se il messaggio dell\'utente richiede una modifica, proponi un piano chiaro e operazioni sicure.',
+            'Quando suggerisci attività con libertà creativa, rispetta le preferenze salvate; richieste esplicite nel messaggio corrente hanno priorità.',
             'Quando possibile, restituisci suggerimenti come card operative: usa titoli brevi, descrizioni concise e, se puoi, collega la card a un POI reale con poiId e poiType.',
             'Se l\'utente chiede modifiche pratiche, usa azioni come add_day, create_nostalgic_day, reorder_route, optimize_route, add_stop, remove_stop o focus_poi.',
             'Se mancano informazioni, fai domande brevi e specifiche.',
@@ -284,7 +286,8 @@ export class GeminiItineraryChatService {
             '{"reply":"string","suggestions":[{"title":"string","description":"string","type":"poi|day|food|evening|route|general","poiId":123,"poiType":"activity"}],"actions":[{"type":"suggest|ask_clarification|add_item|remove_item|update_item|reorder_items|add_day|create_nostalgic_day|reorder_route|optimize_route|add_stop|remove_stop|focus_poi|generate_itinerary","payload":{}}],"followUpQuestions":["string"],"needsConfirmation":true}',
             '',
             `Messaggio utente: ${userInput.message}`,
-            userInput.preferences ? `Preferenze: ${JSON.stringify(userInput.preferences)}` : 'Preferenze: non fornite',
+            workspace.userPreferencePrompt || 'Preferenze salvate: non disponibili (utente ospite o profilo vuoto)',
+            userInput.preferences ? `Preferenze aggiuntive dal client: ${JSON.stringify(userInput.preferences)}` : '',
             `Contesto destinazione: ${JSON.stringify(workspace.location)}`,
             `Itinerario corrente: ${JSON.stringify(userInput.itinerary || workspace.itinerary)}`,
             `Tappe correnti: ${JSON.stringify(itineraryItems)}`,
@@ -348,15 +351,18 @@ export class GeminiItineraryChatService {
             '7. Esempi di richieste da eseguire subito: "ottimizza il viaggio", "aggiungi un giorno 2 con monumenti", "metti un bar in mezzo", "crea un percorso semplice e tranquillo", "rimuovi la tappa X", "sposta il pranzo alle 13:30".',
             '8. Per "percorso tranquillo/semplice" riduci tappe fitte, aumenta pause e POI panoramici; per "ottimizza" riordina minimizzando spostamenti nel catalogo.',
             '9. Se l’utente chiede un giorno aggiuntivo, incrementa dayNumber e popola quel giorno con POI coerenti dal catalogo (monumenti, cultura, food, ecc.).',
+            '10. Quando proponi o generi tappe senza richiesta esplicita nel messaggio, rispetta le preferenze salvate. Se il messaggio è esplicito (es. discoteca stasera), segui il messaggio anche se contrasta con le note.',
             'Restituisci SOLO JSON valido con i campi reply, suggestions, actions, followUpQuestions, needsConfirmation e itinerary.',
             'L’itinerary deve essere SEMPRE l’itinerario completo aggiornato (tutti i giorni e tutte le tappe), non un diff parziale.',
             'Conserva gli id numerici delle tappe esistenti quando non le modifichi.',
             'Per ogni tappa usa: dayNumber, orderInt, itemTypeCode (ACTIVITY o ACCOMMODATION), activityId o accommodationId, groupName, timeSlotStart, timeSlotEnd (HH:mm).',
+            'Se groupName è valorizzato, timeSlotStart/timeSlotEnd si riferiscono al GRUPPO (non alla singola attività): tutte le attività dello stesso groupName nello stesso giorno condividono lo stesso slot.',
             'Formato JSON richiesto:',
             '{"reply":"Ho spostato la colazione al giorno 2 alle 09:00.","suggestions":[],"actions":[],"followUpQuestions":[],"needsConfirmation":false,"itinerary":{"name":"Titolo","description":"Desc","items":[{"id":1,"dayNumber":1,"orderInt":1,"itemTypeCode":"ACTIVITY","activityId":123,"groupName":"Mattina","timeSlotStart":"10:00","timeSlotEnd":"11:00"}]}}',
             '',
             `Messaggio utente: ${userInput.message}`,
-            userInput.preferences ? `Preferenze utente: ${JSON.stringify(userInput.preferences)}` : 'Preferenze utente: non fornite',
+            workspace.userPreferencePrompt || 'Preferenze salvate: non disponibili (utente ospite o profilo vuoto)',
+            userInput.preferences ? `Preferenze aggiuntive dal client: ${JSON.stringify(userInput.preferences)}` : '',
             `Location: ${JSON.stringify(workspace.location)}`,
             `Itinerario corrente: ${JSON.stringify(currentItinerary)}`,
             messageMatches.length > 0
@@ -416,7 +422,9 @@ export class GeminiItineraryChatService {
                 return (left.orderInt || 0) - (right.orderInt || 0);
             });
 
-        const maxDay = items.reduce((max, item) => Math.max(max, item.dayNumber), 1);
+        const itemsWithGroupTiming = applyGroupLevelTiming(items);
+
+        const maxDay = itemsWithGroupTiming.reduce((max, item) => Math.max(max, item.dayNumber), 1);
         const endDate = raw.endDate || current?.endDate || this.addDaysToDate(startDate, maxDay - 1);
 
         return {
@@ -425,7 +433,7 @@ export class GeminiItineraryChatService {
             startDate,
             endDate,
             locationId: current?.locationId ?? workspace.location?.id ?? raw.locationId ?? null,
-            items: items.length > 0 ? items : currentItems,
+            items: itemsWithGroupTiming.length > 0 ? itemsWithGroupTiming : currentItems,
         };
     }
 
@@ -494,6 +502,8 @@ export class GeminiItineraryChatService {
                 note: item.note ?? null,
                 plannedStartAt: item.plannedStartAt ?? null,
                 plannedEndAt: item.plannedEndAt ?? null,
+                groupStartAt: item.groupStartAt ?? null,
+                groupEndAt: item.groupEndAt ?? null,
             }))
             .sort((left, right) => {
                 if (left.dayNumber !== right.dayNumber) return left.dayNumber - right.dayNumber;
@@ -644,9 +654,11 @@ export class GeminiItineraryChatService {
             'L’itinerario deve essere ricco, concreto e ben distribuito.',
             'Ogni giorno deve includere una struttura completa con momenti come colazione, una visita o esperienza forte al mattino, pranzo, esperienza pomeridiana e cena quando il catalogo lo consente.',
             'Se l’utente ha chiesto esplicitamente luoghi come Acquario, musei o monumenti, questi elementi devono essere presenti davvero nell’output se esistono nelle liste disponibili.',
+            'Quando compili l’itinerario con libertà creativa, rispetta le preferenze salvate sotto. Richieste esplicite nel prompt utente hanno priorità sulle note e preferenze.',
+            workspace.userPreferencePrompt || '',
             'Non creare giornate vuote o con una sola attività, salvo impossibilità assoluta del catalogo.',
             'Per ogni tappa, specifica dayNumber, orderInt, date (YYYY-MM-DD), itemTypeCode (ACTIVITY o ACCOMMODATION), activityId o accommodationId, note, groupName, timeSlotStart e timeSlotEnd.',
-            'Usa timeSlotStart e timeSlotEnd nel formato HH:mm.',
+            'Usa timeSlotStart e timeSlotEnd nel formato HH:mm. Se più attività condividono lo stesso groupName nello stesso giorno, usa gli STESSI orari per tutte (slot di gruppo).',
             'Restituisci anche una description narrativa sintetica dell’itinerario.',
             'Il groupName serve per raggruppare le attività della giornata (es. "Mattina", "Pomeriggio", "Cena").',
             '{"name":"Titolo","description":"Desc","items":[{"dayNumber":1,"date":"2026-05-16","orderInt":1,"itemTypeCode":"ACCOMMODATION","accommodationId":123,"groupName":"Arrivo & Check-in","timeSlotStart":"14:00","timeSlotEnd":"16:00"},{"dayNumber":1,"date":"2026-05-16","orderInt":2,"itemTypeCode":"ACTIVITY","activityId":124,"groupName":"Ristoranti & Pausa","timeSlotStart":"18:00","timeSlotEnd":"21:00"}]}',

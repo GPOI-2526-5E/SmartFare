@@ -24,6 +24,12 @@
                     @if (poi.subtitle) {
                     <p class="poi-subtitle">{{ poi.subtitle }}</p>
                     }
+                    @if (poi.street) {
+                    <p class="poi-subtitle"><i class="bi bi-geo-alt"></i> {{ poi.street }}</p>
+                    }
+                    @if (poi.description) {
+                    <p class="poi-description">{{ poi.description }}</p>
+                    }
                     <div class="poi-details">
                         @if (poi.price) {
                         <span class="detail-badge">💰 {{ poi.price }}€</span>

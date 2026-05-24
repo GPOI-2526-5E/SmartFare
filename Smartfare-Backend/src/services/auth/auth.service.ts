@@ -693,6 +693,96 @@ export class AuthService {
         }
     }
 
+    async RequestPasswordChangeCode(userId: number) {
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: {
+                    id: true,
+                    email: true,
+                    authProvider: true,
+                    passwordHash: true,
+                },
+            });
+
+            if (!user || user.authProvider !== 'local' || !user.passwordHash) {
+                return {
+                    success: false,
+                    message: 'Il cambio password con codice è disponibile solo per account email e password.',
+                };
+            }
+
+            const code = String(Math.floor(100000 + Math.random() * 900000));
+            const resetPasswordToken = crypto.createHash('sha256').update(code).digest('hex');
+            const resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { resetPasswordToken, resetPasswordExpires },
+            });
+
+            await emailService.sendPasswordChangeCodeEmail(user.email, code);
+
+            return { success: true, message: 'Codice inviato alla tua email.' };
+        } catch (error) {
+            console.error('❌ Errore RequestPasswordChangeCode:', error);
+            return {
+                success: false,
+                message: "Errore durante l'invio del codice di verifica.",
+            };
+        }
+    }
+
+    async ResetPasswordWithCode(userId: number, code: string, newPassword: string) {
+        try {
+            const hashedCode = crypto.createHash('sha256').update(code.trim()).digest('hex');
+
+            const user = await prisma.user.findFirst({
+                where: {
+                    id: userId,
+                    resetPasswordToken: hashedCode,
+                    resetPasswordExpires: { gt: new Date() },
+                },
+                select: {
+                    id: true,
+                    authProvider: true,
+                    passwordHash: true,
+                },
+            });
+
+            if (!user || user.authProvider !== 'local' || !user.passwordHash) {
+                return {
+                    success: false,
+                    message: 'Codice non valido o scaduto.',
+                };
+            }
+
+            const passwordHash = await bcrypt.hash(newPassword, 10);
+
+            await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    passwordHash,
+                    resetPasswordToken: null,
+                    resetPasswordExpires: null,
+                },
+            });
+
+            await prisma.authSession.updateMany({
+                where: { userId: user.id, revokedAt: null },
+                data: { revokedAt: new Date() },
+            });
+
+            return { success: true, message: 'Password aggiornata con successo.' };
+        } catch (error) {
+            console.error('❌ Errore ResetPasswordWithCode:', error);
+            return {
+                success: false,
+                message: 'Errore durante il cambio password.',
+            };
+        }
+    }
+
     async ResetPassword({ token, newPassword }: { token: string; newPassword: string }) {
         try {
             const hashedToken = crypto.createHash("sha256").update(token).digest("hex");

@@ -62,13 +62,14 @@ router.get("/area", async (req: AuthRequest, res: Response, next: NextFunction) 
                 select: {
                     id: true,
                     name: true,
+                    description: true,
                     street: true,
                     latitude: true,
                     longitude: true,
                     categoryId: true,
                     imageUrl: true,
                     category: {
-                        select: { name: true }
+                        select: { name: true, description: true }
                     }
                 }
             }),

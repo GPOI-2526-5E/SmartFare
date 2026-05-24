@@ -110,4 +110,5 @@ export interface AiItineraryWorkspaceContext {
     id: number;
     name: string;
   }>;
+  userPreferencePrompt?: string | null;
 }

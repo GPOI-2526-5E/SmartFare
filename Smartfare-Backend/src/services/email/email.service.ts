@@ -361,6 +361,79 @@ export class EmailService {
         }
     }
 
+    public async sendPasswordChangeCodeEmail(to: string, code: string) {
+        await this.ensureTransporter();
+        if (!this.transporter && !this.useSendgrid) return;
+
+        const textTemplate = `Ciao,
+
+Hai richiesto di reimpostare la password del tuo account SmartFare dalle impostazioni.
+
+Il tuo codice di verifica è: ${code}
+
+Il codice scade tra 15 minuti.
+
+Se non hai richiesto questa operazione, ignora questa email: la tua password non verrà modificata.
+
+SmartFare`;
+
+        const htmlTemplate = `<!DOCTYPE html>
+<html lang="it">
+<head><meta charset="UTF-8"><title>Codice verifica password</title></head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;color:#333;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:30px 15px;">
+    <tr><td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#fff;border:1px solid #e6e6e6;border-radius:8px;max-width:600px;width:100%;">
+        <tr><td style="padding:32px 40px;">
+          <h1 style="margin:0 0 8px;font-size:22px;color:#111;">Reimposta password</h1>
+          <p style="margin:0 0 24px;color:#555;line-height:1.5;">Usa questo codice nelle impostazioni account di SmartFare:</p>
+          <div style="text-align:center;margin:24px 0;">
+            <span style="display:inline-block;letter-spacing:8px;font-size:32px;font-weight:700;color:#4f46e5;background:#eef2ff;padding:16px 28px;border-radius:12px;">${code}</span>
+          </div>
+          <p style="margin:0;color:#777;font-size:14px;">Valido per <strong>15 minuti</strong>. Se non hai richiesto il cambio password, ignora questa email.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+        try {
+            const smtpFrom = process.env.EMAIL_FROM || process.env.SMTP_FROM || process.env.SMTP_USER;
+            const fromEmail = smtpFrom
+                ? `"SmartFare" <${smtpFrom}>`
+                : '"SmartFare" <noreply@smartfare.com>';
+
+            if (this.useSendgrid && this.sendgridApiKey) {
+                const sgFrom = this.defaultFromEmail || 'support@smartfare.com';
+                const payload = {
+                    personalizations: [{ to: [{ email: to }], subject: 'Codice verifica password - SmartFare' }],
+                    from: { email: sgFrom, name: 'SmartFare (no-reply)' },
+                    content: [
+                        { type: 'text/plain', value: textTemplate },
+                        { type: 'text/html', value: htmlTemplate },
+                    ],
+                    categories: ['password-change-code'],
+                };
+                await axios.post('https://api.sendgrid.com/v3/mail/send', payload, {
+                    headers: { Authorization: `Bearer ${this.sendgridApiKey}`, 'Content-Type': 'application/json' },
+                });
+                return;
+            }
+
+            await this.transporter!.sendMail({
+                from: fromEmail,
+                to,
+                subject: 'Codice verifica password - SmartFare',
+                text: textTemplate,
+                html: htmlTemplate,
+            });
+        } catch (error) {
+            console.error("Errore durante l'invio del codice password:", error);
+            throw new Error("Errore durante l'invio del codice di verifica");
+        }
+    }
+
     public async sendVerificationEmail(to: string, verificationLink: string) {
         await this.ensureTransporter();
         if (!this.transporter && !this.useSendgrid) return;

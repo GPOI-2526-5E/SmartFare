@@ -3,6 +3,11 @@ import { CommonModule } from '@angular/common';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../../../../core/models/builder.types';
+import {
+  buildGoogleSearchUrl,
+  mapAccommodationToBuilderPoi,
+  mapActivityToBuilderPoi,
+} from '../../../../core/utils/poi-display.util';
 import { Subject, debounceTime } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -94,35 +99,13 @@ export class BuilderSidebarComponent implements OnDestroy {
     const ws = this.workspaceSignal();
     if (!ws) return [];
 
-    const accommodations: BuilderPoi[] = ws.accommodations.map(acc => ({
-      key: `accommodation-${acc.id}`,
-      type: 'accommodation' as const,
-      entityId: acc.id,
-      title: acc.name,
-      subtitle: acc.street || 'Alloggio',
-      latitude: acc.latitude,
-      longitude: acc.longitude,
-      itemTypeCode: 'ACCOMMODATION' as const,
-      imageUrl: acc.imageUrl,
-      price: acc.pricePerNight,
-      rating: acc.stars
-    }));
-
-    const activities: BuilderPoi[] = ws.activities.map(a => ({
-      key: `activity-${a.id}`,
-      type: 'activity' as const,
-      entityId: a.id,
-      title: a.name,
-      subtitle: a.category?.name || a.street || 'Attività',
-      latitude: a.latitude,
-      longitude: a.longitude,
-      categoryId: a.categoryId,
-      categoryName: a.category?.name,
-      itemTypeCode: 'ACTIVITY' as const,
-      imageUrl: a.imageUrl,
-      price: a.price,
-      rating: a.rating
-    }));
+    const locationName = ws.location?.name;
+    const accommodations: BuilderPoi[] = ws.accommodations.map((acc) =>
+      mapAccommodationToBuilderPoi(acc, locationName)
+    );
+    const activities: BuilderPoi[] = ws.activities.map((a) =>
+      mapActivityToBuilderPoi(a, locationName)
+    );
 
     return [...accommodations, ...activities];
   });
@@ -138,7 +121,9 @@ export class BuilderSidebarComponent implements OnDestroy {
       if (selectedCategory !== 'all' && poi.type === 'activity' && poi.categoryId !== selectedCategory) return false;
       if (term) {
         return poi.title.toLowerCase().includes(term) ||
-          (poi.subtitle?.toLowerCase().includes(term) ?? false);
+          (poi.subtitle?.toLowerCase().includes(term) ?? false) ||
+          (poi.street?.toLowerCase().includes(term) ?? false) ||
+          (poi.description?.toLowerCase().includes(term) ?? false);
       }
       return true;
     });
@@ -203,6 +188,10 @@ export class BuilderSidebarComponent implements OnDestroy {
 
   isSaved(poi: BuilderPoi): boolean {
     return this.savedPoiKeysSignal().has(poi.key);
+  }
+
+  googleSearchUrl(poi: BuilderPoi): string {
+    return buildGoogleSearchUrl(poi);
   }
 
   private getCategoryIcon(name: string): string {

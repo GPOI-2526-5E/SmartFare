@@ -15,6 +15,10 @@ import { UIStateService } from '../../../core/services/ui-state.service';
 import { AlertService } from '../../../core/services/alert.service';
 import { ItineraryExportService } from '../../../core/services/itinerary-export.service';
 import { BuilderPoi } from '../../../core/models/builder.types';
+import {
+  mapAccommodationToBuilderPoi,
+  mapActivityToBuilderPoi,
+} from '../../../core/utils/poi-display.util';
 
 @Component({
   selector: 'app-itinerary-builder',
@@ -66,35 +70,13 @@ export class ItineraryBuilderComponent implements OnInit {
     const ws = this.workspace();
     if (!ws) return [] as BuilderPoi[];
 
-    const accommodationPois: BuilderPoi[] = ws.accommodations.map((acc) => ({
-      key: `accommodation-${acc.id}`,
-      type: 'accommodation' as const,
-      entityId: acc.id,
-      title: acc.name,
-      subtitle: acc.street || 'Hotel',
-      latitude: acc.latitude,
-      longitude: acc.longitude,
-      itemTypeCode: 'ACCOMMODATION' as const,
-      imageUrl: acc.imageUrl,
-      price: acc.pricePerNight,
-      rating: acc.stars
-    }));
-
-    const activityPois: BuilderPoi[] = ws.activities.map((activity) => ({
-      key: `activity-${activity.id}`,
-      type: 'activity' as const,
-      entityId: activity.id,
-      title: activity.name,
-      subtitle: activity.category?.name || activity.street || 'Attività',
-      latitude: activity.latitude,
-      longitude: activity.longitude,
-      categoryId: activity.categoryId,
-      categoryName: activity.category?.name,
-      itemTypeCode: 'ACTIVITY' as const,
-      imageUrl: activity.imageUrl,
-      price: activity.price,
-      rating: activity.rating
-    }));
+    const locationName = ws.location?.name;
+    const accommodationPois: BuilderPoi[] = ws.accommodations.map((acc) =>
+      mapAccommodationToBuilderPoi(acc, locationName)
+    );
+    const activityPois: BuilderPoi[] = ws.activities.map((activity) =>
+      mapActivityToBuilderPoi(activity, locationName)
+    );
 
     return [...accommodationPois, ...activityPois];
   });
@@ -209,7 +191,8 @@ export class ItineraryBuilderComponent implements OnInit {
     const query = this.route.snapshot.queryParams;
     const locationId = this.getLocationIdFromQuery();
     if (!locationId) {
-      this.workspaceError.set('Nessuna destinazione selezionata. Scegli prima una città dal planner manuale.');
+      this.alertService.warning('Nessuna destinazione selezionata. Scegli prima una città dal planner manuale.');
+      this.router.navigate(['/home']);
       return;
     }
 

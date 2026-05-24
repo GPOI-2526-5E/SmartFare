@@ -4,6 +4,12 @@ import { AppError } from '../../middleware/error.middleware';
 import { GeminiItineraryChatService } from './gemini.service';
 import { ChatMode, ChatStreamResponse, PlannerState, VoyagerChatMode } from '../../models/chat.model';
 import { ItineraryService } from '../itinerary/itinerary.service';
+import { applyGroupLevelTiming } from '../itinerary/itinerary-item-timing.util';
+import {
+  buildUserPreferencePromptBlock,
+  loadUserPreferenceForAi,
+  type UserPreferenceForAi,
+} from '../../utils/user-preference.util';
 
 type DbMessage = {
   role: 'user' | 'assistant';
@@ -11,15 +17,7 @@ type DbMessage = {
   createdAt: Date;
 };
 
-type UserProfileContext = {
-  age: number | null;
-  travelStyle: string | null;
-  pace: string | null;
-  preferredTransport: string | null;
-  prefersNightlife: boolean | null;
-  familyFriendly: boolean | null;
-  notes: string | null;
-};
+type UserProfileContext = UserPreferenceForAi;
 
 type SessionWithMessages = Awaited<ReturnType<ChatService['getSessionOrThrow']>>;
 
@@ -462,63 +460,11 @@ export class ChatService {
   }
 
   private buildUserProfileBlock(ctx?: UserProfileContext | null): string | null {
-    if (!ctx) return null;
-    const parts: string[] = [];
-    if (ctx.age) parts.push(`- Età approssimativa: ${ctx.age} anni`);
-    if (ctx.travelStyle) parts.push(`- Stile di viaggio: ${ctx.travelStyle}`);
-    if (ctx.pace) parts.push(`- Ritmo preferito: ${ctx.pace}`);
-    if (ctx.preferredTransport) parts.push(`- Mezzo di trasporto preferito: ${ctx.preferredTransport}`);
-    if (ctx.prefersNightlife !== null && ctx.prefersNightlife !== undefined) parts.push(`- Preferisce vita notturna: ${ctx.prefersNightlife ? 'sì' : 'no'}`);
-    if (ctx.familyFriendly !== null && ctx.familyFriendly !== undefined) parts.push(`- Viaggia con famiglia/bambini: ${ctx.familyFriendly ? 'sì' : 'no'}`);
-    if (ctx.notes) parts.push(`- Note personali: "${ctx.notes}"`);
-    if (parts.length === 0) return null;
-    return `Profilo personale dell'utente (usalo per personalizzare le risposte):\n${parts.join('\n')}`;
+    return buildUserPreferencePromptBlock(ctx ?? null);
   }
 
   private async getUserProfileContext(userId: number): Promise<UserProfileContext | null> {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          profile: { select: { birthDate: true } },
-          preference: {
-            select: {
-              travelStyle: true,
-              pace: true,
-              preferredTransport: true,
-              prefersNightlife: true,
-              familyFriendly: true,
-              notes: true,
-            }
-          }
-        }
-      });
-
-      if (!user) return null;
-
-      let age: number | null = null;
-      if (user.profile?.birthDate) {
-        const today = new Date();
-        const birth = new Date(user.profile.birthDate);
-        age = today.getFullYear() - birth.getFullYear();
-        const hasBirthdayPassed =
-          today.getMonth() > birth.getMonth() ||
-          (today.getMonth() === birth.getMonth() && today.getDate() >= birth.getDate());
-        if (!hasBirthdayPassed) age -= 1;
-      }
-
-      return {
-        age,
-        travelStyle: user.preference?.travelStyle ?? null,
-        pace: user.preference?.pace ?? null,
-        preferredTransport: user.preference?.preferredTransport ?? null,
-        prefersNightlife: user.preference?.prefersNightlife ?? null,
-        familyFriendly: user.preference?.familyFriendly ?? null,
-        notes: user.preference?.notes ?? null,
-      };
-    } catch {
-      return null;
-    }
+    return loadUserPreferenceForAi(userId);
   }
 
   private buildTranscript(messages: DbMessage[], userMessage: string): string {
@@ -962,8 +908,7 @@ export class ChatService {
 
     items = this.ensureMustSeeItems(items, workspace, transcript, startDate, usedActivityIds);
     items = this.ensureDailyCoverage(items, plannerState, workspace, startDate, usedActivityIds, usedAccommodationIds);
-    items = this.normalizeItineraryItems(items);
-    return items;
+    return this.normalizeItineraryItems(items);
   }
 
   private ensureMustSeeItems(
@@ -1117,7 +1062,7 @@ export class ChatService {
 
     const orderByDay = new Map<number, number>();
 
-    return ordered.map((item) => {
+    const reordered = ordered.map((item) => {
       const nextOrder = (orderByDay.get(item.dayNumber) || 0) + 1;
       orderByDay.set(item.dayNumber, nextOrder);
       return {
@@ -1125,6 +1070,8 @@ export class ChatService {
         orderInt: nextOrder
       };
     });
+
+    return applyGroupLevelTiming(reordered);
   }
 
   private resolvePlannedDateTime(startDate: string, dayNumber: number, value?: string | null) {

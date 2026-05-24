@@ -31,8 +31,8 @@
           <div class="wl-poi-header">
             <h4 class="wl-poi-title">{{ poi.title }}</h4>
             <div class="wl-poi-header-actions">
-              <a [href]="'https://www.google.com/search?q=' + encode(poi.title + ' ' + (poi.subtitle || ''))"
-                target="_blank" class="wl-card-pill wl-card-pill--google" title="Cerca su Google">
+              <a [href]="googleSearchUrl(poi)"
+                target="_blank" rel="noopener noreferrer" class="wl-card-pill wl-card-pill--google" title="Cerca su Google">
                 <i class="bi bi-google"></i>
                 <span>Google</span>
               </a>
@@ -49,9 +49,18 @@
             </div>
           </div>
           <div class="wl-poi-subtitle">
-            <i class="bi bi-geo-alt"></i>
-            <span>{{ poi.subtitle || 'Indirizzo non disponibile' }}</span>
+            <i class="bi bi-tag"></i>
+            <span>{{ poi.subtitle || 'Categoria' }}</span>
           </div>
+          @if (poi.street) {
+          <div class="wl-poi-address">
+            <i class="bi bi-geo-alt"></i>
+            <span>{{ poi.street }}</span>
+          </div>
+          }
+          @if (poi.description) {
+          <p class="wl-poi-description">{{ poi.description }}</p>
+          }
         </div>
       </div>
 
@@ -79,13 +88,13 @@
             <div class="wl-time-pill" [class.is-readonly]="readOnly" (click)="openTimePopup($event)">
               <i class="bi bi-calendar-check"></i>
               <div class="wl-time-segment">
-                <span class="wl-time-label">Check-in</span>
-                <span class="wl-time-val">{{ formatTimeString(poi.plannedStartAt, true) || '--' }}</span>
+                <span class="wl-time-label">{{ startTimeLabel(poi) }}</span>
+                <span class="wl-time-val">{{ formatTimeString(poi.plannedStartAt, isHotel(poi)) || '--' }}</span>
               </div>
               <i class="bi bi-arrow-right wl-time-arrow"></i>
               <div class="wl-time-segment">
-                <span class="wl-time-label">Check-out</span>
-                <span class="wl-time-val">{{ formatTimeString(poi.plannedEndAt, true) || '--' }}</span>
+                <span class="wl-time-label">{{ endTimeLabel(poi) }}</span>
+                <span class="wl-time-val">{{ formatTimeString(poi.plannedEndAt, isHotel(poi)) || '--' }}</span>
               </div>
             </div>
           </div>
@@ -93,13 +102,13 @@
           <div class="wl-time-pill wl-time-pill--readonly">
             <i class="bi bi-calendar-check"></i>
             <div class="wl-time-segment">
-              <span class="wl-time-label">Check-in</span>
-              <span class="wl-time-val">{{ formatTimeString(poi.plannedStartAt, true) || '--' }}</span>
+              <span class="wl-time-label">{{ startTimeLabel(poi) }}</span>
+              <span class="wl-time-val">{{ formatTimeString(poi.plannedStartAt, isHotel(poi)) || '--' }}</span>
             </div>
             <i class="bi bi-arrow-right wl-time-arrow"></i>
             <div class="wl-time-segment">
-              <span class="wl-time-label">Check-out</span>
-              <span class="wl-time-val">{{ formatTimeString(poi.plannedEndAt, true) || '--' }}</span>
+              <span class="wl-time-label">{{ endTimeLabel(poi) }}</span>
+              <span class="wl-time-val">{{ formatTimeString(poi.plannedEndAt, isHotel(poi)) || '--' }}</span>
             </div>
           </div>
           }
@@ -108,7 +117,7 @@
           <div class="wl-time-popup" (click)="onPopupClick($event)">
             <div class="wl-time-inputs">
               <div class="wl-time-field">
-                <label>{{ poi.type === 'accommodation' ? 'Check-in' : 'Inizio' }}</label>
+                <label>{{ startTimeLabel(poi) }}</label>
                 <div class="wl-datetime-inputs">
                   @if (poi.type === 'accommodation') {
                   <select [ngModel]="popupStartDay()" (ngModelChange)="popupStartDay.set($event)"
@@ -127,7 +136,7 @@
               <span class="wl-time-sep">-</span>
 
               <div class="wl-time-field">
-                <label>{{ poi.type === 'accommodation' ? 'Check-out' : 'Fine' }}</label>
+                <label>{{ endTimeLabel(poi) }}</label>
                 <div class="wl-datetime-inputs">
                   @if (poi.type === 'accommodation') {
                   <select [ngModel]="popupEndDay()" (ngModelChange)="popupEndDay.set($event)" title="Giorno check-out">
