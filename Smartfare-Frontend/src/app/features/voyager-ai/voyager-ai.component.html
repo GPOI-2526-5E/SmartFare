@@ -358,6 +358,28 @@
           }
           }
 
+          <!-- STREAM ERROR CARD -->
+          @if (chatService.hasStreamError()) {
+          <div class="itinerary-ready-card stream-error-card">
+            <div class="card-image-wrapper blurred-image">
+              <div class="card-image" aria-hidden="true">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+              </div>
+              <div class="card-badge stream-error-badge">Errore Server</div>
+            </div>
+            <div class="card-body">
+              <h3>Richieste esaurite</h3>
+              <p>Ops! I servizi AI sono temporaneamente in sovraccarico. Non sono riuscito a completare l'itinerario.</p>
+              <div class="generate-actions">
+                <button class="generate-btn stream-retry-btn" (click)="retryLastMessage()" [disabled]="chatService.isStreaming()">
+                  <i class="bi bi-arrow-clockwise"></i>
+                  <span>Riprova più tardi</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          }
+
           @if (isPlannerLocked()) {
           <div class="planner-locked-card">
             <i class="bi bi-lock-fill"></i>

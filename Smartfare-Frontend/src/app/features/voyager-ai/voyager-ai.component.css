@@ -2126,3 +2126,41 @@ textarea {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ─── STREAM ERROR CARD ──────────────────────────────────────── */
+.stream-error-card {
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+.blurred-image {
+  filter: grayscale(100%) blur(2px);
+  opacity: 0.6;
+}
+
+.stream-error-badge {
+  background: #ef4444 !important;
+  color: white !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4) !important;
+}
+
+.stream-error-card h3 {
+  color: #fca5a5 !important;
+}
+
+.stream-error-card p {
+  color: #fecaca !important;
+}
+
+.stream-retry-btn {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1)) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  color: #fca5a5 !important;
+}
+
+.stream-retry-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.35), rgba(239, 68, 68, 0.2)) !important;
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25) !important;
+}

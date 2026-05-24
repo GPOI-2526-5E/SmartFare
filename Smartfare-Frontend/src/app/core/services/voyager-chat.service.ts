@@ -78,6 +78,7 @@ export class VoyagerChatService {
   readonly mode = signal<ChatMode>('planner');
   readonly plannerState = signal<PlannerState | null>(null);
   readonly readyToGenerate = signal(false);
+  readonly hasStreamError = signal(false);
 
   loadSessions(): Observable<ChatSession[]> {
     this.isLoadingSessions.set(true);
@@ -103,6 +104,7 @@ export class VoyagerChatService {
         this.mode.set(session.mode);
         this.plannerState.set(session.metadata?.plannerState || null);
         this.readyToGenerate.set(Boolean(session.metadata?.readyToGenerate));
+        this.hasStreamError.set(false);
         this.messages.set([]);
         this.upsertSession(session);
       })
@@ -165,6 +167,7 @@ export class VoyagerChatService {
 
     this.messages.update((messages) => [...messages, userMessage, { role: 'assistant', content: '', isStreaming: true }]);
     this.isStreaming.set(true);
+    this.hasStreamError.set(false);
 
     const token = this.authService.getAccessToken();
     if (!token) {
@@ -213,6 +216,9 @@ export class VoyagerChatService {
           }
 
           if (data.done) {
+            if (data.error) {
+              this.hasStreamError.set(true);
+            }
             this.finalizeLastAssistantMessage(fullContent);
             this.applyStreamMetadata(sessionId, data.metadata);
             onDone(data);
@@ -221,6 +227,7 @@ export class VoyagerChatService {
       }
     } catch (error) {
       console.error('Streaming error:', error);
+      this.hasStreamError.set(true);
       this.updateLastAssistantMessage('Si è verificato un errore nella comunicazione con Voyager AI.');
       this.finalizeLastAssistantMessage('Si è verificato un errore nella comunicazione con Voyager AI.');
     } finally {
@@ -233,6 +240,7 @@ export class VoyagerChatService {
     this.mode.set(session?.mode || 'planner');
     this.plannerState.set(session?.metadata?.plannerState || null);
     this.readyToGenerate.set(Boolean(session?.metadata?.readyToGenerate));
+    this.hasStreamError.set(false);
   }
 
   clearActiveConversation(mode?: ChatMode) {
@@ -241,6 +249,7 @@ export class VoyagerChatService {
     this.mode.set(mode || this.mode());
     this.plannerState.set(null);
     this.readyToGenerate.set(false);
+    this.hasStreamError.set(false);
   }
 
   private updateLastAssistantMessage(content: string) {

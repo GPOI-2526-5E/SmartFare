@@ -533,6 +533,15 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     await this.generateItinerary();
   }
 
+  async retryLastMessage() {
+    const messages = this.chatService.messages();
+    const lastUserMessage = messages.slice().reverse().find(m => m.role === 'user');
+    if (lastUserMessage && !this.chatService.isStreaming() && !this.isPlannerLocked()) {
+      this.message.set(lastUserMessage.content);
+      await this.sendMessage();
+    }
+  }
+
   exportConversation(format: 'md' | 'json') {
     const session = this.chatService.activeSession();
     if (!session) return;
