@@ -1,0 +1,978 @@
+=== TESINA SMARTFARE DOCX ===
+Paragrafi: 331
+[Nome Istituto di Istruzione Superiore]
+[Classe, es. 5°B Informatica]
+SmartFare
+Piattaforma web AI-driven per la pianificazione di viaggi in Italia
+[ IMMAGINE: Logo SmartFare e schermata Home con barra prompt AI ]
+Autori:  [Nome Cognome] — [Eventuale secondo autore]
+Anno scolastico:  [2025/26]
+Documento:  Tesina Esame di Stato
+[Heading 1] 1. Prefazione e introduzione
+[ IMMAGINE: Home page di SmartFare con il prompt AI nella hero section ]
+[Heading 1] 2. Perché abbiamo scelto questo progetto
+Le motivazioni principali sono quattro:
+[Heading 1] 3. Tecnologie utilizzate
+Per ogni tecnologia viene descritto: che cos'è, come funziona in generale e perché è stata scelta in SmartFare.
+[Heading 2] 3.1 TypeScript
+[Heading 2] 3.2 Angular — framework frontend
+Il funzionamento essenziale si basa su tre elementi:
+Esempio — interceptor di autenticazione (auth.interceptor.ts):
+// Smartfare-Frontend/src/app/core/interceptors/auth.interceptor.ts
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+const token = authService.getAccessToken();
+if (!token || !req.url.startsWith(environment.apiUrl)) return next(req);
+return next(req.clone({
+setHeaders: { Authorization: `Bearer ${token}` }
+}));
+};
+[ IMMAGINE: Struttura cartelle src/app/features nel IDE (opzionale) ]
+[Heading 2] 3.3 Node.js ed Express — backend
+// Smartfare-Backend/src/app.ts (estratto)
+app.use(helmet({ /* header sicurezza */ }));
+app.use(globalLimiter);   // max 50 richieste / 15 min per IP
+app.use(cors({ origin: /* whitelist frontend */, credentials: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use('/api/itineraries', itineraryRoutes);
+app.use('/api/ai',          aiRoutes);
+app.use('/api/chat',        chatRoutes);
+app.use('/auth',            authRoutes);
+[Heading 2] 3.4 PostgreSQL e Prisma ORM
+Esempio di schema Prisma — entità User e Itinerary (schema.prisma):
+// Smartfare-Backend/prisma/schema.prisma (estratto)
+model User {
+id           Int           @id @default(autoincrement())
+email        String        @unique
+passwordHash String?
+itineraries  Itinerary[]
+chatSessions ChatSession[]
+sessions     AuthSession[]
+}
+model Itinerary {
+id           Int             @id @default(autoincrement())
+userId       Int
+locationId   Int
+title        String
+startDate    DateTime?
+endDate      DateTime?
+visibilityId Int
+items        ItineraryItem[]
+}
+[ IMMAGINE: Diagramma ER semplificato (da Prisma Studio o draw.io) — opzionale ]
+[Heading 2] 3.5 Autenticazione: JWT, bcrypt e sessioni server-side
+Codice del middleware di autenticazione (auth.middleware.ts):
+// Smartfare-Backend/src/middleware/auth.middleware.ts (estratto)
+export const authenticateJWT = async (req, res, next) => {
+const token = parseBearerToken(req.headers.authorization);
+const payload = verifyTokenOrThrow(token);
+const isValidSession = await validateUserSession(payload);
+if (!isValidSession) {
+return res.status(401).json({ error: 'Sessione non valida o scaduta' });
+}
+req.user = payload;  // payload disponibile per i controller successivi
+next();
+};
+[ IMMAGINE: Pagina di login e registrazione di SmartFare ]
+[Heading 2] 3.6 Zod — validazione input
+[Heading 2] 3.7 Google Gemini — intelligenza artificiale generativa
+In SmartFare Gemini viene utilizzato per tre compiti distinti:
+[Heading 2] 3.8 Leaflet e OpenStreetMap — mappe interattive
+Codice di inizializzazione della mappa (preview-map.component.ts):
+// Smartfare-Frontend/.../preview-map.component.ts (estratto)
+this.map = L.map(this.mapHost.nativeElement).setView([44.4056, 8.9463], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+maxZoom: 19,
+attribution: '© OpenStreetMap contributors'
+}).addTo(this.map);
+[ IMMAGINE: Anteprima itinerario con mappa, polyline e timeline dei giorni ]
+[Heading 2] 3.9 Altre integrazioni
+[Heading 1] 4. Architettura del sistema e difficoltà affrontate
+[Heading 2] 4.1 Schema logico client–server–database
+Flusso di una richiesta tipica (es. generazione itinerario):
+Il componente Angular chiama il metodo del servizio Angular (ai-chat.service.ts).
+Il servizio invia POST /api/ai/itinerary/generate con il prompt dell'utente.
+Il middleware authenticateJWT verifica il token JWT e la sessione.
+Lo schema Zod valida il body; se invalido, risponde 400.
+Il controller chiama geminiService.generateInitialItinerary() con workspace DB.
+Gemini risponde con la struttura JSON dell'itinerario.
+Il controller salva l'itinerario su PostgreSQL via Prisma e risponde al client.
+Il frontend aggiorna l'interfaccia (mappa + lista tappe) con i dati ricevuti.
+[Heading 2] 4.2 Routing frontend e lazy loading
+// Smartfare-Frontend/src/app/app.routes.ts (estratto)
+{ path: 'voyager',
+loadComponent: () => import('./features/voyager-ai/...'),
+canActivate: [authGuard] },          // richiede login
+{ path: 'discover',
+loadComponent: () => import('./features/discover/...') }, // pubblico
+{ path: 'itineraries/builder',
+loadComponent: () => import('./features/planner/itinerary-builder/...') },
+{ path: 'interactive-map',
+loadComponent: () => import('./features/interactive-map/...') },
+[Heading 2] 4.3 Pipeline di generazione itinerario (backend)
+// Smartfare-Backend/src/routes/ai.route.ts — flusso semplificato
+// 1. Validazione input (Zod)
+const { prompt } = aiItineraryGenerateSchema.parse(req.body);
+// 2. Carica tutte le destinazioni disponibili nel DB
+const locations = await prisma.location.findMany({
+select: { id: true, name: true }
+});
+// 3. Identifica la città nel prompt (regex locali + Gemini fallback)
+const locationId = await geminiService.identifyLocation(prompt, locations);
+// 4. Carica workspace: attività, hotel, preferenze utente
+const workspace = await itineraryService.getWorkspaceData(locationId, userId);
+// 5. Genera itinerario con Gemini e risponde al client
+const response = await geminiService.generateInitialItinerary(
+prompt, { ...workspace }
+);
+res.json({ success: true, itinerary: { ...response, locationId } });
+[Heading 2] 4.4 Voyager AI — chat con risposta in streaming
+[ IMMAGINE: Interfaccia Voyager AI con conversazione e risposta in streaming ]
+[Heading 2] 4.5 Altre difficoltà affrontate
+[Heading 1] 5. Il database relazionale
+[Heading 2] 5.1 Entità principali
+Lo schema PostgreSQL (descritto in schema.prisma) comprende le seguenti entità:
+[Heading 2] 5.2 Normalizzazione e relazioni
+[ IMMAGINE: Diagramma ER semplificato — opzionale (Prisma Studio o draw.io) ]
+[Heading 1] 6. Descrizione delle funzionalità
+[Heading 2] 6.1 Home e accesso rapido all'IA
+[ IMMAGINE: Home con prompt "Voglio un weekend culturale a Firenze" ]
+[Heading 2] 6.2 Discover — community e itinerari pubblici
+[ IMMAGINE: Pagina Discover con griglia itinerari e filtri attivi ]
+[Heading 2] 6.3 Pianificatore manuale e builder
+Il flusso di pianificazione si articola in tre passi:
+Manual planner: l'utente sceglie destinazione, date di partenza e ritorno.
+Preview: timeline visiva + mappa con polyline che collega le tappe nell'ordine.
+[ IMMAGINE: Itinerary builder: mappa, lista tappe e chat AI laterale ]
+[Heading 2] 6.4 Voyager AI
+[ IMMAGINE: Interfaccia Voyager AI con lista sessioni e conversazione attiva ]
+[Heading 2] 6.5 Profilo e libreria itinerari
+[ IMMAGINE: Profilo utente con preferenze di viaggio e lista "I miei itinerari" ]
+[Heading 2] 6.6 Mappa interattiva d'Italia
+[ IMMAGINE: Mappa interattiva d'Italia con cluster di POI e filtri categoria ]
+[Heading 2] 6.7 Autenticazione e sicurezza account
+Il sistema di autenticazione supporta tre modalità:
+Registrazione locale con verifica email (OTP temporaneo via Nodemailer).
+Login locale con email e password (hash bcrypt).
+Login sociale con Google o GitHub (OAuth 2.0, verifica token lato server).
+[ IMMAGINE: Pagina impostazioni sicurezza / verifica email in corso ]
+[Heading 1] 7. Esempi di utilizzo end-to-end
+[Heading 2] Esempio A — Itinerario generato da prompt AI
+L'utente dalla home inserisce: «3 giorni a Roma, ritmo moderato, focus cultura».
+Il backend identifica locationId per Roma, carica le attività e gli hotel dalla tabella Location + Activity del DB.
+Gemini riceve il workspace e propone giorni, tappe e orari.
+L'utente viene portato al builder per rifinire e salvare la bozza.
+In preview verifica mappa e timeline; pubblica su Discover se desidera.
+Codice del servizio Angular che avvia la generazione (ai-chat.service.ts):
+// Smartfare-Frontend/src/app/core/services/ai-chat.service.ts (estratto)
+generateItinerary(prompt: string): Observable<Itinerary | null> {
+return this.http.post<{ itinerary?: Itinerary }>(
+`${environment.apiUrl}/api/ai/itinerary/generate`,
+{ prompt }
+).pipe(
+map((r) => r.itinerary || null)
+);
+}
+[ IMMAGINE: Sequenza: prompt → loading → builder con itinerario generato → preview su mappa ]
+[Heading 2] Esempio B — Modifica in linguaggio naturale nel builder
+L'utente ha una bozza aperta nel builder e vuole aggiungere una tappa senza navigare nella lista delle attività.
+Utente autenticato con bozza aperta nel builder.
+Scrive in chat: «Aggiungi una visita a un museo il secondo giorno».
+Il frontend invia POST /api/ai/itinerary/chat con lo snapshot corrente delle tappe e il messaggio dell'utente.
+Gemini riceve la struttura attuale + la richiesta e restituisce la struttura aggiornata.
+Il frontend aggiorna mappa e timeline senza ricaricare la pagina.
+[ IMMAGINE: Chat laterale nel builder: richiesta utente e risposta AI con tappa aggiunta ]
+[Heading 2] Esempio C — Discover e follow
+Utente A pubblica il proprio itinerario impostando visibilità PUBLIC.
+Utente B in Discover cerca 'Venezia', trova l'itinerario di A e lo apre.
+B segue A (follow); da quel momento vede i nuovi itinerari di A nel proprio feed.
+B può salvare l'itinerario di A nei preferiti (ItineraryFavorite).
+[ IMMAGINE: Scheda dettaglio itinerario pubblico in Discover con pulsante "Segui" ]
+[Heading 1] 8. Conclusioni e sviluppi futuri
+[Heading 2] Risultati raggiunti
+I principali obiettivi raggiunti sono:
+Frontend Angular con lazy loading, routing protetto, mappe interattive e chat AI.
+Backend Node.js/Express con validazione Zod, middleware JWT + sessioni, rate limiting.
+Database PostgreSQL normalizzato con 15+ entità, gestito tramite Prisma ORM.
+Integrazione AI ancorata ai dati reali del territorio italiano (POI, hotel, coordinate).
+Funzionalità social: profili, follow, itinerari pubblici, preferiti.
+[Heading 2] Limiti attuali
+Dipendenza da servizi esterni a pagamento (Gemini API, Cloudinary, email provider).
+Dataset di località e attività da aggiornare manualmente tramite script di popolamento in utils/.
+La pianificazione non considera disponibilità reale (orari di apertura, prenotabilità).
+[Heading 2] Sviluppi possibili
+Export PDF o ICS (calendario) dell'itinerario per uso offline.
+Notifiche push per promemoria delle tappe durante il viaggio.
+Valutazioni e commenti sugli itinerari pubblici nella sezione Discover.
+Ottimizzazione del percorso tra tappe con routing OSRM (Open Source Routing Machine).
+Integrazione prezzi trasporti in tempo reale (Trenitalia, Flixbus API).
+[Heading 1] Allegato A — Struttura del progetto
+SmartFare/
+├── Smartfare-Frontend/src/app/
+│   ├── core/
+│   │   ├── services/      # ai-chat, auth, itinerary, discover…
+│   │   ├── interceptors/  # auth.interceptor.ts (JWT)
+│   │   └── guards/        # authGuard
+│   └── features/
+│       ├── home/
+│       ├── discover/
+│       ├── planner/       # manual-planner, itinerary-builder, preview
+│       ├── voyager-ai/
+│       ├── profile/
+│       └── interactive-map/
+│
+└── Smartfare-Backend/
+├── src/
+│   ├── routes/        # ai.route.ts, auth.route.ts, itinerary.route.ts…
+│   ├── services/      # gemini.service.ts, chat.service.ts, itinerary.service.ts…
+│   ├── middleware/    # auth.middleware.ts, error.middleware.ts
+│   ├── schemas/       # Zod schemas per la validazione input
+│   └── app.ts         # createApp() — configurazione Express
+└── prisma/
+└── schema.prisma  # Definizione del database
+[Heading 1] Allegato B — Checklist screenshot da inserire
+☐  Home page con prompt AI e hero section
+☐  Pagina di login e registrazione
+☐  Discover: lista itinerari pubblici e filtri
+☐  Dettaglio itinerario pubblico in Discover
+☐  Manual planner: selezione destinazione e date
+☐  Itinerary builder: mappa + giorni + chat AI
+☐  Preview: timeline e mappa con polyline
+☐  Voyager AI: lista sessioni e chat attiva
+☐  Mappa interattiva d'Italia con cluster POI
+☐  Profilo utente: preferenze e lista itinerari
+☐  (Opzionale) Prisma Studio o schema ER del database
+
+=== ESEMPIO CAIRONE PDF (43 pag) ===
+--- Pag 1 ---
+Cairone Fiorentino
+Giacchello  Giuseppe
+5ˆB Informatica
+Anno Scolastico 2015/16
+Tesina Esame di Stato
+--- Pag 2 ---
+2
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+SOMMARIO
+PREFAZIONE ..................................................................................................................................... 4
+INTRODUZIONE .........................................................................................................................................
+PERCHÉ ABBIAMO SCELTO QUESTO PROGETTO? ................................................................................................. 4
+TECNOLOGIE UTILIZZATE .......................................................................................................... 5
+LINGUAGGIO C .........................................................................................................................................
+LINGUAGGIO C# ........................................................................................................................................
+COMPILATORE GCC ......................................................................................................................................
+FILE XML .............................................................................................................................................
+STRUTTURA DEL SOFTWARE E DIFFICOLTÀ AFFRONTATE ........................................... 7
+DISPENSE BLOCCO C .................................................................................................................... 13
+FORM PRINCIPALE ......................................................................................................................................
+CREAZIONE DI VARIABILI E VETTORI ............................................................................................................. 14
+AGGIUNTA DI UN BLOCCO ALL’INTERNO DEI PANNELLI ............................................................................... 15
+ELIMINAZIONE DI UN BLOCCO ALL’INTERNO DEI PANNELLI ........................................................................ 15
+CREAZIONE NUOVO PROGETTO ...................................................................................................................... 16
+SALVATAGGIO DI UN PROGETTO ..................................................................................................................... 16
+APERTURA DI UN PROGETTO ........................................................................................................................... 16
+ESECUZIONE DEL PROGRAMMA ...................................................................................................................... 17
+DESCRIZIONE DEI BLOCCHI E LORO UTILIZZO .............................................................................................. 19
+--- Pag 3 ---
+3
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+RICERCA DI ELEMENTO ALL’INTERNO DI UN VETTORE CON ELEMENTI DISORDINATI E RIPETUTI ..................... 37
+ORDINAMENTO DEGLI ELEMENTI DI UN VETTORE DI CARATTERI (METODO PER SELEZIONE) ........................... 39
+CONVERTITORE DI NUMERI DA DECIMALE A BINARIO ....................................................................................... 42
+--- Pag 4 ---
+4
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Prefazione
+Introduzione
+Questo manuale è una guida pratica per l’utilizzo di Blocco C,  un s oftware per la creazione di
+semplici applicazioni in console usando le istruzioni  base del linguaggio ANSI (American National
+Standard Institute ) C. Ogni istruzione è tradotta in un blocc o colorato con l’obbiettivo di
+semplificare l’apprendimento agli utenti alle prime armi (esempio studenti di prima e /o seconda
+superiore).
+Scopo principale dell’applicazione è proprio quello di convertire i blocchi inseriti dal programmatore
+in istruzioni ANSI C.
+Inoltre è possibili  eseguire il progetto che, richiamando automaticamente un compilatore ANSI C
+integrato (GCC), manderà in esecuzione il programma realizzato dall’utente.
+Oltre al salvataggio del progetto e la conversione in C, Blocco C è in grad o di stampare e salvare in
+PDF il file sorgente *.c.
+Perché abbiamo scelto questo progetto?
+La scelta è stata effettuata per vari motivi. Il primo perché il C è un linguaggio general purpose, cioè
+permette di risolvere varie tipologie di problemi. Il secondo per eliminare un suo grande svantaggio:
+a causa delle sue strutture più “elementari” rispetto agli altri linguaggi il suo utilizzo è più complesso
+se non si è un programmatore esperto.  Grazie al blocco C  lo abbiamo voluto rendere più accessibile
+--- Pag 5 ---
+5
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Tecnologie utilizzate
+Linguaggio C
+Il C, nato negli anni ’70 e standardizzato nel 1989, è un linguaggio di programmazione ad alto livello
+di tipo imperativo poiché comunica esattamente al microprocessore cosa deve essere eseguito e
+determina un’esecuzione sequenziale delle istruzioni tranne  nei casi delle strutture di controllo dove
+si effettuano dei salti. Da esso ne derivano altri come il C++ e il C#.
+Linguaggio C#
+Il C# è un linguaggio object oriented , sviluppato da Microsoft e u tilizza il NET Framework. Una
+delle IDE ( Integrated Develop ment Enviroment ), propri etaria Microsoft, che implementa  C# è
+Visual Studio.
+Le principali differenze con il C sono:
+ In molte operazioni aritmetiche vengono controllati eventuali overflow.
+ Gli oggetti dinamici non vengono deallocati tramite codice ma la loro rimozione viene gestita
+automaticamente dal garbage-collector quando non esistono più riferimenti a tali oggetti.
+ É possibile ereditare da una sola classe.
+ Le sole conversioni implicite consentite sono quelle che non espongono al rischio di perdita
+di dati causata dalla diversa tipologia di dato. Ad esempio non puoi convertire un char in
+--- Pag 6 ---
+6
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+File XML
+XML (eXtensible Markup Language ) è un formato di rappresentazione di dati che racchiude ogni
+dato all’interno di Tag creando così una struttura ad albero . Viene utilizzato soprattutto per
+memorizzare database di piccola dimensione, trasportare dati da un ambiente all’altro e memorizzare
+informazioni di configurazione. Uno svantaggio è la scarsa economicità in termini di spazio di
+occupazione rispetto ad altri formati come il CSV.
+Un albero XML è formato da un’intestazione: <?xml version=”1.0” encoding=”UTF -8” ?>  e una
+<root>…</root> fissa, dove al suo interno sono presenti vari elementi figli.
+La struttura è di tipo gerarchica. Ogni Tag XML può contenere attributi, come i Tag HTML.
+--- Pag 7 ---
+7
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Struttura del software e difficoltà affrontate
+Siamo partiti dalla creazione dei vari blocchi colorati definendo degli User Control personalizzati
+per ognuno di esso. Ogni classe contiene metodi e attributi differenti per ogni tipologia di istruzione,
+per esempio il blocco del ciclo For contiene metodi che permettono l’aggiunta di altri blocchi e il
+ridimensionamento automatico. Invece, il blocco per l’assegnazione di una variabile non cont iene
+questi metodi ma gestisce il caricamento delle variabili nelle varie ComboBox.
+Il secondo step è stato gestire il drag&drop dei blocchi, quindi l’inserimento dinamico di
+quest’ultimi nel panello Main e di conseguenza nei pannelli dei cicli e delle condizioni.
+Successivamente abbiamo affrontato una delle fasi più importanti , nonché la più complessa , del
+nostro progetto, cioè la conversione di ogni istruzione visuale nel corrispondente codice testuale.
+Parte della funzione per la traduzione dei blocchi:
+private void traduciBlocchi(string tipo, Panel pnl)
+{
+if (tipo == "main")
+{
+//scorro le variabili
+for (int i = 0; i < varGlobali1.pnl.Controls.Count; i++)
+--- Pag 8 ---
+8
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+}
+}
+}
+for (int i = 0; i < pnl.Controls.Count; i++)
+{
+try
+{
+switch (pnl.Controls[i].GetType().ToString())
+{
+case "Esame.visualizzaTesto":
+visualizzaTestoTraduci((Panel)pnl.Controls[i].Controls["pnlPadre"].Controls
+["pnlTesto"], ref codice);
+break;
+case "Esame.InputBox":
+codiceXML += "<InputBox>";
+visualizzaTestoTraduci((Panel)pnl.Controls[i].Controls["visualizzaTesto1"].
+--- Pag 9 ---
+9
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+}
+}
+private void controlloIf(bloccoControllo bloccoCont, string condizione)
+{
+codiceXML += "<bloccoCondizione>";
+int qta = bloccoCont.Controls["pnlPadre"].Controls.Count - 1;
+codice += condizione + "(";
+CheckBox not = (CheckBox)bloccoCont.Controls["pnlPadre"].Controls["chkNot"];
+if (not.Checked)
+{
+codice += "!(";
+codiceXML += "!§";
+}
+for (int y = 1; y <= qta; y++)
+{
+casellaAndOr casellaAndor =
+(casellaAndOr)bloccoCont.Controls["pnlPadre"].Controls["casellaAndOr" + y];
+--- Pag 10 ---
+10
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+codice += ")";
+codiceXML += "</bloccoCondizione>";
+}
+La funzione traduciBlocchi vuole due parametri: il tipo simbolico del pannello (“main”, “cicloFor”,
+“controlloIf”, ...) e il puntatore fisico al pannello conten ente i blocchi da convertire. È composta
+principalmente da una condizione che verif ica se il tipo del pannello è  “main”. S e soddisfa il
+controllo, la funzione  scorre il contenitore delle variabili , tramite un for,  e le scriv e nella stringa
+codice.
+Fatto questo, in ogni caso, esegue un altro ciclo for che questa volta andrà ad analizzare il pannello
+che si è passato come parametro. Ogni blocco è identificato da un suo tipo (esempio:
+“Esame.controlloIf”) grazie al quale lo switch può identificarlo per poi poterci accedere e prelevare i
+dati, inseriti dall’utente, e comporre così il codice C  e XML per il salvat aggio. Nel caso dei cicli e
+dei controlli il metodo viene richiamat o in modo ricorsivo passandogli come parametro tipo e
+puntatore al suo pannello interno.
+La funzione controlloIf permette di leggere e convertire  le condizioni delle if , ifelse e dei cicli
+while e doWhile.
+Per quanto riguarda il salvataggio di ogni progetto, vengono salvati tre file in una cartella: un file *.c,
+--- Pag 11 ---
+11
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+{
+try
+{
+if (File.Exists("test.exe"))
+File.Delete("test.exe");
+errore = "Errori:\n";
+header = "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include
+<math.h>\n";
+headerXML = "";
+codiceXML = "<root>";
+codice = "int main()\n{\nsrand(time(NULL) + getpid());/*gestisce eventuali numeri
+random*/";
+traduciBlocchi("main", pnlMain.pnl);
+codiceXML += "</root>";
+codice += "\nprintf(\"Premi un pulsante per uscire...\");\ngetchar();\nreturn 0;\n}";
+if (errore != "Errori:\n")
+MessageBox.Show(errore, "ERRORI SUI BLOCCHI (OGGETTI MANCANTI)", MessageBoxButtons.OK,
+MessageBoxIcon.Error);
+else
+{
+--- Pag 12 ---
+12
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+sw.Close();
+programma = "cd " + Application.StartupPath + "\\bins\\gcc\n";
+argomenti = String.Format("gcc.exe \"{0}\" -o \"{1}\"2> \"{2}\" \n exit", fileC,
+fileEXE, Application.StartupPath + "\\errori.txt");
+StreamWriter scriviBat = new StreamWriter(Application.StartupPath + "\\esegui.bat",
+false);
+scriviBat.Write(programma + argomenti);
+scriviBat.Flush();
+scriviBat.Close();
+Process.Start(Application.StartupPath + "\\esegui.bat");
+Directory.SetCurrentDirectory(Application.StartupPath);
+System.Threading.Thread.Sleep(1500);
+StreamWriter swXml = new StreamWriter(fileXML, false);
+swXml.Write(codiceFinaleXML);
+swXml.Flush();
+swXml.Close();
+if (File.Exists(fileEXE))
+{
+processoEXE = Process.Start(fileEXE);
+}
+--- Pag 13 ---
+13
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+DISPENSE BLOCCO C
+Form principale
+Il Main di Blocco C è formato da:
+ Due pannelli: uno per l’inserimento dei blocchi, tramite Drag&Drop, che staranno nel metodo
+main() del file ANSI C. L’altro, di sola lettura, che contiene i vettori e le variabili create.
+ Un menu: dove è possibile salvare, aprire un file *. bloccoc o stampare il file P DF del file
+ANSI C.
+ Un bottone “Converti  e esegui”: converte i blocchi nel linguaggio ANSI C. La prima volta
+che si clicca dall’avvio del programma, viene chiesto di salvare il progetto dell’utente
+all’interno del computer. Fino a che non si farà “nuovo progetto”, contenuto nel menu, Blocco
+C farà riferim ento alla cartella salvata , e le volte successive al click del bottone avvierà il
+codice scritto dall’utente aggiornandolo automaticamente.
+ Un menu dei blocchi : dove l’utente, scelta la categoria, potrà trascinare un rettangolo sul
+pannello del Main e aggiungere così un blocco.
+--- Pag 14 ---
+14
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Creazione di variabili e vettori
+Per creare una variabile o vettore bisogna andare nella sezione “Crea variabile”. Dopo di che si deve
+cliccare su uno dei due bottoni e in base a cosa si è scelto verranno visualizzati questi due Form:
+Ogni variabile deve avere un nome diverso. Se per caso si dovesse sbagliare c’è un controllo
+automatico che avvisa l’utente. I tipi di ogni variabile sono: INT, CHAR, STRING ( vettore di
+Char), BOOL (‘typedef enum {FALSE, TRUE} bool; ’: codice che consente di aggiungere il tipo
+booleano. Questo perché non esiste in ANSI C , e quindi viene creato dal programma scrivendo nel
+file in output questa riga fuori dal metodo principale main()) e DOUBLE. Mentre i vettori non hanno
+il tipo STRING. In aggiunta nei vettori bisogna anche inserire la lunghezza che deve essere un
+numero maggiore di 0. Le variabili verranno visualizzate nel seguente pannello.  Il codice in ANSI C
+corrispondente per le variabili è:
+tipo_variabile nome_variabile = valore_standard;
+esempio:
+int i = 0;
+Per i vettori: tipo_vettore nome_vettore[lunghezza_vettore]:
+--- Pag 15 ---
+15
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+esempio:
+int v[10];
+È possibile eliminare una variabile creata cliccando sulla X in alto a destra.
+Aggiunta di un blocco all’interno dei pannelli
+Per aggiungere un blocco all’interno di un pannello (esempio il Main) bisogna trascinare al suo
+interno un blocco preso dal menu laterale. A questo punto verrà creato e aggiunto in coda a tutti gli
+altri. Un esempio:
+Eliminazione di un blocco all’interno dei pannelli
+Per eliminare un blocco all’interno dei pannelli, basta cliccare sulla X posta su o gnuno di essi in alto
+a destra.
+--- Pag 16 ---
+16
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Creazione nuovo progetto
+Per creare un nuovo progetto basta cliccare sul simbolo del file nuovo nel menu orizzontale posto in
+alto a sinistra, o scegliere la voce “Nuovo” da sottomenu “File”.
+Salvataggio di un progetto
+Per salvare il programma ci sono tre modi:
+1. La prima volta che si clicca su “Converti e esegui” e non si è salvato il progetto viene chiesto
+all’utente di salvare il progetto con nome.
+2. Se si clicca sul bottone salva, posto nel men u orizzontale, tramite il simbolino floppy disk o
+nel sottomenu “File->Salva”.
+3. Nel sottomenu “File->salva con nome”. In questo caso, però crea solo una c opia nel percorso
+specificato, ma non si farà riferimento a quest’ultimo come progetto aperto.
+Apertura di un progetto
+Dopo aver cliccato sul simbolo della cartella nel menu orizzontale posto in alto a sinistra, o scegliere
+la voce “Apri”  dal sottomenu  “File”, comparirà una finestra e si  dovrà scegliere un file  con
+estensione *.bloccoc.
+--- Pag 17 ---
+17
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+A questo punto il programma verrà aperto, visualizzando il suo contenuto nel pannello Main, e il suo
+nome nel titolo del Form principale.
+Esecuzione del programma
+Dopo aver “scritto ” il codice, per avviare il programma bisogna cliccare sul bottone “Converti e
+esegui”.
+Il programma verifica se è stato già salvato il progetto. Se non è così allora viene mostrata una
+finestra che permette di scegliere il percorso di salvataggio.
+--- Pag 18 ---
+18
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Dopo di che verrà eseguita la conversione automatica e se non ci sono errori il compilatore GCC
+creerà il file eseguibile, il file in ANSI C e il file XML  (*.bloccoc) contenuti in una cartella . Infine
+verrà aperto in automatico il terminale dove verrà eseguito il programma.
+--- Pag 19 ---
+19
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Ogni volta che si clicca sul bottone “Converti e esegui”, adesso, verrà in automatico aggiornato il
+progetto nella cartella scelta precedentemente.
+Descrizione dei blocchi e loro utilizzo
+Vettori e Variabili
+I seguenti blocchi si trovano tutti nella sezione “Vettori e variabili” del menu a sinistra e consentono
+la gestione delle variabili e dei vettori.
+Casella a discesa per le variabili
+La seguente casella a discesa (Combobox), contiene tutte le variabili semplici (non i vettori) cr eate
+dall’utente tramite il menu. Non è possibile inserirli direttamente all’interno del Main, come blocchi
+a sé stanti, ma vengono utilizzati all’interno di altri blocchi per diversi scopi che verranno citati più
+avanti.
+Assegnazione di una variabile
+--- Pag 20 ---
+20
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Si immette il numero (in questo caso) e si preme ok. Il testo comparirà sulla Combobox, se  non ci
+sono stati errori di input
+Altrimenti s può selezionare un'altra variabile di tipo INT (in questo caso)
+Questa cosa si può fare per qualsiasi tipologia di variabile, dato che il programma riconosce
+automaticamente il suo tipo. Esempio se si sceglie una variabile di tipo CHAR, si potrà immettere un
+carattere all’interno dell’Inputbox, e scegliere solo variabili di tipo carattere.
+Nel caso di STRING o CHAR, i valori immessi dall’utente tramite Inputbox, si riconoscono perché
+racchiusi tra “” (doppi apici) per le stringhe o ‘’ (singoli apici) per i caratteri.
+Il codice corrispondente in ANSI C è:
+nome_variabile = valore/variabile;
+--- Pag 21 ---
+21
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Esempio:
+Si sceglie una variabile di tipo STRING (testo). Il primo operatore è un testo
+Invece il secondo, si sceglie un’altra variabile di tipo STRING, dopo aver selezionato l’operatore +
+Il codice corrispondente in ANSI C è:
+nome_variabile = valore/variabile (operatore) valore/variabile;
+esempio:
+stringa = “Ciao: ” + nome;
+È possibile utilizzare solo due operatori alla volta. Quindi, si consiglia, per le operazioni più
+complicate, di spezzarle in più blocchi e creare e utilizzare variabili di appoggio se necessario.
+--- Pag 22 ---
+22
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Il codice corrispondente in ANSI C è:
+nome_vettore[numero_intero/variabile_intera] = valore/variabile;
+esempio:
+double[0] = 10.3;
+double[i] = numero_double;
+Calcolo lunghezza di un vettore
+Il seguente blocco consente di richiamare una funzione, insieme di istruzioni richiamabili più volte
+all’interno del programma, che calcola la lunghezza di elementi di un vettore (numero di elementi
+--- Pag 23 ---
+23
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+…
+nome_variabile_intera = lunghezzaVet(nome_vettore);
+…
+}
+esempio:
+#define lunghezzaVet(array) (sizeof (array)/sizeof(array[0])) //calcola la lunghezza del
+vettore
+int main(){
+…
+intero = lunghezzaVet(booleani);
+…
+}
+Dove viene definita una funzione lunghezzaVet(array) che è inserita nel file ANSI C la prima volta
+che viene aggiunto un blocco di questo tipo.
+Assegnazione/modifica variabile inserendo un elemento di un vettore
+--- Pag 24 ---
+24
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Esempio:
+Si sceglie una variabile INT, e i due estremi: 10, 20 (in questo caso)
+Il corrispondente codice in ANSI C è:
+int main()
+{
+srand(time(NULL) + getpid());/*gestisce eventuali numeri random*/
+…
+nome_variabile_intera=random(valore_intero/nome_variabile_intera,valore_intero/nome_va
+riabile_intera);
+}
+int random (int min, int max)
+{
+return rand() % (max - min + 1) + min;
+}
+--- Pag 25 ---
+25
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+scegliere la variabile INT, la seconda consente di inserire un  valore in input  (intero >= 0) o una
+variabile intera (radicando).
+Esempio:
+Si sceglie una variabile INT e si assegna ed essa il suo valore sotto radice
+Il corrispondente codice in ANSI C è:
+Nome_variabile_intera/double = sqrt(valore_intero/nome_variabile_intera);
+esempio:
+intero = sqrt(intero);
+Potenza di un numero
+Il seguente blocco consente di assegnare ad una variabile di tipo INT un numero creato attraverso le
+--- Pag 26 ---
+26
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Controlli
+I seguenti blocchi si trovano tutti nella sezione “ Controlli” del menu a s inistra e consentono di
+effettuare controlli sulle variabili, aggiungere oggetti extra per input di dati (casella di testo, numeri,
+caratteri,…), gestire l’input e l’output dei programmi ANSI C.
+Casella di testo
+La seguente casella di test o può essere utilizzata per inserire valori di tipo STRING all’interno di
+altri blocchi che più avanti verranno citati. La casella accetta qualsiasi carattere della tastiera tranne i
+tre caratteri: “ (doppi apici), ‘ (apicetti) e ‘§’, perché vengono utilizzati dal programma per altri fini.
+Casella di carattere
+--- Pag 27 ---
+27
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Casella a discesa per i valori booleani
+La seguente casella a discesa  permette di scegliere tra TRUE o FALSE che descrivono i possibili
+valori che una variabile booleana può contenere. Viene utilizzata esclusivame nte per i controlli (if,
+ifelse, cicli while, cicli do while).
+Controllo if
+Il seguente blocco consente di effettuare controlli sulle variabili semplici (non i vettori). È formato
+da un blocco che rappresenta la condizione  (bloccoControllo) e da un pannello, dove è possibile,
+attraverso il Drag&Drop, inserire altri blocchi. Il codice inserito all’interno del pannello verrà
+eseguito solo se la condizione inserita dall’utente è verificata.
+Il bloccoControllo è formato da varie parti:
+1. Una checkbox, che se spuntata, rappresenta la negazione dell’intera condizione (nega tutto).
+2. Due pannelli droppabili: Si possono inserire al suo interno caselle di testo, caselle di carattere,
+--- Pag 28 ---
+28
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Il corrispondente codice in ANSI C è:
+if([!]((elemento condizione elemento) operatore_&&_|| (...)))
+{
+…
+}
+esempio:
+if((intero >= 10) && (intero <= 50))
+{
+…
+}
+Controllo if else
+Il seguente blocco consente, anche lui, di effettuare controlli sulle variabili semplici (non i vettori). È
+formato da un blocco che rappresenta la condizione  (bloccoControllo) e da due pannelli, dove è
+possibile, attraverso il Drag&Drop, inserire altri blocchi. Il codice inserito all’interno del primo
+pannello verrà eseguito solo se la condizione inserita dall’utente è verificata , altrimenti verrà
+--- Pag 29 ---
+29
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Il corrispondente codice in ANSI C è:
+if([!]((elemento condizione elemento) operatore_&&_|| (...)))
+{
+…
+}
+else
+{
+…
+}
+esempio:
+if((resto == 0))
+{
+…
+}
+else
+{
+…
+--- Pag 30 ---
+30
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Se si vuole andare a capo si può inserire nel testo ‘ \n’ che in ANSI C consente di andare a capo nella
+console.
+Se si vuole stampare una variabile INT:
+Il corrispondente codice in ANSI C è:
+printf(“%tipo_dato”, “valore”/variabile);
+dove il tipo di dato è: %s (STRING), %d (INT), %lf (DOUBLE), %s (BOOL, perché sono
+visualizzati attraverso una if), %c (CHAR)
+esempio:
+printf(“%s”, “Salve mondo”);
+printf(“%d”, intero);
+Input di una variabile
+--- Pag 31 ---
+31
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Cicli
+I seguenti blocchi si trovano tutti nella sezione “Cicli” del menu a sinistra e consentono l’esecuzione
+di altri blocchi in modo iterativo utilizzando le tre tipologie di cicli.
+Ciclo precondizionale (while)
+Il seguente blocco consente di eseguire delle istruzioni in modo iterativo (ripetuto) se viene verificata
+la condizione che viene inserita dall’utente. I blocchi possono essere inseriti attraverso il Drag&Drop
+all’interno del pannello.
+Il precondizionale, potrebbe , anche, mai eseguire il codice inserito al suo interno, se la condizione
+non è verificata all’inizio della sua esecuzione.
+Esempio:
+Si vuole eseguire un ciclo fino a che non si ha una variabile BOOL a TRUE e stampare il testo
+“Sono a TRUE” e andare a capo ogni volta.
+--- Pag 32 ---
+32
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Ciclo postcondizionale (do while)
+Il seguente blocco consente di eseguire delle istruzi oni in modo iterativo  se viene verificata la
+condizione che viene inserita dall’utente (in fondo al blocco). I blocchi possono essere inseriti
+attraverso il Drag&Drop all’interno del pannello.
+Il postcondizionale, esegue il codice inserito al suo interno una volta prima di fare il primo controllo.
+Esempio:
+Si deve eseguire un ciclo che incrementi di 1 una variabile INT. Quando arriva al valore 10 allora il
+ciclo smette e si stampa il valore della variabile.
+Il corrispondente codice in ANSI C è:
+do
+{
+…
+}while(condizione)
+--- Pag 33 ---
+33
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Il ciclo con il contatore, esegue il codice inserito per n volte, quindi viene utilizzato quando si sa già
+per quante volte si devono eseguire le istruzioni del ciclo. Il blocco è formato da tre caselle a discesa:
+la prima permet te di scegliere il numero di ripetizioni (numero intero o variabile INT), la seconda
+permette di scegliere la variabile INT che servirà da contatore per il ciclo, la terza consente di
+scegliere il numero di partenza della variabile contatore (numero intero o variabile INT).
+Esempio:
+Si vuole caricare un vettore di 10 elementi INT, stamparli uno per uno e sommarli tra di loro e
+visualizzare la somma alla fine del ciclo:
+Il corrispondente codice in ANSI C è:
+for(nome_variabile_intera = valore_intero/nome_variabile_intera;nome_variabile_intera <
+valore_intero/variabile_intera_condizione;nome_variabile_intera++)
+{
+…
+}
+--- Pag 34 ---
+34
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Esempi di progetti Blocco C
+Gioco dell’alto basso
+Il seguente progetto simula il gioco dell’alto basso: il computer genera un numero casuale tra 0 e
+100, e l’u tente deve cercare di indovinarlo  nel minor numero di tentativi, inserendo un numero in
+input. Il programma verificherà se ha indovinato o se il numero è troppo basso o troppo alto e lo
+riferirà all’utente.
+Codice in Blocco C:
+--- Pag 35 ---
+35
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Codice in ANSI C:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+int main()
+{
+int numero_segreto = 0;
+int Tentativo = 0;
+int Contatore = 0;
+numero_segreto = random(0, 100);
+Contatore = 0;
+do
+{
+printf("%s", "Inserire il tentativo: ");
+scanf("%d", &Tentativo);
+getchar();
+Contatore = Contatore + 1;
+if((Tentativo == numero_segreto))
+--- Pag 36 ---
+36
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Somma degli elementi di un vettore
+Il seguente progetto consente di sommare gli elementi di un vettore di lunghezza 10 e di stampare il
+suo valore sulla console. Ogni elemento è un numero casuale tra 0 e 10.
+Codice in Blocco C:
+Codice in ANSI C:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#define lunghezzaVet(array) (sizeof(array)/sizeof(array[0])) //calcola la lunghezza del
+vettore
+int main()
+{
+srand(time(NULL) + getpid());/*gestisce eventuali numeri random*/
+int somma = 0;
+--- Pag 37 ---
+37
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+printf("Premi un pulsante per uscire...");
+getchar();
+return 0;
+}
+int random (int min, int max)
+{
+return rand() % (max - min + 1) + min;
+}
+Esempio di esecuzione:
+Ricerca di elemento all’interno di un vettore con elementi disordinati e
+ripetuti
+Il seguente progetto consente di ricercare un elemento , dopo che l’utente l’ha inserito in input,
+all’interno di un vettore  di N numeri interi . Se il valore è contenuto all’interno del vettore, il
+programma stampa tutte le  posizioni dell’elemento, altrimenti stampa un messaggio negativo:
+“Elemento non contenuto nel vettore!”.
+--- Pag 38 ---
+38
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Codice in ANSI C:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+int main()
+{
+int v[100];
+int N = 0;
+int elemento = 0;
+int i = 0;
+int numero = 0;
+int conta_elementi = 0;
+N = random(2, 10);
+for(i = 0; i < N; i++ )
+{
+numero = random(0, 10);
+--- Pag 39 ---
+39
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Esempio di esecuzione:
+Ordinamento degli elementi di un vettore di caratteri (metodo per
+selezione)
+Il seguente progetto permette di caricare un vettore di 10 caratteri, facendoli immettere dall’utente, e
+poi di stamparlo in modo crescente (dal più piccolo al più grande) , utilizzando l’algoritmo
+fondamentale di ordinamento per selezione.
+--- Pag 40 ---
+40
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Codice in Blocco C:
+Codice in ANSI C:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#define lunghezzaVet(array) (sizeof(array)/sizeof(array[0])) //calcola la lunghezza del
+vettore
+int main()
+{
+char c = ' ';
+char v[10];
+int i = 0;
+int lunghezza = 0;
+--- Pag 41 ---
+41
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+char aus = ' ';
+int j = 0;
+char v_min = ' ';
+lunghezza = lunghezzaVet(v);
+for(i = 0; i < lunghezza; i++ )
+{
+printf("%s", "Inserire un carattere: ");
+scanf("%c", &c);
+getchar();
+v[i] = c;
+}
+N = lunghezza - 2;
+for(i = 0; i < N; i++ )
+{
+min = i;
+for(j = i; j < lunghezza; j++ )
+{
+c = v[j];
+v_min = v[min];
+--- Pag 42 ---
+42
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+Convertitore di numeri da decimale a binario
+Il seguente progetto permette, dopo che l’utente ha inserito un numero intero positivo  compreso tra 0
+e 255 in input,  di convertirlo nel corrispondente valore in binario e stamparlo a video.
+Codice in Blocco C:
+Codice in ANSI C:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+int main()
+{
+srand(time(NULL) + getpid());/*gestisce eventuali numeri random*/
+int N = 0;
+int B = 0;
+int binario[10000];
+int i = 0;
+--- Pag 43 ---
+43
+ISTITUTO ISTRU ZIONE SUPERIORE “G. VALLAU RI”  FOSSANO  – CLASSE 5B INFORMATIC A –
+TESINA DI CAIRONE FI ORENTINO E GIACCHELL O GIUSEPPE
+printf("%d", B);
+}
+printf("%s", "\n");
+printf("Premi un pulsante per uscire...");
+getchar();
+return 0;
+}
+int random (int min, int max)
+{
+return rand() % (max - min + 1) + min;
+}
+Esempio di esecuzione:

@@ -1,6 +1,7 @@
 <div class="top-bar d-flex justify-content-between align-items-center">
     <div class="left-group d-flex align-items-center gap-2">
       <i class="bi bi-envelope"></i>
+      <span class="visually-hidden">{{ 'topbar.emailLabel' | t }}</span>
       <span class="desktop-only">info.smartfare@gmail.com</span>
     </div>
 
@@ -11,23 +12,25 @@
         <i class="bi bi-instagram"></i>
         <i class="bi bi-linkedin"></i>
       </div>
-      <div class="dropdown language-dropdown">
+      <div class="dropdown language-dropdown" data-no-translate>
         <button
           class="btn btn-sm btn-light bg-opacity-10 text-white d-flex align-items-center gap-2 rounded-pill px-3 py-1 dropdown-toggle"
-          type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          type="button" data-bs-toggle="dropdown" aria-expanded="false"
+          [attr.aria-label]="'language.select' | t">
           <i class="bi bi-translate"></i>
-          <span class="d-none d-md-inline">{{ languages.find(l => l.code === selectedLanguage)?.label ||
-            'Language'}}</span>
+          <span class="d-none d-md-inline">{{ i18n.selectedLanguage().nativeLabel }}</span>
         </button>
 
         <ul class="dropdown-menu dropdown-menu-end mt-1 p-0 rounded-3 overflow-hidden">
           @for (lang of languages; track lang.code) {
           <li>
             <button class="dropdown-item d-flex align-items-center gap-2 px-3 py-2" type="button"
-              (click)="selectedLanguage = lang.code">
-              <span class="fi fi-{{lang.code}}"></span>
-              {{ lang.label }}
-              @if(selectedLanguage === lang.code){
+              [class.active]="selectedLanguage() === lang.code"
+              [attr.aria-current]="selectedLanguage() === lang.code ? 'true' : null"
+              (click)="changeLanguage(lang.code)">
+              <span class="language-code">{{ lang.code.toUpperCase() }}</span>
+              {{ lang.nativeLabel }}
+              @if(selectedLanguage() === lang.code){
               <i class="bi bi-check ms-auto text-primary"></i>
               }
             </button>

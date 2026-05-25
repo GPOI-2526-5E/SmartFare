@@ -22,6 +22,7 @@ import {
 import { AuthService } from '../../core/auth/auth.service';
 import { ItineraryService } from '../../core/services/itinerary.service';
 import { AlertService } from '../../core/services/alert.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 
 declare global {
   interface Window {
@@ -50,6 +51,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   private readonly authService = inject(AuthService);
   private readonly itineraryService = inject(ItineraryService);
   private readonly alertService = inject(AlertService);
+  private readonly i18n = inject(I18nService);
 
   @ViewChild('scrollContainer') private scrollContainer?: ElementRef<HTMLDivElement>;
 
@@ -370,7 +372,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
 
   deleteSession(event: Event, session: ChatSession) {
     event.stopPropagation();
-    if (!confirm('Vuoi eliminare questa conversazione?')) return;
+    if (!confirm(this.i18n.translate('voyager.confirmDeleteConversation'))) return;
 
     this.chatService.deleteSession(session.id).subscribe(() => {
       if (this.chatService.activeSession()?.id === session.id) {

@@ -5,6 +5,7 @@ import { AppLoaderComponent } from './features/ui/loader/loader.component';
 import { CookieConsentComponent } from './features/ui/cookie-consent/cookie-consent.component';
 import { LoaderService } from './core/services/loader.service';
 import { SeoService } from './core/seo/seo.service';
+import { I18nService } from './core/i18n/i18n.service';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,7 @@ import { SeoService } from './core/seo/seo.service';
 export class AppComponent implements OnInit {
   private readonly loaderService = inject(LoaderService);
   private readonly seoService = inject(SeoService);
+  private readonly i18nService = inject(I18nService);
 
   readonly isLoading = this.loaderService.isLoading;
   readonly loaderMessage = this.loaderService.message;

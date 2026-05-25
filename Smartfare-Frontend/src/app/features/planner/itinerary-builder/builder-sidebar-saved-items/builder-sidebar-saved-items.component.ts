@@ -7,6 +7,7 @@ import { categoryVisuals, colorFromId } from '../../../interactive-map/utils/map
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../../../../core/models/builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
+import { I18nService } from '../../../../core/i18n/i18n.service';
 
 @Component({
     selector: 'app-builder-sidebar-saved-items',
@@ -24,6 +25,7 @@ export class BuilderSidebarSavedItemsComponent {
     itineraryService = inject(ItineraryService);
     ui = inject(UIStateService);
     activityService = inject(ActivityService);
+    private readonly i18n = inject(I18nService);
     categoryMeta = new Map<number, { iconClass?: string; color?: string }>();
     expandedDay = signal<number | null>(null);
 
@@ -72,7 +74,7 @@ export class BuilderSidebarSavedItemsComponent {
 
     onDeleteClick(poi: BuilderPoi, event: Event) {
         event.stopPropagation();
-        if (confirm(`Rimuovere "${poi.title}" dall'itinerario?`)) {
+        if (confirm(this.i18n.translate('planner.confirmRemovePoi').replace('{title}', poi.title))) {
             this.deletePoi.emit(poi);
         }
     }

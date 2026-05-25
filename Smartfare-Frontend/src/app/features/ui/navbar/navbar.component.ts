@@ -7,17 +7,20 @@ import { TopNavbarComponent } from "../top-navbar/top-navbar.component";
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { animate, query, state, style, transition, trigger } from '@angular/animations';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { TranslationKey } from '../../../core/i18n/translations';
+import { I18nService } from '../../../core/i18n/i18n.service';
 
 interface NavItem {
   icon: string;
-  label: string;
+  labelKey: TranslationKey;
   route: string;
 }
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [FormsModule, RouterLink, TopNavbarComponent],
+  imports: [FormsModule, RouterLink, TopNavbarComponent, TranslatePipe],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
   animations: [
@@ -41,7 +44,8 @@ export class NavbarComponent implements AfterViewInit {
     private router: Router,
     private alertService: AlertService,
     private socialAuthService: SocialAuthService,
-    private itineraryService: ItineraryService
+    private itineraryService: ItineraryService,
+    private i18nService: I18nService
   ) { };
 
   ngAfterViewInit(): void {
@@ -49,11 +53,11 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   readonly navItems: NavItem[] = [
-    { icon: 'bi bi-house-door', label: 'Home', route: '/' },
-    { icon: 'bi bi-compass', label: 'Esplora', route: '/discover' },
-    { icon: 'bi bi-journal-bookmark', label: 'Crea', route: '/itineraries/new' },
-    { icon: 'bi bi-magic', label: 'AI Planner', route: '/voyager' },
-    { icon: 'bi bi-map', label: 'Interactive Map', route: '/interactive-map' }
+    { icon: 'bi bi-house-door', labelKey: 'nav.home', route: '/' },
+    { icon: 'bi bi-compass', labelKey: 'nav.discover', route: '/discover' },
+    { icon: 'bi bi-journal-bookmark', labelKey: 'nav.create', route: '/itineraries/new' },
+    { icon: 'bi bi-magic', labelKey: 'nav.aiPlanner', route: '/voyager' },
+    { icon: 'bi bi-map', labelKey: 'nav.interactiveMap', route: '/interactive-map' }
   ];
 
   mobileMenuOpen = false;
@@ -91,7 +95,7 @@ export class NavbarComponent implements AfterViewInit {
       const last = data.surname || data.family_name || '';
       return `${first} ${last}`.trim();
     }
-    return 'Viaggiatore';
+    return this.i18nService.translate('user.traveler');
   }
 
   get userEmail() {

@@ -86,14 +86,52 @@
     </section>
 
     <main class="discover-shell">
-        <section class="discover-section" style="padding-top: 0;">
-          <div class="italia-map-banner" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(22, 17, 41, 0.9)), url('https://images.unsplash.com/photo-1520175480921-4edfa2983e0f?auto=format&fit=crop&q=80&w=1200') center/cover; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 200px; border: 1px solid rgba(139, 92, 246, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-            <span class="discover-kicker" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; padding: 6px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;"><i class="bi bi-map-fill"></i> Novità</span>
-            <h2 style="font-size: 2rem; font-weight: 800; color: #ffffff; margin: 0 0 8px 0;">Esplora la mappa interattiva</h2>
-            <p style="color: #cbd5e1; font-size: 1.1rem; max-width: 600px; margin: 0 0 24px 0;">Guarda cosa c'è intorno a te. Tutti gli hotel, i ristoranti e le attività d'Italia in un'unica mappa interattiva.</p>
-            <a routerLink="/interactive-map" class="btn" style="background: #8b5cf6; color: white; padding: 12px 24px; border-radius: 999px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: background 0.2s;">
-              Apri mappa interattiva <i class="bi bi-arrow-right"></i>
-            </a>
+        <section class="map-explore discover-section discover-section--lead" aria-labelledby="map-explore-title">
+          <div class="map-explore__panel">
+            <div class="map-explore__copy">
+              <span class="map-explore__kicker"><i class="bi bi-stars" aria-hidden="true"></i> Novità</span>
+              <h2 id="map-explore-title">Esplora la mappa interattiva</h2>
+              <p>
+                Hotel, ristoranti e attività in tutta Italia su un'unica mappa.
+                Filtra per categoria, cerca intorno a te e passa al planner quando hai trovato il posto giusto.
+              </p>
+
+              <ul class="map-explore__perks">
+                <li><i class="bi bi-geo-alt-fill" aria-hidden="true"></i><span>Punti di interesse geolocalizzati</span></li>
+                <li><i class="bi bi-funnel-fill" aria-hidden="true"></i><span>Filtri rapidi per categoria</span></li>
+                <li><i class="bi bi-signpost-split-fill" aria-hidden="true"></i><span>Collegamento diretto al planner</span></li>
+              </ul>
+
+              <a routerLink="/interactive-map" class="map-explore__cta">
+                <span>Apri mappa interattiva</span>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+
+            <div class="map-explore__visual" aria-hidden="true">
+              <div class="map-explore__glow map-explore__glow--violet"></div>
+              <div class="map-explore__glow map-explore__glow--teal"></div>
+
+              <div class="map-explore__map-card">
+                <div class="map-explore__map-toolbar">
+                  <span class="map-explore__dot map-explore__dot--rose"></span>
+                  <span class="map-explore__dot map-explore__dot--amber"></span>
+                  <span class="map-explore__dot map-explore__dot--mint"></span>
+                  <span class="map-explore__toolbar-label">smartfare / mappa</span>
+                </div>
+                <div class="map-explore__map-canvas">
+                  <span class="map-explore__route"></span>
+                  <span class="map-explore__pin map-explore__pin--a"><i class="bi bi-building"></i></span>
+                  <span class="map-explore__pin map-explore__pin--b"><i class="bi bi-cup-hot-fill"></i></span>
+                  <span class="map-explore__pin map-explore__pin--c"><i class="bi bi-camera-fill"></i></span>
+                  <span class="map-explore__pin map-explore__pin--d"><i class="bi bi-geo-alt-fill"></i></span>
+                </div>
+              </div>
+
+              <div class="map-explore__chip map-explore__chip--hotel"><i class="bi bi-building"></i> Hotel</div>
+              <div class="map-explore__chip map-explore__chip--food"><i class="bi bi-cup-hot-fill"></i> Ristoranti</div>
+              <div class="map-explore__chip map-explore__chip--fun"><i class="bi bi-stars"></i> Attività</div>
+            </div>
           </div>
         </section>
 

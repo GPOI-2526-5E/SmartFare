@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
+import { I18nService } from '../../../../core/i18n/i18n.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BuilderPoi } from '../../../../core/models/builder.types';
@@ -27,6 +28,8 @@ export class BuilderPoiEditorComponent {
         dayNumber: 1
     });
 
+    private readonly i18n = inject(I18nService);
+
     ngOnChanges() {
         if (this.item && this.isOpen) {
             this.formData.set({
@@ -53,7 +56,7 @@ export class BuilderPoiEditorComponent {
 
         // Validate times
         if (data.plannedStartAt && data.plannedEndAt && data.plannedStartAt > data.plannedEndAt) {
-            alert('L\'ora di fine non può essere prima dell\'ora di inizio');
+            alert(this.i18n.translate('planner.endBeforeStart'));
             return;
         }
 
@@ -69,7 +72,7 @@ export class BuilderPoiEditorComponent {
     }
 
     onDelete() {
-        if (confirm('Sei sicuro di voler rimuovere questo elemento dall\'itinerario?')) {
+        if (confirm(this.i18n.translate('planner.confirmDeleteItem'))) {
             this.delete.emit();
             this.close.emit();
         }

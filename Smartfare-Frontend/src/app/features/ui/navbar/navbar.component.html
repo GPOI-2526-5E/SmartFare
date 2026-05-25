@@ -12,11 +12,11 @@
 
     <!-- NAV LINKS DESKTOP -->
     <div class="nav-center nav-links d-none d-lg-flex gap-4">
-      @for (item of navItems; track item.label) {
+      @for (item of navItems; track item.labelKey) {
       <a class="nav-item d-flex align-items-center gap-2" [routerLink]="item.route"
         [queryParams]="item.route === '/voyager' ? { sessionId: null, prompt: null } : null">
         <i [class]="item.icon"></i>
-        <span>{{ item.label }}</span>
+        <span>{{ item.labelKey | t }}</span>
       </a>
       }
     </div>
@@ -26,25 +26,25 @@
       @if (isAuthenticated) {
       @if (userAvatar) {
       <div class="dropdown">
-        <img [src]="userAvatar" alt="User Avatar" class="user-avatar-nav align-self-center pointer"
+        <img [src]="userAvatar" [alt]="'user.avatar' | t" class="user-avatar-nav align-self-center pointer"
           referrerpolicy="no-referrer" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" />
         <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/profile/itineraries']">
               <i class="bi bi-journal-bookmark"></i>
-              <span>I miei Itinerari</span>
+              <span>{{ 'nav.myItineraries' | t }}</span>
             </a>
           </li>
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/profile/itineraries']"
               [queryParams]="{tab: 'favorites'}">
               <i class="bi bi-heart"></i>
-              <span>Itinerari Preferiti</span>
+              <span>{{ 'nav.favoriteItineraries' | t }}</span>
             </a>
           </li>
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/profile']">
-              <i class="bi bi-person-circle"></i><span>Profilo</span>
+              <i class="bi bi-person-circle"></i><span>{{ 'nav.profile' | t }}</span>
             </a>
           </li>
           <li>
@@ -53,7 +53,7 @@
           <li>
             <button class="dropdown-item text-danger d-flex align-items-center gap-2 py-2" (click)="logout()">
               <i class="bi bi-box-arrow-right"></i>
-              <span>Logout</span>
+              <span>{{ 'nav.logout' | t }}</span>
             </button>
           </li>
         </ul>
@@ -61,19 +61,19 @@
       } @else {
       <div class="dropdown">
         <button type="button" class="bi bi-person-circle fs-3 align-self-center pointer border-0 bg-transparent p-0"
-          data-bs-toggle="dropdown" data-bs-display="static" aria-label="Apri menu utente"
-          title="Apri menu utente"></button>
+          data-bs-toggle="dropdown" data-bs-display="static" [attr.aria-label]="'nav.openUserMenu' | t"
+          [title]="'nav.openUserMenu' | t"></button>
         <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/profile']">
               <i class="bi bi-person-circle"></i>
-              <span>Profilo</span>
+              <span>{{ 'nav.profile' | t }}</span>
             </a>
           </li>
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
               <i class="bi bi-gear"></i>
-              <span>Impostazioni</span>
+              <span>{{ 'nav.settings' | t }}</span>
             </a>
           </li>
           <li>
@@ -82,21 +82,21 @@
           <li>
             <button class="dropdown-item text-danger d-flex align-items-center gap-2 py-2" (click)="logout()">
               <i class="bi bi-box-arrow-right"></i>
-              <span>Logout</span>
+              <span>{{ 'nav.logout' | t }}</span>
             </button>
           </li>
         </ul>
       </div>
       }
       }@else {
-      <a class="btn login-btn" routerLink="/login">Accedi</a>
-      <a class="btn register-btn" [routerLink]="['/register']">Registrati</a>
+      <a class="btn login-btn" routerLink="/login">{{ 'nav.login' | t }}</a>
+      <a class="btn register-btn" [routerLink]="['/register']">{{ 'nav.register' | t }}</a>
       }
     </div>
 
     <!-- MOBILE TOGGLER -->
-    <button class="mobile-toggler d-lg-none" type="button" (click)="toggleMobileMenu()" aria-label="Apri menu mobile"
-      title="Apri menu mobile">
+    <button class="mobile-toggler d-lg-none" type="button" (click)="toggleMobileMenu()"
+      [attr.aria-label]="'nav.openMobileMenu' | t" [title]="'nav.openMobileMenu' | t">
       <i class="bi bi-list"></i>
     </button>
 
@@ -109,7 +109,7 @@
         <img class='logo-img' src="favicon.png" alt='smartfareLogo'>
         <span class="logo-text">SMARTFARE</span>
       </div>
-      <button class="close-btn" (click)="toggleMobileMenu()">&times;</button>
+      <button class="close-btn" (click)="toggleMobileMenu()" [attr.aria-label]="'nav.closeMobileMenu' | t">&times;</button>
     </div>
 
     <div class="mobile-menu-content">
@@ -119,7 +119,7 @@
         <div class="profile-header">
           <div class="avatar-wrapper">
             @if (userAvatar) {
-            <img [src]="userAvatar" alt="User Avatar" class="user-avatar-mobile" referrerpolicy="no-referrer" />
+            <img [src]="userAvatar" [alt]="'user.avatar' | t" class="user-avatar-mobile" referrerpolicy="no-referrer" />
             } @else {
             <div class="avatar-placeholder">
               <i class="bi bi-person-circle"></i>
@@ -136,14 +136,14 @@
 
       <!-- NAVIGATION LINKS -->
       <div class="menu-section">
-        <h4 class="section-title">Menu Principale</h4>
+        <h4 class="section-title">{{ 'nav.mainMenu' | t }}</h4>
         <div class="mobile-nav-links d-flex flex-column gap-2">
-          @for (item of navItems; track item.label; let i = $index) {
+          @for (item of navItems; track item.labelKey; let i = $index) {
           <a class="menu-row" [routerLink]="item.route" (click)="closeMobileMenu()">
             <div class="row-icon">
               <i [class]="item.icon"></i>
             </div>
-            <span class="row-label">{{ item.label }}</span>
+            <span class="row-label">{{ item.labelKey | t }}</span>
             <i class="bi bi-chevron-right ms-auto chevron"></i>
           </a>
           }
@@ -153,13 +153,13 @@
       <!-- PERSONAL AREA SECTION (consistent with desktop) -->
       @if (isAuthenticated) {
       <div class="menu-section mt-4">
-        <h4 class="section-title">Area Personale</h4>
+        <h4 class="section-title">{{ 'nav.personalArea' | t }}</h4>
         <div class="mobile-nav-links d-flex flex-column gap-2">
           <a class="menu-row" [routerLink]="['/profile/itineraries']" (click)="closeMobileMenu()">
             <div class="row-icon">
               <i class="bi bi-journal-bookmark"></i>
             </div>
-            <span class="row-label">I miei Itinerari</span>
+            <span class="row-label">{{ 'nav.myItineraries' | t }}</span>
             <i class="bi bi-chevron-right ms-auto chevron"></i>
           </a>
           <a class="menu-row" [routerLink]="['/profile/itineraries']" [queryParams]="{tab: 'favorites'}"
@@ -167,28 +167,28 @@
             <div class="row-icon text-danger">
               <i class="bi bi-heart-fill"></i>
             </div>
-            <span class="row-label">Preferiti</span>
+            <span class="row-label">{{ 'nav.favorites' | t }}</span>
             <i class="bi bi-chevron-right ms-auto chevron"></i>
           </a>
           <a class="menu-row" [routerLink]="['/profile']" (click)="closeMobileMenu()">
             <div class="row-icon">
               <i class="bi bi-person-circle"></i>
             </div>
-            <span class="row-label">Profilo</span>
+            <span class="row-label">{{ 'nav.profile' | t }}</span>
             <i class="bi bi-chevron-right ms-auto chevron"></i>
           </a>
           <a class="menu-row" [routerLink]="['/settings']" (click)="closeMobileMenu()">
             <div class="row-icon">
               <i class="bi bi-gear"></i>
             </div>
-            <span class="row-label">Impostazioni</span>
+            <span class="row-label">{{ 'nav.settings' | t }}</span>
             <i class="bi bi-chevron-right ms-auto chevron"></i>
           </a>
 
           <div class="mt-4 px-2">
             <button class="logout-row w-100" (click)="logout()">
               <i class="bi bi-box-arrow-right"></i>
-              <span>Esci dall'account</span>
+              <span>{{ 'nav.logoutAccount' | t }}</span>
             </button>
           </div>
         </div>
@@ -196,10 +196,10 @@
       } @else {
       <!-- LOGIN/REGISTER FOR GUESTS -->
       <div class="guest-actions mt-4 p-3 rounded-4">
-        <p class="guest-hint mb-3 text-center">Accedi per salvare i tuoi viaggi e usare l'AI Planner al meglio.</p>
+        <p class="guest-hint mb-3 text-center">{{ 'nav.guestHint' | t }}</p>
         <div class="d-flex flex-column gap-3">
-          <a class="btn login-btn w-100 py-2" routerLink="/login" (click)="closeMobileMenu()">Accedi</a>
-          <a class="btn register-btn w-100 py-2" [routerLink]="['/register']" (click)="closeMobileMenu()">Registrati</a>
+          <a class="btn login-btn w-100 py-2" routerLink="/login" (click)="closeMobileMenu()">{{ 'nav.login' | t }}</a>
+          <a class="btn register-btn w-100 py-2" [routerLink]="['/register']" (click)="closeMobileMenu()">{{ 'nav.register' | t }}</a>
         </div>
       </div>
       }

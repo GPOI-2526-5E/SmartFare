@@ -10,6 +10,7 @@ import {
   ChangeDetectionStrategy,
   NgZone,
   ChangeDetectorRef,
+  effect,
   inject
 } from '@angular/core';
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations';
@@ -23,6 +24,7 @@ import { FeaturedItinerariesWrapperComponent } from '../featured-itineraries/fea
 import { FeaturesGridWrapperComponent } from '../features-grid/features-grid-wrapper.component';
 import { CtaSectionComponent } from '../cta-section/cta-section.component';
 import { AppLoaderComponent } from '../../ui/loader/loader.component';
+import { I18nService } from '../../../core/i18n/i18n.service';
 
 @Component({
   selector: 'app-home-section',
@@ -68,7 +70,6 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected readonly transitionMs = 1200;
   protected readonly videoRotationMs = 9000;
-  protected readonly heroTypingLines = ['Explore the World', 'With SmartFare'];
   protected readonly videoSources = [
     'https://res.cloudinary.com/dxudggkln/video/upload/f_auto,q_auto/v1778223687/background-3_kzhy8e.mp4',
     'https://res.cloudinary.com/dxudggkln/video/upload/f_auto,q_auto/v1778223688/background-5_cjnawy.mp4',
@@ -92,13 +93,22 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly ngZone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly elRef = inject(ElementRef);
+  private readonly i18nService = inject(I18nService);
 
   private heroObserver: IntersectionObserver | null = null;
+  private isHeroTypingReady = false;
   private isHeroVisible = true;
   private readonly reduceMotion = typeof window !== 'undefined' && (
     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ||
     (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true
   );
+  private readonly heroLanguageEffect = effect(() => {
+    this.i18nService.language();
+
+    if (this.isHeroTypingReady) {
+      queueMicrotask(() => this.initializeHeroTyping());
+    }
+  });
 
   ngOnInit(): void {
     this.isLoadingPublicItineraries.set(true);
@@ -119,6 +129,7 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     queueMicrotask(() => {
       this.prepareVideoElements();
       this.playLayer(this.activeVideoLayer);
+      this.isHeroTypingReady = true;
       this.initializeHeroTyping();
       this.isHeroContentVisible.set(true);
     });
@@ -293,102 +304,17 @@ export class HomeSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initializeHeroTyping(): void {
-    const topTarget = this.heroTypingLines[0] ?? '';
-    const bottomTarget = this.heroTypingLines[1] ?? '';
+    const topTarget = this.i18nService.translate('home.heroTop');
+    const bottomTarget = this.i18nService.translate('home.heroBottom');
 
     this.clearHeroTypingTimers();
-    this.heroTopText.set('');
-    this.heroBottomText.set('');
+    this.heroTopText.set(topTarget);
+    this.heroBottomText.set(bottomTarget);
     this.activeTypingLine.set('none');
-
-    if (this.reduceMotion) {
-      this.heroTopText.set(topTarget);
-      this.heroBottomText.set(bottomTarget);
-      return;
-    }
-
-    this.ngZone.runOutsideAngular(() => {
-      const typeSpeed = 50; // Calma ma non troppo lenta
-      const untypeSpeed = 45;
-      const readDelay = 3000;
-      const lineDelay = 300;
-
-      const typeLine = (
-        target: string,
-        update: (value: string) => void,
-        startDelay = 0,
-        speed = 100,
-        onComplete?: () => void,
-      ) => {
-        let currentIndex = 0;
-        const tick = () => {
-          currentIndex += 1;
-          update(target.slice(0, currentIndex));
-          if (currentIndex < target.length) {
-            const nextTimeoutId = setTimeout(tick, speed);
-            this.heroTypingTimeoutIds.push(nextTimeoutId);
-            return;
-          }
-          onComplete?.();
-        };
-        const timeoutId = setTimeout(tick, startDelay);
-        this.heroTypingTimeoutIds.push(timeoutId);
-      };
-
-      const untypeLine = (
-        target: string,
-        update: (value: string) => void,
-        startDelay = 0,
-        speed = 60,
-        onComplete?: () => void,
-      ) => {
-        let currentIndex = target.length;
-        const tick = () => {
-          currentIndex -= 1;
-          update(target.slice(0, currentIndex));
-          if (currentIndex > 0) {
-            const nextTimeoutId = setTimeout(tick, speed);
-            this.heroTypingTimeoutIds.push(nextTimeoutId);
-            return;
-          }
-          onComplete?.();
-        };
-        const timeoutId = setTimeout(tick, startDelay);
-        this.heroTypingTimeoutIds.push(timeoutId);
-      };
-
-      const typeLoop = () => {
-        this.activeTypingLine.set('top');
-        typeLine(topTarget, (value) => this.heroTopText.set(value), 150, typeSpeed, () => {
-          const bottomStartTimeoutId = setTimeout(() => {
-            this.activeTypingLine.set('bottom');
-            typeLine(bottomTarget, (value) => this.heroBottomText.set(value), 0, typeSpeed, () => {
-              const readTimeoutId = setTimeout(() => {
-                untypeLine(bottomTarget, (value) => this.heroBottomText.set(value), 0, untypeSpeed, () => {
-                  this.activeTypingLine.set('none');
-                  const topUntypeTimeoutId = setTimeout(() => {
-                    this.activeTypingLine.set('top');
-                    untypeLine(topTarget, (value) => this.heroTopText.set(value), 0, untypeSpeed, () => {
-                      this.activeTypingLine.set('none');
-                      const loopTimeoutId = setTimeout(typeLoop, 800);
-                      this.heroTypingTimeoutIds.push(loopTimeoutId);
-                    });
-                  }, 100);
-                  this.heroTypingTimeoutIds.push(topUntypeTimeoutId);
-                });
-              }, readDelay);
-              this.heroTypingTimeoutIds.push(readTimeoutId);
-            });
-          }, lineDelay);
-          this.heroTypingTimeoutIds.push(bottomStartTimeoutId);
-        });
-      };
-
-      typeLoop();
-    });
   }
 
   private destroyHeroTyping(): void {
+    this.isHeroTypingReady = false;
     this.clearHeroTypingTimers();
     this.heroTopText.set('');
     this.heroBottomText.set('');

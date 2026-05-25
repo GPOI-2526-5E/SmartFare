@@ -1,20 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { SupportedLanguage } from '../../../core/i18n/translations';
 
 @Component({
   selector: 'app-top-navbar',
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './top-navbar.component.html',
   styleUrl: './top-navbar.component.css',
 })
 export class TopNavbarComponent {
+  readonly i18n = inject(I18nService);
+  readonly languages = this.i18n.languages;
+  readonly selectedLanguage = this.i18n.language;
 
-languages = [
-    { code: 'en', label: 'English' },
-    { code: 'it', label: 'Italiano' },
-    { code: 'fr', label: 'Français' },
-    { code: 'de', label: 'Deutsch' },
-    { code: 'es', label: 'Español' }
-  ];
-
-  selectedLanguage: string = 'en';
+  changeLanguage(language: SupportedLanguage): void {
+    this.i18n.setLanguage(language);
+  }
 }

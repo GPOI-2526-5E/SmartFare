@@ -13,6 +13,7 @@ import { applyGroupLevelTimingToItems } from '../../../../core/utils/itinerary-i
 import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { AlertService } from '../../../../core/services/alert.service';
+import { I18nService } from '../../../../core/i18n/i18n.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { BuilderSummaryHeaderComponent } from '../builder-summary-header/builder-summary-header.component';
@@ -57,6 +58,7 @@ export class BuilderSummaryComponent {
   private itineraryService = inject(ItineraryService);
   private ui = inject(UIStateService);
   private alertService = inject(AlertService);
+  private readonly i18n = inject(I18nService);
   private http = inject(HttpClient);
 
   itinerary = this.itineraryService.itinerary;
@@ -175,7 +177,7 @@ export class BuilderSummaryComponent {
 
   applyItinerary(publicItin: Itinerary): void {
     const target = this.previewItinerary() || publicItin;
-    if (!confirm(`Vuoi davvero sovrascrivere il tuo itinerario corrente con "${target.name}"?`)) return;
+    if (!confirm(this.i18n.translate('planner.confirmOverwriteItinerary').replace('{name}', target.name))) return;
 
     // Se siamo già in anteprima, abbiamo già i dati completi
     if (this.isPreviewMode() && this.previewItinerary()?.id === publicItin.id) {
@@ -206,7 +208,7 @@ export class BuilderSummaryComponent {
     );
 
     this.closePreview();
-    this.alertService.success(`Itinerario "${fullItin.name}" applicato con successo!`);
+    this.alertService.success(this.i18n.translate('planner.itineraryAppliedSuccess').replace('{name}', fullItin.name));
   }
 
   openPreview(publicItin: Itinerary): void {
