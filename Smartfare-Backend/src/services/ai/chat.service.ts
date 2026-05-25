@@ -10,6 +10,14 @@ import {
   loadUserPreferenceForAi,
   type UserPreferenceForAi,
 } from '../../utils/user-preference.util';
+import {
+  assistantDeclaresItineraryReady,
+  canGenerateItineraryFromSession,
+  enrichPlannerStateDefaults,
+  getMissingPlannerFields,
+  isPlannerStructurallyReady,
+  resolveReadyToGenerate,
+} from '../../utils/planner-ready.util';
 
 type DbMessage = {
   role: 'user' | 'assistant';
@@ -230,7 +238,8 @@ export class ChatService {
         hintWorkspace
       );
 
-      const readyToGenerate = this.isReadyToGenerate(voyagerMode, finalState);
+      const enrichedState = enrichPlannerStateDefaults(finalState);
+      const readyToGenerate = resolveReadyToGenerate(voyagerMode, enrichedState, fullReply);
       const suggestedTitle = await this.suggestTitle(
         session.title,
         voyagerMode,
@@ -250,7 +259,7 @@ export class ChatService {
 
       const mergedMetadata = {
         ...sessionMetadata,
-        plannerState: finalState,
+        plannerState: enrichedState,
         readyToGenerate,
         plannerLocked: Boolean(sessionMetadata.plannerLocked),
         suggestions: chatHints.suggestions,
@@ -263,7 +272,7 @@ export class ChatService {
         where: { id: chatId },
         data: {
           title: suggestedTitle,
-          locationId: finalState.locationId ?? session.locationId,
+          locationId: enrichedState.locationId ?? session.locationId,
           lastMessageAt: new Date(),
           metadata: this.toJsonValue(mergedMetadata)
         }
@@ -273,7 +282,7 @@ export class ChatService {
         reply: '',
         done: true,
         metadata: {
-          plannerState: finalState,
+          plannerState: enrichedState,
           readyToGenerate,
           suggestedTitle,
           suggestions: chatHints.suggestions,
@@ -289,29 +298,99 @@ export class ChatService {
   async generateItineraryFromSession(userId: number, chatId: number) {
     const session = await this.getSessionOrThrow(userId, chatId);
     const sessionMetadata = this.asMetadata(session.metadata);
-    const plannerState = this.normalizePlannerState(sessionMetadata.plannerState);
 
     if (session.mode !== 'planner') {
       throw new AppError('La generazione itinerario è disponibile solo in Planner Mode', 400);
     }
 
-    if (!this.isReadyToGenerate('planner', plannerState)) {
-      throw new AppError('La chat non ha ancora raccolto abbastanza dettagli per creare l’itinerario.', 400);
+    const dbMessages = this.toDbMessages(session.messages);
+    let refreshedState = await this.finalizePlannerState(
+      'planner',
+      this.normalizePlannerState(sessionMetadata.plannerState),
+      dbMessages
+    );
+    let enrichedPlannerState = enrichPlannerStateDefaults(refreshedState);
+
+    const lastAssistant = [...session.messages]
+      .reverse()
+      .find((message) => message.role === 'assistant');
+    const assistantReply =
+      lastAssistant?.content || String(sessionMetadata.lastAssistantReply || '');
+
+    if (!enrichedPlannerState.locationId && enrichedPlannerState.destination) {
+      const matched = await this.findBestLocation(enrichedPlannerState.destination);
+      if (matched) {
+        enrichedPlannerState = {
+          ...enrichedPlannerState,
+          destination: matched.name,
+          locationId: matched.id,
+        };
+      }
     }
 
-    if (!plannerState.locationId) {
-      throw new AppError('Destinazione non ancora collegata a una location supportata dal builder.', 400);
+    if (!enrichedPlannerState.destination && session.title) {
+      const fromTitle = await this.findBestLocation(session.title);
+      if (fromTitle) {
+        enrichedPlannerState = {
+          ...enrichedPlannerState,
+          destination: fromTitle.name,
+          locationId: fromTitle.id,
+        };
+      }
     }
+
+    if (
+      !enrichedPlannerState.days &&
+      (assistantDeclaresItineraryReady(assistantReply) || sessionMetadata.readyToGenerate)
+    ) {
+      enrichedPlannerState = { ...enrichedPlannerState, days: 3 };
+    }
+
+    const canGenerate = canGenerateItineraryFromSession({
+      mode: session.mode,
+      state: enrichedPlannerState,
+      assistantReply,
+      metadataReadyToGenerate: Boolean(sessionMetadata.readyToGenerate),
+    });
+
+    if (!canGenerate) {
+      const missing = getMissingPlannerFields(enrichedPlannerState);
+      throw new AppError(
+        missing.length
+          ? `Mancano ancora: ${missing.join(', ')}. Continua la conversazione con Voyager AI.`
+          : 'La chat non ha ancora raccolto abbastanza dettagli per creare l’itinerario.',
+        400
+      );
+    }
+
+    if (!enrichedPlannerState.locationId) {
+      throw new AppError(
+        `La destinazione "${enrichedPlannerState.destination || 'indicata'}" non è nel catalogo SmartFare. Scegli una città supportata (es. Bari, Lecce, Firenze).`,
+        400
+      );
+    }
+
+    await prisma.chatSession.update({
+      where: { id: chatId },
+      data: {
+        locationId: enrichedPlannerState.locationId,
+        metadata: this.toJsonValue({
+          ...sessionMetadata,
+          plannerState: enrichedPlannerState,
+          readyToGenerate: true,
+        }),
+      },
+    });
     // Idempotency: if an itinerary has already been generated for this session, return it
     if (sessionMetadata.generatedItinerary && (sessionMetadata.generatedItinerary as any).id) {
       return sessionMetadata.generatedItinerary;
     }
-    const workspace = await this.itineraryService.getWorkspaceData(plannerState.locationId, userId);
+    const workspace = await this.itineraryService.getWorkspaceData(enrichedPlannerState.locationId, userId);
     if (!workspace.location) {
       throw new AppError('Workspace destinazione non disponibile.', 404);
     }
 
-    const generationPrompt = this.buildItineraryPrompt(plannerState, this.toDbMessages(session.messages));
+    const generationPrompt = this.buildItineraryPrompt(enrichedPlannerState, this.toDbMessages(session.messages));
     const generated = await this.geminiPlannerService.generateInitialItinerary(generationPrompt, {
       location: {
         id: workspace.location.id,
@@ -330,24 +409,24 @@ export class ChatService {
       throw new AppError('In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.', 500);
     }
 
-    const startDate = this.buildStartDate(plannerState.period);
+    const startDate = this.buildStartDate(enrichedPlannerState.period);
     const transcript = this.toDbMessages(session.messages)
       .filter((message) => message.role === 'user')
       .map((message) => message.content)
       .join(' ');
     const enrichedItems = this.buildRichItineraryItems(
       generated.items,
-      plannerState,
+      enrichedPlannerState,
       workspace,
       startDate,
       transcript
     );
 
     const itineraryData = {
-      name: generated.name || this.suggestItineraryName(plannerState),
-      description: generated.description || this.buildItineraryDescription(plannerState),
+      name: generated.name || this.suggestItineraryName(enrichedPlannerState),
+      description: generated.description || this.buildItineraryDescription(enrichedPlannerState),
       startDate: new Date(startDate),
-      endDate: new Date(this.buildEndDate(startDate, plannerState.days || 3)),
+      endDate: new Date(this.buildEndDate(startDate, enrichedPlannerState.days || 3)),
       locationId: workspace.location.id,
       chatSessionId: chatId,
       userId,
@@ -384,7 +463,7 @@ export class ChatService {
       data: {
         metadata: this.toJsonValue({
           ...sessionMetadata,
-          plannerState,
+          plannerState: enrichedPlannerState,
           readyToGenerate: true,
           plannerLocked: true,
           generatedItineraryId: savedItinerary.id,
@@ -585,20 +664,12 @@ export class ChatService {
   }
 
   private getMissingPlannerFields(state: PlannerState): string[] {
-    const missing: string[] = [];
-    if (!state.destination || !state.locationId) missing.push('destinazione');
-    if (!state.days) missing.push('giorni');
-    if (!state.travelType) missing.push('tipo viaggio');
-    if (!state.travelers) missing.push('viaggiatori');
-    if (!state.interests?.length) missing.push('interessi');
-    if (!state.pace) missing.push('ritmo');
-    if (!state.style && !state.hotelStyle) missing.push('stile');
-    return missing;
+    return getMissingPlannerFields(enrichPlannerStateDefaults(state));
   }
 
   private isReadyToGenerate(mode: VoyagerChatMode, state: PlannerState): boolean {
     if (mode !== 'planner') return false;
-    return this.getMissingPlannerFields(state).length === 0;
+    return isPlannerStructurallyReady(state);
   }
 
   private async suggestTitle(
@@ -1270,6 +1341,14 @@ export class ChatService {
       );
 
       if (boundaryPattern.test(text)) {
+        return location;
+      }
+    }
+
+    for (const location of sorted) {
+      const name = location.name.toLowerCase();
+      if (name.length < 4) continue;
+      if (text.includes(name) || name.includes(text)) {
         return location;
       }
     }

@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { shouldShowItineraryReadyCard } from '../utils/planner-ready.util';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -80,6 +81,19 @@ export class VoyagerChatService {
   readonly readyToGenerate = signal(false);
   readonly hasStreamError = signal(false);
 
+  readonly showItineraryReadyCard = computed(() =>
+    shouldShowItineraryReadyCard({
+      mode: this.mode(),
+      readyToGenerate: this.readyToGenerate(),
+      messages: this.messages(),
+      plannerState: this.plannerState() || this.activeSession()?.metadata?.plannerState || null,
+      plannerLocked: Boolean(
+        this.activeSession()?.metadata?.plannerLocked ||
+        this.activeSession()?.metadata?.generatedItineraryId
+      ),
+    })
+  );
+
   loadSessions(): Observable<ChatSession[]> {
     this.isLoadingSessions.set(true);
     return this.http.get<ChatSession[]>(`${this.apiUrl}/sessions`).pipe(
@@ -117,6 +131,7 @@ export class VoyagerChatService {
       tap({
         next: (messages) => {
           this.messages.set(messages);
+          this.syncReadyFromConversation();
           this.isLoadingMessages.set(false);
         },
         error: () => {
@@ -282,8 +297,12 @@ export class VoyagerChatService {
   private applyStreamMetadata(sessionId: number, metadata?: any) {
     if (!metadata) return;
 
+    if (metadata.plannerState) {
+      this.plannerState.set(metadata.plannerState);
+    }
+
     this.readyToGenerate.set(Boolean(metadata.readyToGenerate));
-    this.plannerState.set(metadata.plannerState || null);
+    this.syncReadyFromConversation();
 
     const active = this.activeSession();
     if (!active || active.id !== sessionId) return;
@@ -293,12 +312,49 @@ export class VoyagerChatService {
       title: metadata.suggestedTitle || active.title,
       metadata: {
         ...(active.metadata || {}),
-        plannerState: metadata.plannerState || active.metadata?.plannerState,
-        readyToGenerate: Boolean(metadata.readyToGenerate),
+        plannerState: this.plannerState() || metadata.plannerState || active.metadata?.plannerState,
+        readyToGenerate: this.readyToGenerate(),
         suggestions: Array.isArray(metadata.suggestions) ? metadata.suggestions : active.metadata?.suggestions,
         actions: Array.isArray(metadata.actions) ? metadata.actions : active.metadata?.actions
       },
       lastMessageAt: new Date().toISOString()
+    };
+
+    this.activeSession.set(updatedSession);
+    this.upsertSession(updatedSession);
+  }
+
+  /** Allinea readyToGenerate quando l'assistente dichiara l'itinerario pronto ma il flag non è ancora true. */
+  syncReadyFromConversation(): void {
+    if (this.readyToGenerate()) return;
+
+    if (
+      !shouldShowItineraryReadyCard({
+        mode: this.mode(),
+        readyToGenerate: false,
+        messages: this.messages(),
+        plannerState: this.plannerState() || this.activeSession()?.metadata?.plannerState || null,
+        plannerLocked: Boolean(
+          this.activeSession()?.metadata?.plannerLocked ||
+          this.activeSession()?.metadata?.generatedItineraryId
+        ),
+      })
+    ) {
+      return;
+    }
+
+    this.readyToGenerate.set(true);
+
+    const active = this.activeSession();
+    if (!active) return;
+
+    const updatedSession: ChatSession = {
+      ...active,
+      metadata: {
+        ...(active.metadata || {}),
+        readyToGenerate: true,
+        plannerState: this.plannerState() || active.metadata?.plannerState,
+      },
     };
 
     this.activeSession.set(updatedSession);

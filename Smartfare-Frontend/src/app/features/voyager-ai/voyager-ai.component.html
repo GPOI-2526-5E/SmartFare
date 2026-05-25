@@ -294,7 +294,7 @@
           }
 
           <!-- ITINERARY READY CARD -->
-          @if (chatService.readyToGenerate() && chatService.messages().length > 0) {
+          @if (chatService.showItineraryReadyCard()) {
           <div class="itinerary-ready-card">
             <div class="card-image-wrapper">
               <div class="card-image card-image--pulse" aria-hidden="true">
