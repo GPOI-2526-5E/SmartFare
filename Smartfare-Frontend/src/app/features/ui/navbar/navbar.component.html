@@ -13,17 +13,11 @@
     <!-- NAV LINKS DESKTOP -->
     <div class="nav-center nav-links d-none d-lg-flex gap-4">
       @for (item of navItems; track item.label) {
-      @if (item.route === '/voyager') {
-      <a class="nav-item d-flex align-items-center gap-2" href="" (click)="openAiPlanner($event)">
+      <a class="nav-item d-flex align-items-center gap-2" [routerLink]="item.route"
+        [queryParams]="item.route === '/voyager' ? { sessionId: null, prompt: null } : null">
         <i [class]="item.icon"></i>
         <span>{{ item.label }}</span>
       </a>
-      } @else {
-      <a class="nav-item d-flex align-items-center gap-2" [routerLink]="item.route">
-        <i [class]="item.icon"></i>
-        <span>{{ item.label }}</span>
-      </a>
-      }
       }
     </div>
 
@@ -95,8 +89,8 @@
       </div>
       }
       }@else {
-      <button class="btn login-btn" (click)="login()">Login</button>
-      <a class="btn register-btn" [routerLink]="['/register']">Register</a>
+      <a class="btn login-btn" routerLink="/login">Accedi</a>
+      <a class="btn register-btn" [routerLink]="['/register']">Registrati</a>
       }
     </div>
 
@@ -204,7 +198,7 @@
       <div class="guest-actions mt-4 p-3 rounded-4">
         <p class="guest-hint mb-3 text-center">Accedi per salvare i tuoi viaggi e usare l'AI Planner al meglio.</p>
         <div class="d-flex flex-column gap-3">
-          <button class="btn login-btn w-100 py-2" (click)="login()">Login</button>
+          <a class="btn login-btn w-100 py-2" routerLink="/login" (click)="closeMobileMenu()">Accedi</a>
           <a class="btn register-btn w-100 py-2" [routerLink]="['/register']" (click)="closeMobileMenu()">Registrati</a>
         </div>
       </div>

@@ -49,7 +49,7 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   readonly navItems: NavItem[] = [
-    { icon: 'bi bi-house-door', label: 'Home', route: '/home' },
+    { icon: 'bi bi-house-door', label: 'Home', route: '/' },
     { icon: 'bi bi-compass', label: 'Esplora', route: '/discover' },
     { icon: 'bi bi-journal-bookmark', label: 'Crea', route: '/itineraries/new' },
     { icon: 'bi bi-magic', label: 'AI Planner', route: '/voyager' },
