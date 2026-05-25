@@ -68,10 +68,17 @@
                 <span class="stat-value">{{ publicItinerariesCount() }}</span>
                 <span class="stat-label">itinerari</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-value">{{ followersCount() }}</span>
-                <span class="stat-label">follower</span>
-              </div>
+              @if (isMe()) {
+                <button type="button" class="stat-item stat-item--link" (click)="goToFollowers()" title="Vedi i tuoi follower">
+                  <span class="stat-value">{{ followersCount() }}</span>
+                  <span class="stat-label">follower</span>
+                </button>
+              } @else {
+                <div class="stat-item">
+                  <span class="stat-value">{{ followersCount() }}</span>
+                  <span class="stat-label">follower</span>
+                </div>
+              }
             </div>
 
             <div class="profile-actions">

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { UserProfile, UserPreference, UserProfileFull } from '../models/user-profile.model';
+import { UserProfile, UserPreference, UserProfileFull, MyFollowersResponse } from '../models/user-profile.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +14,14 @@ export class ProfileService {
 
   getMyProfile(): Observable<UserProfileFull | null> {
     return this.http.get<UserProfileFull>(`${this.API_URL}/me`).pipe(
+      catchError(() => of(null))
+    );
+  }
+
+  getMyFollowers(limit = 50, offset = 0): Observable<MyFollowersResponse | null> {
+    return this.http.get<MyFollowersResponse>(`${this.API_URL}/me/followers`, {
+      params: { limit: limit.toString(), offset: offset.toString() }
+    }).pipe(
       catchError(() => of(null))
     );
   }

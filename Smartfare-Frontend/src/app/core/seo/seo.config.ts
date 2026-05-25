@@ -199,6 +199,12 @@ export const SEO_PAGES: Record<string, SeoPageConfig> = {
     keywords: 'impostazioni account, preferenze viaggio, privacy profilo',
     path: '/settings',
     robots: 'noindex, follow'
+  },
+  'profile-followers': {
+    title: 'I tuoi follower | SmartFare',
+    description: 'Elenco dei follower del tuo profilo. Visibile solo a te.',
+    path: '/profile/followers',
+    robots: 'noindex, follow'
   }
 };
 

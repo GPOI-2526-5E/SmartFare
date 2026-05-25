@@ -1,0 +1,84 @@
+<section class="pv-timeline" aria-label="Programma del viaggio">
+  <header class="pv-timeline__head">
+    <div>
+      <span class="pv-timeline__kicker"><i class="bi bi-list-check"></i> Programma</span>
+      <h2>Il tuo percorso giorno per giorno</h2>
+    </div>
+    <span class="pv-timeline__readonly">
+      <i class="bi bi-lock-fill"></i>
+      Sola lettura
+    </span>
+  </header>
+
+  @if (!hasStops) {
+    <div class="pv-timeline__empty">
+      <i class="bi bi-signpost-2"></i>
+      <p>Questo itinerario non ha ancora tappe da mostrare.</p>
+    </div>
+  } @else {
+    @for (day of days; track day.dayNumber) {
+      <article class="pv-day">
+        <header class="pv-day__head">
+          <div class="pv-day__badge">{{ day.dayNumber }}</div>
+          <div>
+            <h3>{{ day.title }}</h3>
+            @if (day.dateLabel) {
+              <p>{{ day.dateLabel }}</p>
+            }
+          </div>
+          <span class="pv-day__count">{{ day.stops.length }} tappe</span>
+        </header>
+
+        <ol class="pv-day__stops">
+          @for (stop of day.stops; track stop.key) {
+            <li class="pv-stop">
+              <div class="pv-stop__marker" aria-hidden="true">
+                <span>{{ stop.order }}</span>
+              </div>
+
+              <div class="pv-stop__card">
+                @if (stop.imageUrl) {
+                  <div class="pv-stop__media">
+                    <img [src]="stop.imageUrl" [alt]="stop.title" loading="lazy" />
+                  </div>
+                }
+
+                <div class="pv-stop__body">
+                  <div class="pv-stop__top">
+                    <span class="pv-stop__type" [class.pv-stop__type--stay]="stop.type === 'accommodation'">
+                      <i class="bi" [class]="stop.iconClass"></i>
+                      {{ stop.categoryLabel }}
+                    </span>
+                    @if (stop.timeRange) {
+                      <span class="pv-stop__time">
+                        <i class="bi bi-clock"></i>
+                        {{ stop.timeRange }}
+                      </span>
+                    }
+                  </div>
+
+                  <h4>{{ stop.title }}</h4>
+                  <p class="pv-stop__address">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    {{ stop.locationLine }}
+                  </p>
+
+                  @if (stop.note) {
+                    <blockquote class="pv-stop__note">{{ stop.note }}</blockquote>
+                  }
+
+                  @if (stop.mapsUrl) {
+                    <a class="pv-stop__maps" [href]="stop.mapsUrl" target="_blank" rel="noopener noreferrer">
+                      Apri in Google Maps
+                      <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                  }
+                </div>
+              </div>
+            </li>
+          }
+        </ol>
+      </article>
+    }
+  }
+</section>

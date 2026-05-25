@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, firstValueFrom, takeUntil } from 'rxjs';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -16,34 +16,26 @@ import { AlertService } from '../../../core/services/alert.service';
 import { Itinerary, ItineraryItem, ItineraryWorkspace } from '../../../core/models/itinerary.model';
 import Location from '../../../core/models/location.model';
 import { BuilderPoi } from '../../../core/models/builder.types';
-import { BuilderMapComponent } from '../itinerary-builder/builder-map/builder-map.component';
-
-export type PreviewStop = {
-  key: string;
-  order: number;
-  dayNumber: number;
-  title: string;
-  locationLine: string;
-  categoryLabel: string;
-  note: string | null;
-  timeRange: string | null;
-  type: 'activity' | 'accommodation';
-  imageUrl: string | null;
-  mapsUrl: string | null;
-  iconClass: string;
-};
-
-export type PreviewDay = {
-  dayNumber: number;
-  title: string;
-  dateLabel: string;
-  stops: PreviewStop[];
-};
+import { NavbarComponent } from '../../ui/navbar/navbar.component';
+import { FooterComponent } from '../../ui/footer/footer.component';
+import { PreviewHeroComponent } from './preview-hero/preview-hero.component';
+import { PreviewTimelineComponent } from './preview-timeline/preview-timeline.component';
+import { PreviewMapPanelComponent } from './preview-map-panel/preview-map-panel.component';
+import { PreviewActionsComponent } from './preview-actions/preview-actions.component';
+import { PreviewDay, PreviewStop } from './preview.types';
 
 @Component({
   selector: 'app-itinerary-preview',
   standalone: true,
-  imports: [CommonModule, RouterModule, BuilderMapComponent],
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    FooterComponent,
+    PreviewHeroComponent,
+    PreviewTimelineComponent,
+    PreviewMapPanelComponent,
+    PreviewActionsComponent,
+  ],
   templateUrl: './itinerary-preview.component.html',
   styleUrl: './itinerary-preview.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,6 +64,8 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     return !!(itin?.userId && user?.userId && itin.userId === user.userId);
   });
 
+  readonly isReadOnlyViewer = computed(() => !this.isOwner());
+
   readonly durationLabel = computed(() => {
     const days = this.dayCount();
     if (days <= 0) return 'Itinerario';
@@ -93,9 +87,17 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     );
   });
 
+  readonly authorName = computed(() => {
+    const profile = this.itinerary()?.user?.profile;
+    if (!profile) return null;
+    const name = [profile.name, profile.surname].filter(Boolean).join(' ').trim();
+    return name || null;
+  });
+
   readonly previewDays = computed(() => this.buildPreviewDays());
   readonly previewStops = computed(() => this.previewDays().flatMap((day) => day.stops));
   readonly hasStops = computed(() => this.previewStops().length > 0);
+  readonly stopCount = computed(() => this.previewStops().length);
 
   readonly mapPois = computed<BuilderPoi[]>(() => {
     const itin = this.itinerary();
@@ -202,7 +204,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      void this.router.navigate(['/profile/itineraries']);
+      void this.router.navigate(['/discover']);
     }
   }
 
@@ -250,7 +252,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
       next: (data) => {
         if (!data) {
           this.alertService.error('Itinerario non trovato');
-          void this.router.navigate(['/home']);
+          void this.router.navigate(['/discover']);
           this.isLoading.set(false);
           return;
         }
@@ -264,7 +266,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
       error: () => {
         this.alertService.error('Impossibile caricare l\'itinerario');
         this.isLoading.set(false);
-        void this.router.navigate(['/home']);
+        void this.router.navigate(['/discover']);
       },
     });
   }

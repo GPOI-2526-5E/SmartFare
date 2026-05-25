@@ -1,0 +1,107 @@
+.pv-map {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.pv-map__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  flex-shrink: 0;
+}
+
+.pv-map__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #5eead4;
+}
+
+.pv-map__head h2 {
+  margin: 0.4rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.pv-map__hint {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--pv-border);
+}
+
+.pv-map__frame {
+  flex: 1;
+  min-height: 280px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--pv-border);
+  background: var(--pv-surface);
+  box-shadow: var(--pv-shadow);
+}
+
+.pv-map__frame app-builder-map {
+  display: block;
+  height: 100%;
+  min-height: 280px;
+}
+
+.pv-map__frame app-builder-map ::ng-deep .map-shell,
+.pv-map__frame app-builder-map ::ng-deep #map,
+.pv-map__frame app-builder-map ::ng-deep .map-root {
+  height: 100% !important;
+  min-height: 100% !important;
+  border-radius: 0 !important;
+}
+
+.pv-map__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  height: 100%;
+  min-height: 280px;
+  color: var(--pv-muted);
+}
+
+.pv-map__loading i {
+  font-size: 2rem;
+  color: #64748b;
+}
+
+.pv-map__spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--pv-teal);
+  animation: pv-spin 0.75s linear infinite;
+}
+
+@keyframes pv-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (min-width: 1024px) {
+  .pv-map__frame {
+    min-height: calc(100vh - 14rem);
+    position: sticky;
+    top: 6.5rem;
+  }
+}

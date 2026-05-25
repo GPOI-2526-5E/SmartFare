@@ -176,6 +176,10 @@ export class ProfileViewComponent implements OnInit {
     this.router.navigate(['/settings']);
   }
 
+  goToFollowers() {
+    this.router.navigate(['/profile/followers']);
+  }
+
   toggleFollow() {
     const targetId = this.targetUserId();
     if (!targetId || this.isFollowingLoading()) return;

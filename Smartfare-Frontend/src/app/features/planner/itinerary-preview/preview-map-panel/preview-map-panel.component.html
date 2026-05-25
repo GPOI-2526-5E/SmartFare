@@ -1,0 +1,32 @@
+<aside class="pv-map" aria-label="Mappa del percorso">
+  <header class="pv-map__head">
+    <div>
+      <span class="pv-map__kicker"><i class="bi bi-map-fill"></i> Mappa</span>
+      <h2>Percorso sul territorio</h2>
+    </div>
+    <span class="pv-map__hint">Anteprima · non modificabile</span>
+  </header>
+
+  <div class="pv-map__frame">
+    @if (canRender && itinerary) {
+      <app-builder-map
+        [itinerary]="itinerary"
+        [isPreview]="true"
+        [location]="location"
+        [savedPois]="routePois"
+        [routePois]="routePois"
+        [availablePois]="[]"
+      />
+    } @else {
+      <div class="pv-map__loading">
+        @if (isLoading) {
+          <div class="pv-map__spinner"></div>
+          <p>Caricamento mappa…</p>
+        } @else {
+          <i class="bi bi-map"></i>
+          <p>Mappa non disponibile per questo itinerario.</p>
+        }
+      </div>
+    }
+  </div>
+</aside>

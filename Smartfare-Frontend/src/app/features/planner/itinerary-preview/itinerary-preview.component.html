@@ -1,207 +1,87 @@
-<div class="trip-preview">
-  <div class="trip-preview__bg" aria-hidden="true">
-    <span class="trip-preview__orb trip-preview__orb--a"></span>
-    <span class="trip-preview__orb trip-preview__orb--b"></span>
-  </div>
+<div class="ip-page">
+  <app-navbar></app-navbar>
 
-  <header class="trip-preview__topbar">
-    <div class="trip-preview__brand">
-      <a routerLink="/home" class="trip-preview__home">
-        <img src="favicon.png" alt="SmartFare" width="28" height="28" />
-        <span class="trip-preview__home-text">
-          <strong>SmartFare</strong>
-          <small>Home</small>
-        </span>
-      </a>
-      <span class="trip-preview__badge">
-        <i class="bi bi-eye"></i>
-        Anteprima
-      </span>
-    </div>
-
-    <h1 class="trip-preview__title">{{ itinerary()?.name || 'Caricamento…' }}</h1>
-
-    <div class="trip-preview__actions">
-      @if (!isLoading() && itinerary()) {
-      <button
-        type="button"
-        class="trip-preview__btn trip-preview__btn--ghost"
-        [class.is-active]="isFavorite()"
-        (click)="toggleFavorite()"
-        [disabled]="isSaving() || isCopying()"
-      >
-        <i [class]="isFavorite() ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
-        <span>{{ isFavorite() ? 'Preferito' : 'Salva' }}</span>
-      </button>
-      <button
-        type="button"
-        class="trip-preview__btn trip-preview__btn--primary"
-        (click)="primaryAction()"
-        [disabled]="isSaving() || isCopying()"
-      >
-        @if (isOwner()) {
-        <i class="bi bi-pencil-square"></i>
-        <span>Modifica</span>
-        } @else {
-        <i [class]="isCopying() ? 'bi bi-hourglass-split' : 'bi bi-box-arrow-in-down'"></i>
-        <span>{{ isCopying() ? 'Salvataggio…' : 'Incorpora' }}</span>
-        }
-      </button>
-      }
-    </div>
-  </header>
-
-  @if (isLoading()) {
-  <div class="trip-preview__loading">
-    <div class="trip-preview__spinner"></div>
-    <p>Caricamento itinerario…</p>
-  </div>
-  } @else if (!itinerary()) {
-  <div class="trip-preview__empty">
-    <i class="bi bi-inbox"></i>
-    <h2>Itinerario non trovato</h2>
-    <button type="button" class="trip-preview__btn trip-preview__btn--primary" (click)="goBack()">Torna indietro</button>
-  </div>
-  } @else {
-  <div class="trip-preview__body">
-    <section
-      class="trip-preview__plan"
-      [class.trip-preview__plan--visible]="mobileTab() === 'plan'"
-    >
-      <article class="trip-hero" [class.trip-hero--has-image]="!!coverImage()">
-        @if (coverImage()) {
-        <img class="trip-hero__img" [src]="coverImage()!" [alt]="itinerary()!.name" />
-        } @else {
-        <div class="trip-hero__placeholder" aria-hidden="true">
-          <i class="bi bi-image"></i>
-        </div>
-        }
-        <div class="trip-hero__overlay">
-          <span class="trip-hero__chip">
-            <i class="bi bi-calendar3"></i>
-            {{ durationLabel() }}
-          </span>
-          <h2 class="trip-hero__destination">{{ locationLabel() }}</h2>
-          <p class="trip-hero__desc">
-            {{ itinerary()?.description?.trim() || 'Nessuna descrizione aggiunta per questo viaggio.' }}
-          </p>
-        </div>
-      </article>
-
-      @if (!hasStops()) {
-      <div class="trip-preview__no-stops">
-        <i class="bi bi-signpost-split"></i>
-        <p>Questo itinerario non ha ancora tappe da mostrare.</p>
-      </div>
-      } @else {
-      @for (day of previewDays(); track day.dayNumber) {
-      <section class="trip-day">
-        <header class="trip-day__head">
-          <div>
-            <h3>{{ day.title }}</h3>
-            @if (day.dateLabel) {
-            <p>{{ day.dateLabel }}</p>
-            }
-          </div>
-          <span class="trip-day__count">{{ day.stops.length }} tappe</span>
-        </header>
-
-        <ol class="trip-day__list">
-          @for (stop of day.stops; track stop.key) {
-          <li class="trip-stop">
-            <div class="trip-stop__rail">
-              <span class="trip-stop__num">{{ stop.order }}</span>
-            </div>
-
-            <article class="trip-stop__card">
-              <div class="trip-stop__main">
-                <div class="trip-stop__icon" [class.trip-stop__icon--stay]="stop.type === 'accommodation'">
-                  <i class="bi" [class]="stop.iconClass"></i>
-                </div>
-
-                <div class="trip-stop__copy">
-                  <span class="trip-stop__category">{{ stop.categoryLabel }}</span>
-                  <h4 class="trip-stop__name">{{ stop.title }}</h4>
-                  <p class="trip-stop__location">
-                    <i class="bi bi-geo-alt"></i>
-                    {{ stop.locationLine }}
-                  </p>
-
-                  @if (stop.timeRange) {
-                  <p class="trip-stop__time">
-                    <i class="bi bi-clock"></i>
-                    {{ stop.timeRange }}
-                  </p>
-                  }
-
-                  @if (stop.note) {
-                  <p class="trip-stop__note">{{ stop.note }}</p>
-                  }
-
-                  @if (stop.mapsUrl) {
-                  <a class="trip-stop__maps" [href]="stop.mapsUrl" target="_blank" rel="noopener noreferrer">
-                    <i class="bi bi-map"></i>
-                    Apri in Maps
-                  </a>
-                  }
-                </div>
-
-                @if (stop.imageUrl) {
-                <div class="trip-stop__thumb">
-                  <img [src]="stop.imageUrl" [alt]="stop.title" loading="lazy" />
-                </div>
-                }
-              </div>
-            </article>
-          </li>
-          }
-        </ol>
-      </section>
-      }
-      }
-    </section>
-
-    <section
-      class="trip-preview__map"
-      [class.trip-preview__map--visible]="mobileTab() === 'map'"
-    >
-      @if (mapCanRender()) {
-      <app-builder-map
-        [itinerary]="itinerary()"
-        [isPreview]="true"
-        [location]="mapLocation()"
-        [savedPois]="mapPois()"
-        [routePois]="mapPois()"
-        [availablePois]="[]"
+  <main class="ip-main">
+    <div class="ip-shell">
+      <app-preview-actions
+        [isOwner]="isOwner()"
+        [isFavorite]="isFavorite()"
+        [isSaving]="isSaving()"
+        [isCopying]="isCopying()"
+        [isLoading]="isLoading()"
+        [hasItinerary]="!!itinerary()"
+        [isReadOnlyViewer]="isReadOnlyViewer()"
+        (back)="goBack()"
+        (favoriteToggle)="toggleFavorite()"
+        (primaryAction)="primaryAction()"
       />
-      } @else {
-      <div class="trip-preview__map-fallback">
-        <i class="bi bi-map"></i>
-        <p>Mappa in caricamento…</p>
-      </div>
-      }
-    </section>
-  </div>
 
-  <nav class="trip-preview__tabs" aria-label="Vista anteprima">
-    <button
-      type="button"
-      class="trip-preview__tab"
-      [class.is-active]="mobileTab() === 'plan'"
-      (click)="setMobileTab('plan')"
-    >
-      <i class="bi bi-list-ul"></i>
-      Itinerario
-    </button>
-    <button
-      type="button"
-      class="trip-preview__tab"
-      [class.is-active]="mobileTab() === 'map'"
-      (click)="setMobileTab('map')"
-    >
-      <i class="bi bi-map"></i>
-      Mappa
-    </button>
-  </nav>
-  }
+      @if (isLoading()) {
+        <div class="ip-state">
+          <div class="ip-state__spinner"></div>
+          <p>Caricamento anteprima…</p>
+        </div>
+      } @else if (!itinerary()) {
+        <div class="ip-state">
+          <i class="bi bi-inbox"></i>
+          <h2>Itinerario non trovato</h2>
+          <p>Il link potrebbe essere scaduto o l'itinerario non è più disponibile.</p>
+          <button type="button" class="ip-state__btn" (click)="goBack()">Torna a Esplora</button>
+        </div>
+      } @else {
+        <app-preview-hero
+          [title]="itinerary()!.name"
+          [destination]="locationLabel()"
+          [description]="itinerary()!.description || ''"
+          [coverImage]="coverImage()"
+          [durationLabel]="durationLabel()"
+          [stopCount]="stopCount()"
+          [authorName]="authorName()"
+          [isPublished]="!!itinerary()!.isPublished"
+        />
+
+        <div class="ip-layout" [class.ip-layout--map]="mobileTab() === 'map'">
+          <div class="ip-layout__plan" [class.ip-layout__panel--active]="mobileTab() === 'plan'">
+            <app-preview-timeline
+              [days]="previewDays()"
+              [hasStops]="hasStops()"
+            />
+          </div>
+
+          <div class="ip-layout__map" [class.ip-layout__panel--active]="mobileTab() === 'map'">
+            <app-preview-map-panel
+              [itinerary]="itinerary()"
+              [location]="mapLocation()"
+              [routePois]="mapPois()"
+              [canRender]="mapCanRender()"
+              [isLoading]="isLoading()"
+            />
+          </div>
+        </div>
+
+        <nav class="ip-tabs" aria-label="Vista mobile">
+          <button
+            type="button"
+            class="ip-tabs__btn"
+            [class.is-active]="mobileTab() === 'plan'"
+            (click)="setMobileTab('plan')"
+          >
+            <i class="bi bi-journal-text"></i>
+            Programma
+          </button>
+          <button
+            type="button"
+            class="ip-tabs__btn"
+            [class.is-active]="mobileTab() === 'map'"
+            (click)="setMobileTab('map')"
+          >
+            <i class="bi bi-map"></i>
+            Mappa
+          </button>
+        </nav>
+      }
+    </div>
+  </main>
+
+  <app-footer></app-footer>
 </div>

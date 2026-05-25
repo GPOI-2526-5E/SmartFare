@@ -225,6 +225,25 @@
   cursor: default;
 }
 
+.stat-item--link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: opacity 0.2s;
+}
+
+.stat-item--link:hover {
+  opacity: 0.85;
+}
+
+.stat-item--link:hover .stat-label {
+  text-decoration: underline;
+}
+
 .stat-value {
   font-size: 1.25rem;
   font-weight: 800;

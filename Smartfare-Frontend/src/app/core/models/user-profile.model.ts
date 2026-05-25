@@ -39,4 +39,10 @@ export interface UserProfileFull {
   publicItinerariesCount?: number;
   isFollowing?: boolean;
   lastPublishedAt?: string | null;
+  followedAt?: string;
+}
+
+export interface MyFollowersResponse {
+  followers: UserProfileFull[];
+  total: number;
 }

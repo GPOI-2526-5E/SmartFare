@@ -95,7 +95,11 @@
 }
 
 .logo-img {
-  height: 3vh;
+  height: 40px;
+  width: auto;
+  max-height: 48px;
+  display: block;
+  object-fit: contain;
 }
 
 /* --- NAV LINKS --- */

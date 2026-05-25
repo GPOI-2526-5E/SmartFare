@@ -1,0 +1,45 @@
+<section class="pv-hero" [class.pv-hero--has-image]="!!coverImage">
+  @if (coverImage) {
+    <img class="pv-hero__image" [src]="coverImage" [alt]="title" />
+  } @else {
+    <div class="pv-hero__fallback" aria-hidden="true">
+      <i class="bi bi-signpost-split-fill"></i>
+    </div>
+  }
+  <div class="pv-hero__shade"></div>
+
+  <div class="pv-hero__content">
+    <div class="pv-hero__meta">
+      <span class="pv-hero__chip">
+        <i class="bi bi-calendar3"></i>
+        {{ durationLabel }}
+      </span>
+      @if (stopCount > 0) {
+        <span class="pv-hero__chip pv-hero__chip--muted">
+          <i class="bi bi-geo-alt"></i>
+          {{ stopCount }} {{ stopCount === 1 ? 'tappa' : 'tappe' }}
+        </span>
+      }
+      @if (isPublished) {
+        <span class="pv-hero__chip pv-hero__chip--public">
+          <i class="bi bi-globe2"></i>
+          Pubblico
+        </span>
+      }
+    </div>
+
+    <p class="pv-hero__destination">{{ destination }}</p>
+    <h1 class="pv-hero__title">{{ title }}</h1>
+
+    @if (authorName) {
+      <p class="pv-hero__author">
+        <i class="bi bi-person-circle"></i>
+        Creato da {{ authorName }}
+      </p>
+    }
+
+    <p class="pv-hero__desc">
+      {{ description.trim() || 'Nessuna descrizione per questo viaggio.' }}
+    </p>
+  </div>
+</section>

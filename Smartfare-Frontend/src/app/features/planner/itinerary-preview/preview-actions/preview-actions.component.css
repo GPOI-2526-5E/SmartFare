@@ -1,0 +1,106 @@
+.pv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.85rem 0;
+}
+
+.pv-actions__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--pv-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #e2e8f0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pv-actions__back:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(167, 139, 250, 0.4);
+}
+
+.pv-actions__notice {
+  flex: 1;
+  min-width: 200px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--pv-muted);
+}
+
+.pv-actions__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.pv-actions__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pv-actions__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pv-actions__btn--ghost {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--pv-border);
+}
+
+.pv-actions__btn--ghost.is-active {
+  color: #fda4af;
+  border-color: rgba(251, 113, 133, 0.35);
+  background: rgba(251, 113, 133, 0.12);
+}
+
+.pv-actions__btn--primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--pv-purple), var(--pv-violet));
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.35);
+}
+
+.pv-actions__btn--primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .pv-actions__notice {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .pv-actions__group {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .pv-actions__btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

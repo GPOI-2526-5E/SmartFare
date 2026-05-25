@@ -1,0 +1,70 @@
+<div class="followers-page">
+  <div class="navbar-layer">
+    <app-navbar></app-navbar>
+  </div>
+
+  <main class="followers-main">
+    <header class="followers-header">
+      <button type="button" class="btn-back" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span>Profilo</span>
+      </button>
+      <div class="header-title">
+        <h1><i class="bi bi-people-fill"></i> I tuoi follower</h1>
+        <p class="header-subtitle">Solo tu puoi vedere questa lista</p>
+      </div>
+      @if (!isLoading()) {
+        <span class="followers-count">{{ total() }} {{ total() === 1 ? 'follower' : 'follower' }}</span>
+      }
+    </header>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="loader-ring"></div>
+        <p>Caricamento follower...</p>
+      </div>
+    } @else if (followers().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-person-plus"></i>
+        <h3>Nessun follower ancora</h3>
+        <p>Quando qualcuno seguirà il tuo profilo, apparirà qui.</p>
+        <button type="button" class="btn-primary" (click)="goBack()">Torna al profilo</button>
+      </div>
+    } @else {
+      <section class="followers-list" aria-label="Elenco follower">
+        @for (person of followers(); track person.id) {
+          <article
+            class="follower-card"
+            (click)="openProfile(person)"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="'Profilo di ' + personName(person)"
+          >
+            <div class="follower-avatar">
+              @if (avatarUrl(person); as src) {
+                <img [src]="src" [alt]="personName(person)" loading="lazy" />
+              } @else {
+                <span class="follower-initials">{{ personInitials(person) }}</span>
+              }
+            </div>
+
+            <div class="follower-info">
+              <h2 class="follower-name">{{ personName(person) }}</h2>
+              @if (cityLabel(person)) {
+                <p class="follower-city"><i class="bi bi-geo-alt"></i> {{ cityLabel(person) }}</p>
+              }
+              <div class="follower-meta">
+                <span><i class="bi bi-map"></i> {{ person.publicItinerariesCount ?? 0 }} itinerari</span>
+                @if (followedAtLabel(person)) {
+                  <span><i class="bi bi-calendar3"></i> Dal {{ followedAtLabel(person) }}</span>
+                }
+              </div>
+            </div>
+
+            <i class="bi bi-chevron-right follower-arrow"></i>
+          </article>
+        }
+      </section>
+    }
+  </main>
+</div>

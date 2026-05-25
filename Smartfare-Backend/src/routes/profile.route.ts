@@ -134,6 +134,79 @@ router.get('/me', authenticateJWT, async (req: AuthRequest, res: Response, next:
     }
 });
 
+// ─── GET /api/profile/me/followers (solo proprietario) ─────────────────────────
+router.get('/me/followers', authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = Number(req.user!.userId);
+        const limit = Math.min(Math.max(Number(req.query.limit) || 50, 1), 100);
+        const offset = Math.max(Number(req.query.offset) || 0, 0);
+
+        const publicItineraryWhere = {
+            OR: [
+                { isPublished: true },
+                { visibilityCode: 'PUBLIC' as const }
+            ]
+        };
+
+        const [follows, total] = await Promise.all([
+            prisma.follow.findMany({
+                where: { followingId: userId },
+                orderBy: { createdAt: 'desc' },
+                take: limit,
+                skip: offset,
+                include: {
+                    follower: {
+                        select: {
+                            id: true,
+                            email: true,
+                            authProvider: true,
+                            profile: true,
+                            _count: {
+                                select: {
+                                    followers: true,
+                                    following: true,
+                                    itineraries: { where: publicItineraryWhere }
+                                }
+                            }
+                        }
+                    }
+                }
+            }),
+            prisma.follow.count({ where: { followingId: userId } })
+        ]);
+
+        const followers = await Promise.all(
+            follows.map(async (row) => {
+                const u = row.follower;
+                const follow = await prisma.follow.findUnique({
+                    where: {
+                        followerId_followingId: {
+                            followerId: userId,
+                            followingId: u.id
+                        }
+                    }
+                });
+
+                return {
+                    id: u.id,
+                    email: u.email,
+                    authProvider: u.authProvider,
+                    profile: u.profile,
+                    followersCount: u._count.followers,
+                    followingCount: u._count.following,
+                    publicItinerariesCount: u._count.itineraries,
+                    isFollowing: !!follow,
+                    followedAt: row.createdAt
+                };
+            })
+        );
+
+        return res.json({ followers, total });
+    } catch (error) {
+        next(error);
+    }
+});
+
 // ─── GET /api/profile/top-creators ──────────────────────────────────────────────
 router.get('/top-creators', optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {

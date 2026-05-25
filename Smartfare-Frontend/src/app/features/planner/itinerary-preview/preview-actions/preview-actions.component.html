@@ -1,0 +1,50 @@
+<div class="pv-actions">
+  <button type="button" class="pv-actions__back" (click)="back.emit()" aria-label="Torna indietro">
+    <i class="bi bi-arrow-left"></i>
+    <span>Indietro</span>
+  </button>
+
+  @if (isReadOnlyViewer && hasItinerary && !isLoading) {
+    <p class="pv-actions__notice">
+      <i class="bi bi-eye"></i>
+      Stai visualizzando un itinerario in sola lettura
+    </p>
+  }
+
+  <div class="pv-actions__group">
+    @if (!isLoading && hasItinerary) {
+      <button
+        type="button"
+        class="pv-actions__btn pv-actions__btn--ghost"
+        [class.is-active]="isFavorite"
+        (click)="favoriteToggle.emit()"
+        [disabled]="isSaving || isCopying"
+      >
+        <i [class]="isFavorite ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+        <span>{{ isFavorite ? 'Nei preferiti' : 'Salva' }}</span>
+      </button>
+
+      @if (isOwner) {
+        <button
+          type="button"
+          class="pv-actions__btn pv-actions__btn--primary"
+          (click)="primaryAction.emit()"
+          [disabled]="isSaving || isCopying"
+        >
+          <i class="bi bi-pencil-square"></i>
+          <span>{{ isSaving ? 'Apertura…' : 'Modifica itinerario' }}</span>
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="pv-actions__btn pv-actions__btn--primary"
+          (click)="primaryAction.emit()"
+          [disabled]="isSaving || isCopying"
+        >
+          <i [class]="isCopying ? 'bi bi-hourglass-split' : 'bi bi-copy'"></i>
+          <span>{{ isCopying ? 'Salvataggio…' : 'Incorpora nel mio account' }}</span>
+        </button>
+      }
+    }
+  </div>
+</div>

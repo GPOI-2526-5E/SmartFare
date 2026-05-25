@@ -80,6 +80,12 @@ export const APP_ROUTES: Routes = [
     data: { seoKey: 'voyager' }
   },
   {
+    path: 'profile/followers',
+    loadComponent: () => import('./features/profile/followers/followers.component').then((m) => m.FollowersComponent),
+    canActivate: [authGuard],
+    data: { seoKey: 'profile-followers' }
+  },
+  {
     path: 'profile',
     loadComponent: () => import('./features/profile/profile-view/profile-view.component').then((m) => m.ProfileViewComponent),
     canActivate: [authGuard],
