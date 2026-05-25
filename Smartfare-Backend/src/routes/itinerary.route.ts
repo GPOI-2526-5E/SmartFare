@@ -147,6 +147,24 @@ router.get("/favorites", authenticateJWT, async (req: AuthRequest, res: Response
     }
 });
 
+// DELETE /api/itineraries/:id - Delete an itinerary owned by the logged user
+router.delete("/:id", authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = Number(req.user?.userId);
+        if (!userId || Number.isNaN(userId)) return res.status(401).json({ error: "Unauthorized" });
+
+        const id = Number(req.params.id);
+        if (!id || Number.isNaN(id)) return res.status(400).json({ error: "ID non valido" });
+
+        const deleted = await itineraryService.deleteItinerary(id, userId);
+        if (!deleted) return res.status(404).json({ error: "Itinerario non trovato" });
+
+        res.status(200).json({ message: "Itinerario eliminato correttamente" });
+    } catch (error) {
+        next(error);
+    }
+});
+
 // POST /api/itineraries/:id/favorite - Add an itinerary to favorites
 router.post("/:id/favorite", authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {

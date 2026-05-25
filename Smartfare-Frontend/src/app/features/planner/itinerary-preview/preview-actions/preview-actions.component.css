@@ -1,106 +1,210 @@
-.pv-actions {
+/* ================================================================
+   PREVIEW ACTIONS — Floating pill bar (da 0)
+   ================================================================ */
+
+:host {
+  display: block;
+  /* Posizioniamo il componente in modo fisso rispetto alla viewport */
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  pointer-events: none; /* Lasciamo cliccare il contenitore host solo sui figli */
+}
+
+/* ─── Bar ─── */
+.pva-bar {
+  pointer-events: auto; /* Riabilitiamo i click sulla barra vera e propria */
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem 1rem;
-  padding: 0.85rem 0;
-}
-
-.pv-actions__back {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.5rem 0.85rem;
-  border: 1px solid var(--pv-border);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  color: #e2e8f0;
-  font-size: 0.86rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.pv-actions__back:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(167, 139, 250, 0.4);
-}
-
-.pv-actions__notice {
-  flex: 1;
-  min-width: 200px;
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.82rem;
-  color: var(--pv-muted);
-}
-
-.pv-actions__group {
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  margin-left: auto;
+  padding: 0.5rem;
+  border-radius: 999px;
+  background: rgba(11, 9, 20, 0.65);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  animation: pva-float-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-.pv-actions__btn {
-  display: inline-flex;
+.pva-bar__glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes pva-float-in {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── Buttons base ─── */
+.pva-btn {
+  display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.55rem 1rem;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  font-size: 0.84rem;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 44px;
+  padding: 0 1.2rem;
+  border-radius: 999px;
+  border: none;
+  font-family: inherit;
+  font-size: 0.88rem;
   font-weight: 700;
+  color: #f1f5f9;
+  background: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
-.pv-actions__btn:disabled {
-  opacity: 0.55;
+.pva-btn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.pv-actions__btn--ghost {
-  color: #e2e8f0;
-  background: rgba(255, 255, 255, 0.04);
-  border-color: var(--pv-border);
+.pva-btn i {
+  font-size: 1.1rem;
 }
 
-.pv-actions__btn--ghost.is-active {
-  color: #fda4af;
-  border-color: rgba(251, 113, 133, 0.35);
-  background: rgba(251, 113, 133, 0.12);
+/* ─── Back ─── */
+.pva-btn--back {
+  color: #cbd5e1;
 }
 
-.pv-actions__btn--primary {
+.pva-btn--back:hover:not(:disabled) {
   color: #fff;
-  background: linear-gradient(135deg, var(--pv-purple), var(--pv-violet));
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.35);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.pv-actions__btn--primary:hover:not(:disabled) {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
+/* ─── Heart ─── */
+.pva-btn--heart {
+  color: #cbd5e1;
 }
+
+.pva-btn--heart:hover:not(:disabled) {
+  color: #f43f5e;
+  background: rgba(244, 63, 94, 0.12);
+}
+
+.pva-btn--heart-active {
+  color: #f43f5e;
+}
+
+.pva-btn--heart-active:hover:not(:disabled) {
+  background: rgba(244, 63, 94, 0.15);
+}
+
+.pva-btn--heart-active i {
+  animation: pva-heart-beat 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes pva-heart-beat {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* ─── Primary (Modifica/Incorpora) ─── */
+.pva-btn--primary {
+  color: #fff;
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+}
+
+.pva-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+}
+
+.pva-btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ─── Divider ─── */
+.pva-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ─── Spinner (interno btn) ─── */
+.pva-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pva-spin 0.8s linear infinite;
+}
+
+@keyframes pva-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Skeletons (loading state) ─── */
+.pva-skeleton {
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  animation: pva-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.pva-skeleton--sm { width: 44px; }
+.pva-skeleton--md { width: 120px; }
+
+@keyframes pva-pulse {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}
+
+/* ─── Readonly Notice ─── */
+.pva-readonly-notice {
+  position: absolute;
+  top: -2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: pva-fade-in 0.5s 1s both;
+}
+
+@keyframes pva-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
 
 @media (max-width: 640px) {
-  .pv-actions__notice {
-    order: 3;
-    width: 100%;
-    margin-left: 0;
+  /* Su mobile la barra sta sopra al tab switcher */
+  :host {
+    bottom: 9.5rem;
   }
 
-  .pv-actions__group {
-    width: 100%;
-    margin-left: 0;
+  .pva-btn__label {
+    display: none; /* Nascondiamo le label secondarie su mobile se serve spazio, ma il primary può tenerla */
   }
-
-  .pv-actions__btn {
-    flex: 1;
-    justify-content: center;
+  
+  .pva-btn--primary .pva-btn__label {
+    display: inline;
   }
 }

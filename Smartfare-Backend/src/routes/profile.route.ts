@@ -97,6 +97,7 @@ router.get('/me', authenticateJWT, async (req: AuthRequest, res: Response, next:
                 select: {
                     email: true,
                     authProvider: true,
+                    passwordHash: true,
                     profile: true,
                     preference: true,
                 }
@@ -121,6 +122,7 @@ router.get('/me', authenticateJWT, async (req: AuthRequest, res: Response, next:
         return res.json({
             email: user.email,
             authProvider: user.authProvider,
+            hasLocalPassword: !!user.passwordHash,
             profile: user.profile ?? null,
             preference: user.preference
                 ? await formatPreferenceResponse(user.preference)

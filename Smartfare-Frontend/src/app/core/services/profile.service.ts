@@ -74,15 +74,33 @@ export class ProfileService {
     );
   }
 
-  sendPasswordChangeCode(): Observable<{ success: boolean; message?: string } | null> {
+  sendPasswordChangeCode(): Observable<{ success: boolean; message?: string }> {
     return this.http.post<{ success: boolean; message?: string }>(`${this.API_URL}/password/send-code`, {}).pipe(
-      catchError((err) => of({ success: false, message: err.error?.error || err.error?.message }))
+      catchError((err) =>
+        of({
+          success: false,
+          message:
+            err?.error?.error ||
+            err?.error?.message ||
+            (typeof err?.error === 'string' ? err.error : null) ||
+            'Impossibile inviare il codice. Riprova tra poco.',
+        })
+      )
     );
   }
 
-  resetPasswordWithCode(code: string, newPassword: string): Observable<{ success: boolean; message?: string } | null> {
+  resetPasswordWithCode(code: string, newPassword: string): Observable<{ success: boolean; message?: string }> {
     return this.http.post<{ success: boolean; message?: string }>(`${this.API_URL}/password/reset`, { code, newPassword }).pipe(
-      catchError((err) => of({ success: false, message: err.error?.error || err.error?.message }))
+      catchError((err) =>
+        of({
+          success: false,
+          message:
+            err?.error?.error ||
+            err?.error?.message ||
+            (typeof err?.error === 'string' ? err.error : null) ||
+            'Codice non valido o scaduto.',
+        })
+      )
     );
   }
 

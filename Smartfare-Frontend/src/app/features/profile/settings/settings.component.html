@@ -307,94 +307,143 @@
             </div>
           </div>
 
-          <div class="account-info-block">
-            <div class="info-row">
-              <i class="bi bi-envelope-fill"></i>
-              <div>
-                <label>Email</label>
-                <span>{{ email() }}</span>
+          <div class="account-tab-stack">
+            <div class="account-info-block">
+              <div class="info-row">
+                <i class="bi bi-envelope-fill"></i>
+                <div>
+                  <label>Email</label>
+                  <span>{{ email() }}</span>
+                </div>
+              </div>
+              <div class="info-row">
+                <i class="bi bi-shield-check"></i>
+                <div>
+                  <label>Metodo di accesso</label>
+                  <span>{{ authProviderLabel() }}</span>
+                </div>
               </div>
             </div>
 
-          </div>
-
-
-            <div class="security-block password-reset-panel">
-              <div class="security-block__header">
-                <span class="security-block__badge"><i class="bi bi-shield-lock"></i></span>
-                <div>
-                  <h3>Reimposta password</h3>
-                  <p>Ti inviamo un codice a 6 cifre su <strong>{{ email() }}</strong> per confermare il cambio.</p>
+            @if (canChangePassword()) {
+              <div class="security-block password-reset-panel">
+                <div class="security-block__header">
+                  <span class="security-block__badge"><i class="bi bi-shield-lock"></i></span>
+                  <div>
+                    <h3>Reimposta password</h3>
+                    <p>
+                      @if (!passwordCodeSent()) {
+                        Anche con accesso {{ authProviderLabel() }}, la password che hai scelto in registrazione si cambia qui.
+                        Ti inviamo un codice a 6 cifre su <strong>{{ email() }}</strong>.
+                      } @else {
+                        Inserisci il codice ricevuto via email e scegli la nuova password (valido 15 minuti).
+                      }
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              @if (!passwordCodeSent()) {
-                <button type="button" class="btn-outline" (click)="sendPasswordCode()" [disabled]="isSendingCode()">
-                  @if (isSendingCode()) {
-                    <i class="bi bi-arrow-repeat spin"></i> Invio in corso...
-                  } @else {
-                    <i class="bi bi-envelope-check"></i> Invia codice di verifica
-                  }
-                </button>
-              } @else {
-                <div class="password-form">
+                @if (!passwordCodeSent()) {
+                  <button type="button" class="btn-outline" (click)="sendPasswordCode()" [disabled]="isSendingCode()">
+                    @if (isSendingCode()) {
+                      <i class="bi bi-arrow-repeat spin"></i> Invio in corso...
+                    } @else {
+                      <i class="bi bi-envelope-check"></i> Invia codice di verifica
+                    }
+                  </button>
+                } @else {
+                  <p class="password-reset-step">
+                    <i class="bi bi-check-circle-fill"></i> Codice inviato. Controlla la posta (anche spam).
+                  </p>
+                }
+
+                <div class="password-form" [class.password-form--disabled]="!passwordCodeSent()">
                   <div class="field-group">
-                    <label><i class="bi bi-123"></i> Codice di verifica</label>
-                    <input type="text" class="code-input" maxlength="6" inputmode="numeric" pattern="[0-9]*"
-                           placeholder="000000"
-                           [ngModel]="verificationCode()" (ngModelChange)="verificationCode.set($event)">
+                    <label for="pwd-code"><i class="bi bi-123"></i> Codice di verifica</label>
+                    <input id="pwd-code" type="text" class="code-input" maxlength="6" inputmode="numeric"
+                           autocomplete="one-time-code" placeholder="000000"
+                           [disabled]="!passwordCodeSent()"
+                           [ngModel]="verificationCode()" (ngModelChange)="onVerificationCodeChange($event)">
                   </div>
 
                   <div class="field-group">
-                    <label><i class="bi bi-key"></i> Nuova password</label>
+                    <label for="pwd-new"><i class="bi bi-key"></i> Nuova password</label>
                     <div class="input-password-wrap">
-                      <input [type]="showNewPassword() ? 'text' : 'password'"
-                             placeholder="Minimo 8 caratteri"
+                      <input id="pwd-new" [type]="showNewPassword() ? 'text' : 'password'"
+                             autocomplete="new-password" placeholder="Minimo 8 caratteri"
+                             [disabled]="!passwordCodeSent()"
                              [ngModel]="newPassword()" (ngModelChange)="newPassword.set($event)">
-                      <button type="button" class="toggle-psw" (click)="showNewPassword.set(!showNewPassword())">
+                      <button type="button" class="toggle-psw" (click)="showNewPassword.set(!showNewPassword())"
+                              [disabled]="!passwordCodeSent()">
                         <i class="bi" [ngClass]="showNewPassword() ? 'bi-eye-slash' : 'bi-eye'"></i>
                       </button>
                     </div>
                   </div>
 
                   <div class="field-group">
-                    <label><i class="bi bi-key-fill"></i> Conferma password</label>
-                    <input type="password" placeholder="Ripeti la nuova password"
+                    <label for="pwd-confirm"><i class="bi bi-key-fill"></i> Conferma password</label>
+                    <input id="pwd-confirm" type="password" autocomplete="new-password"
+                           placeholder="Ripeti la nuova password"
+                           [disabled]="!passwordCodeSent()"
                            [ngModel]="confirmPassword()" (ngModelChange)="confirmPassword.set($event)">
                   </div>
 
                   <div class="password-form__actions">
                     <button type="button" class="btn-save" (click)="resetPasswordWithCode()"
-                            [disabled]="isResettingPassword()">
+                            [disabled]="!passwordCodeSent() || isResettingPassword()">
                       @if (isResettingPassword()) {
                         <i class="bi bi-arrow-repeat spin"></i> Aggiornamento...
                       } @else {
                         <i class="bi bi-check-lg"></i> Salva nuova password
                       }
                     </button>
-                    <button type="button" class="btn-ghost" (click)="cancelPasswordReset()">Annulla</button>
+                    @if (passwordCodeSent()) {
+                      <button type="button" class="btn-ghost" (click)="cancelPasswordReset()">Annulla</button>
+                    }
                   </div>
 
-                  <p class="resend-hint">
-                    @if (resendSeconds() > 0) {
-                      Puoi richiedere un nuovo codice tra {{ resendSeconds() }}s
-                    } @else {
-                      <button type="button" class="link-btn" (click)="sendPasswordCode()">
-                        <i class="bi bi-arrow-clockwise"></i> Invia di nuovo il codice
-                      </button>
-                    }
-                  </p>
+                  @if (passwordCodeSent()) {
+                    <p class="resend-hint">
+                      @if (resendSeconds() > 0) {
+                        Puoi richiedere un nuovo codice tra {{ resendSeconds() }}s
+                      } @else {
+                        <button type="button" class="link-btn" (click)="sendPasswordCode()" [disabled]="isSendingCode()">
+                          <i class="bi bi-arrow-clockwise"></i> Invia di nuovo il codice
+                        </button>
+                      }
+                    </p>
+                  }
                 </div>
-              }
-            </div>
 
+                <p class="password-reset-alt">
+                  Problemi con l'email?
+                  <a routerLink="/forgot-password">Recupera password dal link email</a>
+                </p>
+              </div>
+            } @else {
+              <div class="security-block security-block--muted">
+                <div class="security-block__header">
+                  <span class="security-block__badge"><i class="bi bi-shield-exclamation"></i></span>
+                  <div>
+                    <h3>Password non configurata</h3>
+                    <p>
+                      Il tuo account (<strong>{{ authProviderLabel() }}</strong>) non ha ancora una password SmartFare salvata.
+                      Completa la registrazione con una password oppure recuperala dal login.
+                    </p>
+                  </div>
+                </div>
+                <a routerLink="/forgot-password" class="btn-outline">
+                  <i class="bi bi-key"></i> Recupera o imposta password
+                </a>
+              </div>
+            }
 
-          <div class="danger-zone">
+            <div class="danger-zone">
             <h3><i class="bi bi-exclamation-triangle-fill"></i> Zona di uscita</h3>
             <p>Esci dal tuo account su questo dispositivo.</p>
             <button class="btn-danger" (click)="logout()">
               <i class="bi bi-box-arrow-right"></i> Esci
             </button>
+            </div>
           </div>
         </section>
       }

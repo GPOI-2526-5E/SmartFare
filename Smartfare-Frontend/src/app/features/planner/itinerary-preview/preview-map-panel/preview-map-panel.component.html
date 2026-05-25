@@ -1,15 +1,15 @@
-<aside class="pv-map" aria-label="Mappa del percorso">
-  <header class="pv-map__head">
-    <div>
-      <span class="pv-map__kicker"><i class="bi bi-map-fill"></i> Mappa</span>
-      <h2>Percorso sul territorio</h2>
-    </div>
-    <span class="pv-map__hint">Anteprima · non modificabile</span>
-  </header>
+<div class="pvm-wrap" aria-label="Mappa del percorso">
+  
+  <!-- Overlay badge "Anteprima" -->
+  <div class="pvm-badge" aria-hidden="true">
+    <i class="bi bi-map-fill"></i>
+    <span>Anteprima mappa</span>
+  </div>
 
-  <div class="pv-map__frame">
+  <div class="pvm-frame">
     @if (canRender && itinerary) {
       <app-builder-map
+        class="pvm-map-component"
         [itinerary]="itinerary"
         [isPreview]="true"
         [location]="location"
@@ -18,15 +18,25 @@
         [availablePois]="[]"
       />
     } @else {
-      <div class="pv-map__loading">
-        @if (isLoading) {
-          <div class="pv-map__spinner"></div>
-          <p>Caricamento mappa…</p>
-        } @else {
-          <i class="bi bi-map"></i>
-          <p>Mappa non disponibile per questo itinerario.</p>
-        }
+      <!-- Stato loading o vuoto -->
+      <div class="pvm-fallback">
+        <div class="pvm-fallback__bg" aria-hidden="true"></div>
+        
+        <div class="pvm-fallback__content">
+          @if (isLoading) {
+            <div class="pvm-spinner">
+              <div class="pvm-spinner__ring"></div>
+            </div>
+            <p>Caricamento mappa…</p>
+          } @else {
+            <div class="pvm-empty-icon">
+              <i class="bi bi-map"></i>
+            </div>
+            <p>Mappa non disponibile per questo itinerario.</p>
+          }
+        </div>
       </div>
     }
   </div>
-</aside>
+
+</div>

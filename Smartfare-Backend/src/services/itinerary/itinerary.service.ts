@@ -825,8 +825,27 @@ export class ItineraryService {
 
     async deleteItinerary(id: number, userId: number) {
         try {
-            return await prisma.itinerary.delete({
-                where: { id, userId }
+            return await prisma.$transaction(async (tx) => {
+                const itinerary = await tx.itinerary.findFirst({
+                    where: { id, userId },
+                    select: { id: true }
+                });
+
+                if (!itinerary) {
+                    return null;
+                }
+
+                await tx.itineraryFavorite.deleteMany({
+                    where: { itineraryId: id }
+                });
+
+                await tx.itineraryItem.deleteMany({
+                    where: { itineraryId: id }
+                });
+
+                return tx.itinerary.delete({
+                    where: { id }
+                });
             });
         } catch (error) {
             console.error("Errore eliminazione itinerario:", error);

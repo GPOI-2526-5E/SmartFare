@@ -32,6 +32,7 @@ export interface UserProfileFull {
   id?: number;
   email: string;
   authProvider: string;
+  hasLocalPassword?: boolean;
   profile: UserProfile | null;
   preference: UserPreference | null;
   followersCount?: number;

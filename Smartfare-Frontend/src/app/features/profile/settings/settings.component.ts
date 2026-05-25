@@ -63,6 +63,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   email = signal('');
   authProvider = signal('');
+  hasLocalPassword = signal(false);
 
   name = signal('');
   surname = signal('');
@@ -99,6 +100,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const s = this.surname();
     if (n || s) return `${n} ${s}`.trim();
     return this.email() || 'Il tuo profilo';
+  });
+
+  canChangePassword = computed(() => this.hasLocalPassword());
+
+  authProviderLabel = computed(() => {
+    const p = (this.authProvider() || 'local').toLowerCase();
+    if (p === 'google') return 'Google + password SmartFare';
+    if (p === 'github') return 'GitHub + password SmartFare';
+    return 'Email e password';
   });
 
   age = computed(() => {
@@ -149,7 +159,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   private hydrateFromData(data: UserProfileFull) {
     this.email.set(data.email ?? '');
-    this.authProvider.set(data.authProvider ?? '');
+    this.authProvider.set(data.authProvider ?? 'local');
+    this.hasLocalPassword.set(!!data.hasLocalPassword);
 
     const p = data.profile;
     if (p) {
@@ -270,22 +281,37 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   sendPasswordCode() {
+    if (!this.canChangePassword()) {
+      this.alertService.error('Su questo account non è stata ancora impostata una password SmartFare.');
+      return;
+    }
     if (this.resendSeconds() > 0 || this.isSendingCode()) return;
 
     this.isSendingCode.set(true);
     this.profileService.sendPasswordChangeCode().subscribe((res) => {
       this.isSendingCode.set(false);
-      if (res?.success) {
+      if (res.success) {
         this.passwordCodeSent.set(true);
-        this.alertService.success(`Codice inviato a ${this.email()}`);
+        this.verificationCode.set('');
+        this.alertService.success(res.message || `Codice inviato a ${this.email()}`);
         this.startResendCooldown();
       } else {
-        this.alertService.error(res?.message || 'Impossibile inviare il codice.');
+        this.alertService.error(res.message || 'Impossibile inviare il codice.');
       }
     });
   }
 
+  onVerificationCodeChange(value: string) {
+    const digits = value.replace(/\D/g, '').slice(0, 6);
+    this.verificationCode.set(digits);
+  }
+
   resetPasswordWithCode() {
+    if (!this.passwordCodeSent()) {
+      this.alertService.error('Invia prima il codice di verifica alla tua email.');
+      return;
+    }
+
     const code = this.verificationCode().trim();
     const pwd = this.newPassword();
     const confirm = this.confirmPassword();
@@ -306,12 +332,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.isResettingPassword.set(true);
     this.profileService.resetPasswordWithCode(code, pwd).subscribe((res) => {
       this.isResettingPassword.set(false);
-      if (res?.success) {
-        this.alertService.success('Password aggiornata! Accedi di nuovo con la nuova password.');
+      if (res.success) {
+        this.alertService.success(res.message || 'Password aggiornata! Accedi di nuovo con la nuova password.');
+        this.cancelPasswordReset();
         this.authService.Logout();
         this.router.navigate(['/login']);
       } else {
-        this.alertService.error(res?.message || 'Codice non valido o scaduto.');
+        this.alertService.error(res.message || 'Codice non valido o scaduto.');
       }
     });
   }
@@ -321,6 +348,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.verificationCode.set('');
     this.newPassword.set('');
     this.confirmPassword.set('');
+    this.showNewPassword.set(false);
+    if (this.resendTimerId) {
+      clearInterval(this.resendTimerId);
+      this.resendTimerId = null;
+    }
+    this.resendSeconds.set(0);
   }
 
   private startResendCooldown() {

@@ -92,15 +92,29 @@
                 <img
                   [src]="itinerary.imageUrl || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800'"
                   [alt]="itinerary.name"
+                  title="{{ itinerary.name }}"
                   loading="lazy">
                 <div class="image-overlay"></div>
-                <button class="card-more-btn" (click)="$event.stopPropagation()">
+                <button class="card-more-btn" type="button" title="Altre azioni" aria-label="Altre azioni" (click)="$event.stopPropagation()">
                   <i class="bi bi-three-dots-vertical"></i>
                 </button>
               </div>
 
               <div class="card-body">
                 <h3 class="card-title">{{ itinerary.name }}</h3>
+                @if (itinerary.description) {
+                  <p class="card-description">{{ itinerary.description }}</p>
+                }
+                <div class="card-meta">
+                  <div class="card-meta-item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>{{ getTripDuration(itinerary) }}</span>
+                  </div>
+                  <div class="card-meta-item">
+                    <i class="bi bi-list-check"></i>
+                    <span>{{ getActivityCount(itinerary) }} attività</span>
+                  </div>
+                </div>
                 <div class="card-date">
                   <i class="bi bi-calendar3"></i>
                   <span>{{ formatDateRange(itinerary) }}</span>
@@ -130,9 +144,14 @@
                       <i class="bi bi-eye-fill"></i> Anteprima
                     </button>
                   } @else {
-                    <button class="btn-quick-edit" (click)="editItinerary(itinerary, $event)" title="Modifica">
-                      <i class="bi bi-pencil-fill"></i> Modifica
-                    </button>
+                    <div class="card-actions">
+                      <button class="btn-quick-edit" (click)="editItinerary(itinerary, $event)" title="Modifica">
+                        <i class="bi bi-pencil-fill"></i> Modifica
+                      </button>
+                      <button class="btn-delete-itinerary" (click)="promptDeleteItinerary(itinerary, $event)" title="Elimina itinerario">
+                        <i class="bi bi-trash3-fill"></i> Elimina
+                      </button>
+                    </div>
                   }
                 </div>
               </div>
@@ -207,4 +226,35 @@
 
     </main>
   </div>
+  @if (itineraryPendingDelete()) {
+    <div class="delete-modal-backdrop" (click)="closeDeleteModal()">
+      <div class="delete-modal" (click)="$event.stopPropagation()">
+        <div class="delete-modal__icon">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <h2>Sei sicuro di voler eliminare?</h2>
+        <p>
+          L'itinerario <strong>{{ itineraryPendingDelete()?.name }}</strong> verrà rimosso in modo permanente.
+          Questa operazione non si può annullare.
+        </p>
+
+        @if (deleteError()) {
+          <div class="delete-modal__error">{{ deleteError() }}</div>
+        }
+
+        <div class="delete-modal__actions">
+          <button class="btn-delete-cancel" type="button" (click)="closeDeleteModal()" [disabled]="isDeletingItinerary()">
+            Annulla
+          </button>
+          <button class="btn-delete-confirm" type="button" (click)="confirmDeleteItinerary()" [disabled]="isDeletingItinerary()">
+            @if (isDeletingItinerary()) {
+              Eliminazione...
+            } @else {
+              Elimina itinerario
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

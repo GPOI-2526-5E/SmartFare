@@ -1,107 +1,145 @@
-.pv-map {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  height: 100%;
-}
+/* ================================================================
+   PREVIEW MAP PANEL — Full-height sticky (da 0)
+   ================================================================ */
 
-.pv-map__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.85rem;
-  flex-shrink: 0;
-}
-
-.pv-map__kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: #5eead4;
-}
-
-.pv-map__head h2 {
-  margin: 0.4rem 0 0;
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: #fff;
-}
-
-.pv-map__hint {
-  flex-shrink: 0;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #94a3b8;
-  padding: 0.35rem 0.6rem;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--pv-border);
-}
-
-.pv-map__frame {
-  flex: 1;
-  min-height: 280px;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid var(--pv-border);
-  background: var(--pv-surface);
-  box-shadow: var(--pv-shadow);
-}
-
-.pv-map__frame app-builder-map {
+:host {
   display: block;
   height: 100%;
-  min-height: 280px;
 }
 
-.pv-map__frame app-builder-map ::ng-deep .map-shell,
-.pv-map__frame app-builder-map ::ng-deep #map,
-.pv-map__frame app-builder-map ::ng-deep .map-root {
-  height: 100% !important;
-  min-height: 100% !important;
+.pvm-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(11, 9, 20, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Badge in overlay ─── */
+.pvm-badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(15, 11, 31, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c4b5fd;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Map container ─── */
+.pvm-frame {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.pvm-map-component {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Disattivare eventuali bordi/ombre interne al componente app-builder-map se possibile */
+::ng-deep .pvm-map-component .map-container {
   border-radius: 0 !important;
+  border: none !important;
 }
 
-.pv-map__loading {
+/* ─── Fallback (loading/empty) ─── */
+.pvm-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.pvm-fallback__bg {
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.5;
+}
+
+.pvm-fallback__content {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  height: 100%;
-  min-height: 280px;
-  color: var(--pv-muted);
+  gap: 1rem;
+  text-align: center;
+  color: #94a3b8;
 }
 
-.pv-map__loading i {
-  font-size: 2rem;
-  color: #64748b;
+.pvm-fallback__content p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.pv-map__spinner {
-  width: 36px;
-  height: 36px;
+.pvm-empty-icon {
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.08);
-  border-top-color: var(--pv-teal);
-  animation: pv-spin 0.75s linear infinite;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-@keyframes pv-spin {
+.pvm-spinner {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.pvm-spinner__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.05);
+  border-top-color: #8b5cf6;
+  border-right-color: #14b8a6;
+  animation: pvm-spin 1s ease-in-out infinite;
+}
+
+@keyframes pvm-spin {
   to { transform: rotate(360deg); }
 }
 
-@media (min-width: 1024px) {
-  .pv-map__frame {
-    min-height: calc(100vh - 14rem);
-    position: sticky;
-    top: 6.5rem;
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+
+@media (max-width: 1023px) {
+  .pvm-wrap {
+    border-radius: 0; /* Su mobile diventa edge-to-edge o comunque full */
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 }
