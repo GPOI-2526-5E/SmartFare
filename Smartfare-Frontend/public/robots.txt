@@ -1,0 +1,20 @@
+# SmartFare — https://smartfare.nicolas-dominici.it
+User-agent: *
+Allow: /
+Allow: /discover
+Allow: /itineraries/new
+Allow: /voyager
+Allow: /interactive-map
+Allow: /login
+Allow: /register
+
+Disallow: /oauth/callback
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /itineraries/builder
+Disallow: /itineraries/preview
+Disallow: /profile/
+Disallow: /settings
+Disallow: /itineraries
+
+Sitemap: https://smartfare.nicolas-dominici.it/sitemap.xml

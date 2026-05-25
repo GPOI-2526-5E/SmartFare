@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AlertComponent } from './features/ui/alert/alert.component';
 import { AppLoaderComponent } from './features/ui/loader/loader.component';
 import { CookieConsentComponent } from './features/ui/cookie-consent/cookie-consent.component';
 import { LoaderService } from './core/services/loader.service';
+import { SeoService } from './core/seo/seo.service';
 
 @Component({
   selector: 'app-root',
@@ -12,9 +13,14 @@ import { LoaderService } from './core/services/loader.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   private readonly loaderService = inject(LoaderService);
+  private readonly seoService = inject(SeoService);
 
   readonly isLoading = this.loaderService.isLoading;
   readonly loaderMessage = this.loaderService.message;
+
+  ngOnInit(): void {
+    this.seoService.init();
+  }
 }
