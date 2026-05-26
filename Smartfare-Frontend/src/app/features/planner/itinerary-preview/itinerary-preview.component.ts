@@ -13,6 +13,7 @@ import { Subject, firstValueFrom, takeUntil } from 'rxjs';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
+import { I18nService } from '../../../core/i18n/i18n.service';
 import { Itinerary, ItineraryItem, ItineraryWorkspace } from '../../../core/models/itinerary.model';
 import Location from '../../../core/models/location.model';
 import { BuilderPoi } from '../../../core/models/builder.types';
@@ -42,6 +43,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
   private readonly itineraryService = inject(ItineraryService);
   readonly authService = inject(AuthService);
   private readonly alertService = inject(AlertService);
+  private readonly i18n = inject(I18nService);
   private readonly destroy$ = new Subject<void>();
 
   readonly itinerary = signal<Itinerary | null>(null);
@@ -64,8 +66,10 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
 
   readonly durationLabel = computed(() => {
     const days = this.dayCount();
-    if (days <= 0) return 'Itinerario';
-    return days === 1 ? '1 giorno' : `${days} giorni`;
+    const _lang = this.i18n.language(); // reactive to language changes
+    if (days <= 0) return this.i18n.phrase('Itinerario');
+    const unit = days === 1 ? this.i18n.phrase('giorno') : this.i18n.phrase('giorni');
+    return `${days} ${unit}`;
   });
 
   readonly coverImage = computed(() => {
@@ -76,10 +80,11 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
   });
 
   readonly locationLabel = computed(() => {
+    const _lang = this.i18n.language(); // reactive to language changes
     return (
       this.workspace()?.location?.name ||
       this.itinerary()?.location?.name ||
-      'Destinazione'
+      this.i18n.phrase('Destinazione')
     );
   });
 
@@ -166,7 +171,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     const itin = this.itinerary();
     if (!itin?.id) return;
     if (!this.authService.IsAuthenticated()) {
-      this.alertService.warning('Accedi per aggiungere ai preferiti');
+      this.alertService.warning(this.i18n.phrase('Accedi per aggiungere ai preferiti'));
       await this.router.navigate(['/login']);
       return;
     }
@@ -175,14 +180,14 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
       if (this.isFavorite()) {
         await firstValueFrom(this.itineraryService.removeFromFavorites(itin.id));
         this.isFavorite.set(false);
-        this.alertService.success('Rimosso dai preferiti');
+        this.alertService.success(this.i18n.phrase('Rimosso dai preferiti'));
       } else {
         await firstValueFrom(this.itineraryService.addToFavorites(itin.id));
         this.isFavorite.set(true);
-        this.alertService.success('Aggiunto ai preferiti');
+        this.alertService.success(this.i18n.phrase('Aggiunto ai preferiti'));
       }
     } catch {
-      this.alertService.error('Errore durante la modifica dei preferiti');
+      this.alertService.error(this.i18n.phrase('Errore durante la modifica dei preferiti'));
     } finally {
       this.isSaving.set(false);
     }
@@ -212,7 +217,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
       this.itineraryService.setCurrentItinerary(itin, { autosave: false });
       await this.router.navigate(['/itineraries/builder'], { queryParams: { itineraryId: itin.id } });
     } catch {
-      this.alertService.error('Impossibile aprire il builder');
+      this.alertService.error(this.i18n.phrase('Impossibile aprire il builder'));
     } finally {
       this.isSaving.set(false);
     }
@@ -222,7 +227,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     const itin = this.itinerary();
     if (!itin) return;
     if (!this.authService.IsAuthenticated()) {
-      this.alertService.warning('Accedi per incorporare questo itinerario');
+      this.alertService.warning(this.i18n.phrase('Accedi per incorporare questo itinerario'));
       await this.router.navigate(['/login']);
       return;
     }
@@ -230,13 +235,13 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     try {
       const copied = await firstValueFrom(this.itineraryService.copyItinerary(itin));
       if (copied?.id) {
-        this.alertService.success(`Itinerario "${copied.name}" salvato`);
+        this.alertService.success(`${this.i18n.phrase('Itinerario')} "${copied.name}" ${this.i18n.phrase('Salvato').toLowerCase()}`);
         await this.router.navigate(['/itineraries/builder'], { queryParams: { itineraryId: copied.id } });
       } else {
-        this.alertService.error('Errore durante il salvataggio');
+        this.alertService.error(this.i18n.phrase('Errore durante il salvataggio'));
       }
     } catch {
-      this.alertService.error('Errore durante il salvataggio');
+      this.alertService.error(this.i18n.phrase('Errore durante il salvataggio'));
     } finally {
       this.isCopying.set(false);
     }
@@ -247,7 +252,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     this.itineraryService.getItineraryById(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
         if (!data) {
-          this.alertService.error('Itinerario non trovato');
+          this.alertService.error(this.i18n.phrase('Itinerario non trovato'));
           void this.router.navigate(['/discover']);
           this.isLoading.set(false);
           return;
@@ -260,7 +265,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
         }
       },
       error: () => {
-        this.alertService.error('Impossibile caricare l\'itinerario');
+        this.alertService.error(this.i18n.phrase("Impossibile caricare l'itinerario"));
         this.isLoading.set(false);
         void this.router.navigate(['/discover']);
       },
@@ -292,6 +297,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
   }
 
   private buildPreviewDays(): PreviewDay[] {
+    const _lang = this.i18n.language(); // reactive to language changes
     const itin = this.itinerary();
     if (!itin?.items?.length) return [];
 
@@ -314,7 +320,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
       .sort(([a], [b]) => a - b)
       .map(([dayNumber, stops]) => ({
         dayNumber,
-        title: `Giornata ${dayNumber}`,
+        title: `${this.i18n.phrase('Giornata')} ${dayNumber}`,
         dateLabel: this.formatDayDate(itin.startDate, dayNumber),
         stops,
       }));
@@ -360,7 +366,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     const entity = this.resolveEntity(item);
     if (!entity) return null;
 
-    const name = String(entity['name'] || 'Tappa senza nome');
+    const name = String(entity['name'] || this.i18n.phrase('Tappa senza nome'));
     const street = String(entity['street'] || '');
     const lat = Number(entity['latitude']);
     const lng = Number(entity['longitude']);
@@ -379,7 +385,7 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
       dayNumber: item.dayNumber || 1,
       title: name,
       locationLine: street || this.locationLabel(),
-      categoryLabel: isAcc ? 'Alloggio' : category || 'Attività',
+      categoryLabel: isAcc ? this.i18n.phrase('Alloggio') : category || this.i18n.phrase('Attività'),
       note: item.note?.trim() || null,
       timeRange: this.formatTimeRange(item.plannedStartAt, item.plannedEndAt),
       type,
@@ -424,7 +430,8 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     const base = new Date(startDate);
     if (Number.isNaN(base.getTime())) return '';
     base.setDate(base.getDate() + Math.max(0, dayNumber - 1));
-    return base.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+    const locale = this.i18n.selectedLanguage().locale;
+    return base.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
   }
 
   private formatTimeRange(start?: string | null, end?: string | null): string | null {

@@ -22,7 +22,7 @@
           <div class="pvt-day-info">
             <span class="pvt-day-kicker">
               <i class="bi bi-sun" aria-hidden="true"></i>
-              Giornata {{ day.dayNumber }}
+              <span>Giornata</span> {{ day.dayNumber }}
             </span>
             <h2 class="pvt-day-title">{{ day.title }}</h2>
             @if (day.dateLabel) {
@@ -31,7 +31,7 @@
           </div>
           <span class="pvt-day-count">
             <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-            {{ day.stops.length }} {{ day.stops.length === 1 ? 'tappa' : 'tappe' }}
+            {{ day.stops.length }} <span>{{ day.stops.length === 1 ? 'tappa' : 'tappe' }}</span>
           </span>
         </header>
 

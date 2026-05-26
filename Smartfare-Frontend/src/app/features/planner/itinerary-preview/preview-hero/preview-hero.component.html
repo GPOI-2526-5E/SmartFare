@@ -40,7 +40,7 @@
       @if (stopCount > 0) {
         <span class="pvh-chip pvh-chip--teal" role="listitem">
           <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-          {{ stopCount }} {{ stopCount === 1 ? 'tappa' : 'tappe' }}
+          {{ stopCount }} <span>{{ stopCount === 1 ? 'tappa' : 'tappe' }}</span>
         </span>
       }
       @if (isPublished) {
@@ -71,7 +71,7 @@
         <div class="pvh-author__avatar" aria-hidden="true">
           <i class="bi bi-person-fill"></i>
         </div>
-        <span>Creato da <strong>{{ authorName }}</strong></span>
+        <span><span>Creato da</span> <strong>{{ authorName }}</strong></span>
       </div>
     }
   </div>
