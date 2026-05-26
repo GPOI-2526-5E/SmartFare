@@ -2,22 +2,7 @@
 
   <!-- ═══════════ SEZIONE 1: HERO CINEMATOGRAFICO ═══════════ -->
   @if (isLoading()) {
-    <section class="ip-loading-screen">
-      <div class="ip-loading-inner">
-        <div class="ip-loader-ring">
-          <div class="ip-loader-ring__track"></div>
-          <div class="ip-loader-ring__fill"></div>
-        </div>
-        <p class="ip-loading-label">Preparando il tuo viaggio…</p>
-        <span class="ip-loading-sub">SmartFare sta caricando l'itinerario</span>
-      </div>
-      <!-- background noise -->
-      <div class="ip-loading-bg" aria-hidden="true">
-        <div class="ip-loading-orb ip-loading-orb--1"></div>
-        <div class="ip-loading-orb ip-loading-orb--2"></div>
-      </div>
-    </section>
-
+    <app-loader [show]="isLoading()" message="Preparando il tuo viaggio..."></app-loader>
   } @else if (!itinerary()) {
     <section class="ip-empty-screen">
       <div class="ip-empty-inner">

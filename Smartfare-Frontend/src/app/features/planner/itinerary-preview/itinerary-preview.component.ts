@@ -22,6 +22,7 @@ import { PreviewTimelineComponent } from './preview-timeline/preview-timeline.co
 import { PreviewMapPanelComponent } from './preview-map-panel/preview-map-panel.component';
 import { PreviewActionsComponent } from './preview-actions/preview-actions.component';
 import { PreviewDay, PreviewStop } from './preview.types';
+import { AppLoaderComponent } from '../../ui/loader/loader.component';
 
 @Component({
   selector: 'app-itinerary-preview',
@@ -32,6 +33,7 @@ import { PreviewDay, PreviewStop } from './preview.types';
     PreviewTimelineComponent,
     PreviewMapPanelComponent,
     PreviewActionsComponent,
+    AppLoaderComponent,
   ],
   templateUrl: './itinerary-preview.component.html',
   styleUrl: './itinerary-preview.component.css',

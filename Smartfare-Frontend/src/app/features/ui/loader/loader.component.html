@@ -1,33 +1,43 @@
 @if (show()) {
 <div class="loader-shell" aria-hidden="true">
-  <div class="loader-backdrop"></div>
+  <!-- Dynamic Holographic Background -->
+  <div class="loader-backdrop">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
 </div>
 
 <section class="loader-panel" role="status" aria-live="polite" [attr.aria-busy]="show()">
   <div class="loader-content">
-    <div class="loader-visual">
-      <div class="compass">
-        <div class="compass-ring"></div>
-        <div class="compass-needle"></div>
-        <div class="compass-core"></div>
-        <div class="compass-glow"></div>
+    
+    <!-- 3D Logo Visual -->
+    <div class="loader-visual-3d">
+      <div class="scene-3d">
+        <div class="orbit orbit-x"></div>
+        <div class="orbit orbit-y"></div>
+        <div class="orbit orbit-z"></div>
+        <div class="logo-container">
+          <img src="/favicon.png" alt="SmartFare Logo" class="brand-logo" />
+        </div>
       </div>
-      <div class="loader-icon-container">
-        <i class="bi loader-icon" [class]="phases[activePhaseIndex()].icon"></i>
+      <div class="loader-icon-badge">
+        <i class="bi" [class]="phases[activePhaseIndex()].icon"></i>
       </div>
     </div>
 
+    <!-- Premium Text & Progress -->
     <div class="loader-text">
-      <p class="loader-brand">SmartFare</p>
-      <p class="loader-label">{{ phases[activePhaseIndex()].label }}</p>
+      <h2 class="loader-brand-title">SmartFare</h2>
+      <p class="loader-label-phase">{{ phases[activePhaseIndex()].label }}</p>
 
-      <div class="progress-container">
-        <div class="progress-bar" [style.width.%]="progress()">
-          <div class="progress-glow"></div>
+      <div class="progress-bar-premium">
+        <div class="progress-fill" [style.width.%]="progress()">
+          <div class="progress-flare"></div>
         </div>
       </div>
 
-      <p class="loader-message">{{ message() }}</p>
+      <p class="loader-message-text">{{ message() }}</p>
     </div>
   </div>
 </section>

@@ -19,10 +19,7 @@
     </header>
 
     @if (isLoading()) {
-      <div class="loading-state">
-        <div class="loader-ring"></div>
-        <p>Caricamento follower...</p>
-      </div>
+      <app-loader [show]="isLoading()" message="Caricamento followers..."></app-loader>
     } @else if (followers().length === 0) {
       <div class="empty-state">
         <i class="bi bi-person-plus"></i>

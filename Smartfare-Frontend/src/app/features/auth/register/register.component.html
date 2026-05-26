@@ -3,7 +3,17 @@
     <div class="world-map-layer"></div>
     <canvas #authCanvas class="auth-bg-canvas"></canvas>
   </div>
-  <app-navbar class="auth-navbar"></app-navbar>
+
+  <!-- Back to home -->
+  <a routerLink="/" class="back-home-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span>Torna alla Home</span>
+  </a>
+
   <div class="auth-wrapper">
     <!-- Left Side: Visual -->
     <div class="auth-visual">
@@ -29,11 +39,9 @@
           <div class="logo-container">
             <h2 class="logo-text">Smart<span class="text-accent">fare</span></h2>
           </div>
-
           <h1 class="welcome-text">{{ isSocialRegistration ? 'Quasi fatto!' : 'Crea Account' }}</h1>
           <p class="subtitle">
-            {{ isSocialRegistration ? 'Completa il tuo profilo per terminare l\'accesso.' : 'Inizia oggi il tuo viaggio
-            con Smartfare.' }}
+            {{ isSocialRegistration ? 'Completa il tuo profilo per terminare l\'accesso.' : 'Inizia oggi il tuo viaggio con Smartfare.' }}
           </p>
         </div>
 
@@ -88,8 +96,9 @@
             </label>
           </div>
 
-          <div class="legal-disclaimer" style="font-size: 0.8rem; color: #aaa; margin-bottom: 16px; text-align: center;">
-            Registrandoti, accetti i nostri <a href="#" (click)="openTos($event)" style="color: #8b5cf6;">Termini e Condizioni</a> e confermi di aver letto la <a href="#" (click)="openPrivacy($event)" style="color: #8b5cf6;">Privacy Policy</a>.
+          <div class="legal-disclaimer">
+            Registrandoti, accetti i nostri <a href="#" (click)="openTos($event)">Termini e Condizioni</a>
+            e confermi di aver letto la <a href="#" (click)="openPrivacy($event)">Privacy Policy</a>.
           </div>
 
           <button type="submit" class="submit-btn">
@@ -138,7 +147,6 @@
           <p>Hai già un account? <a (click)="goToLogin()" class="link" style="cursor: pointer;">Accedi</a></p>
         </div>
       </div>
-
     </div>
   </div>
 </div>

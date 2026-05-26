@@ -9,6 +9,7 @@ import { AlertService } from '../../../core/services/alert.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserProfile, UserPreference, UserProfileFull } from '../../../core/models/user-profile.model';
 import { ActivityCategory } from '../../../core/models/activity.model';
+import { AppLoaderComponent } from '../../ui/loader/loader.component';
 
 type SettingsTab = 'profile' | 'preferences' | 'account';
 
@@ -40,7 +41,7 @@ const PACE_OPTIONS: LabeledOption[] = [
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterLink, RouterModule, NavbarComponent, AppLoaderComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })

@@ -79,10 +79,7 @@
     <!-- Content Panel -->
     <main class="dashboard-content">
       @if (isLoading()) {
-        <div class="loading-state">
-          <div class="loader-ring"></div>
-          <p>Carico il tuo profilo...</p>
-        </div>
+        <app-loader [show]="isLoading()" message="Carico il tuo profilo..."></app-loader>
       }
 
       <!-- ── PROFILE TAB ─────────────────────────── -->

@@ -3,7 +3,17 @@
     <div class="world-map-layer"></div>
     <canvas #authCanvas class="auth-bg-canvas"></canvas>
   </div>
-  <app-navbar class="auth-navbar"></app-navbar>
+
+  <!-- Back to home -->
+  <a routerLink="/" class="back-home-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span>Torna alla Home</span>
+  </a>
+
   <div class="auth-wrapper">
     <!-- Left Side: Visual -->
     <div class="auth-visual">
@@ -11,7 +21,6 @@
         <h1 class="visual-title">Scopri il tuo <br> prossimo viaggio.</h1>
         <p class="visual-subtitle">Unisciti alla nostra community di viaggiatori e pianifica il tuo itinerario perfetto
           con facilità.</p>
-
       </div>
       <div class="visual-overlay"></div>
     </div>
@@ -115,7 +124,6 @@
           <p>Non hai un account? <a [routerLink]="['/register']" class="link">Registrati</a></p>
         </div>
       </div>
-
     </div>
   </div>
 </div>
