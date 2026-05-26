@@ -51,14 +51,19 @@
       }
     </div>
 
-    <!-- Destination kicker -->
+    <!-- Titolo principale -->
+    <h1 class="pvh-title">{{ title }}</h1>
+
+    <!-- Descrizione -->
+    @if (description.trim()) {
+      <p class="pvh-desc">{{ description }}</p>
+    }
+
+    <!-- Destination kicker (Spostato sotto la descrizione come richiesto) -->
     <p class="pvh-destination" aria-label="Destinazione">
       <i class="bi bi-geo-fill" aria-hidden="true"></i>
       {{ destination }}
     </p>
-
-    <!-- Titolo principale -->
-    <h1 class="pvh-title">{{ title }}</h1>
 
     <!-- Autore -->
     @if (authorName) {
@@ -69,29 +74,6 @@
         <span>Creato da <strong>{{ authorName }}</strong></span>
       </div>
     }
-
-    <!-- Descrizione -->
-    @if (description.trim()) {
-      <p class="pvh-desc">{{ description }}</p>
-    }
-
-    <!-- Stats row -->
-    <div class="pvh-stats" aria-label="Statistiche">
-      <div class="pvh-stat">
-        <span class="pvh-stat__value">{{ stopCount }}</span>
-        <span class="pvh-stat__label">{{ stopCount === 1 ? 'Tappa' : 'Tappe' }}</span>
-      </div>
-      <div class="pvh-stat-sep" aria-hidden="true"></div>
-      <div class="pvh-stat">
-        <span class="pvh-stat__value">{{ durationLabel.split(' ')[0] }}</span>
-        <span class="pvh-stat__label">{{ stopCount === 1 ? 'Giorno' : 'Giorni' }}</span>
-      </div>
-      <div class="pvh-stat-sep" aria-hidden="true"></div>
-      <div class="pvh-stat">
-        <span class="pvh-stat__value"><i class="bi bi-star-fill" aria-hidden="true"></i></span>
-        <span class="pvh-stat__label">{{ isPublished ? 'Pubblico' : 'Privato' }}</span>
-      </div>
-    </div>
   </div>
 
 </section>

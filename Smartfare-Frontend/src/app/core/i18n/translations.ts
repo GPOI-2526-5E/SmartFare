@@ -1142,4 +1142,112 @@ export const PHRASE_TRANSLATIONS: Record<string, PhraseTranslations> = {
     de: 'Melde dich an oder registriere dich, damit du deine Arbeit nicht verlierst!',
     es: 'Inicia sesion o registrate para no perder lo que has hecho!',
   },
+  'Preparando il tuo viaggio…': {
+    en: 'Preparing your trip...',
+    fr: 'Préparation de votre voyage...',
+    de: 'Deine Reise wird vorbereitet...',
+    es: 'Preparando tu viaje...',
+  },
+  "SmartFare sta caricando l'itinerario": {
+    en: 'SmartFare is loading the itinerary',
+    fr: "SmartFare charge l'itinéraire",
+    de: 'SmartFare lädt die Reiseroute',
+    es: 'SmartFare está cargando el itinerario',
+  },
+  'Itinerario non trovato': {
+    en: 'Itinerary not found',
+    fr: 'Itinéraire introuvable',
+    de: 'Reiseroute nicht gefunden',
+    es: 'Itinerario no encontrado',
+  },
+  "Il link potrebbe essere scaduto o l'itinerario non è più disponibile.": {
+    en: 'The link might have expired or the itinerary is no longer available.',
+    fr: "Le lien a peut-être expiré ou l'itinéraire n'est plus disponible.",
+    de: 'Der Link ist möglicherweise abgelaufen oder die Reiseroute ist nicht mehr verfügbar.',
+    es: 'El enlace podría haber expirado o el itinerario ya no está disponible.',
+  },
+  'Torna a Esplora': {
+    en: 'Back to Discover',
+    fr: 'Retour à Explorer',
+    de: 'Zurück zu Entdecken',
+    es: 'Volver a Explorar',
+  },
+  'Programma del viaggio': {
+    en: 'Trip schedule',
+    fr: 'Programme du voyage',
+    de: 'Reiseplan',
+    es: 'Programa del viaje',
+  },
+  'Programma': {
+    en: 'Schedule',
+    fr: 'Programme',
+    de: 'Programm',
+    es: 'Programa',
+  },
+  'Mappa': {
+    en: 'Map',
+    fr: 'Carte',
+    de: 'Karte',
+    es: 'Mapa',
+  },
+  'Caricamento mappa…': {
+    en: 'Loading map...',
+    fr: 'Chargement de la carte...',
+    de: 'Karte wird geladen...',
+    es: 'Cargando mapa...',
+  },
+  'Mappa non disponibile per questo itinerario.': {
+    en: 'Map not available for this itinerary.',
+    fr: 'Carte non disponible pour cet itinéraire.',
+    de: 'Karte für diese Reiseroute nicht verfügbar.',
+    es: 'Mapa no disponible para este itinerario.',
+  },
+  'tappa': {
+    en: 'stop',
+    fr: 'étape',
+    de: 'Stopp',
+    es: 'parada',
+  },
+  'tappe': {
+    en: 'stops',
+    fr: 'étapes',
+    de: 'Stopps',
+    es: 'paradas',
+  },
+  'Pubblico': {
+    en: 'Public',
+    fr: 'Public',
+    de: 'Öffentlich',
+    es: 'Público',
+  },
+  'Creato da': {
+    en: 'Created by',
+    fr: 'Créé par',
+    de: 'Erstellt von',
+    es: 'Creado por',
+  },
+  'Genera o apri un itinerario nel builder per iniziare a modificarlo con l’AI.': {
+    en: 'Generate or open an itinerary in the builder to start modifying it with AI.',
+    fr: 'Générez ou ouvrez un itinéraire dans le builder pour commencer à le modifier avec l’IA.',
+    de: 'Generieren oder öffnen Sie eine Route im Builder, um sie mit KI zu ändern.',
+    es: 'Genera o abre un itinerario en el builder para empezar a modificarlo con IA.',
+  },
+  'Scrivi istruzioni concrete: aggiungi tappe, sposta visite, ottimizza il percorso.': {
+    en: 'Write concrete instructions: add stops, move visits, optimize the route.',
+    fr: 'Écrivez des instructions concrètes : ajoutez des étapes, déplacez des visites, optimisez le parcours.',
+    de: 'Schreiben Sie konkrete Anweisungen: Stopps hinzufügen, Besuche verschieben, Route optimieren.',
+    es: 'Escribe instrucciones concretas: añade paradas, mueve visitas, optimiza la ruta.',
+  },
+  "Scopri questo fantastico itinerario": {
+    en: "Discover this fantastic itinerary",
+    fr: "Découvrez ce fantastique itinéraire",
+    de: "Entdecken Sie diese fantastische Reiseroute",
+    es: "Descubre este fantástico itinerario"
+  },
+  "Nessun itinerario pubblico trovato per questa posizione.": {
+    en: "No public itinerary found for this location.",
+    fr: "Aucun itinéraire public trouvé pour ce lieu.",
+    de: "Keine öffentliche Reiseroute für diesen Ort gefunden.",
+    es: "No se encontró ningún itinerario público para esta ubicación."
+  }
 };

@@ -16,8 +16,6 @@ import { AlertService } from '../../../core/services/alert.service';
 import { Itinerary, ItineraryItem, ItineraryWorkspace } from '../../../core/models/itinerary.model';
 import Location from '../../../core/models/location.model';
 import { BuilderPoi } from '../../../core/models/builder.types';
-import { NavbarComponent } from '../../ui/navbar/navbar.component';
-import { FooterComponent } from '../../ui/footer/footer.component';
 import { PreviewHeroComponent } from './preview-hero/preview-hero.component';
 import { PreviewTimelineComponent } from './preview-timeline/preview-timeline.component';
 import { PreviewMapPanelComponent } from './preview-map-panel/preview-map-panel.component';
@@ -29,8 +27,6 @@ import { PreviewDay, PreviewStop } from './preview.types';
   standalone: true,
   imports: [
     CommonModule,
-    NavbarComponent,
-    FooterComponent,
     PreviewHeroComponent,
     PreviewTimelineComponent,
     PreviewMapPanelComponent,

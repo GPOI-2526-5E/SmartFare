@@ -62,19 +62,19 @@
 
     <!-- SEZIONE BODY (min-height 100vh) — Timeline + Mappa -->
     <section class="ip-body-section" id="ip-body">
-      <!-- Label sezione -->
-      <div class="ip-body-header">
-        <div class="ip-body-header__line"></div>
-        <span class="ip-body-header__label">
-          <i class="bi bi-map-fill"></i>
-          Programma del viaggio
-        </span>
-        <div class="ip-body-header__line"></div>
-      </div>
-
       <div class="ip-split">
         <!-- Colonna sinistra: timeline -->
         <div class="ip-split__plan" [class.ip-split__panel--visible]="mobileTab() === 'plan'">
+          <!-- Label sezione -->
+          <div class="ip-body-header">
+            <div class="ip-body-header__line"></div>
+            <span class="ip-body-header__label">
+              <i class="bi bi-map-fill"></i>
+              Programma del viaggio
+            </span>
+            <div class="ip-body-header__line"></div>
+          </div>
+
           <app-preview-timeline
             [days]="previewDays()"
             [hasStops]="hasStops()"
