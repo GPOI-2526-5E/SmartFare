@@ -1,48 +1,58 @@
-
+@if (isVisible) {
   <div class="sf-privacy-backdrop">
     <div class="sf-privacy-modal" role="dialog" aria-modal="true" aria-labelledby="sf-privacy-title">
       <div class="sf-privacy-header">
         <h2 id="sf-privacy-title">Informativa sulla privacy</h2>
-        <button class="sf-privacy-close" (click)="onClose()" aria-label="Chiudi">×</button>
+        <button class="sf-privacy-close" (click)="onClose()" aria-label="Chiudi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       <div class="sf-privacy-body">
-        <p>Questa informativa descrive come SmartFare raccoglie, usa e condivide i dati personali quando usi l'applicazione.</p>
+        <p>Questa informativa descrive come SmartFare raccoglie, usa e condivide i dati personali quando usi l'applicazione, nel rispetto del Regolamento (UE) 2016/679 (GDPR).</p>
 
-        <h3>Tipi di dati raccolti</h3>
+        <h3>1. Titolari del Trattamento</h3>
+        <p>I Titolari del Trattamento dei dati personali sono: <strong>Nicolas Dominici, Nicolò Pansardi, Igor Tsaturyan</strong>. Per qualsiasi richiesta relativa alla privacy o all'esercizio dei tuoi diritti, puoi contattarci all'indirizzo email: <strong>info.smartfare@gmail.com</strong>.</p>
+
+        <h3>2. Tipi di dati raccolti e Finalità</h3>
         <ul>
-          <li>Informazioni dell'account: nome, email, dati del profilo quando ti registri o accedi via Google.</li>
-          <li>Contenuti caricati: foto/immagini/video di profilo e background che carichi; questi vengono memorizzati su Cloudinary.</li>
-          <li>Dati delle attività e itinerari: ricerche, preferenze, itinerari che salvi per usare il servizio.</li>
-          <li>Comunicazioni: messaggi o e-mail inviati tramite i servizi dell'app.</li>
+          <li><strong>Dati di Account e Profilo:</strong> nome, email, dati del profilo quando ti registri o accedi via Google. Finalità: creazione e gestione dell'account, erogazione del servizio. Base giuridica: esecuzione di un contratto (Art. 6(1)(b) GDPR).</li>
+          <li><strong>Contenuti caricati:</strong> foto, immagini, video di profilo e background caricati sulla piattaforma. Questi file vengono inviati al nostro backend e memorizzati in modo sicuro su Cloudinary. Base giuridica: esecuzione di un contratto.</li>
+          <li><strong>Dati delle attività e itinerari:</strong> ricerche, preferenze, itinerari salvati, e interazioni con l'AI. Finalità: fornitura del servizio di pianificazione viaggi. Base giuridica: esecuzione di un contratto.</li>
         </ul>
 
-        <h3>Servizi di terze parti</h3>
-        <p>SmartFare si appoggia ai seguenti servizi esterni:</p>
+        <h3>3. Servizi di terze parti e Condivisione dei Dati</h3>
+        <p>SmartFare utilizza i seguenti fornitori di servizi terzi necessari per il funzionamento dell'applicazione:</p>
         <ul>
-          <li><strong>Cloudinary</strong> — usato per l'archiviazione e la distribuzione di immagini e video caricati dagli utenti. I file caricati vengono inviati al backend, che li salva su Cloudinary.</li>
-          <li><strong>Google (Social Login)</strong> — l'accesso tramite Google può fornire il nome e l'email al nostro sistema per creare o autenticare il tuo account.</li>
+          <li><strong>Cloudinary:</strong> per l'archiviazione e la distribuzione dei contenuti multimediali caricati dagli utenti.</li>
+          <li><strong>Google (Google OAuth):</strong> per l'autenticazione sicura tramite Social Login.</li>
         </ul>
 
-        <h3>Cookie e tecnologie simili</h3>
-        <p>Usiamo un cookie tecnico per memorizzare la tua scelta di consenso: <code>sf_cookie_consent</code>. Se accetti, memorizziamo la preferenza di consenso; se rifiuti, rispettiamo la scelta e non attiviamo cookie non essenziali.</p>
+        <h3>4. Periodo di Conservazione (Data Retention)</h3>
+        <p>I dati personali sono conservati per il tempo strettamente necessario a conseguire gli scopi per cui sono stati raccolti. Specificamente, i dati dell'account e i contenuti salvati rimangono nei nostri sistemi fino alla richiesta di cancellazione dell'account da parte dell'utente. Al momento della cancellazione dell'account, i dati associati (inclusi i file su Cloudinary) verranno rimossi.</p>
 
-        <h3>Finalità del trattamento</h3>
+        <h3>5. Cookie e tecnologie simili</h3>
+        <p>Utilizziamo il cookie tecnico <code>sf_cookie_consent</code> per memorizzare la tua scelta di consenso, e <code>sf_cookie_prefs</code> per le tue preferenze. Se rifiuti, rispettiamo la scelta e non attiviamo cookie non essenziali. Puoi gestire le preferenze tramite il link "Gestisci Cookie" nel footer.</p>
+
+        <h3>6. Diritti dell'Interessato</h3>
+        <p>In base al GDPR (Art. 15-22), hai il diritto di:</p>
         <ul>
-          <li>Forniamo e manteniamo il servizio (autenticazione, salvataggio itinerari, caricamenti media).</li>
-          <li>Gestiamo i file caricati e li rendiamo disponibili tramite Cloudinary.</li>
-          <li>Se attivato, usiamo dati per analisi e miglioramento del servizio (nessun tracker esterno evidente nel codice sorgente principale, ma potrebbero esserci librerie opzionali di terze parti).</li>
+          <li><strong>Accedere</strong> ai tuoi dati personali (Art. 15)</li>
+          <li><strong>Rettificare</strong> i dati inesatti o incompleti (Art. 16)</li>
+          <li><strong>Cancellare</strong> i tuoi dati ("Diritto all'oblio", Art. 17)</li>
+          <li><strong>Limitare</strong> il trattamento (Art. 18)</li>
+          <li>Richiedere la <strong>Portabilità</strong> dei dati in un formato strutturato (Art. 20)</li>
+          <li><strong>Opporti</strong> al trattamento (Art. 21)</li>
         </ul>
+        <p>Per esercitare questi diritti, puoi contattarci a info.smartfare@gmail.com o utilizzare le apposite funzioni all'interno dell'app (es. elimina account). Hai inoltre il diritto di proporre reclamo all'Autorità Garante per la Protezione dei Dati Personali.</p>
 
-        <h3>Base giuridica e diritti</h3>
-        <p>La base giuridica per i trattamenti è l'esecuzione del servizio e il consenso per finalità di marketing/analisi. Puoi chiedere accesso, rettifica o cancellazione dei tuoi dati contattando il titolare (vedi contatti nell'app o backend). Per cancellare il tuo account, usa le funzionalità dell'app o contatta il supporto.</p>
-
-        <h3>Contatti</h3>
-        <p>Per richieste relative alla privacy contatta l'amministratore del servizio (indirizzo email disponibile nelle impostazioni o nel backend).</p>
       </div>
 
       <div class="sf-privacy-actions">
-        <button class="btn btn-outline-secondary" (click)="onClose()">Chiudi</button>
+        <button class="sf-btn-outline" (click)="onClose()">Chiudi informativa</button>
       </div>
     </div>
   </div>
+}

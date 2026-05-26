@@ -3,20 +3,20 @@ import { CommonModule } from '@angular/common';
 import { LegalService } from '../../../core/services/legal.service';
 
 @Component({
-  selector: 'sf-privacy-modal',
+  selector: 'sf-tos-modal',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: `./privacy-modal.component.html`,
-  styleUrl: `./privacy-modal.component.css`
+  templateUrl: `./tos-modal.component.html`,
+  styleUrl: `../privacy-modal/privacy-modal.component.css` // Reuse privacy modal styles
 })
-export class PrivacyModalComponent {
+export class TosModalComponent {
   private readonly legalService = inject(LegalService);
   
   get isVisible() {
-    return this.legalService.showPrivacyModal();
+    return this.legalService.showTosModal();
   }
 
   onClose() {
-    this.legalService.closePrivacyModal();
+    this.legalService.closeTosModal();
   }
 }

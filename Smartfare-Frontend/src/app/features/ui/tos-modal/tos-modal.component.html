@@ -1,0 +1,44 @@
+@if (isVisible) {
+  <div class="sf-privacy-backdrop">
+    <div class="sf-privacy-modal" role="dialog" aria-modal="true" aria-labelledby="sf-tos-title">
+      <div class="sf-privacy-header">
+        <h2 id="sf-tos-title">Termini e Condizioni</h2>
+        <button class="sf-privacy-close" (click)="onClose()" aria-label="Chiudi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="sf-privacy-body">
+        <p>Benvenuto su SmartFare! L'utilizzo di questa piattaforma è soggetto all'accettazione dei presenti Termini e Condizioni.</p>
+
+        <h3>1. Utilizzo del Servizio</h3>
+        <p>SmartFare è una piattaforma per la pianificazione e condivisione di itinerari di viaggio. Ti impegni a utilizzare il servizio in modo lecito, rispettoso e in conformità con tutte le leggi applicabili.</p>
+
+        <h3>2. Contenuti Generati dagli Utenti (UGC)</h3>
+        <p>Caricando immagini, foto profilo o creando itinerari, dichiari di possederne i diritti. È severamente vietato caricare contenuti:
+          <br>- Illegali, offensivi, diffamatori o discriminatori.
+          <br>- Che violino il diritto d'autore o i marchi registrati di terzi.
+          <br>Ci riserviamo il diritto di rimuovere qualsiasi contenuto senza preavviso qualora lo ritenessimo inappropriato.
+        </p>
+
+        <h3>3. Intelligenza Artificiale e Affidabilità</h3>
+        <p>L'AI Planner di SmartFare genera suggerimenti di viaggio basati su modelli linguistici. Nonostante il nostro impegno, non garantiamo la totale accuratezza delle informazioni generate (es. orari di apertura, disponibilità, esistenza attuale dei luoghi). Ti invitiamo a verificare sempre le informazioni prima del tuo viaggio.</p>
+
+        <h3>4. Limitazione di Responsabilità</h3>
+        <p>I creatori di SmartFare non sono responsabili per danni diretti, indiretti, incidentali o consequenziali derivanti dall'utilizzo del servizio, da disservizi temporanei o da decisioni di viaggio basate sulle informazioni qui trovate.</p>
+
+        <h3>5. Eliminazione dell'Account</h3>
+        <p>Puoi eliminare il tuo account in qualsiasi momento. Alla cancellazione, tutti i tuoi dati, i contenuti caricati e gli itinerari da te creati verranno distrutti o resi completamente anonimi, conformemente alla nostra Privacy Policy.</p>
+
+        <h3>6. Modifiche ai Termini</h3>
+        <p>Ci riserviamo il diritto di modificare questi Termini in qualsiasi momento. Continuando a utilizzare SmartFare dopo eventuali modifiche, accetti i nuovi Termini.</p>
+      </div>
+
+      <div class="sf-privacy-actions">
+        <button class="sf-btn-outline" (click)="onClose()">Accetto e chiudi</button>
+      </div>
+    </div>
+  </div>
+}

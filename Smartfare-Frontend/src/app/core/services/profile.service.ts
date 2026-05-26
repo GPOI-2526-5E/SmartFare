@@ -120,6 +120,12 @@ export class ProfileService {
     );
   }
 
+  deleteAccount(): Observable<{ success: boolean; message: string } | null> {
+    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/account`).pipe(
+      catchError(() => of(null))
+    );
+  }
+
   // ─── Follow System ───────────────────────────────────
   private readonly FOLLOW_API_URL = `${environment.apiUrl}/api/follow`;
 

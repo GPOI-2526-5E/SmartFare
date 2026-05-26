@@ -404,9 +404,27 @@ export class SettingsComponent implements OnInit, OnDestroy {
     });
   }
 
+  isDeletingAccount = signal(false);
+
   logout() {
     this.authService.Logout();
     this.router.navigate(['/login']);
+  }
+
+  deleteAccount() {
+    if (confirm('Sei sicuro di voler eliminare definitivamente il tuo account? Questa azione è irreversibile e tutti i tuoi dati verranno persi.')) {
+      this.isDeletingAccount.set(true);
+      this.profileService.deleteAccount().subscribe(res => {
+        this.isDeletingAccount.set(false);
+        if (res?.success) {
+          this.alertService.success('Account eliminato con successo.');
+          this.authService.Logout();
+          this.router.navigate(['/login']);
+        } else {
+          this.alertService.error('Si è verificato un errore durante l\'eliminazione dell\'account.');
+        }
+      });
+    }
   }
 
 }

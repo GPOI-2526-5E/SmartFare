@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { LegalService } from '../../../core/services/legal.service';
 
 @Component({
   selector: 'app-footer',
@@ -11,4 +12,20 @@ import { RouterLink } from '@angular/router';
 })
 export class FooterComponent {
   currentYear = new Date().getFullYear();
+  private readonly legalService = inject(LegalService);
+
+  openPrivacyPolicy(event: Event) {
+    event.preventDefault();
+    this.legalService.openPrivacyModal();
+  }
+
+  openCookiePolicy(event: Event) {
+    event.preventDefault();
+    this.legalService.openCookieModal();
+  }
+
+  openTosPolicy(event: Event) {
+    event.preventDefault();
+    this.legalService.openTosModal();
+  }
 }

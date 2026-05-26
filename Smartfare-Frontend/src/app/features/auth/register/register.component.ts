@@ -10,6 +10,7 @@ import {
 import { AlertService } from '../../../core/services/alert.service';
 import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { GoogleLoginProvider, SocialAuthService, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
+import { LegalService } from '../../../core/services/legal.service';
 
 @Component({
   selector: 'app-register',
@@ -45,7 +46,8 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private socialAuthService: SocialAuthService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private legalService: LegalService
   ) {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state as { socialData?: PendingSocialRegistration } | undefined;
@@ -231,6 +233,16 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     } catch (e) { }
     this.authService.clearPendingSocialRegistration();
     this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl } });
+  }
+
+  openTos(event: Event) {
+    event.preventDefault();
+    this.legalService.openTosModal();
+  }
+
+  openPrivacy(event: Event) {
+    event.preventDefault();
+    this.legalService.openPrivacyModal();
   }
 
   onSubmit() {

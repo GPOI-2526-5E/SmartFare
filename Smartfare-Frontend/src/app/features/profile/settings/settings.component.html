@@ -440,8 +440,18 @@
             <div class="danger-zone">
             <h3><i class="bi bi-exclamation-triangle-fill"></i> Zona di uscita</h3>
             <p>Esci dal tuo account su questo dispositivo.</p>
-            <button class="btn-danger" (click)="logout()">
+            <button class="btn-outline" (click)="logout()">
               <i class="bi bi-box-arrow-right"></i> Esci
+            </button>
+            <hr style="margin: 24px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
+            <h3><i class="bi bi-trash-fill"></i> Eliminazione Account</h3>
+            <p>Attenzione: l'eliminazione è irreversibile. Tutti i tuoi dati, itinerari e conversazioni verranno distrutti.</p>
+            <button class="btn-danger" (click)="deleteAccount()" [disabled]="isDeletingAccount()">
+              @if (isDeletingAccount()) {
+                <i class="bi bi-arrow-repeat spin"></i> Eliminazione...
+              } @else {
+                <i class="bi bi-trash"></i> Elimina Account Definitivamente
+              }
             </button>
             </div>
           </div>

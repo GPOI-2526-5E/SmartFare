@@ -1,7 +1,8 @@
-import { Component, OnInit, HostBinding } from '@angular/core';
+import { Component, OnInit, HostBinding, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CookieConsentService, CookiePrefs } from '../../../core/services/cookie-consent.service';
+import { LegalService } from '../../../core/services/legal.service';
 
 @Component({
   selector: 'sf-cookie-consent',
@@ -18,7 +19,16 @@ export class CookieConsentComponent implements OnInit {
 
   prefs: CookiePrefs = { necessary: true, functional: false, analytics: false, marketing: false };
 
-  constructor(private consent: CookieConsentService) {}
+  private readonly legalService = inject(LegalService);
+
+  constructor(private consent: CookieConsentService) {
+    effect(() => {
+      if (this.legalService.showCookieModal()) {
+        this.openModal();
+        this.tab = 'prefs';
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.visible = !this.consent.hasConsented();
@@ -33,7 +43,10 @@ export class CookieConsentComponent implements OnInit {
   }
 
   openModal(): void  { this.modalOpen = true; this.tab = 'info'; }
-  closeModal(): void { this.modalOpen = false; }
+  closeModal(): void { 
+    this.modalOpen = false; 
+    this.legalService.closeCookieModal();
+  }
 
   onOverlayClick(e: MouseEvent): void {
     if ((e.target as HTMLElement).classList.contains('sf-overlay')) this.closeModal();
@@ -42,19 +55,19 @@ export class CookieConsentComponent implements OnInit {
   acceptAll(): void {
     this.consent.acceptAll();
     this.visible = false;
-    this.modalOpen = false;
+    this.closeModal();
   }
 
   rejectAll(): void {
     this.consent.rejectAll();
     this.visible = false;
-    this.modalOpen = false;
+    this.closeModal();
   }
 
   saveAndClose(): void {
     this.prefs.necessary = true;
     this.consent.savePreferences(this.prefs);
     this.visible = false;
-    this.modalOpen = false;
+    this.closeModal();
   }
 }
