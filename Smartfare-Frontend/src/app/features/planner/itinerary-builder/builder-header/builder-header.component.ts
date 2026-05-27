@@ -239,6 +239,10 @@ export class BuilderHeaderComponent {
     if (current) {
       this.itineraryService.saveToBackend(current).subscribe({
         next: (saved) => {
+          if (!saved) {
+            return;
+          }
+
           this.alertService.success('Itinerario salvato con successo!');
 
           if (saved && saved.id) {

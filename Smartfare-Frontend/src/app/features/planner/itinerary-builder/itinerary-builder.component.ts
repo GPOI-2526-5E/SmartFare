@@ -235,7 +235,7 @@ export class ItineraryBuilderComponent implements OnInit {
     this.itineraryService.getWorkspace(locationId).subscribe((ws) => {
 
       if (!ws || !ws.location) {
-        this.workspaceError.set('Non siamo riusciti a caricare i dati della destinazione selezionata.');
+       this.router.navigate(['/home']);
         return;
       }
 
@@ -408,8 +408,10 @@ export class ItineraryBuilderComponent implements OnInit {
       const current = this.itineraryService.itinerary();
       if (current) {
         // We sync with backend
-        this.itineraryService.saveToBackend(current).subscribe(() => {
-          this.router.navigate([url]);
+        this.itineraryService.saveToBackend(current).subscribe((saved) => {
+          if (saved) {
+            this.router.navigate([url]);
+          }
         });
       } else {
         this.router.navigate([url]);

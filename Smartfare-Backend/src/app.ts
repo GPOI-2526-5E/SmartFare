@@ -13,7 +13,9 @@ import uploadRoutes from './routes/upload.route';
 import chatRoutes from './routes/chat.route';
 import profileRoutes from './routes/profile.route';
 import followRoutes from './routes/follow.route';
+import moderationRoute from './routes/moderation.route';
 import { errorHandler } from "./middleware/error.middleware";
+import { contentModerationMiddleware } from './middleware/content-moderation.middleware';
 
 
 export function createApp() {
@@ -74,6 +76,7 @@ export function createApp() {
     credentials: true
   }));
   app.use(express.json({ limit: '1mb' }));
+  app.use(contentModerationMiddleware);
 
   // Static
   app.use(express.static(path.join(process.cwd(), "/public")));
@@ -101,6 +104,11 @@ export function createApp() {
   app.use("/api/profile", profileRoutes);
   app.use("/api/follow", followRoutes);
   app.use("/auth", authRoutes);
+
+  // Cloudinary webhook (removed image moderation)
+
+  // Public moderation tokens (for frontend sync)
+  app.use('/public', moderationRoute);
 
   // Global Error handling
   app.use(errorHandler);

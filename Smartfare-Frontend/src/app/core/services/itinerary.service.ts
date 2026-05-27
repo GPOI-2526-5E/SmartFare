@@ -1,10 +1,11 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, Subject, catchError, debounceTime, of, switchMap, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Itinerary, ItineraryWorkspace } from '../models/itinerary.model';
 import Location from '../models/location.model';
 import { AuthService } from '../auth/auth.service';
+import { AlertService } from './alert.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,9 +33,34 @@ export class ItineraryService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private alertService: AlertService
   ) {
     this.setupAutosavePipeline();
+  }
+
+  private extractErrorMessage(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      const payload = error.error;
+
+      if (payload && typeof payload === 'object') {
+        const details = (payload as { details?: { reason?: string } }).details;
+        const message =
+          (payload as { error?: string; message?: string }).error ||
+          (payload as { error?: string; message?: string }).message ||
+          details?.reason;
+
+        if (message) {
+          return message;
+        }
+      }
+
+      if (typeof payload === 'string' && payload.trim()) {
+        return payload;
+      }
+    }
+
+    return 'Impossibile salvare l\'itinerario.';
   }
 
   private setupAutosavePipeline() {
@@ -168,6 +194,7 @@ export class ItineraryService {
     return this.http.post<Itinerary>(this.API_URL, data).pipe(
       catchError(err => {
         console.error('Error saving itinerary to backend', err);
+        this.alertService.error(this.extractErrorMessage(err));
         return of(null);
       })
     );

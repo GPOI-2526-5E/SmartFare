@@ -398,6 +398,55 @@ Un database relazionale (PostgreSQL) è appropriato perché:
 
 La home presenta il prodotto e una **barra prompt** per avviare la pianificazione senza navigazione complessa. Da qui l’utente può essere portato su Voyager o sulla generazione itinerario.
 
+### 5.2 Moderazione contenuti (testo)
+
+Per un servizio pubblico che accetta input utente è fondamentale applicare una **moderazione dei contenuti** per sicurezza, conformità e qualità dell’esperienza utente. In SmartFare abbiamo implementato una pipeline che bilancia UX e controllo server‑side autoritativo, focalizzata sulla moderazione del testo.
+
+Panoramica del flusso
+- Controllo testo client: l'interceptor frontend scarica una lista di token/regex dal server e può mostrare alert immediati per UX (non autoritativo).
+- Controllo server: middleware Express controlla tutti i POST/PUT/PATCH e blocca richieste che contengono token espliciti o URL sospetti.
+
+Componenti principali e file coinvolti
+- File token testo: `src/config/moderation-tokens.json` — JSON versionato nel repository contenente categorie (hate, sexual, violence, drugs, spam_url, insults_it, insults_en) e pattern regex.
+- Servizio testo backend: `src/services/textModeration.service.ts` — carica il JSON, costruisce un indice semplice (map token→categorie) e fornisce `detectTextIssues(text)`.
+- Middleware testo backend: `src/middleware/content-moderation.middleware.ts` — esegue la scansione ricorsiva del body delle richieste e ritorna `AppError(400)` con messaggio localizzato `Campo "<path>" non consentito: <motivo>` per la prima violazione rilevata.
+- Endpoint tokens pubblici: `src/routes/moderation.route.ts` → `GET /public/moderation/tokens` — serve il JSON al frontend per sincronizzazione.
+- Interceptor frontend: `Smartfare-Frontend/src/app/core/interceptors/content-moderation.interceptor.ts` — scarica i token all’avvio, esegue il controllo client e mostra alert immediati; se i token non sono ancora caricati non blocca (backend rimane autoritativo).
+
+Text moderation: come funziona
+- Il file JSON è mantenuto nel repo per versioning e review; il backend lo carica in avvio e costruisce un indice (token→categorie). Le regex vengono valutate separatamente.
+- Il middleware ispeziona ricorsivamente il body (oggetti, array, stringhe) e salta chiavi sensibili o file (es. password, token) definite in `SKIPPED_KEYS`.
+- Quando viene trovata una violazione, il middleware interrompe la request con `400` e payload strutturato `{ error: 'Campo "title" non consentito: contenuto d\'odio o discriminatorio', details: { field, category, reason, issues } }`.
+- Il frontend usa lo stesso DB di token per mostrare alert immediati (migliore UX) ma non si fida solo del client: il server applica la regola definitiva.
+
+Configurazione e variabili d'ambiente
+- `FRONTEND_URL` e CORS già presenti per sicurezza e per permettere che il frontend scarichi `/public/moderation/tokens`.
+
+Installazione dipendenze (solo testo)
+```bash
+cd Smartfare-Backend
+npm install
+```
+
+Performance e risorse
+- La moderazione testuale è leggera e non richiede dipendenze native pesanti; mantenere il file dei token aggiornato e testare le regex su casi reali.
+
+Logging, audit e revisione manuale
+- Raccomandazione: mantenere una **coda** (tabella DB) dei blocchi con `field`, `value`, `category`, `createdAt`, `status` (blocked/reviewed/approved) e `reviewerId`.
+- Endpoint admin (da aggiungere):
+  - `GET /admin/moderation/queue` — lista elementi in coda.
+  - `POST /admin/moderation/:id/approve` — approva l'elemento o `reject` per marcare come bloccato definitivamente.
+
+Test e validazione
+- Test manuale: inviare richieste POST/PUT/PATCH con payload contenente token noti per verificare il blocco e il messaggio di errore.
+- Test automatici: creare unit test per `textModeration.service.ts` (diversi token, case insensitivity, normalizzazione NFKC).
+
+Privacy e considerazioni etiche
+- Salvare la lista di token nel repo consente review e tracciamento delle modifiche (PR), ma alcune regole interne sensibili potrebbero essere gestite come override nel DB con accesso amministrativo.
+
+Conclusione e passi futuri
+- Lo stack attuale combina UX reattiva (interceptor) con controllo server‑side autoritativo (middleware). Per produzione consigliamo di aggiungere la **coda di revisione** (DB + UI admin) e monitoraggio (metriche su blocchi, falsi positivi) per iterare sulle soglie e ridurre i falsi positivi.
+
 `[INSERIRE SCREENSHOT: Home con prompt AI]`
 
 ---

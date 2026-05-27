@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { UserProfile, UserPreference, UserProfileFull, MyFollowersResponse } from '../models/user-profile.model';
@@ -11,6 +11,19 @@ export class ProfileService {
   private readonly API_URL = `${environment.apiUrl}/api/profile`;
 
   constructor(private http: HttpClient) {}
+
+  private extractErrorMessage(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      const payload = error.error;
+      if (payload && typeof payload === 'object') {
+        const details = (payload as any).details;
+        const message = (payload as any).error || (payload as any).message || (details && details.reason);
+        if (message) return String(message);
+      }
+      if (typeof payload === 'string' && payload.trim()) return payload;
+    }
+    return 'Impossibile salvare i dati. Riprova più tardi.';
+  }
 
   getMyProfile(): Observable<UserProfileFull | null> {
     return this.http.get<UserProfileFull>(`${this.API_URL}/me`).pipe(
@@ -62,15 +75,15 @@ export class ProfileService {
     );
   }
 
-  updateProfile(data: Partial<UserProfile>): Observable<{ success: boolean; profile: UserProfile } | null> {
+  updateProfile(data: Partial<UserProfile>): Observable<{ success: boolean; profile?: UserProfile; message?: string } | null> {
     return this.http.patch<{ success: boolean; profile: UserProfile }>(`${this.API_URL}/me`, data).pipe(
-      catchError(() => of(null))
+      catchError((err) => of({ success: false, profile: null as any, message: this.extractErrorMessage(err) } as any))
     );
   }
 
-  updatePreferences(data: Partial<UserPreference>): Observable<{ success: boolean; preference: UserPreference } | null> {
+  updatePreferences(data: Partial<UserPreference>): Observable<{ success: boolean; preference?: UserPreference; message?: string } | null> {
     return this.http.patch<{ success: boolean; preference: UserPreference }>(`${this.API_URL}/preferences`, data).pipe(
-      catchError(() => of(null))
+      catchError((err) => of({ success: false, preference: null as any, message: this.extractErrorMessage(err) } as any))
     );
   }
 

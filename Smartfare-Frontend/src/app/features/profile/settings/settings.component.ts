@@ -49,6 +49,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private profileService = inject(ProfileService);
   private activityService = inject(ActivityService);
   private alertService = inject(AlertService);
+  
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -248,7 +249,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
         this.authService.fetchProfile();
         this.alertService.success('Profilo aggiornato con successo!');
       } else {
-        this.alertService.error('Errore durante il salvataggio del profilo.');
+        const msg = (res && (res as any).message) || 'Errore durante il salvataggio del profilo.';
+        this.alertService.error(msg);
       }
     });
   }
@@ -276,7 +278,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
           this.interestCategoryIds.set(pref.interestCategoryIds ?? []);
         }
       } else {
-        this.alertService.error('Errore durante il salvataggio delle preferenze.');
+        const msg = (res && (res as any).message) || 'Errore durante il salvataggio delle preferenze.';
+        this.alertService.error(msg);
       }
     });
   }
