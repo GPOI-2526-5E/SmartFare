@@ -23,7 +23,7 @@ const FALLBACK_COVER =
   'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80';
 const CAROUSEL_SLIDES = 6;
 const TOP_CREATORS_LIMIT = 4;
-const TOP_TRIPS_LIMIT = 5;
+const TOP_TRIPS_LIMIT = 4;
 const LATEST_LIMIT = 8;
 const NEARBY_LIMIT = 6;
 const MIN_SEARCH_LENGTH = 2;
