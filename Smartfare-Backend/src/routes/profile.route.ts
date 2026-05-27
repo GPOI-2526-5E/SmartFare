@@ -7,6 +7,7 @@ import prisma from '../config/prisma';
 import { parseTravelStyles, serializeTravelStyles } from '../utils/user-preference.util';
 import { AuthService } from '../services/auth/auth.service';
 import { AppError } from '../middleware/error.middleware';
+import { sanitizeText, isSafeUrl, isValidBirthDate, isSafeString } from '../utils/security.util';
 
 const authService = new AuthService();
 
@@ -34,24 +35,71 @@ const changePasswordWithCodeSchema = z.object({
 });
 
 const updateProfileSchema = z.object({
-    name: z.string().trim().max(80).optional(),
-    surname: z.string().trim().max(80).optional(),
-    city: z.string().trim().max(100).optional(),
-    street: z.string().trim().max(200).optional(),
-    birthDate: z.string().datetime({ offset: true }).optional().nullable(),
-    avatarUrl: z.string().url().max(500).optional().nullable(),
-    backgroundImageUrl: z.string().url().max(500).optional().nullable(),
-    bio: z.string().trim().max(500).optional().nullable(),
-    instagramUrl: z.string().trim().max(100).optional().nullable(),
-    twitterUrl: z.string().trim().max(100).optional().nullable(),
+    name: z.string().trim().max(80)
+        .refine(isSafeString, 'Il campo nome contiene caratteri non consentiti')
+        .transform(sanitizeText)
+        .optional(),
+    surname: z.string().trim().max(80)
+        .refine(isSafeString, 'Il campo cognome contiene caratteri non consentiti')
+        .transform(sanitizeText)
+        .optional(),
+    city: z.string().trim().max(100)
+        .refine(isSafeString, 'Il campo città contiene caratteri non consentiti')
+        .transform(sanitizeText)
+        .optional(),
+    street: z.string().trim().max(200)
+        .refine(isSafeString, 'Il campo indirizzo contiene caratteri non consentiti')
+        .transform(sanitizeText)
+        .optional(),
+    birthDate: z.string().datetime({ offset: true })
+        .refine(isValidBirthDate, 'La data di nascita non è valida: non può essere nel futuro, precedente al 1900, o indicare un\'età inferiore a 13 anni')
+        .optional()
+        .nullable(),
+    avatarUrl: z.string().url().max(500)
+        .refine(isSafeUrl, 'L\'URL dell\'avatar non è consentito')
+        .optional()
+        .nullable(),
+    backgroundImageUrl: z.string().url().max(500)
+        .refine(isSafeUrl, 'L\'URL dell\'immagine di sfondo non è consentito')
+        .optional()
+        .nullable(),
+    bio: z.string().trim().max(500)
+        .refine(isSafeString, 'La bio contiene caratteri non consentiti')
+        .transform(sanitizeText)
+        .optional()
+        .nullable(),
+    instagramUrl: z.string().trim().max(200)
+        .refine(isSafeUrl, 'Il link Instagram non è consentito')
+        .optional()
+        .nullable(),
+    twitterUrl: z.string().trim().max(200)
+        .refine(isSafeUrl, 'Il link Twitter/X non è consentito')
+        .optional()
+        .nullable(),
 });
 
 const updatePreferencesSchema = z.object({
-    travelStyle: z.string().trim().max(200).optional().nullable(),
-    travelStyles: z.array(z.string().trim().min(1).max(40)).max(8).optional(),
-    pace: z.string().trim().max(50).optional().nullable(),
+    travelStyle: z.string().trim().max(200)
+        .refine(isSafeString, 'Il campo stile di viaggio contiene caratteri non consentiti')
+        .transform(sanitizeText)
+        .optional()
+        .nullable(),
+    travelStyles: z.array(
+        z.string().trim().min(1).max(40)
+            .refine(isSafeString, 'Uno degli stili di viaggio contiene caratteri non consentiti')
+            .transform(sanitizeText)
+    ).max(8).optional(),
+    pace: z.string().trim().max(50)
+        .refine(isSafeString, 'Il campo ritmo contiene caratteri non consentiti')
+        .transform(sanitizeText)
+        .optional()
+        .nullable(),
     travelCompanion: z.enum(['SOLO', 'COUPLE', 'FAMILY', 'GROUP']).optional().nullable(),
-    notes: z.string().trim().max(1000).optional().nullable(),
+    notes: z.string().trim().max(1000)
+        .refine(isSafeString, 'Le note contengono caratteri non consentiti')
+        .transform(sanitizeText)
+        .optional()
+        .nullable(),
     interestCategoryIds: z.array(z.coerce.number().int().positive()).max(24).optional(),
 });
 
@@ -525,7 +573,7 @@ router.get('/:id', authenticateJWT, async (req: AuthRequest, res: Response, next
 router.patch('/me', writeLimiter, authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         const userId = Number(req.user!.userId);
-        const data = updateProfileSchema.parse(req.body);
+        const data = await updateProfileSchema.parseAsync(req.body);
 
         const profile = await prisma.userProfile.upsert({
             where: { userId },
@@ -550,7 +598,7 @@ router.patch('/me', writeLimiter, authenticateJWT, async (req: AuthRequest, res:
 router.patch('/preferences', writeLimiter, authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         const userId = Number(req.user!.userId);
-        const data = updatePreferencesSchema.parse(req.body);
+        const data = await updatePreferencesSchema.parseAsync(req.body);
         const {
             travelStyles,
             interestCategoryIds,
