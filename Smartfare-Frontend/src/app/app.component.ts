@@ -25,8 +25,6 @@ export class AppComponent implements OnInit {
   private readonly scriptLoader = inject(ScriptLoaderService);
 
   readonly isLoading = this.loaderService.isLoading;
-  readonly loaderMessage = this.loaderService.message;
-
   ngOnInit(): void {
     this.seoService.init();
   }

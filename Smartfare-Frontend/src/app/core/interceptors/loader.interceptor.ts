@@ -3,37 +3,6 @@ import { inject } from '@angular/core';
 import { finalize } from 'rxjs';
 import { LoaderService } from '../services/loader.service';
 
-function getLoaderMessage(req: any): string {
-  const normalized = req.url.toLowerCase();
-  const method = req.method;
-
-  if (normalized.includes('/auth/login')) {
-    return 'Verifica credenziali in corso...';
-  }
-
-  if (normalized.includes('/auth/register')) {
-    return 'Creazione account in corso...';
-  }
-
-  if (normalized.includes('/api/itineraries/workspace')) {
-    return 'Caricamento destinazione e punti di interesse...';
-  }
-  
-  if (normalized.includes('/api/itineraries/me')) {
-    return 'Recupero i tuoi itinerari...';
-  }
-
-  if (normalized.includes('/api/itineraries/latest')) {
-    return 'Ripristino l\'ultimo itinerario...';
-  }
-
-  if (normalized.includes('/api/itineraries') && method === 'POST') {
-    return 'Sincronizzazione modifiche in corso...';
-  }
-
-  return "Sincronizzazione dati...";
-}
-
 export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
   const loaderService = inject(LoaderService);
   const normalized = req.url.toLowerCase();
@@ -56,9 +25,7 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const message = getLoaderMessage(req);
-
-  loaderService.show(message);
+  loaderService.show();
 
   return next(req).pipe(
     finalize(() => {
