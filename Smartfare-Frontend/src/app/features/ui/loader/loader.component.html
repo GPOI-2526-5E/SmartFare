@@ -21,6 +21,23 @@
           <img src="/favicon.png" alt="SmartFare Logo" class="brand-logo" />
         </div>
       </div>
+      <div class="loader-icon-badge">
+        <i class="bi" [class]="phases[activePhaseIndex()].icon"></i>
+      </div>
+    </div>
+
+    <!-- Premium Text & Progress -->
+    <div class="loader-text">
+      <h2 class="loader-brand-title">SmartFare</h2>
+      <p class="loader-label-phase">{{ phases[activePhaseIndex()].label }}</p>
+
+      <div class="progress-bar-premium">
+        <div class="progress-fill" [style.width.%]="progress()">
+          <div class="progress-flare"></div>
+        </div>
+      </div>
+
+      <p class="loader-message-text">{{ message() }}</p>
     </div>
   </div>
 </section>

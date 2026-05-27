@@ -8,13 +8,14 @@ import {
   SocialProvider,
 } from '../../../core/auth/auth.service';
 import { AlertService } from '../../../core/services/alert.service';
+import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { GoogleLoginProvider, SocialAuthService, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { LegalService } from '../../../core/services/legal.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, GoogleSigninButtonModule],
+  imports: [CommonModule, FormsModule, NavbarComponent, RouterModule, GoogleSigninButtonModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })

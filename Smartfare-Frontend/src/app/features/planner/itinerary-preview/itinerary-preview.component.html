@@ -2,7 +2,7 @@
 
   <!-- ═══════════ SEZIONE 1: HERO CINEMATOGRAFICO ═══════════ -->
   @if (isLoading()) {
-    <app-loader [show]="isLoading()"></app-loader>
+    <app-loader [show]="isLoading()" message="Preparando il tuo viaggio..."></app-loader>
   } @else if (!itinerary()) {
     <section class="ip-empty-screen">
       <div class="ip-empty-inner">

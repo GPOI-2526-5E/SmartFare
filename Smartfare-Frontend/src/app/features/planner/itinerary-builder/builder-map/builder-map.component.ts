@@ -190,14 +190,17 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   private bindPopupActions(popup: L.Popup) {
+    if (this.isPreview) return;
+
     // Wait for the next macro-task to ensure Leaflet has finished rendering the popup content
     setTimeout(() => {
       const container = popup.getElement();
       if (!container) return;
 
+      const addBtn = container.querySelector('.popup-action-btn--add') as HTMLElement;
+      const removeBtn = container.querySelector('.popup-action-btn--remove') as HTMLElement;
       const closeBtn = container.querySelector('.popup-close-btn') as HTMLElement;
 
-      // Always bind the close button so the popup can be closed in all modes
       if (closeBtn) {
         closeBtn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -206,36 +209,30 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         });
       }
 
-      // Only bind add/remove actions when not in preview mode (read-only)
-      if (!this.isPreview) {
-        const addBtn = container.querySelector('.popup-action-btn--add') as HTMLElement;
-        const removeBtn = container.querySelector('.popup-action-btn--remove') as HTMLElement;
+      if (addBtn) {
+        addBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const key = addBtn.getAttribute('data-poi-key');
+          const poi = this.findPoiByKey(key);
+          if (poi) {
+            this.addPoi.emit(poi);
+            this.map?.closePopup(popup);
+          }
+        });
+      }
 
-        if (addBtn) {
-          addBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const key = addBtn.getAttribute('data-poi-key');
-            const poi = this.findPoiByKey(key);
-            if (poi) {
-              this.addPoi.emit(poi);
-              this.map?.closePopup(popup);
-            }
-          });
-        }
-
-        if (removeBtn) {
-          removeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const key = removeBtn.getAttribute('data-poi-key');
-            const poi = this.findPoiByKey(key);
-            if (poi) {
-              this.removePoi.emit(poi);
-              this.map?.closePopup(popup);
-            }
-          });
-        }
+      if (removeBtn) {
+        removeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const key = removeBtn.getAttribute('data-poi-key');
+          const poi = this.findPoiByKey(key);
+          if (poi) {
+            this.removePoi.emit(poi);
+            this.map?.closePopup(popup);
+          }
+        });
       }
     }, 10);
   }
@@ -719,7 +716,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
           ${poi.subtitle ? `<div class="popup-subtitle"><i class="bi bi-tag"></i> ${escapeHtmlForPopup(poi.subtitle)}</div>` : ''}
           ${poi.street ? `<div class="popup-subtitle"><i class="bi bi-geo-alt"></i> ${escapeHtmlForPopup(poi.street)}</div>` : ''}
           ${poi.description ? `<p class="popup-description">${escapeHtmlForPopup(poi.description)}</p>` : ''}
-
+          
           <div class="popup-meta" style="display: flex; gap: 12px; margin-bottom: 10px; font-size: 0.75rem; font-weight: 600;">
             ${poi.rating ? `
               <span class="popup-rating" style="color: #fbbf24; display: flex; align-items: center; gap: 4px;">
