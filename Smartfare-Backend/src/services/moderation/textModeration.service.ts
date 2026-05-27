@@ -3,7 +3,7 @@ import path from 'path';
 
 type TokensJson = Record<string, any>;
 
-const TOKENS_PATH = path.join(process.cwd(), 'src', 'config', 'moderation-tokens.json');
+const TOKENS_PATH = path.join(process.cwd(), 'src', 'services', 'moderation', 'moderation-tokens.json');
 
 let tokensCache: TokensJson | null = null;
 let simpleTokenMap: Map<string, string[]> | null = null;
