@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LegalService } from '../../../core/services/legal.service';
 
 @Component({
   selector: 'sf-privacy-modal',
@@ -9,9 +10,13 @@ import { CommonModule } from '@angular/common';
   styleUrl: `./privacy-modal.component.css`
 })
 export class PrivacyModalComponent {
-  @Output() close = new EventEmitter<void>();
+  private readonly legalService = inject(LegalService);
+  
+  get isVisible() {
+    return this.legalService.showPrivacyModal();
+  }
 
   onClose() {
-    this.close.emit();
+    this.legalService.closePrivacyModal();
   }
 }

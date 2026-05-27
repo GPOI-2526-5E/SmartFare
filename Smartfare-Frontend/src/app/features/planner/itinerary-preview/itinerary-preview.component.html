@@ -1,54 +1,74 @@
-<div class="ip-page">
-  <app-navbar></app-navbar>
+<div class="ip-root">
 
-  <main class="ip-main">
-    <div class="ip-shell">
-      <app-preview-actions
-        [isOwner]="isOwner()"
-        [isFavorite]="isFavorite()"
-        [isSaving]="isSaving()"
-        [isCopying]="isCopying()"
-        [isLoading]="isLoading()"
-        [hasItinerary]="!!itinerary()"
-        [isReadOnlyViewer]="isReadOnlyViewer()"
-        (back)="goBack()"
-        (favoriteToggle)="toggleFavorite()"
-        (primaryAction)="primaryAction()"
+  <!-- ═══════════ SEZIONE 1: HERO CINEMATOGRAFICO ═══════════ -->
+  @if (isLoading()) {
+    <app-loader [show]="isLoading()" message="Preparando il tuo viaggio..."></app-loader>
+  } @else if (!itinerary()) {
+    <section class="ip-empty-screen">
+      <div class="ip-empty-inner">
+        <div class="ip-empty-icon">
+          <i class="bi bi-compass"></i>
+        </div>
+        <h1 class="ip-empty-title">Itinerario non trovato</h1>
+        <p class="ip-empty-desc">Il link potrebbe essere scaduto o l'itinerario non è più disponibile.</p>
+        <button type="button" class="ip-btn-back-main" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i>
+          Torna a Esplora
+        </button>
+      </div>
+      <div class="ip-empty-bg" aria-hidden="true">
+        <div class="ip-bg-orb ip-bg-orb--1"></div>
+        <div class="ip-bg-orb ip-bg-orb--2"></div>
+      </div>
+    </section>
+
+  } @else {
+
+    <!-- SEZIONE HERO (100vh) -->
+    <section class="ip-hero-section" id="ip-hero">
+      <app-preview-hero
+        [title]="itinerary()!.name"
+        [destination]="locationLabel()"
+        [description]="itinerary()!.description || ''"
+        [coverImage]="coverImage()"
+        [durationLabel]="durationLabel()"
+        [stopCount]="stopCount()"
+        [authorName]="authorName()"
+        [isPublished]="!!itinerary()!.isPublished"
       />
-
-      @if (isLoading()) {
-        <div class="ip-state">
-          <div class="ip-state__spinner"></div>
-          <p>Caricamento anteprima…</p>
+      <!-- Scroll hint -->
+      <div class="ip-scroll-hint" aria-hidden="true">
+        <span class="ip-scroll-hint__text">Scorri per il programma</span>
+        <div class="ip-scroll-hint__arrow">
+          <i class="bi bi-chevron-double-down"></i>
         </div>
-      } @else if (!itinerary()) {
-        <div class="ip-state">
-          <i class="bi bi-inbox"></i>
-          <h2>Itinerario non trovato</h2>
-          <p>Il link potrebbe essere scaduto o l'itinerario non è più disponibile.</p>
-          <button type="button" class="ip-state__btn" (click)="goBack()">Torna a Esplora</button>
-        </div>
-      } @else {
-        <app-preview-hero
-          [title]="itinerary()!.name"
-          [destination]="locationLabel()"
-          [description]="itinerary()!.description || ''"
-          [coverImage]="coverImage()"
-          [durationLabel]="durationLabel()"
-          [stopCount]="stopCount()"
-          [authorName]="authorName()"
-          [isPublished]="!!itinerary()!.isPublished"
-        />
+      </div>
+    </section>
 
-        <div class="ip-layout" [class.ip-layout--map]="mobileTab() === 'map'">
-          <div class="ip-layout__plan" [class.ip-layout__panel--active]="mobileTab() === 'plan'">
-            <app-preview-timeline
-              [days]="previewDays()"
-              [hasStops]="hasStops()"
-            />
+    <!-- SEZIONE BODY (min-height 100vh) — Timeline + Mappa -->
+    <section class="ip-body-section" id="ip-body">
+      <div class="ip-split">
+        <!-- Colonna sinistra: timeline -->
+        <div class="ip-split__plan" [class.ip-split__panel--visible]="mobileTab() === 'plan'">
+          <!-- Label sezione -->
+          <div class="ip-body-header">
+            <div class="ip-body-header__line"></div>
+            <span class="ip-body-header__label">
+              <i class="bi bi-map-fill"></i>
+              Programma del viaggio
+            </span>
+            <div class="ip-body-header__line"></div>
           </div>
 
-          <div class="ip-layout__map" [class.ip-layout__panel--active]="mobileTab() === 'map'">
+          <app-preview-timeline
+            [days]="previewDays()"
+            [hasStops]="hasStops()"
+          />
+        </div>
+
+        <!-- Colonna destra: mappa sticky -->
+        <div class="ip-split__map" [class.ip-split__panel--visible]="mobileTab() === 'map'">
+          <div class="ip-map-sticky">
             <app-preview-map-panel
               [itinerary]="itinerary()"
               [location]="mapLocation()"
@@ -58,30 +78,48 @@
             />
           </div>
         </div>
+      </div>
+    </section>
 
-        <nav class="ip-tabs" aria-label="Vista mobile">
-          <button
-            type="button"
-            class="ip-tabs__btn"
-            [class.is-active]="mobileTab() === 'plan'"
-            (click)="setMobileTab('plan')"
-          >
-            <i class="bi bi-journal-text"></i>
-            Programma
-          </button>
-          <button
-            type="button"
-            class="ip-tabs__btn"
-            [class.is-active]="mobileTab() === 'map'"
-            (click)="setMobileTab('map')"
-          >
-            <i class="bi bi-map"></i>
-            Mappa
-          </button>
-        </nav>
-      }
-    </div>
-  </main>
+    <!-- TAB SWITCHER MOBILE -->
+    <nav class="ip-mobile-tabs" aria-label="Cambia vista">
+      <button
+        type="button"
+        class="ip-mobile-tabs__btn"
+        [class.is-active]="mobileTab() === 'plan'"
+        (click)="setMobileTab('plan')"
+        id="ip-tab-plan"
+      >
+        <i class="bi bi-journal-text"></i>
+        <span>Programma</span>
+      </button>
+      <div class="ip-mobile-tabs__divider"></div>
+      <button
+        type="button"
+        class="ip-mobile-tabs__btn"
+        [class.is-active]="mobileTab() === 'map'"
+        (click)="setMobileTab('map')"
+        id="ip-tab-map"
+      >
+        <i class="bi bi-map"></i>
+        <span>Mappa</span>
+      </button>
+    </nav>
 
-  <app-footer></app-footer>
+  }
+
+  <!-- ═══════════ FLOATING ACTION BAR (sempre visibile) ═══════════ -->
+  <app-preview-actions
+    [isOwner]="isOwner()"
+    [isFavorite]="isFavorite()"
+    [isSaving]="isSaving()"
+    [isCopying]="isCopying()"
+    [isLoading]="isLoading()"
+    [hasItinerary]="!!itinerary()"
+    [isReadOnlyViewer]="isReadOnlyViewer()"
+    (back)="goBack()"
+    (favoriteToggle)="toggleFavorite()"
+    (primaryAction)="primaryAction()"
+  />
+
 </div>

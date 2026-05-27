@@ -705,10 +705,15 @@ export class AuthService {
                 },
             });
 
-            if (!user || user.authProvider !== 'local' || !user.passwordHash) {
+            if (!user) {
+                return { success: false, message: 'Utente non trovato.' };
+            }
+
+            if (!user.passwordHash) {
                 return {
                     success: false,
-                    message: 'Il cambio password con codice è disponibile solo per account email e password.',
+                    message:
+                        'Nessuna password impostata su questo account. Completa la registrazione con una password oppure usa «Password dimenticata» dal login.',
                 };
             }
 
@@ -723,7 +728,17 @@ export class AuthService {
 
             await emailService.sendPasswordChangeCodeEmail(user.email, code);
 
-            return { success: true, message: 'Codice inviato alla tua email.' };
+            const isDev = process.env.NODE_ENV !== 'production';
+            if (isDev) {
+                console.info(`[DEV] Codice cambio password per ${user.email}: ${code}`);
+            }
+
+            return {
+                success: true,
+                message: isDev
+                    ? 'Codice inviato (in sviluppo controlla anche i log del server se non ricevi l\'email).'
+                    : 'Codice inviato alla tua email. Controlla anche la cartella spam.',
+            };
         } catch (error) {
             console.error('❌ Errore RequestPasswordChangeCode:', error);
             return {
@@ -750,10 +765,17 @@ export class AuthService {
                 },
             });
 
-            if (!user || user.authProvider !== 'local' || !user.passwordHash) {
+            if (!user) {
                 return {
                     success: false,
-                    message: 'Codice non valido o scaduto.',
+                    message: 'Codice non valido o scaduto. Richiedi un nuovo codice.',
+                };
+            }
+
+            if (!user.passwordHash) {
+                return {
+                    success: false,
+                    message: 'Nessuna password da aggiornare su questo account.',
                 };
             }
 

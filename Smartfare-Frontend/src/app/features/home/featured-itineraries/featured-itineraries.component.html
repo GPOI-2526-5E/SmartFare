@@ -12,20 +12,11 @@
       </div>
     </div>
 
-    <div class="itinerary-grid" [class.is-loading]="loading">
+    <div class="itinerary-grid">
       @if (loading) {
-      <div class="loader-container">
-        <div class="premium-loader">
-          <div class="loader-ring"></div>
-          <div class="loader-compass">
-            <i class="bi bi-compass-fill"></i>
-          </div>
-        </div>
-        <p class="loader-text">Esplorando mete incredibili...</p>
-      </div>
-      }
-  @if (!loading) {
-  @for (itinerary of itineraries; track itinerary.id) {
+      <app-loader [show]="loading" message="Esplorando mete incredibili..."></app-loader>
+      } @else {
+      @for (itinerary of itineraries; track itinerary.id) {
       <div class="itinerary-card">
         <div class="card-image-wrap">
           <img

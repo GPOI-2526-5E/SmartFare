@@ -4,11 +4,12 @@ import { Router, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
 import { ProfileService } from '../../../core/services/profile.service';
 import { UserProfileFull } from '../../../core/models/user-profile.model';
+import { AppLoaderComponent } from '../../ui/loader/loader.component';
 
 @Component({
   selector: 'app-followers',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent],
+  imports: [CommonModule, RouterModule, NavbarComponent, AppLoaderComponent],
   templateUrl: './followers.component.html',
   styleUrl: './followers.component.css'
 })

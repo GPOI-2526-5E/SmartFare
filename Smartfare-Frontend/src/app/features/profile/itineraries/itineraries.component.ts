@@ -26,7 +26,10 @@ export class ItinerariesComponent implements OnInit {
   private allFavorites = signal<Itinerary[]>([]);
 
   isLoading = signal(false);
+  isDeletingItinerary = signal(false);
   activeTab = signal<TabType>('itineraries');
+  itineraryPendingDelete = signal<Itinerary | null>(null);
+  deleteError = signal<string | null>(null);
 
   // Pagination limits per group
   limitByGroup = signal<Record<string, number>>({});
@@ -189,11 +192,72 @@ export class ItinerariesComponent implements OnInit {
     });
   }
 
+  promptDeleteItinerary(itinerary: Itinerary, event: Event): void {
+    event.stopPropagation();
+    this.deleteError.set(null);
+    this.itineraryPendingDelete.set(itinerary);
+  }
+
+  closeDeleteModal(): void {
+    if (this.isDeletingItinerary()) return;
+    this.itineraryPendingDelete.set(null);
+    this.deleteError.set(null);
+  }
+
+  confirmDeleteItinerary(): void {
+    const itinerary = this.itineraryPendingDelete();
+    if (!itinerary || this.isDeletingItinerary()) return;
+    if (typeof itinerary.id !== 'number') {
+      this.deleteError.set("L'itinerario selezionato non ha un ID valido.");
+      return;
+    }
+
+    const itineraryId = itinerary.id;
+
+    this.isDeletingItinerary.set(true);
+    this.deleteError.set(null);
+
+    this.itineraryService.deleteItinerary(itineraryId).subscribe({
+      next: () => {
+        this.allItineraries.update(items => items.filter(item => item.id !== itineraryId));
+        this.allFavorites.update(items => items.filter(item => item.id !== itineraryId));
+        this.itineraryPendingDelete.set(null);
+        this.isDeletingItinerary.set(false);
+      },
+      error: () => {
+        this.deleteError.set('Non sono riuscito a eliminare l’itinerario. Riprova tra poco.');
+        this.isDeletingItinerary.set(false);
+      }
+    });
+  }
+
   previewItinerary(itinerary: Itinerary, event: Event): void {
     event.stopPropagation();
     this.router.navigate(['/itineraries/preview'], {
       queryParams: { itineraryId: itinerary.id },
     });
+  }
+
+  getActivityCount(itinerary: Itinerary): number {
+    return itinerary._count?.items ?? itinerary.items?.length ?? 0;
+  }
+
+  getTripDuration(itinerary: Itinerary): string {
+    if (!itinerary.startDate || !itinerary.endDate) {
+      return 'Durata da confermare';
+    }
+
+    const start = new Date(itinerary.startDate);
+    const end = new Date(itinerary.endDate);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      return 'Durata da confermare';
+    }
+
+    const startUtc = Date.UTC(start.getFullYear(), start.getMonth(), start.getDate());
+    const endUtc = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+    const diffDays = Math.max(1, Math.round((endUtc - startUtc) / 86400000) + 1);
+
+    return diffDays === 1 ? '1 giorno' : `${diffDays} giorni`;
   }
 
   formatDateRange(itinerary: Itinerary): string {

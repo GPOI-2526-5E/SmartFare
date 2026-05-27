@@ -10,7 +10,7 @@
       <div class="sidebar-header">
         @if (chatService.isSidebarOpen() || showMobileSidebar()) {
         <div class="sidebar-brand">
-          <img src="assets/logo_smartfare_ai-removebg-preview.png" alt="SmartFare AI Logo" class="brand-logo">
+          <img src="/favicon.png" alt="SmartFare AI Logo" class="brand-logo">
         </div>
         }
 
@@ -202,7 +202,7 @@
         <div class="header-right">
           <button class="hdr-home-btn" type="button" (click)="goHome()">
             <div class="hdr-home-logo-wrap">
-              <img src="favicon.png" alt="SmartFare" class="hdr-home-logo" />
+              <img src="/favicon.png" alt="SmartFare" class="hdr-home-logo" />
             </div>
             <div class="hdr-home-text">
               <span class="hdr-home-brand">SmartFare</span>
@@ -305,57 +305,15 @@
             <div class="card-body">
               <h3>Il tuo viaggio è pronto!</h3>
               <p>Ho raccolto tutti i dettagli necessari.</p>
-              @if (isGeneratingItinerary()) {
-              <div class="generation-overlay">
-                <div class="generation-globe">
-                  <div class="generation-orbit"></div>
-                  <div class="generation-orbit generation-orbit--2"></div>
-                  <i class="bi bi-globe-europe-africa generation-globe-icon"></i>
-                </div>
-                <div class="generation-steps">
-                  <div class="generation-step generation-step--active">
-                    <span class="step-dot"></span>
-                    <span>Analisi preferenze viaggio</span>
-                  </div>
-                  <div class="generation-step generation-step--active">
-                    <span class="step-dot"></span>
-                    <span>Selezione attività e monumenti</span>
-                  </div>
-                  <div class="generation-step generation-step--pulse">
-                    <span class="step-dot"></span>
-                    <span>Costruzione itinerario nel builder...</span>
-                  </div>
-                </div>
-                <p class="generation-tagline">Voyager AI sta creando il tuo viaggio perfetto</p>
-              </div>
-              } @else if (!generationFailed()) {
               <div class="generate-actions">
                 <p>Vuoi generare l'itinerario completo nel builder?</p>
-                <button class="generate-btn" (click)="generateItinerary()" [disabled]="isGeneratingItinerary()">
+                <button class="generate-btn" id="generate-itinerary-btn" (click)="generateItinerary()" [disabled]="isGeneratingItinerary()">
                   <i class="bi bi-magic"></i>
                   <span>Genera Itinerario</span>
                 </button>
               </div>
-              }
             </div>
           </div>
-
-          <!-- RETRY CARD: mostrata solo in caso di errore di generazione -->
-          @if (generationFailed()) {
-          <div class="retry-card">
-            <div class="retry-card__icon">
-              <i class="bi bi-exclamation-triangle-fill"></i>
-            </div>
-            <div class="retry-card__body">
-              <strong>Generazione non riuscita</strong>
-              <p>{{ generationError() ?? 'I servizi Voyager AI sono momentaneamente in sovraccarico.' }}</p>
-            </div>
-            <button class="retry-btn" (click)="retryGeneration()" [disabled]="isGeneratingItinerary()">
-              <i class="bi bi-arrow-clockwise"></i>
-              <span>Riprova</span>
-            </button>
-          </div>
-          }
           }
 
           <!-- STREAM ERROR CARD -->
@@ -498,6 +456,61 @@
             <button class="locked-cta" (click)="openGeneratedItinerary()">
               <i class="bi bi-arrow-right-circle-fill"></i>
               Apri nel builder
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- GENERATION IN PROGRESS MODAL OVERLAY -->
+      @if (showGeneratingModal()) {
+      <div class="generation-modal-overlay" role="dialog" aria-modal="true" aria-label="Creazione itinerario in corso">
+        <div class="generation-modal-box">
+          <div class="gm-globe-wrap">
+            <i class="bi bi-globe2 gm-globe-icon"></i>
+            <div class="gm-orbit"></div>
+            <div class="gm-orbit gm-orbit--2"></div>
+            <div class="gm-orbit gm-orbit--3"></div>
+          </div>
+          <h2 class="gm-title">Creazione in corso...</h2>
+          <p class="gm-subtitle">Voyager AI sta costruendo il tuo itinerario personalizzato</p>
+          <div class="gm-steps">
+            <div class="gm-step gm-step--done">
+              <span class="gm-step-dot"></span>
+              <span>Analisi preferenze e conversazione</span>
+            </div>
+            <div class="gm-step gm-step--done">
+              <span class="gm-step-dot"></span>
+              <span>Selezione attività e strutture</span>
+            </div>
+            <div class="gm-step gm-step--pulse">
+              <span class="gm-step-dot"></span>
+              <span>Costruzione itinerario nel builder...</span>
+            </div>
+          </div>
+          <div class="gm-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- GENERATION ERROR MODAL OVERLAY -->
+      @if (showErrorModal()) {
+      <div class="gen-error-modal-overlay" role="alertdialog" aria-modal="true" aria-label="Errore generazione itinerario">
+        <div class="gen-error-modal-box">
+          <div class="gem-icon-wrap">
+            <i class="bi bi-exclamation-triangle-fill gem-icon"></i>
+          </div>
+          <h2 class="gem-title">Generazione non riuscita</h2>
+          <p class="gem-message">{{ generationError() ?? 'I servizi Voyager AI sono momentaneamente in sovraccarico. Attendi qualche istante e riprova.' }}</p>
+          <div class="gem-actions">
+            <button class="gem-retry-btn" id="retry-generation-btn" (click)="retryGeneration()">
+              <i class="bi bi-arrow-clockwise"></i>
+              <span>Riprova</span>
+            </button>
+            <button class="gem-dismiss-btn" (click)="generationFailed.set(false); generationError.set(null)">
+              Annulla
             </button>
           </div>
         </div>

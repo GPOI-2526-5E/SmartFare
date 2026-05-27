@@ -74,15 +74,33 @@ export class ProfileService {
     );
   }
 
-  sendPasswordChangeCode(): Observable<{ success: boolean; message?: string } | null> {
+  sendPasswordChangeCode(): Observable<{ success: boolean; message?: string }> {
     return this.http.post<{ success: boolean; message?: string }>(`${this.API_URL}/password/send-code`, {}).pipe(
-      catchError((err) => of({ success: false, message: err.error?.error || err.error?.message }))
+      catchError((err) =>
+        of({
+          success: false,
+          message:
+            err?.error?.error ||
+            err?.error?.message ||
+            (typeof err?.error === 'string' ? err.error : null) ||
+            'Impossibile inviare il codice. Riprova tra poco.',
+        })
+      )
     );
   }
 
-  resetPasswordWithCode(code: string, newPassword: string): Observable<{ success: boolean; message?: string } | null> {
+  resetPasswordWithCode(code: string, newPassword: string): Observable<{ success: boolean; message?: string }> {
     return this.http.post<{ success: boolean; message?: string }>(`${this.API_URL}/password/reset`, { code, newPassword }).pipe(
-      catchError((err) => of({ success: false, message: err.error?.error || err.error?.message }))
+      catchError((err) =>
+        of({
+          success: false,
+          message:
+            err?.error?.error ||
+            err?.error?.message ||
+            (typeof err?.error === 'string' ? err.error : null) ||
+            'Codice non valido o scaduto.',
+        })
+      )
     );
   }
 
@@ -98,6 +116,12 @@ export class ProfileService {
     const formData = new FormData();
     formData.append('image', file);
     return this.http.post<{ success: boolean; url: string }>(`${this.API_URL}/upload/background`, formData).pipe(
+      catchError(() => of(null))
+    );
+  }
+
+  deleteAccount(): Observable<{ success: boolean; message: string } | null> {
+    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/account`).pipe(
       catchError(() => of(null))
     );
   }

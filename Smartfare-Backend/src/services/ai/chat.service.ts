@@ -560,8 +560,6 @@ export class ChatService {
       return {};
     }
 
-    const ai = new GoogleGenerativeAI(this.apiKey);
-    const model = ai.getGenerativeModel({ model: this.modelName });
     const prompt = [
       'Estrai dati strutturati da questa conversazione di pianificazione viaggio.',
       'Restituisci SOLO JSON valido.',
@@ -576,13 +574,21 @@ export class ChatService {
       `Conversazione:\n${transcript}`
     ].join('\n');
 
-    try {
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
-      return this.safeParseJson(text) || {};
-    } catch {
-      return {};
+    const ai = new GoogleGenerativeAI(this.apiKey);
+    
+    for (const modelName of this.modelFallbacks) {
+      try {
+        const model = ai.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        const parsed = this.safeParseJson(text);
+        if (parsed) return parsed;
+      } catch (error) {
+        // Fallback al prossimo modello in caso di rate limit o errore
+        console.warn(`Fallimento extractPlannerState su ${modelName}, provo fallback...`);
+      }
     }
+    return {};
   }
 
   private async finalizePlannerState(
@@ -729,32 +735,36 @@ export class ChatService {
       return null;
     }
 
-    try {
-      const ai = new GoogleGenerativeAI(this.apiKey);
-      const model = ai.getGenerativeModel({ model: this.modelName });
-      const prompt = [
-        'Genera un titolo breve per una chat travel premium di SmartFare.',
-        'Restituisci solo il titolo, senza virgolette, markdown o spiegazioni.',
-        'Massimo 5 parole.',
-        'Il titolo deve essere naturale, specifico e utile nella sidebar.',
-        `Modalita: ${mode}.`,
-        `Planner state: ${JSON.stringify(state)}.`,
-        `Messaggio utente: ${userMessage}`,
-        `Risposta assistant: ${assistantReply}`
-      ].join('\n');
+    const prompt = [
+      'Genera un titolo breve per una chat travel premium di SmartFare.',
+      'Restituisci solo il titolo, senza virgolette, markdown o spiegazioni.',
+      'Massimo 5 parole.',
+      'Il titolo deve essere naturale, specifico e utile nella sidebar.',
+      `Modalita: ${mode}.`,
+      `Planner state: ${JSON.stringify(state)}.`,
+      `Messaggio utente: ${userMessage}`,
+      `Risposta assistant: ${assistantReply}`
+    ].join('\n');
 
-      const result = await model.generateContent(prompt);
-      const rawTitle = result.response.text().replace(/["'*`#]/g, ' ').trim();
-      const cleanTitle = rawTitle
-        .split('\n')[0]
-        ?.replace(/\s+/g, ' ')
-        .trim()
-        .slice(0, 60);
+    const ai = new GoogleGenerativeAI(this.apiKey);
 
-      return cleanTitle || null;
-    } catch {
-      return null;
+    for (const modelName of this.modelFallbacks) {
+      try {
+        const model = ai.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        const rawTitle = result.response.text().replace(/["'*`#]/g, ' ').trim();
+        const cleanTitle = rawTitle
+          .split('\n')[0]
+          ?.replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 60);
+
+        if (cleanTitle) return cleanTitle;
+      } catch (error) {
+        console.warn(`Fallimento generateSessionTitle su ${modelName}, provo fallback...`);
+      }
     }
+    return null;
   }
 
   private buildItineraryPrompt(state: PlannerState, messages: DbMessage[]): string {

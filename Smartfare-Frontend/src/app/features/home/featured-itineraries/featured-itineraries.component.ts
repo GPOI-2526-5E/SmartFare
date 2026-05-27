@@ -2,11 +2,12 @@ import { Component, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Itinerary } from '../../../core/models/itinerary.model';
+import { AppLoaderComponent } from '../../ui/loader/loader.component';
 
 @Component({
   selector: 'app-featured-itineraries',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, AppLoaderComponent],
   templateUrl: './featured-itineraries.component.html',
   styleUrl: './featured-itineraries.component.css'
 })

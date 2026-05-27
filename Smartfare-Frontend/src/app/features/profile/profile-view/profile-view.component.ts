@@ -7,13 +7,14 @@ import { ProfileService } from '../../../core/services/profile.service';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { UserProfileFull } from '../../../core/models/user-profile.model';
 import { Itinerary } from '../../../core/models/itinerary.model';
+import { AppLoaderComponent } from '../../ui/loader/loader.component';
 
 type ProfileTab = 'all' | 'public' | 'private';
 
 @Component({
   selector: 'app-profile-view',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent],
+  imports: [CommonModule, RouterModule, NavbarComponent, AppLoaderComponent],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.css'
 })

@@ -25,7 +25,7 @@ export function shouldShowItineraryReadyCard(input: {
 
   const lastAssistant = [...input.messages]
     .reverse()
-    .find((message) => message.role === 'assistant' && !message.isStreaming);
+    .find((message) => message.role === 'assistant');
 
   return lastAssistant ? assistantDeclaresItineraryReady(lastAssistant.content) : false;
 }

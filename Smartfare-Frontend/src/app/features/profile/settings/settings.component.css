@@ -798,12 +798,18 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
 }
 
 /* ─── Account Tab ────────────────────────────────────────────── */
+.account-tab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .account-info-block {
   background: rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   overflow: hidden;
-  margin-bottom: 2rem;
+  margin-bottom: 0;
 }
 
 .info-row {
@@ -928,10 +934,45 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cur
   opacity: 0.9;
 }
 
+.password-reset-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #86efac;
+  font-size: 0.9rem;
+}
+
+.password-reset-step i {
+  flex-shrink: 0;
+}
+
+.password-reset-alt {
+  margin: 1rem 0 0;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.password-reset-alt a {
+  color: #a5b4fc;
+  text-decoration: underline;
+}
+
 .password-form {
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
+  margin-top: 0.25rem;
+}
+
+.password-form--disabled input:disabled,
+.password-form--disabled .toggle-psw:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .password-form .field-group label {

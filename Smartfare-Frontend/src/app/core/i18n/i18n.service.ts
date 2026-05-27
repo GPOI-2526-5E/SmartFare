@@ -52,6 +52,11 @@ export class I18nService {
     return TRANSLATIONS[language][key] ?? TRANSLATIONS[DEFAULT_LANGUAGE][key] ?? key;
   }
 
+  /** Translates a raw Italian phrase using the PHRASE_TRANSLATIONS dictionary. */
+  phrase(value: string): string {
+    return this.translatePhrase(value, this.currentLanguage());
+  }
+
   getLanguageOption(language: SupportedLanguage): LanguageOption {
     return LANGUAGE_OPTIONS.find((option) => option.code === language) ?? LANGUAGE_OPTIONS[0];
   }

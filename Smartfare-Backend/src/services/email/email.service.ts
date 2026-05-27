@@ -361,9 +361,8 @@ export class EmailService {
         }
     }
 
-    public async sendPasswordChangeCodeEmail(to: string, code: string) {
+    public async sendPasswordChangeCodeEmail(to: string, code: string): Promise<void> {
         await this.ensureTransporter();
-        if (!this.transporter && !this.useSendgrid) return;
 
         const textTemplate = `Ciao,
 

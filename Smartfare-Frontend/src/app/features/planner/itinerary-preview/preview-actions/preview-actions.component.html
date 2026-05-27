@@ -1,50 +1,91 @@
-<div class="pv-actions">
-  <button type="button" class="pv-actions__back" (click)="back.emit()" aria-label="Torna indietro">
-    <i class="bi bi-arrow-left"></i>
-    <span>Indietro</span>
+<div class="pva-bar" role="toolbar" aria-label="Azioni itinerario">
+
+  <!-- Sfondo glassmorphism -->
+  <div class="pva-bar__glass" aria-hidden="true"></div>
+
+  <!-- Back button -->
+  <button
+    type="button"
+    class="pva-btn pva-btn--back"
+    (click)="back.emit()"
+    aria-label="Torna indietro"
+    id="pva-btn-back"
+  >
+    <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    <span class="pva-btn__label">Indietro</span>
   </button>
 
-  @if (isReadOnlyViewer && hasItinerary && !isLoading) {
-    <p class="pv-actions__notice">
-      <i class="bi bi-eye"></i>
-      Stai visualizzando un itinerario in sola lettura
-    </p>
-  }
+  <!-- Divider -->
+  <div class="pva-divider" aria-hidden="true"></div>
 
-  <div class="pv-actions__group">
-    @if (!isLoading && hasItinerary) {
+  <!-- Azioni (mostrate solo quando c'è l'itinerario) -->
+  @if (!isLoading && hasItinerary) {
+
+    <!-- Tasto cuore -->
+    <button
+      type="button"
+      class="pva-btn pva-btn--heart"
+      [class.pva-btn--heart-active]="isFavorite"
+      (click)="favoriteToggle.emit()"
+      [disabled]="isSaving || isCopying"
+      [attr.aria-label]="isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'"
+      [attr.aria-pressed]="isFavorite"
+      id="pva-btn-favorite"
+    >
+      <i [class]="isFavorite ? 'bi bi-heart-fill' : 'bi bi-heart'" aria-hidden="true"></i>
+      <span class="pva-btn__label">{{ isFavorite ? 'Salvato' : 'Salva' }}</span>
+    </button>
+
+    <!-- Divider -->
+    <div class="pva-divider" aria-hidden="true"></div>
+
+    <!-- CTA primaria: Modifica (owner) o Incorpora (viewer) -->
+    @if (isOwner) {
       <button
         type="button"
-        class="pv-actions__btn pv-actions__btn--ghost"
-        [class.is-active]="isFavorite"
-        (click)="favoriteToggle.emit()"
+        class="pva-btn pva-btn--primary"
+        (click)="primaryAction.emit()"
         [disabled]="isSaving || isCopying"
+        id="pva-btn-edit"
       >
-        <i [class]="isFavorite ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
-        <span>{{ isFavorite ? 'Nei preferiti' : 'Salva' }}</span>
+        @if (isSaving) {
+          <div class="pva-spinner" aria-hidden="true"></div>
+          <span>Apertura…</span>
+        } @else {
+          <i class="bi bi-pencil-square" aria-hidden="true"></i>
+          <span>Modifica</span>
+        }
       </button>
-
-      @if (isOwner) {
-        <button
-          type="button"
-          class="pv-actions__btn pv-actions__btn--primary"
-          (click)="primaryAction.emit()"
-          [disabled]="isSaving || isCopying"
-        >
-          <i class="bi bi-pencil-square"></i>
-          <span>{{ isSaving ? 'Apertura…' : 'Modifica itinerario' }}</span>
-        </button>
-      } @else {
-        <button
-          type="button"
-          class="pv-actions__btn pv-actions__btn--primary"
-          (click)="primaryAction.emit()"
-          [disabled]="isSaving || isCopying"
-        >
-          <i [class]="isCopying ? 'bi bi-hourglass-split' : 'bi bi-copy'"></i>
-          <span>{{ isCopying ? 'Salvataggio…' : 'Incorpora nel mio account' }}</span>
-        </button>
-      }
+    } @else {
+      <button
+        type="button"
+        class="pva-btn pva-btn--primary"
+        (click)="primaryAction.emit()"
+        [disabled]="isSaving || isCopying"
+        id="pva-btn-copy"
+      >
+        @if (isCopying) {
+          <div class="pva-spinner" aria-hidden="true"></div>
+          <span>Salvataggio…</span>
+        } @else {
+          <i class="bi bi-copy" aria-hidden="true"></i>
+          <span>Incorpora</span>
+        }
+      </button>
     }
-  </div>
+
+  } @else if (isLoading) {
+    <!-- Skeleton loading -->
+    <div class="pva-skeleton pva-skeleton--sm" aria-hidden="true"></div>
+    <div class="pva-skeleton pva-skeleton--md" aria-hidden="true"></div>
+  }
+
 </div>
+
+<!-- Notifica readonly (piccola, separata dalla barra) -->
+@if (isReadOnlyViewer && hasItinerary && !isLoading) {
+  <div class="pva-readonly-notice" role="status" aria-live="polite">
+    <i class="bi bi-eye" aria-hidden="true"></i>
+    <span>Anteprima sola lettura</span>
+  </div>
+}

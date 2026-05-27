@@ -1,45 +1,79 @@
-<section class="pv-hero" [class.pv-hero--has-image]="!!coverImage">
+<section class="pvh-hero" [class.pvh-hero--has-image]="!!coverImage" aria-label="Copertina itinerario">
+
+  <!-- Immagine di sfondo o fallback gradiente -->
   @if (coverImage) {
-    <img class="pv-hero__image" [src]="coverImage" [alt]="title" />
+    <div class="pvh-bg">
+      <img class="pvh-bg__img" [src]="coverImage" [alt]="title" />
+    </div>
   } @else {
-    <div class="pv-hero__fallback" aria-hidden="true">
-      <i class="bi bi-signpost-split-fill"></i>
+    <div class="pvh-bg pvh-bg--fallback" aria-hidden="true">
+      <div class="pvh-bg__noise"></div>
+      <div class="pvh-bg__grid"></div>
     </div>
   }
-  <div class="pv-hero__shade"></div>
 
-  <div class="pv-hero__content">
-    <div class="pv-hero__meta">
-      <span class="pv-hero__chip">
-        <i class="bi bi-calendar3"></i>
+  <!-- Overlay multistrato -->
+  <div class="pvh-overlay" aria-hidden="true">
+    <div class="pvh-overlay__base"></div>
+    <div class="pvh-overlay__vignette"></div>
+    <div class="pvh-overlay__gradient"></div>
+  </div>
+
+  <!-- Orbe decorativi (solo senza immagine) -->
+  @if (!coverImage) {
+    <div class="pvh-orbs" aria-hidden="true">
+      <div class="pvh-orb pvh-orb--1"></div>
+      <div class="pvh-orb pvh-orb--2"></div>
+      <div class="pvh-orb pvh-orb--3"></div>
+    </div>
+  }
+
+  <!-- ─── CONTENT ─── -->
+  <div class="pvh-content">
+
+    <!-- Chips meta — in alto a sinistra -->
+    <div class="pvh-chips" role="list" aria-label="Informazioni itinerario">
+      <span class="pvh-chip pvh-chip--purple" role="listitem">
+        <i class="bi bi-calendar3" aria-hidden="true"></i>
         {{ durationLabel }}
       </span>
       @if (stopCount > 0) {
-        <span class="pv-hero__chip pv-hero__chip--muted">
-          <i class="bi bi-geo-alt"></i>
-          {{ stopCount }} {{ stopCount === 1 ? 'tappa' : 'tappe' }}
+        <span class="pvh-chip pvh-chip--teal" role="listitem">
+          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          {{ stopCount }} <span>{{ stopCount === 1 ? 'tappa' : 'tappe' }}</span>
         </span>
       }
       @if (isPublished) {
-        <span class="pv-hero__chip pv-hero__chip--public">
-          <i class="bi bi-globe2"></i>
+        <span class="pvh-chip pvh-chip--green" role="listitem">
+          <i class="bi bi-globe2" aria-hidden="true"></i>
           Pubblico
         </span>
       }
     </div>
 
-    <p class="pv-hero__destination">{{ destination }}</p>
-    <h1 class="pv-hero__title">{{ title }}</h1>
+    <!-- Titolo principale -->
+    <h1 class="pvh-title">{{ title }}</h1>
 
-    @if (authorName) {
-      <p class="pv-hero__author">
-        <i class="bi bi-person-circle"></i>
-        Creato da {{ authorName }}
-      </p>
+    <!-- Descrizione -->
+    @if (description.trim()) {
+      <p class="pvh-desc">{{ description }}</p>
     }
 
-    <p class="pv-hero__desc">
-      {{ description.trim() || 'Nessuna descrizione per questo viaggio.' }}
+    <!-- Destination kicker (Spostato sotto la descrizione come richiesto) -->
+    <p class="pvh-destination" aria-label="Destinazione">
+      <i class="bi bi-geo-fill" aria-hidden="true"></i>
+      {{ destination }}
     </p>
+
+    <!-- Autore -->
+    @if (authorName) {
+      <div class="pvh-author">
+        <div class="pvh-author__avatar" aria-hidden="true">
+          <i class="bi bi-person-fill"></i>
+        </div>
+        <span><span>Creato da</span> <strong>{{ authorName }}</strong></span>
+      </div>
+    }
   </div>
+
 </section>

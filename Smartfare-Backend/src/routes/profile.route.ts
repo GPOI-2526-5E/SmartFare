@@ -2,7 +2,7 @@ import { Router, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import rateLimit from 'express-rate-limit';
 import { authenticateJWT, AuthRequest, optionalAuthenticateJWT } from '../middleware/auth.middleware';
-import { upload } from '../config/cloudinary';
+import { upload, cloudinary } from '../config/cloudinary';
 import prisma from '../config/prisma';
 import { parseTravelStyles, serializeTravelStyles } from '../utils/user-preference.util';
 import { AuthService } from '../services/auth/auth.service';
@@ -97,6 +97,7 @@ router.get('/me', authenticateJWT, async (req: AuthRequest, res: Response, next:
                 select: {
                     email: true,
                     authProvider: true,
+                    passwordHash: true,
                     profile: true,
                     preference: true,
                 }
@@ -121,6 +122,7 @@ router.get('/me', authenticateJWT, async (req: AuthRequest, res: Response, next:
         return res.json({
             email: user.email,
             authProvider: user.authProvider,
+            hasLocalPassword: !!user.passwordHash,
             profile: user.profile ?? null,
             preference: user.preference
                 ? await formatPreferenceResponse(user.preference)
@@ -685,5 +687,70 @@ router.post('/upload/background', writeLimiter, authenticateJWT, upload.single('
     }
 });
 
+
+async function deleteCloudinaryImage(url: string | null) {
+    if (!url || !url.includes('cloudinary.com')) return;
+    try {
+        const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)\.[^.]+$/);
+        if (match && match[1]) {
+            await cloudinary.uploader.destroy(match[1]);
+        }
+    } catch (e) {
+        console.error('Error deleting image from cloudinary:', e);
+    }
+}
+
+// ─── DELETE /api/profile/account ──────────────────────────────────────────────
+router.delete('/account', writeLimiter, authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = Number(req.user!.userId);
+
+        const profile = await prisma.userProfile.findUnique({ where: { userId } });
+        if (profile?.avatarUrl) await deleteCloudinaryImage(profile.avatarUrl);
+        if (profile?.backgroundImageUrl) await deleteCloudinaryImage(profile.backgroundImageUrl);
+
+        const itineraries = await prisma.itinerary.findMany({ where: { userId } });
+        for (const it of itineraries) {
+            if (it.imageUrl) await deleteCloudinaryImage(it.imageUrl);
+        }
+
+        await prisma.$transaction(async (tx) => {
+            const pref = await tx.userPreference.findUnique({ where: { userId } });
+            if (pref) {
+                await tx.userPreferenceInterest.deleteMany({ where: { preferenceId: pref.id } });
+                await tx.userPreference.delete({ where: { userId } });
+            }
+            
+            await tx.userProfile.deleteMany({ where: { userId } });
+            
+            await tx.follow.deleteMany({ where: { OR: [{ followerId: userId }, { followingId: userId }] } });
+            
+            await tx.itineraryFavorite.deleteMany({ where: { userId } });
+            
+            const userItins = await tx.itinerary.findMany({ where: { userId }, select: { id: true, chatSessionId: true } });
+            const itinIds = userItins.map(i => i.id);
+            if (itinIds.length > 0) {
+                await tx.itineraryItem.deleteMany({ where: { itineraryId: { in: itinIds } } });
+                await tx.itineraryFavorite.deleteMany({ where: { itineraryId: { in: itinIds } } });
+                await tx.itinerary.deleteMany({ where: { userId } });
+            }
+
+            const sessions = await tx.chatSession.findMany({ where: { userId }, select: { id: true } });
+            const sessionIds = sessions.map(s => s.id);
+            if (sessionIds.length > 0) {
+                await tx.chatMessage.deleteMany({ where: { chatId: { in: sessionIds } } });
+                await tx.chatSession.deleteMany({ where: { userId } });
+            }
+
+            await tx.authSession.deleteMany({ where: { userId } });
+
+            await tx.user.delete({ where: { id: userId } });
+        });
+
+        return res.json({ success: true, message: 'Account eliminato con successo' });
+    } catch (error) {
+        next(error);
+    }
+});
 
 export default router;

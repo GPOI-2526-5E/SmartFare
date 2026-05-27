@@ -237,6 +237,16 @@ export class ItineraryService {
     );
   }
 
+  deleteItinerary(itineraryId: number): Observable<void> {
+    if (!this.authService.IsAuthenticated()) return of(void 0);
+    return this.http.delete<void>(`${this.API_URL}/${itineraryId}`).pipe(
+      catchError(err => {
+        console.error('Error deleting itinerary', err);
+        throw err;
+      })
+    );
+  }
+
   getItineraryById(id: number): Observable<Itinerary | null> {
     // Prima prova a caricare dal backend (sia pubblici che privati se autenticato)
     if (this.authService.IsAuthenticated()) {
