@@ -14,6 +14,10 @@
   overflow: hidden;
 }
 
+.wl-header-bg.is-clickable {
+  cursor: pointer;
+}
+
 .wl-header-bg::after {
   content: '';
   position: absolute;
@@ -27,6 +31,38 @@
   object-fit: cover;
   opacity: 0.6;
   filter: saturate(1.2);
+}
+
+.wl-cover-lock {
+  position: absolute;
+  inset: auto 24px 24px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(11, 9, 20, 0.55);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  text-align: right;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.wl-cover-lock i {
+  font-size: 1.1rem;
+}
+
+.wl-cover-lock span {
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.wl-cover-lock small {
+  color: rgba(248, 250, 252, 0.72);
+  font-size: 0.75rem;
 }
 
 .wl-edit-bg-btn {

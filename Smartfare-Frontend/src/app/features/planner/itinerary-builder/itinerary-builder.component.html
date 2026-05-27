@@ -31,7 +31,8 @@
       </app-builder-map>
       } @else {
       <div class="summary-container">
-        <app-builder-summary [workspace]="workspace()" (showOnMap)="onPreviewPoi($event)">
+        <app-builder-summary [workspace]="workspace()" (showOnMap)="onPreviewPoi($event)"
+          (coverImageAccessRequested)="handleCoverImageAccessRequest()">
         </app-builder-summary>
       </div>
       }
@@ -85,7 +86,16 @@
 
   <!-- Modals -->
   @if (showLoginPrompt()) {
-  <app-login-prompt-modal (login)="onLoginRedirect()" (continueWithoutSaving)="onContinueExit()" (close)="closeModal()">
+  <app-login-prompt-modal
+    [title]="loginPromptTitle()"
+    [description]="loginPromptDescription()"
+    [highlight]="loginPromptHighlight()"
+    [loginLabel]="loginPromptLoginLabel()"
+    [secondaryLabel]="loginPromptSecondaryLabel()"
+    [showSecondaryAction]="showLoginPromptSecondaryAction()"
+    (login)="onLoginRedirect()"
+    (continueWithoutSaving)="onContinueExit()"
+    (close)="closeModal()">
   </app-login-prompt-modal>
   }
 </div>

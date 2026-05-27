@@ -54,6 +54,7 @@ export class BuilderSummaryComponent {
   isPreviewInput = input<boolean>(false);
 
   @Output() showOnMap = new EventEmitter<BuilderPoi>();
+  @Output() coverImageAccessRequested = new EventEmitter<void>();
 
   private itineraryService = inject(ItineraryService);
   private ui = inject(UIStateService);
@@ -219,6 +220,10 @@ export class BuilderSummaryComponent {
         document.querySelector('.wl-timeline-container')?.scrollIntoView({ behavior: 'smooth' });
       }
     });
+  }
+
+  requestCoverImageAccess(): void {
+    this.coverImageAccessRequested.emit();
   }
 
   closePreview(): void {

@@ -1,7 +1,8 @@
 <div class="summary-shell" [class.is-preview]="previewItinerary()">
 
   <!-- HEADER -->
-  <app-builder-summary-header [workspace]="workspace()" [readOnly]="isPreviewMode()"></app-builder-summary-header>
+  <app-builder-summary-header [workspace]="workspace()" [readOnly]="isPreviewMode()"
+    (coverImageAccessRequested)="requestCoverImageAccess()"></app-builder-summary-header>
 
   <!-- ESPLORA -->
   @if (!isPreviewInput()) {

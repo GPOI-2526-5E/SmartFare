@@ -38,6 +38,7 @@ import {
 })
 export class ItineraryBuilderComponent implements OnInit {
   showLoginPrompt = signal(false);
+  loginPromptMode = signal<'save' | 'cover'>('save');
   workspaceError = signal<string | null>(null);
   workspace = signal<ItineraryWorkspace | null>(null);
   previewPoi = signal<BuilderPoi | null>(null);
@@ -426,6 +427,13 @@ export class ItineraryBuilderComponent implements OnInit {
   handleSaveRequest() {
     // Header emitted a save request but user is NOT authenticated
     this.targetUrl = null; // No final navigation target, just want to save
+    this.loginPromptMode.set('save');
+    this.showLoginPrompt.set(true);
+  }
+
+  handleCoverImageAccessRequest() {
+    this.targetUrl = null;
+    this.loginPromptMode.set('cover');
     this.showLoginPrompt.set(true);
   }
 
@@ -449,7 +457,34 @@ export class ItineraryBuilderComponent implements OnInit {
 
   closeModal() {
     this.showLoginPrompt.set(false);
+    this.loginPromptMode.set('save');
   }
+
+  readonly loginPromptTitle = computed(() =>
+    this.loginPromptMode() === 'cover' ? 'Accedi per cambiare immagine' : 'Salva il tuo lavoro'
+  );
+
+  readonly loginPromptDescription = computed(() =>
+    this.loginPromptMode() === 'cover'
+      ? 'L\'itinerario ha una copertina di default. Se vuoi cambiarla o caricare un\'immagine personalizzata, devi accedere.'
+      : 'Non sei loggato. Se esci ora, i tuoi progressi sull\'itinerario non verranno salvati permanentemente.'
+  );
+
+  readonly loginPromptHighlight = computed(() =>
+    this.loginPromptMode() === 'cover'
+      ? 'Accedi per modificare la copertina del viaggio.'
+      : 'Accedi o registrati per non perdere quello che hai fatto!'
+  );
+
+  readonly loginPromptLoginLabel = computed(() =>
+    this.loginPromptMode() === 'cover' ? 'Accedi per cambiare immagine' : 'Accedi per salvare'
+  );
+
+  readonly loginPromptSecondaryLabel = computed(() =>
+    this.loginPromptMode() === 'cover' ? 'Resta con l\'immagine di default' : 'Esci senza salvare'
+  );
+
+  readonly showLoginPromptSecondaryAction = computed(() => this.loginPromptMode() !== 'cover');
 
   // ============ NEW POI EDITOR METHODS ============
 

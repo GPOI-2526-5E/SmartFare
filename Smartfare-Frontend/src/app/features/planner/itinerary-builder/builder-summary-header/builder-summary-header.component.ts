@@ -2,8 +2,10 @@ import { ChangeDetectionStrategy, Component, Input, computed, inject, input, sig
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { EventEmitter, Output } from '@angular/core';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
 import { AlertService } from '../../../../core/services/alert.service';
+import { AuthService } from '../../../../core/auth/auth.service';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { environment } from '../../../../../environments/environment';
 
@@ -16,11 +18,16 @@ import { environment } from '../../../../../environments/environment';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BuilderSummaryHeaderComponent {
+  private static readonly DEFAULT_COVER_IMAGE = '/assets/home-section.avif';
+
   workspace = input<ItineraryWorkspace | null>(null);
   @Input() readOnly = false;
 
+  @Output() coverImageAccessRequested = new EventEmitter<void>();
+
   private itineraryService = inject(ItineraryService);
   private alertService = inject(AlertService);
+  private authService = inject(AuthService);
   private http = inject(HttpClient);
 
   itinerary = this.itineraryService.itinerary;
@@ -33,6 +40,9 @@ export class BuilderSummaryHeaderComponent {
 
   isUploadingImage = signal<boolean>(false);
   isReadOnly = computed(() => this.readOnly);
+  isAuthenticated = computed(() => this.authService.IsAuthenticated());
+
+  coverImageUrl = computed(() => this.itinerary()?.imageUrl || this.workspace()?.location?.image || BuilderSummaryHeaderComponent.DEFAULT_COVER_IMAGE);
 
 
   isPublic = computed(() => {
@@ -110,6 +120,23 @@ export class BuilderSummaryHeaderComponent {
       this.isUploadingImage.set(false);
       event.target.value = '';
     }
+  }
+
+  onCoverImageClick(event?: MouseEvent): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    if (this.isReadOnly()) {
+      return;
+    }
+
+    if (!this.isAuthenticated()) {
+      this.coverImageAccessRequested.emit();
+      return;
+    }
+
+    const input = document.querySelector<HTMLInputElement>('#cover-image-input');
+    input?.click();
   }
 
   startEditingTitle(): void {

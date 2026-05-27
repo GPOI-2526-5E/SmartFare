@@ -1,16 +1,23 @@
 <section class="wl-header" [class.is-readonly]="isReadOnly()">
-  <div class="wl-header-bg">
-    <img [src]="itinerary()?.imageUrl" alt="Cover" />
+  <div class="wl-header-bg" [class.is-clickable]="!isReadOnly()" (click)="onCoverImageClick($event)">
+    <img [src]="coverImageUrl()" alt="Cover" />
     @if (!isReadOnly()) {
-    <button class="wl-edit-bg-btn" (click)="coverInput.click()">
+    <button class="wl-edit-bg-btn" type="button" (click)="$event.stopPropagation(); onCoverImageClick($event)">
       @if (isUploadingImage()) {
       <span class="spinner-border spinner-border-sm"></span>
       } @else {
       <i class="bi bi-pencil-fill"></i>
       }
     </button>
+    @if (!isAuthenticated()) {
+    <div class="wl-cover-lock">
+      <i class="bi bi-lock-fill"></i>
+      <span>Clicca per cambiare immagine</span>
+      <small>Devi essere loggato</small>
+    </div>
     }
-    <input type="file" #coverInput hidden accept="image/*" (change)="onCoverImageSelected($event)" />
+    }
+    <input id="cover-image-input" type="file" hidden accept="image/*" (change)="onCoverImageSelected($event)" />
   </div>
 
   <div class="wl-header-card">
