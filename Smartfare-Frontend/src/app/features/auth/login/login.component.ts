@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from "../../ui/navbar/navbar.component";
 import { AlertService } from '../../../core/services/alert.service';
 import { AuthService, PendingSocialRegistration } from '../../../core/auth/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -10,7 +9,7 @@ import { GoogleLoginProvider, SocialAuthService, GoogleSigninButtonModule } from
 @Component({
   selector: 'app-login.component',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, FormsModule, RouterLink, GoogleSigninButtonModule],
+  imports: [CommonModule, FormsModule, RouterLink, GoogleSigninButtonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })

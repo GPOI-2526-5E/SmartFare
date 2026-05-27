@@ -14,7 +14,7 @@
 
     <div class="itinerary-grid">
       @if (loading) {
-      <app-loader [show]="loading" message="Esplorando mete incredibili..."></app-loader>
+      <app-loader [show]="loading"></app-loader>
       } @else {
       @for (itinerary of itineraries; track itinerary.id) {
       <div class="itinerary-card">
