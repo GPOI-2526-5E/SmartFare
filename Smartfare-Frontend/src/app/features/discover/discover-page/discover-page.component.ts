@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, finalize, forkJoin, of, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { catchError, finalize, forkJoin, of } from 'rxjs';
 import { NavbarComponent } from '../../ui/navbar/navbar.component';
 import { FooterComponent } from '../../ui/footer/footer.component';
 import { AppLoaderComponent } from '../../ui/loader/loader.component';
@@ -24,8 +24,8 @@ const FALLBACK_COVER =
 const CAROUSEL_SLIDES = 6;
 const TOP_CREATORS_LIMIT = 4;
 const TOP_TRIPS_LIMIT = 3;
-const LATEST_LIMIT = 8;
-const NEARBY_LIMIT = 6;
+const LATEST_LIMIT = 3;
+const NEARBY_LIMIT = 3;
 const MIN_SEARCH_LENGTH = 2;
 const CAROUSEL_INTERVAL_MS = 5200;
 
@@ -86,10 +86,6 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
   readonly activeSearchTab = signal<SearchTab>('itinerari');
   readonly searchMode = signal<'query' | 'all'>('query');
   readonly allPublicTrips = signal<Itinerary[]>([]);
-
-  // Autocomplete Signals
-  readonly filteredLocations = signal<Location[]>([]);
-  readonly showSuggestions = signal(false);
 
   readonly selectedTripId = signal<number | null>(null);
   readonly routePoints = signal<DiscoverRoutePoint[]>([]);
@@ -235,16 +231,6 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadVetrina();
     this.startCarousel();
-
-    this.searchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(q => q.length < 2 ? of([]) : this.locationService.getLocations(q)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe((locs) => {
-      this.filteredLocations.set(locs ?? []);
-      this.showSuggestions.set((locs ?? []).length > 0);
-    });
   }
 
   ngOnDestroy(): void {
@@ -377,7 +363,6 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
 
     this.searchPending.set(true);
     this.searchSubmitted.set(true);
-    this.showSuggestions.set(false);
     this.scrollToTop();
 
     forkJoin({
@@ -406,12 +391,7 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
       });
   }
 
-  selectSuggestion(loc: Location): void {
-    this.searchControl.setValue(loc.name);
-    this.showSuggestions.set(false);
-    this.filteredLocations.set([]);
-    this.submitSearch();
-  }
+
 
   onSearchInput(): void {
     if (this.searchControl.value.trim().length === 0 && this.searchSubmitted()) {
@@ -433,7 +413,6 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
     this.searchResultTrips.set(this.allPublicTrips());
     this.searchUsers.set([]);
     this.searchPlaces.set([]);
-    this.showSuggestions.set(false);
     this.scrollToTop();
   }
 

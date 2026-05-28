@@ -46,6 +46,7 @@
   display: flex;
   gap: 12px;
   align-items: flex-start;
+}
 .planner-locked-card i {
   font-size: 1.15rem;
   margin-top: 2px;

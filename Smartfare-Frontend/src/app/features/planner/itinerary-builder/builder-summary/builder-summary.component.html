@@ -73,107 +73,131 @@
         </div>
       </div>
 
-      <div class="wl-day-items" cdkDropList [cdkDropListData]="day.items" [cdkDropListDisabled]="isPreviewMode()"
-        (cdkDropListDropped)="drop($event, day.day)">
+      <div class="wl-day-items" cdkDropList [id]="'day-' + day.day + '-root'" [cdkDropListData]="day.blocks" [cdkDropListConnectedTo]="allDropListIds()" [cdkDropListDisabled]="isPreviewMode()"
+        (cdkDropListDropped)="drop($event)">
 
-        @if (day.items.length === 0) {
+        @if (day.blocks.length === 0) {
         <div class="wl-empty-day">Trascina qui le tappe per questa giornata</div>
         }
 
-        @for (poi of day.items; track poi.key; let idx = $index) {
-        @if (isFirstInGroup(idx, day.items) && poi.groupName) {
-        <div class="wl-group-header-container">
-          <div class="wl-group-header">
-            <div class="wl-group-title">
-              @if (isPreviewMode()) {
-              <h4 class="wl-group-title-static">
-                <i class="bi bi-collection-fill wl-group-icon"></i>
-                <span>{{ poi.groupName }}</span>
-              </h4>
-              } @else if (editingGroupNameKey() === poi.groupName) {
-              <input type="text" class="wl-group-name-input" [ngModel]="editGroupNameValue()"
-                title="Modifica nome gruppo" placeholder="Modifica nome gruppo"
-                (ngModelChange)="editGroupNameValue.set($event)" (blur)="saveGroupName(poi.groupName)"
-                (keyup.enter)="saveGroupName(poi.groupName)" autofocus>
-              } @else {
-              <h4 (click)="startEditingGroupName(poi.groupName, $event)">
-                <i class="bi bi-collection-fill wl-group-icon"></i>
-                <span>{{ poi.groupName }}</span>
-                <i class="bi bi-pencil-fill wl-group-edit-icon"></i>
-              </h4>
-              }
-            </div>
-            @if (isPreviewMode()) {
-            @if (poi.groupStartAt || poi.groupEndAt) {
-            <div class="wl-group-time-readonly">
-              <i class="bi bi-clock"></i>
-              <span>{{ formatTimeDisplay($any({ plannedStartAt: poi.groupStartAt, plannedEndAt: poi.groupEndAt, type:
-                'activity' })) }}</span>
-            </div>
-            }
-            } @else {
-            <div class="wl-group-time-actions">
-              <button class="wl-dissolve-btn" (click)="dissolveGroup(poi.groupName)" title="Sciogli gruppo">
-                <i class="bi bi-node-minus"></i>
-              </button>
-              <div class="wl-time-wrapper">
-                <button class="wl-btn-pill wl-group-time-btn" (click)="openGroupTimePopup(poi, $event)"
-                  title="Modifica orario gruppo">
-                  <i class="bi bi-clock"></i>
-                  @if (poi.groupStartAt || poi.groupEndAt) {
-                  {{ formatTimeDisplay($any({ plannedStartAt: poi.groupStartAt, plannedEndAt: poi.groupEndAt, type:
-                  'activity' })) }}
+        @for (block of day.blocks; track block.type === 'group' ? block.groupName : block.poi.key; let idx = $index) {
+          @if (block.type === 'group') {
+            <div class="wl-group-box" cdkDrag [cdkDragDisabled]="isPreviewMode()" [cdkDragData]="block">
+              <!-- GROUP HEADER -->
+              <div class="wl-group-header-container">
+                <div class="wl-group-header">
+                  <div class="wl-group-title">
+                    @if (isPreviewMode()) {
+                    <h4 class="wl-group-title-static">
+                      <i class="bi bi-collection-fill wl-group-icon"></i>
+                      <span>{{ block.groupName }}</span>
+                    </h4>
+                    } @else if (editingGroupNameKey() === block.groupName) {
+                    <input type="text" class="wl-group-name-input" [ngModel]="editGroupNameValue()"
+                      title="Modifica nome gruppo" placeholder="Modifica nome gruppo"
+                      (ngModelChange)="editGroupNameValue.set($event)" (blur)="saveGroupName(block.groupName)"
+                      (keyup.enter)="saveGroupName(block.groupName)" autofocus>
+                    } @else {
+                    <h4 (click)="startEditingGroupName(block.groupName, $event)">
+                      <i class="bi bi-collection-fill wl-group-icon"></i>
+                      <span>{{ block.groupName }}</span>
+                      <i class="bi bi-pencil-fill wl-group-edit-icon"></i>
+                    </h4>
+                    }
+                  </div>
+                  @if (isPreviewMode()) {
+                    @if (block.groupStartAt || block.groupEndAt) {
+                    <div class="wl-group-time-readonly">
+                      <i class="bi bi-clock"></i>
+                      <span>{{ formatTimeDisplay($any({ plannedStartAt: block.groupStartAt, plannedEndAt: block.groupEndAt, type: 'activity' })) }}</span>
+                    </div>
+                    }
                   } @else {
-                  Orario Gruppo
+                  <div class="wl-group-time-actions">
+                    <button class="wl-dissolve-btn" (click)="dissolveGroup(block.groupName)" title="Sciogli gruppo">
+                      <i class="bi bi-node-minus"></i>
+                    </button>
+                    <div class="wl-time-wrapper">
+                      <!-- We need a fake poi object to pass to the time formatting function -->
+                      <button class="wl-btn-pill wl-group-time-btn" (click)="openGroupTimePopup($any({groupName: block.groupName, groupStartAt: block.groupStartAt, groupEndAt: block.groupEndAt}), $event)"
+                        title="Modifica orario gruppo">
+                        <i class="bi bi-clock"></i>
+                        @if (block.groupStartAt || block.groupEndAt) {
+                        {{ formatTimeDisplay($any({ plannedStartAt: block.groupStartAt, plannedEndAt: block.groupEndAt, type: 'activity' })) }}
+                        } @else {
+                        Orario Gruppo
+                        }
+                      </button>
+                      @if (activeGroupTimePopup() === block.groupName) {
+                      <div class="wl-time-popup" (click)="onPopupClick($event)">
+                        <div class="wl-time-inputs">
+                          <div class="wl-time-field">
+                            <label>Inizio</label>
+                            <select [ngModel]="groupStartTime()" (ngModelChange)="groupStartTime.set($event)"
+                              title="Ora di inizio gruppo">
+                              <option value="">--:--</option>
+                              @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
+                            </select>
+                          </div>
+                          <span class="wl-time-sep">-</span>
+                          <div class="wl-time-field">
+                            <label>Fine</label>
+                            <select [ngModel]="groupEndTime()" (ngModelChange)="groupEndTime.set($event)"
+                              title="Ora di fine gruppo">
+                              <option value="">--:--</option>
+                              @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
+                            </select>
+                          </div>
+                        </div>
+                        <div class="wl-time-popup-actions">
+                          <button class="wl-btn-cancel" (click)="clearGroupTime(block.groupName)">Cancella</button>
+                          <button class="wl-btn-save" (click)="saveGroupTime(block.groupName, day.date)">Salva</button>
+                        </div>
+                      </div>
+                      }
+                    </div>
+                  </div>
                   }
-                </button>
-                @if (activeGroupTimePopup() === poi.groupName) {
-                <div class="wl-time-popup" (click)="onPopupClick($event)">
-                  <div class="wl-time-inputs">
-                    <div class="wl-time-field">
-                      <label>Inizio</label>
-                      <select [ngModel]="groupStartTime()" (ngModelChange)="groupStartTime.set($event)"
-                        title="Ora di inizio gruppo">
-                        <option value="">--:--</option>
-                        @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
-                      </select>
-                    </div>
-                    <span class="wl-time-sep">-</span>
-                    <div class="wl-time-field">
-                      <label>Fine</label>
-                      <select [ngModel]="groupEndTime()" (ngModelChange)="groupEndTime.set($event)"
-                        title="Ora di fine gruppo">
-                        <option value="">--:--</option>
-                        @for (opt of timeOptions(); track opt) { <option [value]="opt">{{ opt }}</option> }
-                      </select>
-                    </div>
-                  </div>
-                  <div class="wl-time-popup-actions">
-                    <button class="wl-btn-cancel" (click)="clearGroupTime(poi.groupName)">Cancella</button>
-                    <button class="wl-btn-save" (click)="saveGroupTime(poi.groupName, day.date)">Salva</button>
-                  </div>
                 </div>
+              </div>
+
+              <!-- GROUP DROP LIST FOR NESTED ITEMS -->
+              <div class="wl-group-items-list" cdkDropList [id]="'group-' + sanitizeId(block.groupName)" [cdkDropListData]="block.items"
+                   [cdkDropListConnectedTo]="allDropListIds()" [cdkDropListDisabled]="isPreviewMode()"
+                   (cdkDropListDropped)="drop($event)">
+                
+                @for (poi of block.items; track poi.key; let pIdx = $index) {
+                  <div class="wl-poi-row" cdkDrag [cdkDragDisabled]="isPreviewMode()" [cdkDragData]="poi"
+                    (cdkDragStarted)="onPoiDragStarted(poi)" (cdkDragMoved)="onPoiDragMoved($event, poi)"
+                    (cdkDragEnded)="onPoiDragEnded($event, poi, day.day)" [class.in-group]="true"
+                    [class.group-last]="pIdx === block.items.length - 1" [attr.data-poi-key]="poi.key"
+                    [attr.data-day-number]="day.day">
+
+                    <app-builder-summary-poi-card [poi]="poi" [dayNumber]="day.day" [index]="pIdx"
+                      [isLast]="pIdx === block.items.length - 1" [dayColor]="getDayColor(day.day)"
+                      [isSelected]="selectedPoiKeys().has(poi.key)" [totalDaysCount]="daySections().length"
+                      [readOnly]="isPreviewMode()" (toggleSelect)="toggleSelection(poi)" (remove)="removeItem(poi)"
+                      (poiUpdate)="updatePoi(poi, $event)">
+                    </app-builder-summary-poi-card>
+                  </div>
                 }
               </div>
             </div>
-            }
-          </div>
-        </div>
-        }
+          } @else {
+            <div class="wl-poi-row" cdkDrag [cdkDragDisabled]="isPreviewMode()" [cdkDragData]="block.poi"
+              (cdkDragStarted)="onPoiDragStarted(block.poi)" (cdkDragMoved)="onPoiDragMoved($event, block.poi)"
+              (cdkDragEnded)="onPoiDragEnded($event, block.poi, day.day)" [class.in-group]="false"
+              [attr.data-poi-key]="block.poi.key"
+              [attr.data-day-number]="day.day">
 
-        <div class="wl-poi-row" cdkDrag [cdkDragDisabled]="isPreviewMode()" [cdkDragData]="poi"
-          (cdkDragStarted)="onPoiDragStarted(poi)" (cdkDragMoved)="onPoiDragMoved($event, poi)"
-          (cdkDragEnded)="onPoiDragEnded($event, poi, day.day)" [class.in-group]="poi.groupName"
-          [class.group-last]="isLastInGroup(idx, day.items)" [attr.data-poi-key]="poi.key"
-          [attr.data-day-number]="day.day">
-
-          <app-builder-summary-poi-card [poi]="poi" [dayNumber]="day.day" [index]="idx"
-            [isLast]="isLastInGroup(idx, day.items)" [dayColor]="getDayColor(day.day)"
-            [isSelected]="selectedPoiKeys().has(poi.key)" [totalDaysCount]="daySections().length"
-            [readOnly]="isPreviewMode()" (toggleSelect)="toggleSelection(poi)" (remove)="removeItem(poi)"
-            (poiUpdate)="updatePoi(poi, $event)">
-          </app-builder-summary-poi-card>
-        </div>
+              <app-builder-summary-poi-card [poi]="block.poi" [dayNumber]="day.day" [index]="idx"
+                [isLast]="idx === day.blocks.length - 1" [dayColor]="getDayColor(day.day)"
+                [isSelected]="selectedPoiKeys().has(block.poi.key)" [totalDaysCount]="daySections().length"
+                [readOnly]="isPreviewMode()" (toggleSelect)="toggleSelection(block.poi)" (remove)="removeItem(block.poi)"
+                (poiUpdate)="updatePoi(block.poi, $event)">
+              </app-builder-summary-poi-card>
+            </div>
+          }
         }
       </div>
 

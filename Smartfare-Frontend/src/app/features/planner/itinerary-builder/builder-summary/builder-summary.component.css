@@ -278,28 +278,44 @@
 }
 
 /* Premium Grouping Styles */
+.wl-group-box {
+  background: rgba(11, 9, 20, 0.4);
+  border-left: 4px solid #8b5cf6;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.05);
+  transition: all 0.2s ease;
+  overflow: hidden;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.wl-group-box.cdk-drag-preview {
+  background: rgba(22, 17, 41, 0.9);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  border-left: 4px solid #8b5cf6;
+  border-radius: 16px;
+}
+
 .wl-group-header-container {
-  margin-left: 50px;
-  margin-bottom: 12px;
-  padding: 0 16px 0 20px;
+  padding: 0;
   position: relative;
   z-index: 10;
 }
 
 .wl-group-header {
   background: linear-gradient(135deg, rgba(22, 17, 41, 0.7) 0%, rgba(11, 9, 20, 0.9) 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(147, 197, 253, 0.15);
+  border-bottom: 1px solid rgba(147, 197, 253, 0.15);
   border-top: 1px solid rgba(147, 197, 253, 0.3); /* Subtle top highlight for 3D effect */
-  border-radius: 16px;
   padding: 14px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   position: relative;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, background 0.2s;
+  cursor: grab;
 }
 
 /* Soft internal glow */
@@ -310,14 +326,12 @@
   left: 0;
   right: 0;
   height: 60%;
-  border-radius: 16px 16px 0 0;
   background: linear-gradient(to bottom, rgba(139, 92, 246, 0.15), transparent);
   pointer-events: none;
 }
 
-.wl-group-header:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+.wl-group-header:active {
+  cursor: grabbing;
 }
 
 .wl-group-title h4 {
@@ -405,32 +419,33 @@
   color: #fca5a5;
 }
 
-/* In-Group visual cues - Premium Connector Line */
+/* In-Group visual cues - nested items */
+.wl-group-items-list {
+  padding: 12px 16px 12px 20px;
+  min-height: 50px;
+}
+
+.wl-group-items-list.cdk-drop-list-dragging .wl-poi-row:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
 .wl-poi-row.in-group {
   position: relative;
+  padding: 0;
 }
 
 .wl-poi-row.in-group .wl-poi-card {
-  border-left: 4px solid #8b5cf6;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 0 15px rgba(139, 92, 246, 0.05);
-  transform: translateX(8px);
-  width: calc(100% - 8px);
+  width: 100%;
   background: linear-gradient(135deg, rgba(22, 17, 41, 0.6) 0%, rgba(11, 9, 20, 0.8) 100%);
-  border-top-left-radius: 4px; /* Make it look more "connected" if it's in a group */
-  border-bottom-left-radius: 4px;
+  border-radius: 8px;
 }
 
 .wl-poi-row.in-group:not(.group-last) {
-  margin-bottom: 4px; /* Reduce gap between cards in the same group */
+  margin-bottom: 8px;
 }
 
 .wl-poi-row.in-group::before {
-  display: none; /* Removed vertical line to avoid overlap with timeline pins */
-}
-
-.wl-poi-row.in-group.group-last::before {
-  bottom: 50%; /* Connector line stops exactly half-way down the last card */
-  background: linear-gradient(to bottom, #8b5cf6, transparent);
+  display: none;
 }
 
 /* Drop Target Highlight */

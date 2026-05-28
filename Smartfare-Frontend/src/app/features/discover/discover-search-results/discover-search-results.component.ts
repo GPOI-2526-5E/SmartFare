@@ -26,8 +26,6 @@ export class DiscoverSearchResultsComponent implements OnChanges {
   @Input() activeTab: SearchTab = 'itinerari';
   @Input() trips: Itinerary[] = [];
   @Input() users: UserProfileFull[] = [];
-  @Input() filteredLocations: Location[] = [];
-  @Input() showSuggestions = false;
 
   @Output() back = new EventEmitter<void>();
   @Output() searchTermChange = new EventEmitter<string>();
@@ -39,7 +37,6 @@ export class DiscoverSearchResultsComponent implements OnChanges {
   @Output() profileOpen = new EventEmitter<UserProfileFull>();
   @Output() followToggle = new EventEmitter<{ user: UserProfileFull; event: MouseEvent }>();
   @Output() authorOpen = new EventEmitter<{ trip: Itinerary; event: MouseEvent }>();
-  @Output() locationSelect = new EventEmitter<Location>();
 
   // ── internal signals for inputs ─────────────────────────────────────────────
   readonly trips$ = signal<Itinerary[]>([]);
@@ -187,10 +184,6 @@ export class DiscoverSearchResultsComponent implements OnChanges {
 
   onUserCityInput(value: string): void {
     this.userCityFilter.set(value);
-  }
-
-  selectSuggestion(loc: Location): void {
-    this.locationSelect.emit(loc);
   }
 
   // ── helpers ─────────────────────────────────────────────────────────────────

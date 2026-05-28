@@ -25,8 +25,23 @@ interface DaySection {
   label: string;
   date: Date | null;
   carouselImages: string[];
+  blocks: DayBlock[];
+}
+
+export interface DayBlockItem {
+  type: 'item';
+  poi: BuilderPoi;
+}
+
+export interface DayBlockGroup {
+  type: 'group';
+  groupName: string;
+  groupStartAt: string | null;
+  groupEndAt: string | null;
   items: BuilderPoi[];
 }
+
+export type DayBlock = DayBlockItem | DayBlockGroup;
 
 interface ExploreCard {
   title: string;
@@ -81,9 +96,25 @@ export class BuilderSummaryComponent {
     });
   }
 
-  // ---- Sezione percorso giorno selezionato ----
   /** Giorno attualmente visibile nella mappa (number | 'all') */
   visibleDayRoute = computed(() => this.ui.visibleDayRoute());
+
+  sanitizeId(name: string): string {
+    return name.replace(/[^a-zA-Z0-9]/g, '_');
+  }
+
+  allDropListIds = computed(() => {
+    const ids: string[] = [];
+    for (const day of this.daySections()) {
+      ids.push(`day-${day.day}-root`);
+      for (const block of day.blocks) {
+        if (block.type === 'group') {
+          ids.push(`group-${this.sanitizeId(block.groupName)}`);
+        }
+      }
+    }
+    return ids;
+  });
 
   /** URL Google Maps per il giorno selezionato (null se 'all' o < 2 tappe) */
   dayGoogleMapsUrl = computed<string | null>(() => {
@@ -91,7 +122,12 @@ export class BuilderSummaryComponent {
     if (day === 'all') return null;
     const section = this.daySections().find(s => s.day === day);
     if (!section) return null;
-    const pois = section.items.filter(
+    const allPois: BuilderPoi[] = [];
+    section.blocks.forEach(b => {
+      if (b.type === 'item') allPois.push(b.poi);
+      else allPois.push(...b.items);
+    });
+    const pois = allPois.filter(
       p => Number.isFinite(p.latitude) && Number.isFinite(p.longitude)
     );
     if (pois.length < 2) return null;
@@ -103,7 +139,8 @@ export class BuilderSummaryComponent {
     const day = this.ui.visibleDayRoute();
     if (day === 'all') return 0;
     const section = this.daySections().find(s => s.day === day);
-    return section?.items.length ?? 0;
+    if (!section) return 0;
+    return section.blocks.reduce((acc, b) => acc + (b.type === 'item' ? 1 : b.items.length), 0);
   });
 
   // Drag and Drop State
@@ -275,6 +312,33 @@ export class BuilderSummaryComponent {
           return (a.plannedStartAt || '').localeCompare(b.plannedStartAt || '');
         });
 
+        const blocks: DayBlock[] = [];
+        let currentGroup: DayBlockGroup | null = null;
+
+        for (const poi of sortedItems) {
+          if (poi.groupName) {
+            if (currentGroup && currentGroup.groupName === poi.groupName) {
+              currentGroup.items.push(poi);
+            } else {
+              if (currentGroup) blocks.push(currentGroup);
+              currentGroup = {
+                type: 'group',
+                groupName: poi.groupName,
+                groupStartAt: poi.groupStartAt || null,
+                groupEndAt: poi.groupEndAt || null,
+                items: [poi]
+              };
+            }
+          } else {
+            if (currentGroup) {
+              blocks.push(currentGroup);
+              currentGroup = null;
+            }
+            blocks.push({ type: 'item', poi });
+          }
+        }
+        if (currentGroup) blocks.push(currentGroup);
+
         // Genera carosello immagini per il giorno
         const carouselImages = sortedItems
           .map(item => item.imageUrl)
@@ -288,7 +352,7 @@ export class BuilderSummaryComponent {
           day,
           label: `Giorno ${day}`,
           date: this.getDayDate(day),
-          items: sortedItems,
+          blocks,
           carouselImages: carouselImages.slice(0, 5)
         };
       });
@@ -557,33 +621,130 @@ export class BuilderSummaryComponent {
     });
   }
 
-  drop(event: CdkDragDrop<BuilderPoi[]>, newDay: number): void {
-    // Se c'è un target valido per il gruppo, ignoriamo il riordinamento classico
-    if (this.dragTargetPoiKey() || this.skipDrop) {
-      return;
-    }
-
+  drop(event: CdkDragDrop<any>): void {
     const current = this.itinerary();
     if (!current?.items) return;
 
-    const movedPoi = event.item.data as BuilderPoi | undefined;
-    if (!movedPoi) return;
+    // Create a mutable copy of the days and blocks to manipulate arrays easily
+    const daysData = this.daySections().map(d => ({
+       day: d.day,
+       blocks: d.blocks.map(b => b.type === 'item' ? { ...b } : { ...b, items: [...b.items] })
+    }));
 
-    const dayMap = this.buildDayMap(current.items);
-    const sourceDay = movedPoi.dayNumber ?? this.findDayByKey(dayMap, movedPoi.key) ?? newDay;
-    const sourceList = [...(dayMap.get(sourceDay) || [])];
-    const targetList = event.previousContainer === event.container ? sourceList : [...(dayMap.get(newDay) || [])];
+    const prevId = event.previousContainer.id;
+    const currId = event.container.id;
 
-    if (event.previousContainer === event.container) {
-      moveItemInArray(sourceList, event.previousIndex, event.currentIndex);
-      dayMap.set(sourceDay, sourceList);
-    } else {
-      transferArrayItem(sourceList, targetList, event.previousIndex, event.currentIndex);
-      dayMap.set(sourceDay, sourceList);
-      dayMap.set(newDay, targetList);
+    // Resolve source array
+    let prevArray: any[] = [];
+    if (prevId.startsWith('day-')) {
+       const d = parseInt(prevId.split('-')[1], 10);
+       const dData = daysData.find(x => x.day === d);
+       if(dData) prevArray = dData.blocks;
+    } else if (prevId.startsWith('group-')) {
+       const gNameSanitized = prevId.substring(6);
+       for (const d of daysData) {
+         const gBlock = d.blocks.find(b => b.type === 'group' && this.sanitizeId(b.groupName) === gNameSanitized) as DayBlockGroup;
+         if (gBlock) prevArray = gBlock.items;
+       }
     }
 
-    this.updateItineraryOrder(dayMap);
+    // Resolve target array
+    let currArray: any[] = [];
+    if (currId.startsWith('day-')) {
+       const currDayNumber = parseInt(currId.split('-')[1], 10);
+       const dData = daysData.find(x => x.day === currDayNumber);
+       if(dData) currArray = dData.blocks;
+    } else if (currId.startsWith('group-')) {
+       const gNameSanitized = currId.substring(6);
+       for (const d of daysData) {
+         const gBlock = d.blocks.find(b => b.type === 'group' && this.sanitizeId(b.groupName) === gNameSanitized) as DayBlockGroup;
+         if (gBlock) currArray = gBlock.items;
+       }
+    }
+
+    if (!prevArray || !currArray) return;
+
+    if (event.previousContainer === event.container) {
+      moveItemInArray(prevArray, event.previousIndex, event.currentIndex);
+    } else {
+      let itemToMove = prevArray[event.previousIndex];
+
+      if (prevId.startsWith('day-') && currId.startsWith('group-')) {
+         if (itemToMove.type === 'group') {
+             return;
+         }
+         itemToMove = itemToMove.poi;
+      } else if (prevId.startsWith('group-') && currId.startsWith('day-')) {
+         itemToMove = { type: 'item', poi: itemToMove };
+      }
+
+      prevArray.splice(event.previousIndex, 1);
+      currArray.splice(event.currentIndex, 0, itemToMove);
+    }
+
+    // Flatten back to a single items list with updated fields
+    const groupTimes = new Map<string, {start: string|null, end: string|null}>();
+    this.daySections().forEach(d => {
+       d.blocks.forEach(b => {
+          if (b.type === 'group') {
+             groupTimes.set(b.groupName, { start: b.groupStartAt, end: b.groupEndAt });
+          }
+       });
+    });
+
+    const flattenedUpdates: any[] = [];
+    let currentOrder = 1;
+
+    for (const day of daysData) {
+      for (const block of day.blocks) {
+         if (block.type === 'item') {
+            const poi = block.poi;
+            flattenedUpdates.push({
+               key: poi.key,
+               dayNumber: day.day,
+               orderInt: currentOrder++,
+               groupName: null,
+               groupStartAt: null,
+               groupEndAt: null
+            });
+         } else if (block.type === 'group') {
+            const gTimes = groupTimes.get(block.groupName) || { start: null, end: null };
+            for (const poi of block.items) {
+               flattenedUpdates.push({
+                  key: poi.key,
+                  dayNumber: day.day,
+                  orderInt: currentOrder++,
+                  groupName: block.groupName,
+                  groupStartAt: gTimes.start,
+                  groupEndAt: gTimes.end
+               });
+            }
+         }
+      }
+    }
+
+    const updatedItems = current.items.map(item => {
+       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+       const update = flattenedUpdates.find(u => u.key === key);
+       if (update) {
+          return {
+             ...item,
+             dayNumber: update.dayNumber,
+             orderInt: update.orderInt,
+             groupName: update.groupName,
+             groupStartAt: update.groupStartAt,
+             groupEndAt: update.groupEndAt
+          };
+       }
+       return item;
+    });
+
+    const normalizedItems = applyGroupLevelTimingToItems(updatedItems);
+
+    this.itineraryService.setCurrentItinerary({
+      ...this.withNormalizedEndDate(current, normalizedItems),
+      items: normalizedItems
+    });
   }
 
   private skipDrop = false;
@@ -594,12 +755,10 @@ export class BuilderSummaryComponent {
     this.skipDrop = false;
   }
 
-  onPoiDragMoved(event: CdkDragMove<BuilderPoi>, sourcePoi: BuilderPoi): void {
-    // La logica di rilevamento target per il raggruppamento tramite drag è stata rimossa
-    // in favore della selezione multipla tramite checkbox.
+  onPoiDragMoved(event: CdkDragMove<any>, sourcePoi: BuilderPoi): void {
   }
 
-  onPoiDragEnded(event: CdkDragEnd<BuilderPoi>, sourcePoi: BuilderPoi, sourceDay: number): void {
+  onPoiDragEnded(event: CdkDragEnd<any>, sourcePoi: BuilderPoi, sourceDay: number): void {
     this.draggingPoiKey.set(null);
   }
 

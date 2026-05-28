@@ -47,21 +47,6 @@
               <span>Cerca</span>
             </button>
           </form>
-
-          <!-- Autocomplete dropdown placed OUTSIDE the form to escape overflow clipping -->
-          @if (showSuggestions()) {
-            <div class="hero-autocomplete-overlay">
-              @for (loc of filteredLocations(); track loc.id) {
-                <div class="autocomplete-item" (click)="selectSuggestion(loc)">
-                  <div class="autocomplete-item__icon"><i class="bi bi-geo-alt-fill"></i></div>
-                  <div class="autocomplete-item__text">
-                    <span class="autocomplete-item__name">{{ loc.name }}</span>
-                    <span class="autocomplete-item__prov">{{ loc.province }} &bull; CAP {{ loc.cap }}</span>
-                  </div>
-                </div>
-              }
-            </div>
-          }
         </div>
 
         @if (activeCarouselPlace(); as place) {
@@ -112,7 +97,7 @@
               <div class="map-explore__glow map-explore__glow--violet"></div>
               <div class="map-explore__glow map-explore__glow--teal"></div>
 
-              <img src="/assets/preview.png" alt="Mappa interattiva" class="map-explore__preview-img" />
+              <img src="/assets/preview6.png" alt="Mappa interattiva" class="map-explore__preview-img" />
             </div>
           </div>
         </section>
@@ -363,9 +348,6 @@
       [trips]="searchResultTrips()"
       [users]="searchUsers()"
       (back)="backToVetrina()"
-      [filteredLocations]="filteredLocations()"
-      [showSuggestions]="showSuggestions()"
-      (locationSelect)="selectSuggestion($event)"
       (searchTermChange)="searchControl.setValue($event)"
       (search)="submitSearch()"
       (clearSearch)="backToVetrina()"
