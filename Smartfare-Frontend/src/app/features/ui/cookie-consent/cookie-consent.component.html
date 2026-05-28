@@ -12,7 +12,7 @@
       </svg>
     </div>
     <p class="sf-banner-text">
-      Utilizziamo i cookie per migliorare la tua esperienza.
+      Utilizziamo cookie tecnici per far funzionare il sito e cookie funzionali per accesso social e preferenze.
       <button class="sf-link" (click)="openModal()">Gestisci preferenze</button>
     </p>
     <div class="sf-banner-actions">
@@ -71,8 +71,7 @@
         </ul>
 
         <h3>Cookie tecnici</h3>
-        <p>Utilizziamo il cookie <code>sf_cookie_consent</code> per memorizzare la tua scelta. Non vengono attivati
-          cookie non essenziali senza il tuo consenso.</p>
+        <p>Usiamo il cookie <code>sf_cookie_consent</code> per ricordare la tua scelta e <code>sf_cookie_prefs</code> per salvare le preferenze. Sono necessari per il corretto funzionamento del servizio.</p>
 
         <h3>Finalità del trattamento</h3>
         <ul>
@@ -88,14 +87,13 @@
       @if(tab === 'prefs'){
       <!-- TAB: PREFERENZE -->
       <div class="sf-prefs">
-        <p class="sf-prefs-intro">Scegli quali categorie di cookie abilitare. I cookie necessari non possono essere
-          disattivati.</p>
+        <p class="sf-prefs-intro">Scegli se abilitare i cookie funzionali. I cookie tecnici non possono essere disattivati.</p>
 
         <div class="sf-pref-item">
           <div class="sf-pref-info">
-            <span class="sf-pref-name">Necessari</span>
+            <span class="sf-pref-name">Cookie tecnici</span>
             <span class="sf-badge sf-badge--required">Sempre attivi</span>
-            <p>Essenziali per il corretto funzionamento del servizio (autenticazione, sicurezza, sessione).</p>
+            <p>Servono per autenticazione, sicurezza, sessione e memorizzazione delle preferenze di base.</p>
           </div>
           <label class="sf-switch sf-switch--disabled">
             <input type="checkbox" checked disabled />
@@ -105,8 +103,8 @@
 
         <div class="sf-pref-item">
           <div class="sf-pref-info">
-            <span class="sf-pref-name">Funzionalità</span>
-            <p>Consentono funzionalità aggiuntive come preferenze di layout e personalizzazione dell'interfaccia.</p>
+            <span class="sf-pref-name">Cookie funzionali</span>
+            <p>Abilitano accesso con Google e GitHub, oltre a funzioni di personalizzazione e integrazioni utili.</p>
           </div>
           <label class="sf-switch">
             <input type="checkbox" [(ngModel)]="prefs.functional" />
@@ -114,28 +112,6 @@
           </label>
         </div>
 
-        <div class="sf-pref-item">
-          <div class="sf-pref-info">
-            <span class="sf-pref-name">Analitica</span>
-            <p>Dati aggregati e anonimi per comprendere come viene usata l'app e migliorarne la qualità.</p>
-          </div>
-          <label class="sf-switch">
-            <input type="checkbox" [(ngModel)]="prefs.analytics" />
-            <span class="sf-switch-track"></span>
-          </label>
-        </div>
-
-        <div class="sf-pref-item">
-          <div class="sf-pref-info">
-            <span class="sf-pref-name">Marketing</span>
-            <p>Utilizzo dei dati per comunicazioni promozionali e contenuti personalizzati basati sulle tue preferenze.
-            </p>
-          </div>
-          <label class="sf-switch">
-            <input type="checkbox" [(ngModel)]="prefs.marketing" />
-            <span class="sf-switch-track"></span>
-          </label>
-        </div>
       </div>
       }
 

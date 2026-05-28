@@ -6,9 +6,9 @@ const KEY_PREFS   = 'sf_cookie_prefs';
 export interface CookiePrefs {
   necessary: true;
   functional: boolean;
-  analytics: boolean;
-  marketing: boolean;
 }
+
+export type CookieCategory = keyof CookiePrefs;
 
 @Injectable({ providedIn: 'root' })
 export class CookieConsentService {
@@ -25,6 +25,18 @@ export class CookieConsentService {
    */
   readonly consented = computed(() => this.getCookie(KEY_CONSENT) !== null);
 
+  isAllowed(category: CookieCategory): boolean {
+    if (category === 'necessary') {
+      return true;
+    }
+
+    return this.preferences()?.[category] === true;
+  }
+
+  canUseFunctionalCookies(): boolean {
+    return this.isAllowed('functional');
+  }
+
   hasConsented(): boolean {
     return this.getCookie(KEY_CONSENT) !== null;
   }
@@ -40,12 +52,12 @@ export class CookieConsentService {
   }
 
   acceptAll(): void {
-    const prefs: CookiePrefs = { necessary: true, functional: true, analytics: true, marketing: true };
+    const prefs: CookiePrefs = { necessary: true, functional: true };
     this.savePreferences(prefs);
   }
 
   rejectAll(): void {
-    const prefs: CookiePrefs = { necessary: true, functional: false, analytics: false, marketing: false };
+    const prefs: CookiePrefs = { necessary: true, functional: false };
     this.savePreferences(prefs);
   }
 

@@ -17,7 +17,7 @@ export class CookieConsentComponent implements OnInit {
   modalOpen = false;
   tab: 'info' | 'prefs' = 'info';
 
-  prefs: CookiePrefs = { necessary: true, functional: false, analytics: false, marketing: false };
+  prefs: CookiePrefs = { necessary: true, functional: false };
 
   private readonly legalService = inject(LegalService);
 
@@ -42,7 +42,12 @@ export class CookieConsentComponent implements OnInit {
     }
   }
 
-  openModal(): void  { this.modalOpen = true; this.tab = 'info'; }
+  openModal(): void  {
+    const saved = this.consent.getPreferences();
+    if (saved) this.prefs = { ...saved };
+    this.modalOpen = true;
+    this.tab = 'info';
+  }
   closeModal(): void { 
     this.modalOpen = false; 
     this.legalService.closeCookieModal();
@@ -54,12 +59,14 @@ export class CookieConsentComponent implements OnInit {
 
   acceptAll(): void {
     this.consent.acceptAll();
+    this.prefs = { necessary: true, functional: true };
     this.visible = false;
     this.closeModal();
   }
 
   rejectAll(): void {
     this.consent.rejectAll();
+    this.prefs = { necessary: true, functional: false };
     this.visible = false;
     this.closeModal();
   }

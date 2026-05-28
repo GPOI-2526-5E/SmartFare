@@ -154,6 +154,11 @@
                   <div class="featured-tile__content">
                     <h3>{{ trip.name }}</h3>
                     <div class="featured-tile__footer">
+                      <span class="featured-tile__likes">
+                        <i class="bi bi-heart-fill"></i>
+                        <strong>{{ trip._count?.favorites ?? 0 }}</strong>
+                        <small>like</small>
+                      </span>
                       <button
                         type="button"
                         class="featured-tile__author"
@@ -182,7 +187,7 @@
               <div class="showcase-route-panel__head">
                 <div>
                   <span>Mappa itinerario</span>
-                  <h3>{{ selectedTrip()?.name || mapLocation()?.name || 'Percorso' }}</h3>
+                  <h3>{{ mapLocation()?.name || selectedTrip()?.name || 'Percorso' }}</h3>
                   <p>
                     @if (routeLoading()) {
                       Caricamento percorso...
@@ -201,7 +206,7 @@
                 <app-discover-map
                   [location]="mapLocation()"
                   [routePoints]="routePoints()"
-                  [label]="selectedTrip()?.name || ''"
+                  [label]="mapLocation()?.name || selectedTrip()?.name || ''"
                 />
               </div>
             </aside>

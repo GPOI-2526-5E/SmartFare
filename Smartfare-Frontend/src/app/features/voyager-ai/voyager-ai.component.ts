@@ -59,8 +59,8 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   readonly userInitial = signal('V');
   readonly searchTerm = signal('');
   readonly message = signal('');
-  readonly pendingAttachmentName = signal<string | null>(null);
   readonly isGeneratingItinerary = signal(false);
+  readonly showConfirmGenerate = signal(false);
   readonly generationFailed = signal(false);
   readonly generationError = signal<string | null>(null);
   readonly isVoiceSupported = signal(false);
@@ -267,7 +267,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   async createNewChat(mode: ChatMode = this.chatService.mode()) {
     const active = this.chatService.activeSession();
     const hasNoMessages = this.chatService.messages().length === 0;
-    const hasDraftInput = !this.message().trim() && !this.pendingAttachmentName();
+    const hasDraftInput = !this.message().trim();
 
     if (active && hasNoMessages && hasDraftInput && active.mode === mode) {
       this.showMobileSidebar.set(false);
@@ -517,6 +517,25 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  openConfirmGenerate() {
+    this.showConfirmGenerate.set(true);
+  }
+
+  async confirmGenerateYes() {
+    this.showConfirmGenerate.set(false);
+    await this.generateItinerary();
+  }
+
+  confirmGenerateNo() {
+    this.showConfirmGenerate.set(false);
+    const assistantMsg = {
+      role: 'assistant',
+      content: "C'è qualcos'altro che vuoi aggiungere ?",
+      createdAt: new Date().toISOString()
+    };
+    this.chatService.messages.update((m) => [...m, assistantMsg as any]);
+  }
+
   async retryGeneration() {
     this.generationFailed.set(false);
     this.generationError.set(null);
@@ -580,16 +599,6 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     this.alertService.success('Link conversazione copiato negli appunti.');
   }
 
-  attachPlaceholder(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    this.pendingAttachmentName.set(file?.name || null);
-  }
-
-  clearAttachment() {
-    this.pendingAttachmentName.set(null);
-  }
-
   onEnter(event: Event) {
     const keyboardEvent = event as KeyboardEvent;
     if (keyboardEvent.shiftKey) return;
@@ -624,7 +633,6 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   private enterCleanLandingState(mode: ChatMode = this.chatService.mode()) {
     this.chatService.clearActiveConversation(mode);
     this.message.set('');
-    this.pendingAttachmentName.set(null);
     this.isSwitchingSession.set(false);
     this.router.navigate([], {
       queryParams: {

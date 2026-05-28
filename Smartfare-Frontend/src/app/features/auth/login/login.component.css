@@ -373,8 +373,45 @@
   justify-content: center;
   gap: 12px;
   font-weight: 700;
+  text-align: left;
   transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
   cursor: pointer;
+}
+
+.social-btn:disabled {
+  opacity: 0.82;
+}
+
+.social-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+
+.social-title {
+  font-size: 0.95rem;
+}
+
+.social-note {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(248, 250, 252, 0.72);
+}
+
+.social-icon-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.social-icon-badge--github {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .github-btn {
@@ -417,6 +454,21 @@
   display: flex;
   justify-content: center;
   width: 100%;
+}
+
+@media (max-width: 480px) {
+  .social-btn {
+    padding: 11px 14px;
+    gap: 10px;
+  }
+
+  .social-title {
+    font-size: 0.9rem;
+  }
+
+  .social-note {
+    font-size: 0.72rem;
+  }
 }
 
 /* ─── Footer ─────────────────────────────────────────────────────── */

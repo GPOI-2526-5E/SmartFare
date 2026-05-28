@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { UserProfile, UserPreference, UserProfileFull, MyFollowersResponse } from '../models/user-profile.model';
+import { UserProfile, UserPreference, UserProfileFull, MyFollowersResponse, FollowMutationResponse } from '../models/user-profile.model';
 
 @Injectable({
   providedIn: 'root'
@@ -142,14 +142,14 @@ export class ProfileService {
   // ─── Follow System ───────────────────────────────────
   private readonly FOLLOW_API_URL = `${environment.apiUrl}/api/follow`;
 
-  followUser(userId: number): Observable<{ success: boolean } | null> {
-    return this.http.post<{ success: boolean }>(`${this.FOLLOW_API_URL}/${userId}`, {}).pipe(
+  followUser(userId: number): Observable<FollowMutationResponse | null> {
+    return this.http.post<FollowMutationResponse>(`${this.FOLLOW_API_URL}/${userId}`, {}).pipe(
       catchError(() => of(null))
     );
   }
 
-  unfollowUser(userId: number): Observable<{ success: boolean } | null> {
-    return this.http.delete<{ success: boolean }>(`${this.FOLLOW_API_URL}/${userId}`).pipe(
+  unfollowUser(userId: number): Observable<FollowMutationResponse | null> {
+    return this.http.delete<FollowMutationResponse>(`${this.FOLLOW_API_URL}/${userId}`).pipe(
       catchError(() => of(null))
     );
   }

@@ -122,6 +122,13 @@ function collectIssues(value: unknown, path: Array<string | number> = [], key?: 
 }
 
 export function contentModerationMiddleware(req: Request, _res: Response, next: NextFunction) {
+  // Skip moderation for AI endpoints that do not accept user-generated titles
+  // (the AI service responses are controlled and shouldn't be blocked here)
+  const skipPaths = ['/api/ai', '/api/gemini', '/api/ai/', '/api/chat'];
+  if (skipPaths.some(p => req.path.startsWith(p))) {
+    next();
+    return;
+  }
   if (!['POST', 'PUT', 'PATCH'].includes(req.method)) {
     next();
     return;

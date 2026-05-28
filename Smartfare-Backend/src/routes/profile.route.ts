@@ -217,7 +217,8 @@ router.get('/top-creators', optionalAuthenticateJWT, async (req: AuthRequest, re
 
         const users = await prisma.user.findMany({
             where: {
-                profile: { isNot: null }
+                profile: { isNot: null },
+                ...(currentUserId ? { id: { not: currentUserId } } : {})
             },
             select: {
                 id: true,
@@ -306,7 +307,11 @@ router.get('/featured-explorers', optionalAuthenticateJWT, async (req: AuthReque
             .map((row) => row.userId)
             .filter((id): id is number => id != null);
 
-        if (userIds.length === 0) {
+        const visibleUserIds = currentUserId
+            ? userIds.filter((id) => id !== currentUserId)
+            : userIds;
+
+        if (visibleUserIds.length === 0) {
             return res.json([]);
         }
 
@@ -316,7 +321,7 @@ router.get('/featured-explorers', optionalAuthenticateJWT, async (req: AuthReque
 
         const users = await prisma.user.findMany({
             where: {
-                id: { in: userIds },
+                id: { in: visibleUserIds },
                 profile: { isNot: null }
             },
             select: {
@@ -344,7 +349,7 @@ router.get('/featured-explorers', optionalAuthenticateJWT, async (req: AuthReque
         const usersById = new Map(users.map((u) => [u.id, u]));
 
         const result = await Promise.all(
-            userIds.map(async (userId) => {
+            visibleUserIds.map(async (userId) => {
                 const u = usersById.get(userId);
                 if (!u) return null;
 
@@ -397,6 +402,9 @@ router.get('/search', optionalAuthenticateJWT, async (req: AuthRequest, res: Res
         const terms = query.toLowerCase().split(' ').filter(Boolean);
         
         let whereClause: any = { profile: { isNot: null } };
+        if (currentUserId) {
+            whereClause.id = { not: currentUserId };
+        }
         
         if (terms.length === 1) {
             whereClause.OR = [

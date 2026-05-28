@@ -523,7 +523,7 @@ export class ChatService {
       'Sei in Planner Mode: il tuo obiettivo è raccogliere i dettagli essenziali e preparare un itinerario da inviare al builder.',
       'PRIORITÀ ASSOLUTA: se manca la destinazione, fai UNA sola domanda per capire dove vuole andare. Non chiedere giorni, viaggiatori, interessi o stile finché la destinazione non è chiara e confermata dall’utente.',
       'Se l’utente saluta, chiede se sei operativo o fa domande generiche, rispondi in 1-2 frasi e riportalo gentilmente alla pianificazione chiedendo la destinazione.',
-      'Dopo la destinazione raccogli in ordine: giorni, tipo di viaggio, viaggiatori, interessi, ritmo, stile/periodo, mezzi preferiti, hotel style.',
+      'Dopo la destinazione raccogli in ordine: giorni, tipo di viaggio, viaggiatori, interessi, ritmo, stile/periodo, hotel style.',
       'Fai una sola domanda principale per volta, salvo quando mancano solo 1-2 dettagli molto collegati.',
       'Non assumere mai una destinazione se l’utente non l’ha detta esplicitamente.',
       'Quando hai abbastanza dati, dillo esplicitamente con una frase simile a: "Il tuo itinerario è pronto".',

@@ -94,15 +94,22 @@
           </div>
 
           <div class="social-actions">
-            <button type="button" class="social-btn github-btn" (click)="startGithubLogin()">
-              <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="currentColor"
-                  d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.5 0-.24-.01-1.03-.01-1.87-2.78.62-3.37-1.21-3.37-1.21-.46-1.2-1.11-1.51-1.11-1.51-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.63-1.38-2.22-.26-4.55-1.14-4.55-5.05 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.9-1.32 2.74-1.05 2.74-1.05.55 1.42.2 2.47.1 2.73.64.72 1.03 1.63 1.03 2.75 0 3.92-2.33 4.78-4.56 5.04.36.32.68.95.68 1.92 0 1.39-.01 2.51-.01 2.85 0 .28.18.61.69.5A10.24 10.24 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
-              </svg>
-              <span>Continua con GitHub</span>
+            <button type="button" class="social-btn github-btn" (click)="startGithubLogin()" [disabled]="!canUseFunctionalCookies()">
+              <span class="social-icon-badge social-icon-badge--github" aria-hidden="true">
+                <svg class="social-icon" viewBox="0 0 24 24">
+                  <path fill="currentColor"
+                    d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.5 0-.24-.01-1.03-.01-1.87-2.78.62-3.37-1.21-3.37-1.21-.46-1.2-1.11-1.51-1.11-1.51-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.63-1.38-2.22-.26-4.55-1.14-4.55-5.05 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.9-1.32 2.74-1.05 2.74-1.05.55 1.42.2 2.47.1 2.73.64.72 1.03 1.63 1.03 2.75 0 3.92-2.33 4.78-4.56 5.04.36.32.68.95.68 1.92 0 1.39-.01 2.51-.01 2.85 0 .28.18.61.69.5A10.24 10.24 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
+                </svg>
+              </span>
+              <span class="social-copy">
+                <span class="social-title">{{ canUseFunctionalCookies() ? 'Continua con GitHub' : 'GitHub bloccato' }}</span>
+                <span class="social-note">
+                  {{ canUseFunctionalCookies() ? 'Accesso rapido con il tuo account' : 'Accetta i cookie funzionali per sbloccarlo' }}
+                </span>
+              </span>
             </button>
             <div class="google-btn-container" style="position: relative; width: 100%;">
-              <button type="button" class="social-btn google-btn">
+              <button type="button" class="social-btn google-btn" (click)="requestGoogleLogin()" [disabled]="!canUseFunctionalCookies()">
                 <span class="google-icon-badge" aria-hidden="true">
                   <svg class="social-icon google-icon" viewBox="0 0 24 24">
                     <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.24 1.26-.96 2.33-2.04 3.05l3.3 2.56c1.92-1.77 3.03-4.38 3.03-7.49 0-.72-.06-1.42-.18-2.1H12Z"/>
@@ -111,11 +118,18 @@
                     <path fill="#FBBC05" d="M12 6.03c1.47 0 2.78.5 3.82 1.49l2.87-2.87C16.96 3.04 14.69 2 12 2a9.99 9.99 0 0 0-8.91 5.45l3.41 2.63c.78-2.32 2.94-4.05 5.5-4.05Z"/>
                   </svg>
                 </span>
-                <span>Continua con Google</span>
+                <span class="social-copy">
+                  <span class="social-title">{{ canUseFunctionalCookies() ? 'Continua con Google' : 'Google bloccato' }}</span>
+                  <span class="social-note">
+                    {{ canUseFunctionalCookies() ? 'Accedi con il tuo account Google' : 'Accetta i cookie funzionali per sbloccarlo' }}
+                  </span>
+                </span>
               </button>
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.01; overflow: hidden; z-index: 10; display: flex; align-items: center; justify-content: center; transform: scale(1.5);">
-                <asl-google-signin-button type="standard" size="large" [width]="400"></asl-google-signin-button>
-              </div>
+              @if(canUseFunctionalCookies()){
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.01; overflow: hidden; z-index: 10; display: flex; align-items: center; justify-content: center; transform: scale(1.5);">
+                  <asl-google-signin-button type="standard" size="large" [width]="400"></asl-google-signin-button>
+                </div>
+              }
             </div>
           </div>
         </form>

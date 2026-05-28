@@ -33,7 +33,18 @@ router.post('/:userId', authenticateJWT, async (req: AuthRequest, res: Response,
             update: {} // No change if already following
         });
 
-        return res.json({ success: true, follow });
+        const [targetFollowersCount, currentFollowingCount] = await Promise.all([
+            prisma.follow.count({ where: { followingId } }),
+            prisma.follow.count({ where: { followerId } })
+        ]);
+
+        return res.json({
+            success: true,
+            follow,
+            isFollowing: true,
+            targetFollowersCount,
+            currentFollowingCount
+        });
     } catch (error) {
         next(error);
     }
@@ -54,7 +65,17 @@ router.delete('/:userId', authenticateJWT, async (req: AuthRequest, res: Respons
             }
         });
 
-        return res.json({ success: true });
+        const [targetFollowersCount, currentFollowingCount] = await Promise.all([
+            prisma.follow.count({ where: { followingId } }),
+            prisma.follow.count({ where: { followerId } })
+        ]);
+
+        return res.json({
+            success: true,
+            isFollowing: false,
+            targetFollowersCount,
+            currentFollowingCount
+        });
     } catch (error) {
         // If not following, Prisma might throw error, catch it or check existence first
         if ((error as any).code === 'P2025') {

@@ -33,26 +33,11 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  z-index: 0;
-}
-
-.glow {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.12;
 }
 
 .glow-1 {
   top: -100px;
   right: -100px;
-  background: radial-gradient(circle, #4f46e5, transparent);
-}
-
-.glow-2 {
-  bottom: -100px;
   left: -100px;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent);
 }
@@ -61,14 +46,6 @@
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  margin-top: 16px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.28);
-  color: #e2e8f0;
-}
-
 .planner-locked-card i {
   font-size: 1.15rem;
   margin-top: 2px;

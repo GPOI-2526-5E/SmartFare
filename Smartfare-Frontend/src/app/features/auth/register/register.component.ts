@@ -10,6 +10,7 @@ import {
 import { AlertService } from '../../../core/services/alert.service';
 import { GoogleLoginProvider, SocialAuthService, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { LegalService } from '../../../core/services/legal.service';
+import { CookieConsentService } from '../../../core/services/cookie-consent.service';
 
 @Component({
   selector: 'app-register',
@@ -46,7 +47,8 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private socialAuthService: SocialAuthService,
     private ngZone: NgZone,
-    private legalService: LegalService
+    private legalService: LegalService,
+    private cookieConsent: CookieConsentService
   ) {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state as { socialData?: PendingSocialRegistration } | undefined;
@@ -73,6 +75,10 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.socialAuthService.authState.subscribe((user) => {
+      if (!this.cookieConsent.canUseFunctionalCookies()) {
+        return;
+      }
+
       if (user && user.idToken && !this.googleLoginInProgress && !this.authService.IsAuthenticated()) {
         this.googleLoginInProgress = true;
         this.authService.LoginWithGoogle(user.idToken).subscribe({
@@ -223,7 +229,24 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   startGithubRegistration() {
+    if (!this.cookieConsent.canUseFunctionalCookies()) {
+      this.alertService.error('Devi accettare i cookie funzionali prima di registrarti con GitHub.');
+      this.legalService.openCookieModal();
+      return;
+    }
+
     this.authService.startGithubAuth('register', this.returnUrl);
+  }
+
+  requestGoogleRegistration() {
+    if (!this.cookieConsent.canUseFunctionalCookies()) {
+      this.alertService.error('Devi accettare i cookie funzionali prima di registrarti con Google.');
+      this.legalService.openCookieModal();
+    }
+  }
+
+  canUseFunctionalCookies(): boolean {
+    return this.cookieConsent.canUseFunctionalCookies();
   }
 
   async goToLogin() {

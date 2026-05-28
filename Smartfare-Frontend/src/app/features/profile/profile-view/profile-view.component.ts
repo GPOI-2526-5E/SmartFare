@@ -190,16 +190,16 @@ export class ProfileViewComponent implements OnInit {
       this.profileService.unfollowUser(targetId).subscribe(res => {
         this.isFollowingLoading.set(false);
         if (res?.success) {
-          this.isFollowing.set(false);
-          this.followersCount.update(c => c - 1);
+          this.isFollowing.set(Boolean(res.isFollowing));
+          this.followersCount.set(res.targetFollowersCount ?? Math.max(0, this.followersCount() - 1));
         }
       });
     } else {
       this.profileService.followUser(targetId).subscribe(res => {
         this.isFollowingLoading.set(false);
         if (res?.success) {
-          this.isFollowing.set(true);
-          this.followersCount.update(c => c + 1);
+          this.isFollowing.set(Boolean(res.isFollowing));
+          this.followersCount.set(res.targetFollowersCount ?? (this.followersCount() + 1));
         }
       });
     }

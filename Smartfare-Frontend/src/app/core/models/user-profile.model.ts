@@ -43,6 +43,13 @@ export interface UserProfileFull {
   followedAt?: string;
 }
 
+export interface FollowMutationResponse {
+  success: boolean;
+  isFollowing?: boolean;
+  targetFollowersCount?: number;
+  currentFollowingCount?: number;
+}
+
 export interface MyFollowersResponse {
   followers: UserProfileFull[];
   total: number;

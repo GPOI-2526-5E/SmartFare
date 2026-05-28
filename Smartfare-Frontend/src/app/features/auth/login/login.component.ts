@@ -5,6 +5,8 @@ import { AlertService } from '../../../core/services/alert.service';
 import { AuthService, PendingSocialRegistration } from '../../../core/auth/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GoogleLoginProvider, SocialAuthService, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
+import { CookieConsentService } from '../../../core/services/cookie-consent.service';
+import { LegalService } from '../../../core/services/legal.service';
 
 @Component({
   selector: 'app-login.component',
@@ -31,7 +33,9 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private socialAuthService: SocialAuthService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private cookieConsent: CookieConsentService,
+    private legalService: LegalService
   ) {
     if (this.authService.IsAuthenticated())
       this.router.navigate(['/']);
@@ -40,6 +44,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.returnUrl = this.authService.sanitizeReturnUrl(this.route.snapshot.queryParams['returnUrl'] || '/');
     this.socialAuthService.authState.subscribe((user) => {
+      if (!this.cookieConsent.canUseFunctionalCookies()) {
+        return;
+      }
+
       if (user && user.idToken && !this.googleLoginInProgress && !this.authService.IsAuthenticated()) {
         this.googleLoginInProgress = true;
 
@@ -189,8 +197,25 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+
+  canUseFunctionalCookies(): boolean {
+    return this.cookieConsent.canUseFunctionalCookies();
+  }
   startGithubLogin() {
+    if (!this.cookieConsent.canUseFunctionalCookies()) {
+      this.alertService.error('Devi accettare i cookie funzionali prima di accedere con GitHub.');
+      this.legalService.openCookieModal();
+      return;
+    }
+
     this.authService.startGithubAuth('login', this.returnUrl);
+  }
+
+  requestGoogleLogin() {
+    if (!this.cookieConsent.canUseFunctionalCookies()) {
+      this.alertService.error('Devi accettare i cookie funzionali prima di accedere con Google.');
+      this.legalService.openCookieModal();
+    }
   }
 
   Login() {

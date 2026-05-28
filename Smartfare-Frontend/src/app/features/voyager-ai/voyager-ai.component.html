@@ -307,10 +307,24 @@
               <p>Ho raccolto tutti i dettagli necessari.</p>
               <div class="generate-actions">
                 <p>Vuoi generare l'itinerario completo nel builder?</p>
-                <button class="generate-btn" id="generate-itinerary-btn" (click)="generateItinerary()" [disabled]="isGeneratingItinerary()">
+                <button class="generate-btn" id="generate-itinerary-btn" (click)="openConfirmGenerate()" [disabled]="isGeneratingItinerary()">
                   <i class="bi bi-magic"></i>
                   <span>Genera Itinerario</span>
                 </button>
+              </div>
+            </div>
+          </div>
+          }
+
+          <!-- CONFIRM GENERATE MODAL -->
+          @if (showConfirmGenerate()) {
+          <div class="confirm-generate-overlay" role="dialog" aria-modal="true" aria-label="Conferma generazione itinerario">
+            <div class="confirm-generate-box">
+              <h2>Ho tutto per generare l'itinerario</h2>
+              <p>Vuoi generarlo adesso?</p>
+              <div class="confirm-actions">
+                <button class="btn-yes" (click)="confirmGenerateYes()">Si, genera</button>
+                <button class="btn-no" (click)="confirmGenerateNo()">No, aggiungo altro</button>
               </div>
             </div>
           </div>
@@ -354,20 +368,7 @@
       <footer class="chat-footer" [class.content-blurred]="isPlannerLocked()">
         <div class="chat-input-container">
 
-          @if (pendingAttachmentName()) {
-          <div class="attachment-chip">
-            <span>{{ pendingAttachmentName() }}</span>
-            <button type="button" title="Rimuovi allegato" aria-label="Rimuovi allegato" (click)="clearAttachment()"><i
-                class="bi bi-x-lg"></i></button>
-          </div>
-          }
-
           <div class="input-wrapper">
-            <label class="action-btn attach-btn">
-              <i class="bi bi-paperclip"></i>
-              <input type="file" hidden (change)="attachPlaceholder($event)">
-            </label>
-
             @if (isVoiceSupported()) {
             <button class="action-btn" type="button" title="Attiva o disattiva input vocale"
               aria-label="Attiva o disattiva input vocale" (click)="toggleVoiceInput()" [class.active]="isListening()">

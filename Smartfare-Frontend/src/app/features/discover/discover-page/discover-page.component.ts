@@ -225,16 +225,10 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
 
   readonly topCreatorPreview = computed(() => this.topCreators().slice(0, TOP_CREATORS_LIMIT));
   readonly featuredTrips = computed(() => {
-    const trips = this.topLikedTrips();
-    const selectedId = this.selectedTripId();
-    if (!selectedId) return trips;
-
-    const selectedIndex = trips.findIndex((trip) => trip.id === selectedId);
-    if (selectedIndex <= 0) return trips;
-
-    const selectedTrip = trips[selectedIndex];
-    return [selectedTrip, ...trips.filter((trip) => trip.id !== selectedId)];
+    return this.topLikedTrips().slice(0, TOP_TRIPS_LIMIT);
   });
+
+  private readonly currentUserId = computed(() => this.authService.getUserData()?.userId ? Number(this.authService.getUserData()?.userId) : null);
 
   private carouselTimer?: ReturnType<typeof setInterval>;
 
@@ -280,7 +274,7 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
         });
         this.latestTrips.set(latest.slice(0, LATEST_LIMIT));
 
-        this.topCreators.set(creators ?? []);
+        this.topCreators.set((creators ?? []).filter((user) => user.id !== this.currentUserId()));
         this.nearbyAnchor.set(nearby.anchorLocation);
         this.nearbyTrips.set((nearby.itineraries ?? []).slice(0, NEARBY_LIMIT));
 
@@ -480,6 +474,7 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
     if (!trip.id) return;
     this.mapViewMode.set('route');
     this.selectedTripId.set(trip.id);
+    this.routePoints.set([]);
     this.loadRoute(trip.id);
   }
 
@@ -534,20 +529,15 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
 
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res) => {
       if (!res?.success) return;
-      const nextFollowingState = !user.isFollowing;
+      const nextFollowingState = Boolean(res.isFollowing ?? !user.isFollowing);
       const patch = (list: UserProfileFull[]) =>
         list.map((u) => {
           if (u.id !== user.id) return u;
 
-          const currentFollowers = u.followersCount ?? 0;
-          const nextFollowers = nextFollowingState
-            ? currentFollowers + 1
-            : Math.max(0, currentFollowers - 1);
-
           return {
             ...u,
             isFollowing: nextFollowingState,
-            followersCount: nextFollowers,
+            followersCount: res.targetFollowersCount ?? u.followersCount ?? 0,
           };
         });
 
