@@ -7,7 +7,7 @@
     <app-loader [show]="isLoading()"></app-loader>
   } @else {
     <main class="profile-main">
-      
+
       <!-- ─── COVER & BIO HEADER ─── -->
       <header class="profile-header">
         <div class="cover-photo" [style.background-image]="pageBackground() ? 'url(' + pageBackground() + ')' : 'none'">
@@ -36,7 +36,7 @@
                 <span class="meta-item"><i class="bi bi-geo-alt-fill"></i> {{ city() }}</span>
               }
             </div>
-            
+
             @if (bio()) {
               <div class="user-bio">
                 <p>{{ bio() }}</p>
@@ -140,6 +140,12 @@
                 </div>
                 <div class="card-body">
                   <h3 class="card-title">{{ itinerary.name }}</h3>
+                  <div class="card-meta">
+                    <div class="card-meta-item card-meta-item--favorites">
+                      <i class="bi bi-heart-fill"></i>
+                      <span>{{ getFavoriteCount(itinerary) }} preferiti</span>
+                    </div>
+                  </div>
                   <div class="card-date">
                     <i class="bi bi-calendar3"></i> {{ formatDateRange(itinerary) }}
                   </div>

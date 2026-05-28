@@ -118,10 +118,16 @@
         </section>
 
         <section class="showcase-section">
-          <header class="section-head">
-            <span>Top community</span>
-            <h2>Itinerari piu votati</h2>
-            <p>I percorsi con piu like: cliccane uno e la mappa larga sotto mostra la rotta.</p>
+          <header class="section-head showcase-section__head">
+            <div class="showcase-section__copy">
+              <span>Top community</span>
+              <h2>Itinerari piu votati</h2>
+              <p>I percorsi con piu like: cliccane uno e la mappa larga sotto mostra la rotta.</p>
+            </div>
+
+            <button type="button" class="showcase-section__all-btn" (click)="openAllItineraries()">
+              Vedi tutto <i class="bi bi-arrow-right"></i>
+            </button>
           </header>
 
           @if (topLikedTrips().length === 0) {
@@ -129,11 +135,12 @@
               <p>Nessun itinerario in evidenza al momento.</p>
             </div>
           } @else {
-            <div class="featured-mosaic">
-              @for (trip of topLikedTrips(); track trip.id) {
+            <div class="featured-mosaic" [class.featured-mosaic--focus]="featuredTrips().length > 0">
+              @for (trip of featuredTrips(); track trip.id) {
                 <article
                   class="featured-tile"
-                  [class.featured-tile--large]="$index === 0"
+                  [class.featured-tile--selected]="isTripSelected(trip)"
+                  [class.featured-tile--compact]="!isTripSelected(trip)"
                   [class.is-selected]="isTripSelected(trip)"
                   (click)="selectTrip(trip)"
                   role="button"
@@ -141,7 +148,7 @@
                 >
                   <img [src]="tripCover(trip)" [alt]="trip.name" loading="lazy" />
                   <div class="featured-tile__shade"></div>
-                  @if ($index === 0) {
+                  @if (isTripSelected(trip)) {
                     <span class="featured-tile__badge">In evidenza</span>
                   }
                   <div class="featured-tile__content">

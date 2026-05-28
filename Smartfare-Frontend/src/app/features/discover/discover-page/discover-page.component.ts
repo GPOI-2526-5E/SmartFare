@@ -23,7 +23,7 @@ const FALLBACK_COVER =
   'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80';
 const CAROUSEL_SLIDES = 6;
 const TOP_CREATORS_LIMIT = 4;
-const TOP_TRIPS_LIMIT = 4;
+const TOP_TRIPS_LIMIT = 3;
 const LATEST_LIMIT = 8;
 const NEARBY_LIMIT = 6;
 const MIN_SEARCH_LENGTH = 2;
@@ -84,6 +84,8 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
   readonly searchPlaces = signal<Location[]>([]);
   readonly searchSubmitted = signal(false);
   readonly activeSearchTab = signal<SearchTab>('itinerari');
+  readonly searchMode = signal<'query' | 'all'>('query');
+  readonly allPublicTrips = signal<Itinerary[]>([]);
 
   // Autocomplete Signals
   readonly filteredLocations = signal<Location[]>([]);
@@ -214,11 +216,25 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
   });
 
   readonly searchTitle = computed(() => {
+    if (this.searchMode() === 'all') {
+      return 'Tutti gli itinerari pubblici';
+    }
     const term = this.searchTerm();
     return term ? `Risultati per "${term}"` : 'Risultati ricerca';
   });
 
   readonly topCreatorPreview = computed(() => this.topCreators().slice(0, TOP_CREATORS_LIMIT));
+  readonly featuredTrips = computed(() => {
+    const trips = this.topLikedTrips();
+    const selectedId = this.selectedTripId();
+    if (!selectedId) return trips;
+
+    const selectedIndex = trips.findIndex((trip) => trip.id === selectedId);
+    if (selectedIndex <= 0) return trips;
+
+    const selectedTrip = trips[selectedIndex];
+    return [selectedTrip, ...trips.filter((trip) => trip.id !== selectedId)];
+  });
 
   private carouselTimer?: ReturnType<typeof setInterval>;
 
@@ -254,6 +270,7 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(({ carousel, trending, allPublic, creators, nearby }) => {
         this.carouselPlaces.set(carousel ?? []);
+        this.allPublicTrips.set(allPublic ?? []);
         this.topLikedTrips.set((trending ?? []).slice(0, TOP_TRIPS_LIMIT));
 
         const latest = [...(allPublic ?? [])].sort((a, b) => {
@@ -362,6 +379,8 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
     const term = this.searchControl.value.trim();
     if (term.length < MIN_SEARCH_LENGTH) return;
 
+    this.searchMode.set('query');
+
     this.searchPending.set(true);
     this.searchSubmitted.set(true);
     this.showSuggestions.set(false);
@@ -411,9 +430,23 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
     this.exitSearchResults();
   }
 
+  openAllItineraries(): void {
+    this.searchMode.set('all');
+    this.searchControl.setValue('');
+    this.searchPending.set(false);
+    this.searchSubmitted.set(true);
+    this.activeSearchTab.set('itinerari');
+    this.searchResultTrips.set(this.allPublicTrips());
+    this.searchUsers.set([]);
+    this.searchPlaces.set([]);
+    this.showSuggestions.set(false);
+    this.scrollToTop();
+  }
+
   private exitSearchResults(): void {
     this.searchSubmitted.set(false);
     this.searchPending.set(false);
+    this.searchMode.set('query');
     this.searchResultTrips.set([]);
     this.searchUsers.set([]);
     this.searchPlaces.set([]);

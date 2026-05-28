@@ -478,7 +478,7 @@ router.get('/search', optionalAuthenticateJWT, async (req: AuthRequest, res: Res
 });
 
 // ─── GET /api/profile/:id ─────────────────────────────────────────────────────
-router.get('/:id', authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
+router.get('/:id', optionalAuthenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         const userId = Number(req.params.id);
 

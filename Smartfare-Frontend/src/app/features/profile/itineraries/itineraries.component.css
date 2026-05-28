@@ -435,9 +435,18 @@
   font-weight: 600;
 }
 
+.card-meta-item--favorites {
+  background: rgba(244, 114, 182, 0.08);
+  border-color: rgba(244, 114, 182, 0.18);
+}
+
 .card-meta-item i {
   color: var(--accent);
   font-size: 0.85rem;
+}
+
+.card-meta-item--favorites i {
+  color: #f472b6;
 }
 
 .card-date, .card-location {

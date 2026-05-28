@@ -26,7 +26,7 @@ export class ProfileViewComponent implements OnInit {
   private readonly authService = inject(AuthService);
 
   isLoading = signal(true);
-  
+
   // User Data
   displayName = signal('');
   age = signal<number | null>(null);
@@ -39,7 +39,7 @@ export class ProfileViewComponent implements OnInit {
   twitterUrl = signal('');
   followersCount = signal(0);
   publicItinerariesCount = signal(0);
-  
+
   // Follow logic
   targetUserId = signal<number | null>(null);
   isFollowing = signal(false);
@@ -54,7 +54,7 @@ export class ProfileViewComponent implements OnInit {
   filteredItineraries = computed(() => {
     const itineraries = this.allItineraries();
     const tab = this.activeTab();
-    
+
     if (tab === 'public') {
       return itineraries.filter(it => it.isPublished);
     } else if (tab === 'private') {
@@ -72,7 +72,7 @@ export class ProfileViewComponent implements OnInit {
       if (id) {
         const targetId = Number(id);
         const currentUserId = this.authService.getUserData()?.userId;
-        
+
         if (targetId === Number(currentUserId)) {
           this.isMe.set(true);
           this.loadMyProfile();
@@ -94,7 +94,7 @@ export class ProfileViewComponent implements OnInit {
       if (data) {
         this.hydrateFromData(data);
       }
-      
+
       // Load itineraries
       this.itineraryService.getMyItineraries().subscribe(itineraries => {
         this.allItineraries.set(itineraries);
@@ -110,9 +110,9 @@ export class ProfileViewComponent implements OnInit {
     this.profileService.getProfileById(userId).subscribe(data => {
       if (data) {
         this.hydrateFromData(data);
-        
+
         // For other profiles, we only show public itineraries
-        // We'll use getPublicItineraries with a filter? 
+        // We'll use getPublicItineraries with a filter?
         // Or better, the backend route for public profile should return public itineraries?
         // Let's check my backend change... ah, I didn't return itineraries in GET /api/profile/:id.
         // I'll fetch them separately.
@@ -157,12 +157,12 @@ export class ProfileViewComponent implements OnInit {
 
     if (profile?.birthDate) {
       const birth = new Date(profile.birthDate);
-      
+
       // Calculate age
       const diffMs = Date.now() - birth.getTime();
       const ageDt = new Date(diffMs);
       this.age.set(Math.abs(ageDt.getUTCFullYear() - 1970));
-      
+
       // Format birth string e.g., "15 Maggio 1999"
       const formatter = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
       this.birthDateStr.set(formatter.format(birth));
@@ -213,5 +213,9 @@ export class ProfileViewComponent implements OnInit {
     const startStr = start.toLocaleDateString('it-IT', opts);
     if (!end) return startStr;
     return `${startStr} - ${end.toLocaleDateString('it-IT', opts)}`;
+  }
+
+  getFavoriteCount(itinerary: Itinerary): number {
+    return itinerary._count?.favorites ?? 0;
   }
 }

@@ -242,6 +242,10 @@ export class ItinerariesComponent implements OnInit {
     return itinerary._count?.items ?? itinerary.items?.length ?? 0;
   }
 
+  getFavoriteCount(itinerary: Itinerary): number {
+    return itinerary._count?.favorites ?? 0;
+  }
+
   getTripDuration(itinerary: Itinerary): string {
     if (!itinerary.startDate || !itinerary.endDate) {
       return 'Durata da confermare';
