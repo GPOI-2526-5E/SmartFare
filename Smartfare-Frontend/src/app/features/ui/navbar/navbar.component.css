@@ -436,18 +436,30 @@
   }
 }
 
-.user-avatar-nav {
+.user-avatar-nav-trigger {
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  object-fit: cover;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transition: transform 0.2s;
 }
 
-.user-avatar-nav:hover {
+.user-avatar-nav-trigger:hover {
   transform: scale(1.1);
+}
+
+.user-avatar-nav-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .user-avatar-mobile {

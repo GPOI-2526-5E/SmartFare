@@ -24,10 +24,16 @@
     <!-- ACTION BUTTONS DESKTOP -->
     <div class="nav-actions actions d-none d-lg-flex gap-2">
       @if (isAuthenticated) {
-      @if (userAvatar) {
       <div class="dropdown">
-        <img [src]="userAvatar" [alt]="'user.avatar' | t" class="user-avatar-nav align-self-center pointer"
-          referrerpolicy="no-referrer" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" />
+        <button type="button" class="user-avatar-nav-trigger align-self-center pointer"
+          data-bs-toggle="dropdown" data-bs-display="static" [attr.aria-label]="'nav.openUserMenu' | t"
+          [title]="'nav.openUserMenu' | t">
+          @if (userAvatar) {
+          <img [src]="userAvatar" [alt]="'user.avatar' | t" class="user-avatar-nav-image" referrerpolicy="no-referrer" />
+          } @else {
+          <i class="bi bi-person-circle fs-3"></i>
+          }
+        </button>
         <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
           <li>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/profile/itineraries']">
@@ -58,36 +64,6 @@
           </li>
         </ul>
       </div>
-      } @else {
-      <div class="dropdown">
-        <button type="button" class="bi bi-person-circle fs-3 align-self-center pointer border-0 bg-transparent p-0"
-          data-bs-toggle="dropdown" data-bs-display="static" [attr.aria-label]="'nav.openUserMenu' | t"
-          [title]="'nav.openUserMenu' | t"></button>
-        <ul class="dropdown-menu dropdown-menu-end mt-2 p-2 shadow-sm rounded-3">
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/profile']">
-              <i class="bi bi-person-circle"></i>
-              <span>{{ 'nav.profile' | t }}</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/settings']">
-              <i class="bi bi-gear"></i>
-              <span>{{ 'nav.settings' | t }}</span>
-            </a>
-          </li>
-          <li>
-            <hr class="dropdown-divider">
-          </li>
-          <li>
-            <button class="dropdown-item text-danger d-flex align-items-center gap-2 py-2" (click)="logout()">
-              <i class="bi bi-box-arrow-right"></i>
-              <span>{{ 'nav.logout' | t }}</span>
-            </button>
-          </li>
-        </ul>
-      </div>
-      }
       }@else {
       <a class="btn login-btn" routerLink="/login">{{ 'nav.login' | t }}</a>
       <a class="btn register-btn" [routerLink]="['/register']">{{ 'nav.register' | t }}</a>

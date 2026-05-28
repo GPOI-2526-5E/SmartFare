@@ -501,8 +501,23 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
 
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res) => {
       if (!res?.success) return;
+      const nextFollowingState = !user.isFollowing;
       const patch = (list: UserProfileFull[]) =>
-        list.map((u) => (u.id === user.id ? { ...u, isFollowing: !user.isFollowing } : u));
+        list.map((u) => {
+          if (u.id !== user.id) return u;
+
+          const currentFollowers = u.followersCount ?? 0;
+          const nextFollowers = nextFollowingState
+            ? currentFollowers + 1
+            : Math.max(0, currentFollowers - 1);
+
+          return {
+            ...u,
+            isFollowing: nextFollowingState,
+            followersCount: nextFollowers,
+          };
+        });
+
       this.topCreators.update(patch);
       this.searchUsers.update(patch);
     });
