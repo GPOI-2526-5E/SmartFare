@@ -45,6 +45,7 @@ export const APP_ROUTES: Routes = [
   {
     path: 'profile/itineraries',
     loadComponent: () => import('./features/profile/itineraries/itineraries.component').then((c) => c.ItinerariesComponent),
+    canActivate: [authGuard],
     data: { seoKey: 'profile-itineraries' }
   },
   {
