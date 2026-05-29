@@ -1641,7 +1641,10 @@ textarea {
 /* Full-area overlay that sits on top of blurred content */
 .locked-overlay {
   position: absolute;
-  inset: 0;
+  top: 60px;
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 200;
   display: flex;
   align-items: center;

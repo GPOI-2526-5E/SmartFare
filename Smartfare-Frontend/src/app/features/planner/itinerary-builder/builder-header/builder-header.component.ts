@@ -101,7 +101,7 @@ export class BuilderHeaderComponent {
 
   @Output() navRequest = new EventEmitter<string>();
   @Output() saveRequest = new EventEmitter<void>();
-  @Output() exportRequest = new EventEmitter<'pdf' | 'html' | 'json'>();
+  @Output() exportRequest = new EventEmitter<'pdf'>();
 
   private authService = inject(AuthService);
   private itineraryService = inject(ItineraryService);
@@ -120,29 +120,10 @@ export class BuilderHeaderComponent {
 
   // Custom dropdown states
   showVisibleDayDropdown = signal(false);
-  showExportDropdown = signal(false);
-  selectedExportFormat = signal<'pdf' | 'html' | 'json'>('pdf');
 
-  readonly selectedExportLabel = computed(() => {
-    switch (this.selectedExportFormat()) {
-      case 'html':
-        return 'HTML';
-      case 'json':
-        return 'JSON';
-      default:
-        return 'PDF';
-    }
-  });
-
-  readonly selectedExportHint = computed(() => {
-    switch (this.selectedExportFormat()) {
-      case 'html':
-        return 'File stampabile e condivisibile';
-      case 'json':
-        return 'Dati strutturati con gruppi e orari';
-      default:
-        return 'A4 stampabile';
-    }
+  readonly visibleDayLabel = computed(() => {
+    const day = this.ui.visibleDayRoute();
+    return day === 'all' ? 'Tutti i giorni' : `Percorso G${day}`;
   });
 
   constructor() {
@@ -260,19 +241,7 @@ export class BuilderHeaderComponent {
   }
 
   requestExport() {
-    this.exportRequest.emit(this.selectedExportFormat());
-  }
-
-  toggleExportDropdown(event: Event) {
-    event.stopPropagation();
-    this.showExportDropdown.update(v => !v);
-    this.showVisibleDayDropdown.set(false);
-  }
-
-  selectExportFormat(format: 'pdf' | 'html' | 'json') {
-    this.selectedExportFormat.set(format);
-    this.showExportDropdown.set(false);
-    this.requestExport();
+    this.exportRequest.emit('pdf');
   }
 
   onDayColorChange(event: Event) {
@@ -316,7 +285,6 @@ export class BuilderHeaderComponent {
     const target = event.target as HTMLElement;
     if (!target.closest('.custom-dropdown')) {
       this.showVisibleDayDropdown.set(false);
-      this.showExportDropdown.set(false);
     }
   }
 }
