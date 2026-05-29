@@ -226,6 +226,8 @@ export const PHRASE_TRANSLATIONS: Record<string, PhraseTranslations> = {
     de: 'Dein Profil wird geladen...',
     es: 'Cargando tu perfil...',
   },
+  'Scarica PDF': { en: 'Download PDF', fr: 'Télécharger PDF', de: 'PDF herunterladen', es: 'Descargar PDF' },
+  'A4 stampabile': { en: 'A4 printable', fr: 'A4 imprimable', de: 'A4 druckbar', es: 'A4 imprimible' },
   'Home': { en: 'Home', fr: 'Accueil', de: 'Home', es: 'Inicio' },
   'Esplora': { en: 'Discover', fr: 'Explorer', de: 'Entdecken', es: 'Explorar' },
   'Crea': { en: 'Create', fr: 'Creer', de: 'Erstellen', es: 'Crear' },
