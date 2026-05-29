@@ -110,7 +110,6 @@ router.post('/sessions', chatWriteLimiter, authenticateJWT, async (req: AuthRequ
                         style: null,
                         period: null,
                         departureAirport: null,
-                        preferredTransport: null,
                         hotelStyle: null
                     },
                     readyToGenerate: false,

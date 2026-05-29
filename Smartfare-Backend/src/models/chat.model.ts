@@ -13,7 +13,6 @@ export interface PlannerState {
   style: string | null;
   period: string | null;
   departureAirport: string | null;
-  preferredTransport: string | null;
   hotelStyle: string | null;
 }
 

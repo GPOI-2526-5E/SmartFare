@@ -52,7 +52,6 @@ router.post('/itinerary/chat', aiLimiter, optionalAuthenticateJWT, async (req: A
                         travelCompanion: true,
                         travelStyle: true,
                         pace: true,
-                        preferredTransport: true,
                         notes: true
                     }
                 }

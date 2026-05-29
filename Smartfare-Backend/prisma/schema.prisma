@@ -111,7 +111,6 @@ model UserPreference {
   userId             Int      @unique
   travelStyle        String?
   pace               String?
-  preferredTransport String?
   travelCompanion    String?
   notes              String?
   createdAt          DateTime @default(now())

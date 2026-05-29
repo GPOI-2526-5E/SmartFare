@@ -569,7 +569,7 @@ export class ChatService {
       'NON usare come destinazione: saluti, "sei operativo", "funziona", parole comuni o sottostringhe casuali (es. "operativo" NON è "Opera").',
       'Se l’utente non ha indicato dove vuole andare, destination deve essere null.',
       'Schema JSON:',
-      '{"destination":null,"days":null,"travelType":null,"travelers":null,"interests":[],"pace":null,"style":null,"period":null,"departureAirport":null,"preferredTransport":null,"hotelStyle":null}',
+      '{"destination":null,"days":null,"travelType":null,"travelers":null,"interests":[],"pace":null,"style":null,"period":null,"departureAirport":null,"hotelStyle":null}',
       `Fallback corrente: ${JSON.stringify(fallback)}`,
       `Conversazione:\n${transcript}`
     ].join('\n');
@@ -647,7 +647,6 @@ export class ChatService {
       style: nextState.style || baseState.style || null,
       period: nextState.period || baseState.period || null,
       departureAirport: nextState.departureAirport || baseState.departureAirport || null,
-      preferredTransport: nextState.preferredTransport || baseState.preferredTransport || null,
       hotelStyle: nextState.hotelStyle || baseState.hotelStyle || null
     };
   }
@@ -664,7 +663,6 @@ export class ChatService {
       style: raw?.style || null,
       period: raw?.period || null,
       departureAirport: raw?.departureAirport || null,
-      preferredTransport: raw?.preferredTransport || null,
       hotelStyle: raw?.hotelStyle || null
     };
   }
@@ -782,7 +780,6 @@ export class ChatService {
       state.pace ? `Ritmo richiesto: ${state.pace}.` : '',
       state.style ? `Stile generale: ${state.style}.` : '',
       state.hotelStyle ? `Hotel style: ${state.hotelStyle}.` : '',
-      state.preferredTransport ? `Mezzi preferiti: ${state.preferredTransport}.` : '',
       state.period ? `Periodo: ${state.period}.` : '',
       'L’itinerario deve essere ricco e completo: ogni giorno deve avere colazione, attività principali, pranzo, attività pomeridiane e cena quando possibile.',
       'Inserisci orari realistici e distribuiti nella giornata.',
