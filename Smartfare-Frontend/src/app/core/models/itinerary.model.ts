@@ -14,6 +14,7 @@ export interface Itinerary {
     location?: Location | null;
     userId?: number;
     items?: ItineraryItem[];
+    createdAt?: string;
     updatedAt?: string;
     isPublished?: boolean;
     imageUrl?: string | null;

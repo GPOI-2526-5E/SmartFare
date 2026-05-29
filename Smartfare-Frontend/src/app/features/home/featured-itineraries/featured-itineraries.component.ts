@@ -27,6 +27,10 @@ export class FeaturedItinerariesComponent {
     return itinerary._count?.items ?? itinerary.items?.length ?? 0;
   }
 
+  getLikesCount(itinerary: Itinerary): number {
+    return itinerary._count?.favorites ?? 0;
+  }
+
   getCreatorName(itinerary: Itinerary): string {
     const p = itinerary.user?.profile;
     if (p?.name || p?.surname) {

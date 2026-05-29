@@ -761,6 +761,11 @@
   gap: 12px;
   color: #3b82f6;
 }
+
+.card-meta-item.likes-item i.heart-icon {
+  color: #ef4444;
+}
+
 @media (max-width: 640px) {
   .section-header {
     flex-direction: column;

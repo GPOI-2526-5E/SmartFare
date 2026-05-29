@@ -33,6 +33,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isSocialRegistration = false;
   showPassword = false;
+  acceptedLegal = false;
   socialProvider: SocialProvider | null = null;
   oauthRegistrationToken: string | null = null;
   private googleLoginInProgress = false;
@@ -229,6 +230,11 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   startGithubRegistration() {
+    if (!this.acceptedLegal) {
+      this.alertService.error('Devi accettare i Termini e Condizioni e la Privacy Policy prima di registrarti.');
+      return;
+    }
+
     if (!this.cookieConsent.canUseFunctionalCookies()) {
       this.alertService.error('Devi accettare i cookie funzionali prima di registrarti con GitHub.');
       this.legalService.openCookieModal();
@@ -239,6 +245,11 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   requestGoogleRegistration() {
+    if (!this.acceptedLegal) {
+      this.alertService.error('Devi accettare i Termini e Condizioni e la Privacy Policy prima di registrarti.');
+      return;
+    }
+
     if (!this.cookieConsent.canUseFunctionalCookies()) {
       this.alertService.error('Devi accettare i cookie funzionali prima di registrarti con Google.');
       this.legalService.openCookieModal();
@@ -268,6 +279,11 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSubmit() {
+    if (!this.acceptedLegal) {
+      this.alertService.error('Devi accettare i Termini e Condizioni e la Privacy Policy prima di registrarti.');
+      return;
+    }
+
     if (this.registerData.password !== this.registerData.confirmPassword) {
       this.alertService.error('Le password non corrispondono');
       return;

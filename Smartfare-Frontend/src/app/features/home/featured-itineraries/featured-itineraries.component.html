@@ -37,6 +37,10 @@
               <i class="bi bi-collection-fill"></i>
               <span>{{ getItemCount(itinerary) }} {{ getItemCount(itinerary) === 1 ? 'tappa' : 'tappe' }}</span>
             </div>
+            <div class="card-meta-item likes-item">
+              <i class="bi bi-heart-fill heart-icon"></i>
+              <span>{{ getLikesCount(itinerary) }}</span>
+            </div>
           </div>
 
           <div class="card-footer">

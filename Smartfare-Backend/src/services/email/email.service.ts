@@ -10,6 +10,7 @@ import path from 'path';
 dns.setDefaultResultOrder('ipv4first');
 
 export class EmailService {
+    private static instance: EmailService;
     private transporter: nodemailer.Transporter | null = null;
     private initPromise: Promise<void> | null = null;
     private useSendgrid = false;
@@ -27,7 +28,11 @@ export class EmailService {
     ]);
 
     constructor() {
+        if (EmailService.instance) {
+            return EmailService.instance;
+        }
         this.initPromise = this.init();
+        EmailService.instance = this;
     }
 
     private extractDomain(email?: string): string | null {

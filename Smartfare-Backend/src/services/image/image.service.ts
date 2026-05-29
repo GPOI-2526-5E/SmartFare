@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 export class ImageService {
-    private unsplashAccessKey: string;
+    private static instance: ImageService;
+    private unsplashAccessKey: string = '';
     private readonly UNSPLASH_API_BASE = 'https://api.unsplash.com/search/photos';
     private readonly fallbackImages = [
         'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=1600&auto=format&fit=crop',
@@ -13,10 +14,14 @@ export class ImageService {
     ];
 
     constructor() {
+        if (ImageService.instance) {
+            return ImageService.instance;
+        }
         this.unsplashAccessKey = process.env.UNSPLASH_ACCESS_KEY || '';
         if (!this.unsplashAccessKey) {
             console.warn('⚠️  UNSPLASH_ACCESS_KEY not configured. Location images will use defaults.');
         }
+        ImageService.instance = this;
     }
 
     /**
