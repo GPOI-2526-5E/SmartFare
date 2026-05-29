@@ -4,7 +4,7 @@ import fs from 'fs';
 
 const router = express.Router();
 
-const TOKENS_PATH = path.join(process.cwd(), 'src', 'config', 'moderation-tokens.json');
+const TOKENS_PATH = path.join(process.cwd(), 'src', 'services', 'moderation', 'moderation-tokens.json');
 
 router.get('/moderation/tokens', (_req, res) => {
   try {
