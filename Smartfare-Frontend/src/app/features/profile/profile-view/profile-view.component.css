@@ -79,9 +79,8 @@
   width: 100%;
   padding: 0 2rem;
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 2.5rem;
-  margin-top: -40px; /* Reduced overlap */
   position: relative;
   z-index: 10;
 }
@@ -96,6 +95,7 @@
   padding: 6px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border: 4px solid #080d1a;
+  margin-top: -80px;
 }
 
 .avatar-img {
@@ -124,6 +124,7 @@
   flex: 1;
   padding-bottom: 1rem;
   min-width: 0;
+  padding-top: 1rem;
 }
 
 .user-name {
@@ -211,65 +212,62 @@
 }
 
 .user-stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  display: flex;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 0;
   padding: 0;
   border: none;
 }
 
 .stat-item {
   display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  gap: 8px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   cursor: default;
-  padding: 0.95rem 1rem;
+  padding: 1rem 1.5rem;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  min-height: 76px;
+  min-width: 110px;
 }
 
 .stat-item--link {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  color: inherit;
   cursor: pointer;
-  border-radius: 8px;
-  transition: opacity 0.2s;
+  transition: all 0.2s ease;
 }
 
 .stat-item--link:hover {
-  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .stat-item--link:hover .stat-label {
-  text-decoration: underline;
+  color: white;
 }
 
 .stat-value {
-  font-size: 1.25rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: white;
-  letter-spacing: -0.5px;
+  line-height: 1;
 }
 
 .stat-label {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 500;
-  text-transform: lowercase;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.2s;
 }
 
 /* Actions */
 .profile-actions {
-  padding-bottom: 0;
   display: flex;
   justify-content: flex-end;
+  width: 100%;
 }
 
 .btn-settings {
@@ -337,13 +335,14 @@
   cursor: not-allowed;
 }
 
-/* ─/* Summary Row (Stats + Actions) */
+/* Summary Row (Stats + Actions) */
 .profile-summary-row {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  align-items: stretch;
+  gap: 1.25rem;
+  align-items: flex-end;
   min-width: 260px;
+  padding-top: 1rem;
   padding-bottom: 1.5rem;
 }
 
@@ -555,8 +554,8 @@
     flex-direction: column;
     flex-wrap: nowrap;
     align-items: center;
-    text-align: left;
-    margin-top: -30px; /* Reduced overlap for mobile */
+    text-align: center;
+    margin-top: 0;
     gap: 1.35rem;
     padding: 0 1.5rem;
   }
@@ -564,6 +563,7 @@
   .avatar-wrapper {
     width: 92px;
     height: 92px;
+    margin-top: -46px;
   }
 
   .user-details {
@@ -602,18 +602,18 @@
   }
 
   .user-meta {
-    justify-content: flex-start;
+    justify-content: center;
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  .social-links {
+    justify-content: center;
   }
 
   .meta-item {
     font-size: 0.75rem;
     padding: 0.3rem 0.6rem;
-  }
-
-  .social-links {
-    justify-content: flex-start;
   }
 
   .user-name {

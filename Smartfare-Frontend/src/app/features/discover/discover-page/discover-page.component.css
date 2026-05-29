@@ -1534,7 +1534,7 @@
   transform: scale(1.06);
 }
 
-.discover-itinerary-card__media span {
+.discover-itinerary-card__place {
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -1548,6 +1548,26 @@
   font-size: 0.82rem;
   font-weight: 850;
   backdrop-filter: blur(12px);
+}
+
+.discover-itinerary-card__likes {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(10, 8, 20, 0.75);
+  color: #fb7185;
+  font-size: 0.78rem;
+  font-weight: 800;
+  backdrop-filter: blur(6px);
+}
+
+.discover-itinerary-card__likes i {
+  font-size: 0.7rem;
 }
 
 .discover-itinerary-card__body {

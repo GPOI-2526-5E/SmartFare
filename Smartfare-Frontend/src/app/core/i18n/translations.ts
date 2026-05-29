@@ -469,7 +469,7 @@ export const PHRASE_TRANSLATIONS: Record<string, PhraseTranslations> = {
     es: 'Abrir mapa interactivo',
   },
   'Cerca Genova, un itinerario o un viaggiatore': {
-    en: 'Search Genoa, an itinerary or a traveler',
+    en: 'Search Genova, an itinerary or a traveler',
     fr: 'Rechercher Genes, un itineraire ou un voyageur',
     de: 'Suche Genua, eine Route oder einen Reisenden',
     es: 'Busca Genova, un itinerario o un viajero',

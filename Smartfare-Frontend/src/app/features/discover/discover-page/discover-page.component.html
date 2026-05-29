@@ -255,7 +255,8 @@
                 >
                   <div class="discover-itinerary-card__media">
                     <img [src]="tripCover(trip)" [alt]="trip.name" loading="lazy" />
-                    <span>{{ trip.location?.name || 'Italia' }}</span>
+                    <span class="discover-itinerary-card__likes"><i class="bi bi-heart-fill"></i> {{ trip._count?.favorites ?? 0 }}</span>
+                    <span class="discover-itinerary-card__place">{{ trip.location?.name || 'Italia' }}</span>
                   </div>
                   <div class="discover-itinerary-card__body">
                     <h3>{{ trip.name }}</h3>
@@ -305,7 +306,8 @@
                 >
                   <div class="discover-itinerary-card__media">
                     <img [src]="tripCover(trip)" [alt]="trip.name" loading="lazy" />
-                    <span>{{ trip.location?.name || 'Italia' }}</span>
+                    <span class="discover-itinerary-card__likes"><i class="bi bi-heart-fill"></i> {{ trip._count?.favorites ?? 0 }}</span>
+                    <span class="discover-itinerary-card__place">{{ trip.location?.name || 'Italia' }}</span>
                   </div>
                   <div class="discover-itinerary-card__body">
                     <h3>{{ trip.name }}</h3>

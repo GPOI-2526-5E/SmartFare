@@ -87,6 +87,7 @@ export class UIStateService {
 
   setSelectedDay(day: number) {
     this.selectedDay.set(day);
+    this.visibleDayRoute.set(day);
   }
 
   getDefaultDayColor(day: number): string {

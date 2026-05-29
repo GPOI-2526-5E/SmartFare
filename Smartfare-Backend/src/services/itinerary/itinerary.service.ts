@@ -1099,7 +1099,7 @@ export class ItineraryService {
                         }
                     },
                     _count: {
-                        select: { items: true }
+                        select: { items: true, favorites: true }
                     }
                 }
             });
@@ -1121,7 +1121,7 @@ export class ItineraryService {
                         include: {
                             location: true,
                             user: { include: { profile: true } },
-                            _count: { select: { items: true } }
+                            _count: { select: { items: true, favorites: true } }
                         }
                     }
                 }
