@@ -14,10 +14,11 @@ export const DEFAULT_SITE_URL = 'https://smartfare.nicolas-dominici.it';
 
 export const SITE_NAME = 'SmartFare';
 export const SITE_TAGLINE = 'Pianifica viaggi in Italia con AI, mappe e itinerari su misura';
+export const DEFAULT_OG_IMAGE = '/assets/preview6.png';
 
 /**
  * Primary navigation mirrored in Google Sitelinks (SiteNavigationElement).
- * Order matches the main navbar + Accedi.
+ * Only public, indexable routes — no auth-gated pages.
  */
 export const SITE_NAVIGATION: ReadonlyArray<{
   name: string;
@@ -38,11 +39,6 @@ export const SITE_NAVIGATION: ReadonlyArray<{
     name: 'Crea',
     url: '/itineraries/new',
     description: 'Crea un nuovo itinerario: scegli date, meta e costruisci il tuo viaggio.'
-  },
-  {
-    name: 'AI Planner',
-    url: '/voyager',
-    description: 'Assistente AI per generare itinerari personalizzati in pochi minuti.'
   },
   {
     name: 'Mappa interattiva',
@@ -90,7 +86,7 @@ export const SEO_PAGES: Record<string, SeoPageConfig> = {
       'Chiedi all\'assistente AI di progettare il tuo viaggio in Italia. Genera itinerari intelligenti, salva le conversazioni e passa al builder.',
     keywords: 'AI planner viaggi, assistente viaggio, itinerario AI, chat viaggio',
     path: '/voyager',
-    navLabel: 'AI Planner'
+    robots: 'noindex, follow'
   },
   'interactive-map': {
     title: 'Mappa interattiva dell\'Italia | SmartFare',
@@ -106,6 +102,7 @@ export const SEO_PAGES: Record<string, SeoPageConfig> = {
       'Accedi a SmartFare con email o social login. Salva itinerari, usa l\'AI Planner e gestisci il profilo viaggiatore.',
     keywords: 'accedi SmartFare, login viaggi, account viaggiatore',
     path: '/login',
+    robots: 'noindex, follow',
     navLabel: 'Accedi'
   },
   register: {
@@ -113,7 +110,8 @@ export const SEO_PAGES: Record<string, SeoPageConfig> = {
     description:
       'Crea un account SmartFare in pochi secondi. Registrati per salvare itinerari, seguire creator e usare l\'AI Planner.',
     keywords: 'registrati SmartFare, creare account viaggi, iscrizione gratuita',
-    path: '/register'
+    path: '/register',
+    robots: 'noindex, follow'
   },
   'forgot-password': {
     title: 'Recupera password | SmartFare',
@@ -208,7 +206,7 @@ export const SEO_PAGES: Record<string, SeoPageConfig> = {
   }
 };
 
-/** Public URLs included in sitemap.xml (canonical paths only). */
+/** Public URLs included in sitemap.xml and prerendered at build time. */
 export const SITEMAP_ENTRIES: ReadonlyArray<{
   loc: string;
   changefreq: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
@@ -217,10 +215,6 @@ export const SITEMAP_ENTRIES: ReadonlyArray<{
   { loc: '/', changefreq: 'weekly', priority: 1.0 },
   { loc: '/discover', changefreq: 'daily', priority: 0.95 },
   { loc: '/itineraries/new', changefreq: 'weekly', priority: 0.9 },
-  { loc: '/voyager', changefreq: 'weekly', priority: 0.9 },
   { loc: '/interactive-map', changefreq: 'weekly', priority: 0.85 },
-  { loc: '/login', changefreq: 'monthly', priority: 0.8 },
-  { loc: '/register', changefreq: 'monthly', priority: 0.75 },
-  { loc: '/manual/planner', changefreq: 'monthly', priority: 0.7 },
-  { loc: '/forgot-password', changefreq: 'yearly', priority: 0.3 }
+  { loc: '/manual/planner', changefreq: 'monthly', priority: 0.7 }
 ];

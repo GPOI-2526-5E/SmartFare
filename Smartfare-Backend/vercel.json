@@ -1,0 +1,29 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "server.ts",
+        "use": "@vercel/node",
+        "config": {
+          "includeFiles": "public/**"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "server.ts"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/(.*)",
+        "headers": [
+          { "key": "Access-Control-Allow-Origin", "value": "https://nicolas-dominici.it" },
+          { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,POST,PUT,DELETE" },
+          { "key": "Access-Control-Allow-Credentials", "value": "true" }
+        ]
+      }
+    ]
+    
+  }
