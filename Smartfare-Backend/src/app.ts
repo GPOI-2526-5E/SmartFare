@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import fs from "fs";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth.route";
@@ -21,6 +22,12 @@ import { contentModerationMiddleware } from './middleware/content-moderation.mid
 export function createApp() {
   const app = express();
   const startedAt = Date.now();
+  const publicDirCandidates = [
+    path.resolve(__dirname, '..', 'public'),
+    path.resolve(process.cwd(), 'public'),
+    path.resolve(process.cwd(), 'Smartfare-Backend', 'public')
+  ];
+  const publicDir = publicDirCandidates.find(candidate => fs.existsSync(candidate));
 
   // Required behind Render/other reverse proxies for correct client IP and rate-limiting.
   app.set('trust proxy', 1);
@@ -79,11 +86,17 @@ export function createApp() {
   app.use(contentModerationMiddleware);
 
   // Static
-  app.use(express.static(path.join(process.cwd(), "/public")));
+  if (publicDir) {
+    app.use(express.static(publicDir));
+  }
 
   // Route home
   app.get("/", (req, res) => {
-    res.sendFile(path.join(process.cwd(), "/public", "index.html"));
+    if (publicDir) {
+      res.sendFile(path.join(publicDir, "index.html"));
+      return;
+    }
+    res.status(200).send('<!doctype html><html><head><meta charset="utf-8"><title>SmartFare</title></head><body><h1>SmartFare</h1></body></html>');
   });
 
   // Health endpoint for Render checks

@@ -1,17 +1,13 @@
-import fs from 'fs';
-import path from 'path';
+import moderationTokens from './moderation-tokens.json';
 
 type TokensJson = Record<string, any>;
-
-const TOKENS_PATH = path.join(process.cwd(), 'src', 'services', 'moderation', 'moderation-tokens.json');
 
 let tokensCache: TokensJson | null = null;
 let simpleTokenMap: Map<string, string[]> | null = null;
 
 function loadTokensFile(): TokensJson {
   if (tokensCache) return tokensCache;
-  const raw = fs.readFileSync(TOKENS_PATH, 'utf8');
-  tokensCache = JSON.parse(raw) as TokensJson;
+  tokensCache = moderationTokens as TokensJson;
   return tokensCache;
 }
 
