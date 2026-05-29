@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CookieConsentService, CookiePrefs } from '../../../core/services/cookie-consent.service';
 import { LegalService } from '../../../core/services/legal.service';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'sf-cookie-consent',
@@ -13,7 +14,7 @@ import { LegalService } from '../../../core/services/legal.service';
 })
 export class CookieConsentComponent implements OnInit {
   @HostBinding('class.sf-theme-dark') darkMode = false;
-  visible   = false;
+  visible = false;
   modalOpen = false;
   tab: 'info' | 'prefs' = 'info';
 
@@ -21,7 +22,7 @@ export class CookieConsentComponent implements OnInit {
 
   private readonly legalService = inject(LegalService);
 
-  constructor(private consent: CookieConsentService) {
+  constructor(private consent: CookieConsentService, private router: Router) {
     effect(() => {
       if (this.legalService.showCookieModal()) {
         this.openModal();
@@ -42,14 +43,14 @@ export class CookieConsentComponent implements OnInit {
     }
   }
 
-  openModal(): void  {
+  openModal(): void {
     const saved = this.consent.getPreferences();
     if (saved) this.prefs = { ...saved };
     this.modalOpen = true;
     this.tab = 'info';
   }
-  closeModal(): void { 
-    this.modalOpen = false; 
+  closeModal(): void {
+    this.modalOpen = false;
     this.legalService.closeCookieModal();
   }
 
@@ -62,6 +63,8 @@ export class CookieConsentComponent implements OnInit {
     this.prefs = { necessary: true, functional: true };
     this.visible = false;
     this.closeModal();
+    this.reloadComponent();
+
   }
 
   rejectAll(): void {
@@ -69,6 +72,13 @@ export class CookieConsentComponent implements OnInit {
     this.prefs = { necessary: true, functional: false };
     this.visible = false;
     this.closeModal();
+    this.reloadComponent();
+  }
+  
+  reloadComponent() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([this.router.url]);
+    });
   }
 
   saveAndClose(): void {

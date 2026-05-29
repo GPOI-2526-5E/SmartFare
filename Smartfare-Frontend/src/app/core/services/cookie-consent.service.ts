@@ -15,14 +15,8 @@ export class CookieConsentService {
   // Reactive state management using Angular Signals
   private prefsSignal = signal<CookiePrefs | null>(this.getPreferences());
   
-  /**
-   * Signal exposing the current cookie preferences.
-   */
   readonly preferences = computed(() => this.prefsSignal());
 
-  /**
-   * Signal indicating whether the user has given consent.
-   */
   readonly consented = computed(() => this.getCookie(KEY_CONSENT) !== null);
 
   isAllowed(category: CookieCategory): boolean {
