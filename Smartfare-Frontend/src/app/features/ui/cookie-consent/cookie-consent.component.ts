@@ -74,10 +74,12 @@ export class CookieConsentComponent implements OnInit {
     this.closeModal();
     this.reloadComponent();
   }
-  
+
   reloadComponent() {
+    const currentUrl = this.router.url;
+
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate([this.router.url]);
+      this.router.navigate([currentUrl]);
     });
   }
 
