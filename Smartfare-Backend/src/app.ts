@@ -55,7 +55,7 @@ export function createApp() {
   });
   app.use(globalLimiter);
 
-  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:4200')
+  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:4200,https://smartfare.nicolas-dominici.it')
     .split(',')
     .map(o => o.trim())
     .filter(Boolean);
