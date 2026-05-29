@@ -98,9 +98,6 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.ui.markerColor();
       this.ui.visibleDayRoute();
 
-      // Debug log to trace visibleDayRoute changes that should affect map
-      console.log('[BuilderMap] effect tick', { visibleDayRoute: this.ui.visibleDayRoute(), markerColor: this.ui.markerColor() });
-
       // Trigger refresh when they change
       if (this.map) {
         this.refreshLayers(false);

@@ -79,25 +79,19 @@ export class UIStateService {
 
   setVisibleDayRoute(day: number | 'all') {
     const prev = this.visibleDayRoute();
-    console.log('[UIState] setVisibleDayRoute start', { prev, next: day });
     this.visibleDayRoute.set(day);
-    console.log('[UIState] setVisibleDayRoute end', { now: this.visibleDayRoute() });
     // If we select a specific day for the route, also update the active day for adding items
     if (day !== 'all') {
       const prevSel = this.selectedDay();
-      console.log('[UIState] setVisibleDayRoute -> setSelectedDay', { prevSel, nextSel: day });
       this.selectedDay.set(day);
-      console.log('[UIState] setSelectedDay after setVisibleDayRoute', { nowSel: this.selectedDay() });
     }
   }
 
   setSelectedDay(day: number) {
     const prev = this.selectedDay();
-    console.log('[UIState] setSelectedDay start', { prev, next: day });
     this.selectedDay.set(day);
     // Mirror selection to visible route (keep map in sync)
     this.visibleDayRoute.set(day);
-    console.log('[UIState] setSelectedDay end', { nowSelected: this.selectedDay(), nowVisible: this.visibleDayRoute() });
   }
 
   getDefaultDayColor(day: number): string {

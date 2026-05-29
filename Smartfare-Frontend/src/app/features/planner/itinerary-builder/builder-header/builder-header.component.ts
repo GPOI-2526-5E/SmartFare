@@ -30,6 +30,7 @@ type CategoryPill = {
 })
 export class BuilderHeaderComponent {
   private workspaceSignal = signal<ItineraryWorkspace | null>(null);
+  private readonly visibleDaySelection = signal<number | 'all'>('all');
 
   @Input()
   set workspace(value: ItineraryWorkspace | null) {
@@ -80,6 +81,11 @@ export class BuilderHeaderComponent {
     return typeof route === 'number' ? route : this.ui.selectedDay();
   });
 
+  readonly visibleDayLabel = computed(() => {
+    const day = this.visibleDaySelection();
+    return day === 'all' ? 'Tutti i giorni' : `Giorno ${day}`;
+  });
+
   selectPill(pill: CategoryPill) {
     this.ui.setType(pill.type);
     this.ui.setCategory(pill.categoryId);
@@ -121,12 +127,11 @@ export class BuilderHeaderComponent {
   // Custom dropdown states
   showVisibleDayDropdown = signal(false);
 
-  readonly visibleDayLabel = computed(() => {
-    const day = this.ui.visibleDayRoute();
-    return day === 'all' ? 'Tutti i giorni' : `Percorso G${day}`;
-  });
-
   constructor() {
+    effect(() => {
+      this.visibleDaySelection.set(this.ui.visibleDayRoute());
+    });
+
     effect(() => {
       const days = this.availableDays();
       const lastDay = days[days.length - 1] ?? 1;
@@ -253,7 +258,12 @@ export class BuilderHeaderComponent {
   onVisibleDayChange(event: Event) {
     const select = event.target as HTMLSelectElement;
     const val = select.value === 'all' ? 'all' : parseInt(select.value, 10);
-    this.ui.setVisibleDayRoute(val as number | 'all');
+    this.visibleDaySelection.set(val as number | 'all');
+    if (val === 'all') {
+      this.ui.setVisibleDayRoute('all');
+    } else {
+      this.ui.setSelectedDay(val);
+    }
     this.ui.setActiveSurface('map');
   }
 
@@ -275,7 +285,12 @@ export class BuilderHeaderComponent {
   }
 
   selectVisibleDay(day: number | 'all') {
-    this.ui.setVisibleDayRoute(day);
+    this.visibleDaySelection.set(day);
+    if (day === 'all') {
+      this.ui.setVisibleDayRoute('all');
+    } else {
+      this.ui.setSelectedDay(day);
+    }
     this.showVisibleDayDropdown.set(false);
     this.ui.setActiveSurface('map');
   }
