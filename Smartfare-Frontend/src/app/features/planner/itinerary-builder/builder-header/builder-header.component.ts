@@ -137,10 +137,17 @@ export class BuilderHeaderComponent {
   });
 
   // ── Color picker ──────────────────────────────────────────────────────────
-  readonly showDayColorPicker = computed(() => this.ui.visibleDayRoute() !== 'all');
+  readonly visibleDayRoute = computed(() => this.ui.visibleDayRoute());
+
+  readonly visibleDayLabel = computed(() => {
+    const route = this.visibleDayRoute();
+    return route === 'all' ? 'Tutti i giorni' : `Giorno ${route}`;
+  });
+
+  readonly showDayColorPicker = computed(() => this.visibleDayRoute() !== 'all');
 
   readonly colorPickerDay = computed(() => {
-    const route = this.ui.visibleDayRoute();
+    const route = this.visibleDayRoute();
     return typeof route === 'number' ? route : this.ui.selectedDay();
   });
 
