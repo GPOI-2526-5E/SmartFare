@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Itinerary } from '../../../core/models/itinerary.model';
 import { AppLoaderComponent } from '../../ui/loader/loader.component';
+import { ItineraryCardComponent } from '../../../shared/components/itinerary-card/itinerary-card.component';
 
 @Component({
   selector: 'app-featured-itineraries',
   standalone: true,
-  imports: [CommonModule, RouterLink, AppLoaderComponent],
+  imports: [CommonModule, RouterLink, AppLoaderComponent, ItineraryCardComponent],
   templateUrl: './featured-itineraries.component.html',
   styleUrl: './featured-itineraries.component.css'
 })
@@ -15,36 +16,6 @@ export class FeaturedItinerariesComponent {
   @Input({ required: true }) itineraries: Itinerary[] = [];
   @Input() loading = false;
 
-  getDuration(itinerary: Itinerary): string {
-    const days = itinerary.durationDays;
-    if (days != null && days > 0) {
-      return `${days} ${days === 1 ? 'Giorno' : 'Giorni'} di Viaggio`;
-    }
-    return 'Durata non definita';
-  }
-
-  getItemCount(itinerary: Itinerary): number {
-    return itinerary._count?.items ?? itinerary.items?.length ?? 0;
-  }
-
-  getLikesCount(itinerary: Itinerary): number {
-    return itinerary._count?.favorites ?? 0;
-  }
-
-  getCreatorName(itinerary: Itinerary): string {
-    const p = itinerary.user?.profile;
-    if (p?.name || p?.surname) {
-      return `${p.name ?? ''} ${p.surname ?? ''}`.trim();
-    }
-    return 'Utente SmartFare';
-  }
-
-  getCreatorInitials(itinerary: Itinerary): string {
-    const p = itinerary.user?.profile;
-    const first = p?.name?.[0] ?? '';
-    const last = p?.surname?.[0] ?? '';
-    return (first + last).toUpperCase() || 'SF';
-  }
 
   trackById(_index: number, item: Itinerary) {
     return item.id;

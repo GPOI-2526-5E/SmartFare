@@ -17,52 +17,7 @@
       <app-loader [show]="loading"></app-loader>
       } @else {
       @for (itinerary of itineraries; track itinerary.id) {
-      <div class="itinerary-card">
-        <div class="card-image-wrap">
-          <img
-            [src]="itinerary.imageUrl || 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800'"
-            class="card-image" alt="Itinerary cover">
-        </div>
-        <div class="card-content">
-          <span class="location-tag">{{ itinerary.location?.name?.toUpperCase() || 'ITALIA' }}</span>
-          <h3>{{ itinerary.name }}</h3>
-          <p class="fi-card-desc">{{ itinerary.description || 'Nessuna descrizione disponibile per questo itinerario.' }}</p>
-
-          <div class="card-meta-row">
-            <div class="card-meta-item">
-              <i class="bi bi-geo-alt-fill"></i>
-              <span>{{ itinerary.location?.name || 'Destinazione libera' }}</span>
-            </div>
-            <div class="card-meta-item">
-              <i class="bi bi-collection-fill"></i>
-              <span>{{ getItemCount(itinerary) }} {{ getItemCount(itinerary) === 1 ? 'tappa' : 'tappe' }}</span>
-            </div>
-            <div class="card-meta-item likes-item">
-              <i class="bi bi-heart-fill heart-icon"></i>
-              <span>{{ getLikesCount(itinerary) }}</span>
-            </div>
-          </div>
-
-          <div class="card-footer">
-            <div class="card-footer-left">
-              <div class="creator-avatar" [title]="getCreatorName(itinerary)">
-                @if (itinerary.user?.profile?.avatarUrl) {
-                  <img [src]="itinerary.user!.profile!.avatarUrl" [alt]="getCreatorName(itinerary)" class="creator-img">
-                } @else {
-                  <span class="creator-initials">{{ getCreatorInitials(itinerary) }}</span>
-                }
-              </div>
-              <span class="days-info">
-                <i class="bi bi-clock"></i>
-                {{ getDuration(itinerary) }}
-              </span>
-            </div>
-            <a [routerLink]="['/itineraries/preview']" [queryParams]="{ itineraryId: itinerary.id }" class="view-plan">
-              Vai al Piano <i class="bi bi-arrow-right"></i>
-            </a>
-          </div>
-        </div>
-      </div>
+        <app-itinerary-card [itinerary]="itinerary" mode="link"></app-itinerary-card>
       }
       @if (!loading && (!itineraries || itineraries.length === 0)) {
       <div class="empty-state">

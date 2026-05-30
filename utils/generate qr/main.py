@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 
 BASE_DIR = Path(__file__).resolve().parent
 URL = "https://smartfare.nicolas-dominici.it"
-LOGO_PATH = BASE_DIR.parent.parent / "Smartfare-Frontend" / "public" / "favicon.png"
+LOGO_PATH = "https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png"
 OUTPUT_PATH = BASE_DIR / "smartfare_qr_final.png"
 
 

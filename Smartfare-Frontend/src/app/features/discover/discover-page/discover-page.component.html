@@ -246,43 +246,9 @@
             </header>
             <div class="itinerary-strip itinerary-strip--wrap">
               @for (trip of nearbyTrips(); track trip.id) {
-                <article
-                  class="discover-itinerary-card"
-                  [class.is-selected]="isTripSelected(trip)"
-                  (click)="selectTrip(trip)"
-                  role="button"
-                  tabindex="0"
-                >
-                  <div class="discover-itinerary-card__media">
-                    <img [src]="tripCover(trip)" [alt]="trip.name" loading="lazy" />
-                    <span class="discover-itinerary-card__likes"><i class="bi bi-heart-fill"></i> {{ trip._count?.favorites ?? 0 }}</span>
-                    <span class="discover-itinerary-card__place">{{ trip.location?.name || 'Italia' }}</span>
-                  </div>
-                  <div class="discover-itinerary-card__body">
-                    <h3>{{ trip.name }}</h3>
-                    <p>{{ trip.description || ('Pubblicato da ' + authorName(trip)) }}</p>
-                    <div class="discover-itinerary-card__footer">
-                      <button
-                        type="button"
-                        class="discover-itinerary-card__author"
-                        [disabled]="!trip.user?.id"
-                        (click)="openAuthorProfile(trip, $event)"
-                      >
-                        <span class="discover-itinerary-card__avatar">
-                          @if (creatorAvatarUrl(trip); as avatar) {
-                            <img [src]="avatar" [alt]="authorName(trip)" loading="lazy" />
-                          } @else {
-                            <span>{{ creatorInitials(trip) }}</span>
-                          }
-                        </span>
-                        <span>di {{ authorName(trip) }}</span>
-                      </button>
-                      <button type="button" class="discover-itinerary-card__preview" (click)="openPreview(trip, $event)">
-                        Anteprima <i class="bi bi-arrow-right"></i>
-                      </button>
-                    </div>
-                  </div>
-                </article>
+                <div class="discover-card-wrap" [class.is-selected]="isTripSelected(trip)" (click)="selectTrip(trip)">
+                  <app-itinerary-card [itinerary]="trip" mode="link"></app-itinerary-card>
+                </div>
               }
             </div>
           </section>
@@ -297,43 +263,9 @@
             </header>
             <div class="itinerary-strip itinerary-strip--wrap">
               @for (trip of latestTrips(); track trip.id) {
-                <article
-                  class="discover-itinerary-card"
-                  [class.is-selected]="isTripSelected(trip)"
-                  (click)="selectTrip(trip)"
-                  role="button"
-                  tabindex="0"
-                >
-                  <div class="discover-itinerary-card__media">
-                    <img [src]="tripCover(trip)" [alt]="trip.name" loading="lazy" />
-                    <span class="discover-itinerary-card__likes"><i class="bi bi-heart-fill"></i> {{ trip._count?.favorites ?? 0 }}</span>
-                    <span class="discover-itinerary-card__place">{{ trip.location?.name || 'Italia' }}</span>
-                  </div>
-                  <div class="discover-itinerary-card__body">
-                    <h3>{{ trip.name }}</h3>
-                    <p>{{ trip.description || ('Creato da ' + authorName(trip)) }}</p>
-                    <div class="discover-itinerary-card__footer">
-                      <button
-                        type="button"
-                        class="discover-itinerary-card__author"
-                        [disabled]="!trip.user?.id"
-                        (click)="openAuthorProfile(trip, $event)"
-                      >
-                        <span class="discover-itinerary-card__avatar">
-                          @if (creatorAvatarUrl(trip); as avatar) {
-                            <img [src]="avatar" [alt]="authorName(trip)" loading="lazy" />
-                          } @else {
-                            <span>{{ creatorInitials(trip) }}</span>
-                          }
-                        </span>
-                        <span>di {{ authorName(trip) }}</span>
-                      </button>
-                      <button type="button" class="discover-itinerary-card__preview" (click)="openPreview(trip, $event)">
-                        Anteprima <i class="bi bi-arrow-right"></i>
-                      </button>
-                    </div>
-                  </div>
-                </article>
+                <div class="discover-card-wrap" [class.is-selected]="isTripSelected(trip)" (click)="selectTrip(trip)">
+                  <app-itinerary-card [itinerary]="trip" mode="link"></app-itinerary-card>
+                </div>
               }
             </div>
           </section>

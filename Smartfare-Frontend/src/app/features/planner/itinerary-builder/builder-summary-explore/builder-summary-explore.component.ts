@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output, effect, injec
 import { CommonModule } from '@angular/common';
 import { Itinerary, ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
+import { ItineraryCardComponent } from '../../../../shared/components/itinerary-card/itinerary-card.component';
 import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-builder-summary-explore',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ItineraryCardComponent, RouterLink],
   templateUrl: './builder-summary-explore.component.html',
   styleUrls: ['./builder-summary-explore.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
