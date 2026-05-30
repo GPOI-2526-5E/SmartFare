@@ -18,7 +18,7 @@ import { environment } from '../../../../../environments/environment';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BuilderSummaryHeaderComponent {
-  private static readonly DEFAULT_COVER_IMAGE = '/assets/home-section.avif';
+  private static readonly DEFAULT_COVER_IMAGE = '/assets/default.jpg';
 
   workspace = input<ItineraryWorkspace | null>(null);
   @Input() readOnly = false;
@@ -41,6 +41,7 @@ export class BuilderSummaryHeaderComponent {
   isUploadingImage = signal<boolean>(false);
   isReadOnly = computed(() => this.readOnly);
   isAuthenticated = computed(() => this.authService.IsAuthenticated());
+  canTogglePublish = computed(() => !this.isReadOnly() && this.isAuthenticated());
 
   coverImageUrl = computed(() => this.itinerary()?.imageUrl || this.workspace()?.location?.image || BuilderSummaryHeaderComponent.DEFAULT_COVER_IMAGE);
 
@@ -178,6 +179,11 @@ export class BuilderSummaryHeaderComponent {
   }
 
   togglePublish(): void {
+    if (!this.canTogglePublish()) {
+      this.alertService.error('Devi essere loggato per pubblicare l\'itinerario.');
+      return;
+    }
+
     const current = this.itinerary();
     if (!current) return;
 

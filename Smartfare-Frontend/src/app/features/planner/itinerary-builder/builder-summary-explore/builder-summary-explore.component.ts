@@ -26,7 +26,8 @@ export class BuilderSummaryExploreComponent {
       const ws = this.workspace();
       if (ws?.location?.id) {
         this.itineraryService.getPublicItineraries({ locationId: ws.location.id }).subscribe(list => {
-          this.publicItineraries.set(list);
+          const randomThree = [...list].sort(() => 0.5 - Math.random()).slice(0, 3);
+          this.publicItineraries.set(randomThree);
         });
       }
     });

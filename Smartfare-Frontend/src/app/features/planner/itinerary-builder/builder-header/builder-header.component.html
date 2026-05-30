@@ -59,24 +59,41 @@
 
         <!-- Route day selector -->
         <div class="custom-dropdown" [class.open]="showVisibleDayDropdown()">
-          <div class="map-ctrl-btn" (click)="toggleVisibleDayDropdown($event)">
+          <div class="dropdown-trigger" (click)="toggleVisibleDayDropdown($event)">
             <i class="bi bi-map"></i>
-            @if (showDayColorPicker()) {
+
+            <!-- Pallino colore giorno: visibile solo quando è selezionato un giorno specifico -->
+            @if (ui.visibleDayRoute() !== 'all') {
               <span class="day-color-dot"
                 [style.background]="ui.dayRouteColors()[colorPickerDay()] || ui.getDefaultDayColor(colorPickerDay())">
               </span>
             }
-            <span>{{ visibleDayLabel() }}</span>
+
+            <span>
+              @if (ui.visibleDayRoute() === 'all') {
+                Tutti i giorni
+              } @else {
+                Giorno {{ ui.visibleDayRoute() }}
+              }
+            </span>
+
             <i class="bi bi-chevron-down" style="font-size:0.6rem; opacity:0.45;"></i>
           </div>
+
           @if (showVisibleDayDropdown()) {
             <div class="dropdown-menu-custom glass-effect">
-              <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === 'all'"
+
+              <!-- Opzione "Tutti i giorni" -->
+              <div class="dropdown-item-custom"
+                [class.active]="ui.visibleDayRoute() === 'all'"
                 (click)="selectVisibleDay('all')">
                 <i class="bi bi-calendar-range"></i> Tutti i giorni
               </div>
+
+              <!-- Opzioni per ogni giorno disponibile -->
               @for (day of availableDays(); track day) {
-                <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === day"
+                <div class="dropdown-item-custom"
+                  [class.active]="ui.visibleDayRoute() === day"
                   (click)="selectVisibleDay(day)">
                   <span class="day-color-dot"
                     [style.background]="ui.dayRouteColors()[day] || ui.getDefaultDayColor(day)">
@@ -84,6 +101,7 @@
                   Giorno {{ day }}
                 </div>
               }
+
             </div>
           }
         </div>
@@ -107,14 +125,14 @@
         <div class="layout-toggles d-none d-lg-flex">
           <button class="toggle-btn" [class.active]="ui.showSidebar()" (click)="ui.toggleSidebar()"
             title="Mostra/Nascondi scelte attività">
-            <i class="bi bi-layout-sidebar"></i>
+            <i class="bi bi-layout-sidebar"></i> <span>Attività</span>
           </button>
           <button class="toggle-btn" [class.active]="ui.showSummary()" (click)="ui.toggleSummary()"
             title="Riepilogo viaggio">
-            <i class="bi bi-journal-text"></i>
+            <i class="bi bi-journal-text"></i> <span>Riepilogo</span>
           </button>
           <button class="toggle-btn" [class.active]="ui.showChat()" (click)="ui.toggleChat()" title="Area AI">
-            <i class="bi bi-stars"></i>
+            <i class="bi bi-stars"></i> <span>AI</span>
           </button>
         </div>
       </div>
@@ -197,6 +215,7 @@
         </button>
       }
     </div>
+
     <!-- Scroll right button -->
     <button type="button" class="cat-scroll-btn cat-scroll-btn--right" (click)="scrollCategoryBar(280)" aria-hidden="true">
       <i class="bi bi-chevron-right"></i>

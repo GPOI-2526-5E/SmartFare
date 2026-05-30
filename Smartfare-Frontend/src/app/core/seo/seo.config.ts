@@ -14,7 +14,7 @@ export const DEFAULT_SITE_URL = 'https://smartfare.nicolas-dominici.it';
 
 export const SITE_NAME = 'SmartFare';
 export const SITE_TAGLINE = 'Pianifica viaggi in Italia con AI, mappe e itinerari su misura';
-export const DEFAULT_OG_IMAGE = '/assets/preview6.png';
+export const DEFAULT_OG_IMAGE = 'https://res.cloudinary.com/dxudggkln/image/upload/v1780136072/preview6_fhogrx.png';
 
 /**
  * Primary navigation mirrored in Google Sitelinks (SiteNavigationElement).

@@ -1,4 +1,16 @@
-import { Component, EventEmitter, HostListener, Input, Output, computed, effect, inject, signal, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+  computed,
+  inject,
+  signal,
+  ViewChild,
+  ElementRef,
+  effect
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -8,8 +20,6 @@ import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AlertService } from '../../../../core/services/alert.service';
 import { UIStateService } from '../../../../core/services/ui-state.service';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
-import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { colorFromId } from '../../../interactive-map/utils/map-category.util';
 
 type CategoryPill = {
@@ -29,8 +39,17 @@ type CategoryPill = {
   styleUrl: './builder-header.component.css'
 })
 export class BuilderHeaderComponent {
-  private workspaceSignal = signal<ItineraryWorkspace | null>(null);
-  private readonly visibleDaySelection = signal<number | 'all'>('all');
+
+  // ── Services ──────────────────────────────────────────────────────────────
+  readonly ui = inject(UIStateService);
+  private readonly authService = inject(AuthService);
+  private readonly itineraryService = inject(ItineraryService);
+  private readonly router = inject(Router);
+  private readonly alertService = inject(AlertService);
+  private readonly socialAuthService = inject(SocialAuthService);
+
+  // ── Workspace input ───────────────────────────────────────────────────────
+  private readonly workspaceSignal = signal<ItineraryWorkspace | null>(null);
 
   @Input()
   set workspace(value: ItineraryWorkspace | null) {
@@ -40,7 +59,51 @@ export class BuilderHeaderComponent {
     return this.workspaceSignal();
   }
 
-  // ── Category pills (computed from workspace) ───────────────────────────
+  // ── Outputs ───────────────────────────────────────────────────────────────
+  @Output() navRequest = new EventEmitter<string>();
+  @Output() saveRequest = new EventEmitter<void>();
+  @Output() exportRequest = new EventEmitter<'pdf'>();
+
+  // ── Dropdown state ────────────────────────────────────────────────────────
+  readonly showVisibleDayDropdown = signal(false);
+
+  // ── Itinerary state ───────────────────────────────────────────────────────
+  readonly itinerary = this.itineraryService.itinerary;
+  readonly autosaveStatus = this.itineraryService.autosaveStatus;
+  readonly canUndo = this.itineraryService.canUndo;
+  readonly canRedo = this.itineraryService.canRedo;
+
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  readonly isAuthenticated = computed(() => this.authService.IsAuthenticated());
+  readonly user = computed(() => this.authService.getUserData());
+
+  // ── Available days ────────────────────────────────────────────────────────
+  readonly availableDays = computed(() => {
+    const it = this.itinerary();
+    if (!it) return [1];
+
+    const usedDays = (it.items || [])
+      .map((item) => item.dayNumber || 1)
+      .filter((day) => Number.isFinite(day) && day > 0);
+
+    const highestUsedDay = usedDays.length ? Math.max(...usedDays) : 1;
+    const progressiveDays = highestUsedDay + 1;
+    let totalDaysFromDates = 1;
+
+    if (it.startDate && it.endDate) {
+      const start = new Date(it.startDate);
+      const end = new Date(it.endDate);
+      if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        totalDaysFromDates = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      }
+    }
+
+    const totalDays = Math.max(1, totalDaysFromDates, progressiveDays);
+    return Array.from({ length: totalDays }, (_, i) => i + 1);
+  });
+
+  // ── Category pills ────────────────────────────────────────────────────────
   readonly categoryPills = computed((): CategoryPill[] => {
     const ws = this.workspaceSignal();
     const pills: CategoryPill[] = [
@@ -73,7 +136,7 @@ export class BuilderHeaderComponent {
     return 'all';
   });
 
-  /** Mostra cambia-colore solo con un giorno specifico selezionato nel percorso. */
+  // ── Color picker ──────────────────────────────────────────────────────────
   readonly showDayColorPicker = computed(() => this.ui.visibleDayRoute() !== 'all');
 
   readonly colorPickerDay = computed(() => {
@@ -81,16 +144,144 @@ export class BuilderHeaderComponent {
     return typeof route === 'number' ? route : this.ui.selectedDay();
   });
 
-  readonly visibleDayLabel = computed(() => {
-    const day = this.visibleDaySelection();
-    return day === 'all' ? 'Tutti i giorni' : `Giorno ${day}`;
-  });
+  // ── Save status ───────────────────────────────────────────────────────────
+  get saveStatusIcon(): string {
+    const status = this.autosaveStatus();
+    if (status === 'saving') return 'bi bi-cloud-upload';
+    if (status === 'error') return 'bi bi-cloud-slash';
+    return 'bi bi-cloud-check';
+  }
 
-  selectPill(pill: CategoryPill) {
+  // ── ViewChild ─────────────────────────────────────────────────────────────
+  @ViewChild('categoryBar', { static: false }) categoryBarRef?: ElementRef<HTMLElement>;
+
+  // ── Constructor: solo l'effect di reset dei giorni fuori range ────────────
+  constructor() {
+    // Inizializza i colori dei giorni e reimposta il giorno
+    // visibile se supera il massimo disponibile.
+    // Legge solo availableDays() — NON legge visibleDayRoute()
+    // per evitare side-effect sul segnale che vogliamo osservare.
+    effect(() => {
+      const days = this.availableDays();
+      const lastDay = days[days.length - 1] ?? 1;
+
+      // Inizializza colori
+      days.forEach((day) => this.ui.ensureDayColor(day));
+
+      // Reset selectedDay se fuori range
+      if (this.ui.selectedDay() > lastDay) {
+        this.ui.setSelectedDay(lastDay);
+      }
+    });
+  }
+
+  // ── Day selection ─────────────────────────────────────────────────────────
+
+  /**
+   * Unico punto di scrittura per la selezione del giorno visibile.
+   * Chiama solo setVisibleDayRoute — il service aggiorna anche selectedDay internamente.
+   * Il template legge ui.visibleDayRoute() direttamente, quindi si aggiorna immediatamente.
+   */
+  selectVisibleDay(day: number | 'all'): void {
+    this.ui.setVisibleDayRoute(day);
+    this.showVisibleDayDropdown.set(false);
+    this.ui.setActiveSurface('map');
+  }
+
+  toggleVisibleDayDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showVisibleDayDropdown.update(v => !v);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.custom-dropdown')) {
+      this.showVisibleDayDropdown.set(false);
+    }
+  }
+
+  // ── Category pill ─────────────────────────────────────────────────────────
+  selectPill(pill: CategoryPill): void {
     this.ui.setType(pill.type);
     this.ui.setCategory(pill.categoryId);
   }
 
+  // ── Category bar scroll ───────────────────────────────────────────────────
+  scrollCategoryBar(amount: number): void {
+    const el = this.categoryBarRef?.nativeElement;
+    if (!el) return;
+    el.scrollBy({ left: amount, behavior: 'smooth' });
+  }
+
+  // ── Map view ──────────────────────────────────────────────────────────────
+  showSelectedMarkers(): void {
+    this.ui.setMapView('selected');
+    this.ui.setActiveSurface('map');
+    this.alertService.info('Vista mappa: solo marker selezionati');
+  }
+
+  showAreaMarkers(): void {
+    this.ui.setMapView('all');
+    this.ui.setActiveSurface('map');
+    this.alertService.info('Vista mappa: tutti i punti disponibili');
+  }
+
+  // ── Undo / Redo ───────────────────────────────────────────────────────────
+  undo(): void { this.itineraryService.undo(); }
+  redo(): void { this.itineraryService.redo(); }
+
+  // ── Color change ──────────────────────────────────────────────────────────
+  onDayColorChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.ui.setDayColor(this.colorPickerDay(), input.value);
+    this.ui.setActiveSurface('map');
+  }
+
+  // ── Save ──────────────────────────────────────────────────────────────────
+  onNavRequest(url: string, event: Event): void {
+    event.preventDefault();
+    this.navRequest.emit(url);
+  }
+
+  updateName(newName: string): void {
+    const current = this.itinerary();
+    if (current) {
+      this.itineraryService.setCurrentItinerary({
+        ...current,
+        name: newName?.trim() || 'Senza titolo'
+      });
+    }
+  }
+
+  saveItinerary(): void {
+    if (!this.isAuthenticated()) {
+      this.saveRequest.emit();
+      return;
+    }
+    const current = this.itinerary();
+    if (current) {
+      this.itineraryService.saveToBackend(current).subscribe({
+        next: (saved) => {
+          if (!saved) return;
+          this.alertService.success('Itinerario salvato con successo!');
+          if (saved.id) {
+            sessionStorage.setItem('last_saved_itinerary_id', saved.id.toString());
+            sessionStorage.setItem('last_saved_itinerary_updated_at', saved.updatedAt || '');
+          }
+          this.itineraryService.clearDraft();
+          this.router.navigate(['/home']);
+        },
+        error: () => this.alertService.error('Errore durante il salvataggio.')
+      });
+    }
+  }
+
+  requestExport(): void {
+    this.exportRequest.emit('pdf');
+  }
+
+  // ── Private helpers ───────────────────────────────────────────────────────
   private catIcon(name: string): string {
     const n = name.toLowerCase();
     if (n.includes('muse') || n.includes('monument') || n.includes('storico')) return 'bi-bank';
@@ -103,203 +294,5 @@ export class BuilderHeaderComponent {
     if (n.includes('arte') || n.includes('galler')) return 'bi-palette';
     if (n.includes('beach') || n.includes('spiaggia')) return 'bi-water';
     return 'bi-compass';
-  }
-
-  @Output() navRequest = new EventEmitter<string>();
-  @Output() saveRequest = new EventEmitter<void>();
-  @Output() exportRequest = new EventEmitter<'pdf'>();
-
-  private authService = inject(AuthService);
-  private itineraryService = inject(ItineraryService);
-  private router = inject(Router);
-  private alertService = inject(AlertService);
-  private socialAuthService = inject(SocialAuthService);
-  ui = inject(UIStateService);
-
-  @ViewChild('categoryBar', { static: false }) categoryBarRef?: ElementRef<HTMLElement>;
-
-  scrollCategoryBar(amount: number) {
-    const el = this.categoryBarRef?.nativeElement;
-    if (!el) return;
-    el.scrollBy({ left: amount, behavior: 'smooth' });
-  }
-
-  // Custom dropdown states
-  showVisibleDayDropdown = signal(false);
-
-  constructor() {
-    effect(() => {
-      this.visibleDaySelection.set(this.ui.visibleDayRoute());
-    });
-
-    effect(() => {
-      const days = this.availableDays();
-      const lastDay = days[days.length - 1] ?? 1;
-
-      days.forEach((day) => this.ui.ensureDayColor(day));
-
-      if (this.ui.selectedDay() > lastDay) {
-        this.ui.setSelectedDay(lastDay);
-      }
-
-      const visibleDay = this.ui.visibleDayRoute();
-      if (visibleDay !== 'all' && visibleDay > lastDay) {
-        this.ui.setVisibleDayRoute('all');
-      }
-    });
-  }
-
-  isAuthenticated = computed(() => this.authService.IsAuthenticated());
-
-  // Use computed to react to token changes immediately
-  user = computed(() => this.authService.getUserData());
-  itinerary = this.itineraryService.itinerary;
-  autosaveStatus = this.itineraryService.autosaveStatus;
-
-  canUndo = this.itineraryService.canUndo;
-  canRedo = this.itineraryService.canRedo;
-
-  undo() {
-    this.itineraryService.undo();
-  }
-
-  redo() {
-    this.itineraryService.redo();
-  }
-
-  availableDays = computed(() => {
-    const it = this.itinerary();
-    if (!it) return [1];
-
-    const usedDays = (it.items || [])
-      .map((item) => item.dayNumber || 1)
-      .filter((day) => Number.isFinite(day) && day > 0);
-
-    const highestUsedDay = usedDays.length ? Math.max(...usedDays) : 1;
-    const progressiveDays = highestUsedDay + 1;
-    let totalDaysFromDates = 1;
-
-    if (it.startDate && it.endDate) {
-      const start = new Date(it.startDate);
-      const end = new Date(it.endDate);
-
-      if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
-        const diffTime = Math.abs(end.getTime() - start.getTime());
-        totalDaysFromDates = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      }
-    }
-
-    const totalDays = Math.max(1, totalDaysFromDates, progressiveDays);
-    return Array.from({ length: totalDays }, (_, i) => i + 1);
-  });
-
-  get saveStatusIcon(): string {
-    const status = this.autosaveStatus();
-
-    if (status === 'saving') return 'bi bi-cloud-upload';
-    if (status === 'error') return 'bi bi-cloud-slash';
-    return 'bi bi-cloud-check';
-  }
-
-  onNavRequest(url: string, event: Event) {
-    event.preventDefault();
-    this.navRequest.emit(url);
-  }
-
-  updateName(newName: string) {
-    const current = this.itinerary();
-    if (current) {
-      this.itineraryService.setCurrentItinerary({
-        ...current,
-        name: newName?.trim() || 'Senza titolo'
-      });
-    }
-  }
-  saveItinerary() {
-    if (!this.isAuthenticated()) {
-      this.saveRequest.emit();
-      return;
-    }
-
-    const current = this.itinerary();
-    if (current) {
-      this.itineraryService.saveToBackend(current).subscribe({
-        next: (saved) => {
-          if (!saved) {
-            return;
-          }
-
-          this.alertService.success('Itinerario salvato con successo!');
-
-          if (saved && saved.id) {
-            // Track exactly what we saved to avoid resume prompts for it
-            sessionStorage.setItem('last_saved_itinerary_id', saved.id.toString());
-            sessionStorage.setItem('last_saved_itinerary_updated_at', saved.updatedAt || '');
-          }
-
-          this.itineraryService.clearDraft();
-          this.router.navigate(['/home']);
-        },
-        error: () => this.alertService.error('Errore durante il salvataggio.')
-      });
-    }
-  }
-
-  requestExport() {
-    this.exportRequest.emit('pdf');
-  }
-
-  onDayColorChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.ui.setDayColor(this.colorPickerDay(), input.value);
-    this.ui.setActiveSurface('map');
-  }
-
-  onVisibleDayChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const val = select.value === 'all' ? 'all' : parseInt(select.value, 10);
-    this.visibleDaySelection.set(val as number | 'all');
-    if (val === 'all') {
-      this.ui.setVisibleDayRoute('all');
-    } else {
-      this.ui.setSelectedDay(val);
-    }
-    this.ui.setActiveSurface('map');
-  }
-
-  showSelectedMarkers() {
-    this.ui.setMapView('selected');
-    this.ui.setActiveSurface('map');
-    this.alertService.info('Vista mappa: solo marker selezionati');
-  }
-
-  showAreaMarkers() {
-    this.ui.setMapView('all');
-    this.ui.setActiveSurface('map');
-    this.alertService.info('Vista mappa: tutti i punti disponibili');
-  }
-
-  toggleVisibleDayDropdown(event: Event) {
-    event.stopPropagation();
-    this.showVisibleDayDropdown.update(v => !v);
-  }
-
-  selectVisibleDay(day: number | 'all') {
-    this.visibleDaySelection.set(day);
-    if (day === 'all') {
-      this.ui.setVisibleDayRoute('all');
-    } else {
-      this.ui.setSelectedDay(day);
-    }
-    this.showVisibleDayDropdown.set(false);
-    this.ui.setActiveSurface('map');
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.custom-dropdown')) {
-      this.showVisibleDayDropdown.set(false);
-    }
   }
 }
