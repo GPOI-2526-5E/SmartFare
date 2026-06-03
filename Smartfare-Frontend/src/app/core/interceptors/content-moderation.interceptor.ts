@@ -9,48 +9,38 @@ type ModerationIssue = {
   category: ModerationCategory;
 };
 
-const SKIPPED_KEYS = new Set([
-  'password',
-  'newPassword',
-  'confirmPassword',
-  'token',
-  'code',
-  'email',
-  'idToken',
-  'accessToken',
-  'refreshToken',
-  'avatarUrl',
-  'backgroundImageUrl',
-  'image',
-  'imageUrl',
-  'photo',
-  'photoUrl',
-  'picture',
-  'thumbnail',
-  'thumb',
-  'cover',
-  'coverImage',
-  'logo',
-  'icon',
-  'instagramUrl',
-  'twitterUrl',
-  'returnUrl',
-  'visibilityCode',
-  'birthDate',
-  'startDate',
-  'endDate',
-  'plannedStartAt',
-  'plannedEndAt',
-  'groupStartAt',
-  'groupEndAt',
-  'locationId',
-  'activityId',
-  'accommodationId',
-  'dayNumber',
-  'orderInt',
-  'id',
-  'mode'
+const MODERATED_KEYS = new Set([
+  'bio',
+  'note',
+  'notes',
+  'description',
+  'title',
+  'groupName',
+  'comment',
+  'message',
+  'text',
+  'content',
+  'review',
+  'about',
+  'prompt',
+  'style',
+  'pace',
+  'interests',
+  'name',
+  'surname',
+  'firstName',
+  'lastName',
+  'itineraryDescription'
 ]);
+
+function isModeratedPath(path: Array<string | number>): boolean {
+  for (const seg of path) {
+    if (typeof seg === 'string' && MODERATED_KEYS.has(seg)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // Token store loaded from backend: /public/moderation/tokens
 const tokenStore: {
@@ -105,13 +95,7 @@ async function initTokens() {
 // kick off async load (fire-and-forget)
 void initTokens();
 
-function shouldInspectKey(key: string | number | undefined): boolean {
-  if (key === undefined || key === null) {
-    return true;
-  }
 
-  return !SKIPPED_KEYS.has(String(key));
-}
 
 function normalizeText(value: string): string {
   return value.normalize('NFKC').trim();
@@ -147,23 +131,22 @@ function detectCategory(text: string): ModerationCategory | null {
   return null;
 }
 
-function collectIssues(value: unknown, path: Array<string | number> = [], key?: string | number): ModerationIssue[] {
-  if (!shouldInspectKey(key)) {
+function collectIssues(value: unknown, path: Array<string | number> = []): ModerationIssue[] {
+  if (typeof value === 'string') {
+    if (isModeratedPath(path)) {
+      const category = detectCategory(value);
+      return category ? [{ path: path.join('.'), category }] : [];
+    }
     return [];
   }
 
-  if (typeof value === 'string') {
-    const category = detectCategory(value);
-    return category ? [{ path: path.join('.'), category }] : [];
-  }
-
   if (Array.isArray(value)) {
-    return value.flatMap((item, index) => collectIssues(item, [...path, index], index));
+    return value.flatMap((item, index) => collectIssues(item, [...path, index]));
   }
 
   if (value && typeof value === 'object') {
     return Object.entries(value as Record<string, unknown>).flatMap(([childKey, childValue]) =>
-      collectIssues(childValue, [...path, childKey], childKey)
+      collectIssues(childValue, [...path, childKey])
     );
   }
 
