@@ -32,7 +32,8 @@ const updateSessionSchema = z
         title: z.string().trim().min(1).max(120).optional(),
         isPinned: z.boolean().optional(),
         isActive: z.boolean().optional(),
-        mode: chatModeSchema.optional()
+        mode: chatModeSchema.optional(),
+        metadata: z.record(z.string(), z.unknown()).nullable().optional()
     })
     .refine((body) => Object.keys(body).length > 0, {
         message: 'Payload di aggiornamento vuoto'
@@ -157,7 +158,7 @@ router.patch('/sessions/:id', chatWriteLimiter, authenticateJWT, async (req: Aut
     try {
         const userId = Number(req.user?.userId);
         const chatId = Number(req.params.id);
-        const { title, isPinned, isActive, mode } = updateSessionSchema.parse(req.body);
+        const { title, isPinned, isActive, mode, metadata } = updateSessionSchema.parse(req.body);
         console.info(`[CHAT] update session userId=${userId} sessionId=${chatId}`);
 
         const session = await prisma.chatSession.updateMany({
@@ -166,7 +167,8 @@ router.patch('/sessions/:id', chatWriteLimiter, authenticateJWT, async (req: Aut
                 ...(title !== undefined && { title }),
                 ...(isPinned !== undefined && { isPinned }),
                 ...(isActive !== undefined && { isActive }),
-                ...(mode !== undefined && { mode })
+                ...(mode !== undefined && { mode }),
+                ...(metadata !== undefined && { metadata })
             }
         });
 

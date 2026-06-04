@@ -49,7 +49,11 @@ const SKIPPED_KEYS = new Set([
   'dayNumber',
   'orderInt',
   'id',
-  'mode'
+  'mode',
+  'metadata',
+  'description',
+  'note',
+  'groupName'
 ]);
 
 function shouldInspectKey(key: string | number | undefined): boolean {
@@ -124,7 +128,7 @@ function collectIssues(value: unknown, path: Array<string | number> = [], key?: 
 export function contentModerationMiddleware(req: Request, _res: Response, next: NextFunction) {
   // Skip moderation for AI endpoints that do not accept user-generated titles
   // (the AI service responses are controlled and shouldn't be blocked here)
-  const skipPaths = ['/api/ai', '/api/gemini', '/api/ai/', '/api/chat'];
+  const skipPaths = ['/api/ai', '/api/gemini'];
   if (skipPaths.some(p => req.path.startsWith(p))) {
     next();
     return;

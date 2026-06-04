@@ -303,28 +303,18 @@
               <div class="card-badge">Itinerario Pronto</div>
             </div>
             <div class="card-body">
-              <h3>Il tuo viaggio è pronto!</h3>
-              <p>Ho raccolto tutti i dettagli necessari.</p>
+              <h3>Ho tutto per generare l'itinerario</h3>
               <div class="generate-actions">
-                <p>Vuoi generare l'itinerario completo nel builder?</p>
-                <button class="generate-btn" id="generate-itinerary-btn" (click)="openConfirmGenerate()" [disabled]="isGeneratingItinerary()">
-                  <i class="bi bi-magic"></i>
-                  <span>Genera Itinerario</span>
-                </button>
-              </div>
-            </div>
-          </div>
-          }
-
-          <!-- CONFIRM GENERATE MODAL -->
-          @if (showConfirmGenerate()) {
-          <div class="confirm-generate-overlay" role="dialog" aria-modal="true" aria-label="Conferma generazione itinerario">
-            <div class="confirm-generate-box">
-              <h2>Ho tutto per generare l'itinerario</h2>
-              <p>Vuoi generarlo adesso?</p>
-              <div class="confirm-actions">
-                <button class="btn-yes" (click)="confirmGenerateYes()">Si, genera</button>
-                <button class="btn-no" (click)="confirmGenerateNo()">No, aggiungo altro</button>
+                <p>Vuoi generarlo adesso?</p>
+                <div class="action-buttons-group">
+                  <button class="generate-btn" id="generate-itinerary-btn" (click)="confirmGenerateYes()" [disabled]="isGeneratingItinerary()">
+                    <i class="bi bi-magic"></i>
+                    <span>Sì, genera</span>
+                  </button>
+                  <button class="generate-btn-outline" (click)="confirmGenerateNo()" [disabled]="isGeneratingItinerary()">
+                    <span>No, aggiungo altro</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

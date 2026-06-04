@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import { AppError } from '../../middleware/error.middleware';
 import { applyGroupLevelTiming } from '../itinerary/itinerary-item-timing.util';
 import {
@@ -19,6 +19,13 @@ const PROMPT_STOP_WORDS = new Set([
     'una', 'uno', 'dei', 'che', 'con', 'per', 'alla', 'alle', 'allo', 'agli', 'deve', 'essere',
     'stazione', 'stazioni', 'ferroviaria', 'ferroviario',
 ]);
+
+const SAFETY_SETTINGS = [
+    { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+    { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+    { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+];
 
 export class GeminiItineraryChatService {
     private readonly apiKey = process.env.GEMINI_API_KEY;
@@ -150,7 +157,7 @@ export class GeminiItineraryChatService {
         }
 
         const ai = new GoogleGenerativeAI(this.apiKey);
-        const model = ai.getGenerativeModel({ model: this.modelName });
+        const model = ai.getGenerativeModel({ model: this.modelName, safetySettings: SAFETY_SETTINGS });
 
         const prompt = this.buildPrompt(userInput, workspace);
 
@@ -198,7 +205,7 @@ export class GeminiItineraryChatService {
         }
 
         const ai = new GoogleGenerativeAI(this.apiKey);
-        const model = ai.getGenerativeModel({ model: this.modelName });
+        const model = ai.getGenerativeModel({ model: this.modelName, safetySettings: SAFETY_SETTINGS });
         const currentItinerary = userInput.itinerary || workspace.itinerary || null;
         const directEdit = this.tryDirectItineraryEdit(userInput.message, currentItinerary, workspace);
         if (directEdit) {
@@ -566,7 +573,7 @@ export class GeminiItineraryChatService {
         }
 
         const ai = new GoogleGenerativeAI(this.apiKey);
-        const model = ai.getGenerativeModel({ model: this.modelName });
+        const model = ai.getGenerativeModel({ model: this.modelName, safetySettings: SAFETY_SETTINGS });
 
         const systemPrompt = [
             'Sei un esperto di viaggi.',
@@ -612,7 +619,7 @@ export class GeminiItineraryChatService {
     async generateInitialItinerary(prompt: string, workspace: AiItineraryWorkspaceContext): Promise<any> {
         if (!this.apiKey) throw new AppError('GEMINI_API_KEY mancante', 500);
         const ai = new GoogleGenerativeAI(this.apiKey);
-        const model = ai.getGenerativeModel({ model: this.modelName });
+        const model = ai.getGenerativeModel({ model: this.modelName, safetySettings: SAFETY_SETTINGS });
 
         const rankedActivities = this.rankActivitiesForPrompt(prompt, workspace.activities || []);
         const activities = rankedActivities
