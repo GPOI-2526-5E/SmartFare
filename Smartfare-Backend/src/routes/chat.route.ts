@@ -33,7 +33,7 @@ const updateSessionSchema = z
         isPinned: z.boolean().optional(),
         isActive: z.boolean().optional(),
         mode: chatModeSchema.optional(),
-        metadata: z.record(z.string(), z.unknown()).nullable().optional()
+        metadata: z.any().optional()
     })
     .refine((body) => Object.keys(body).length > 0, {
         message: 'Payload di aggiornamento vuoto'
@@ -168,7 +168,7 @@ router.patch('/sessions/:id', chatWriteLimiter, authenticateJWT, async (req: Aut
                 ...(isPinned !== undefined && { isPinned }),
                 ...(isActive !== undefined && { isActive }),
                 ...(mode !== undefined && { mode }),
-                ...(metadata !== undefined && { metadata })
+                ...(metadata !== undefined && { metadata: metadata as any })
             }
         });
 

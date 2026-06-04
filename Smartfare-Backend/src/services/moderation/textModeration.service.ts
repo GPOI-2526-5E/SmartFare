@@ -35,6 +35,10 @@ function normalizeText(s: string): string {
   return s.normalize('NFKC').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 }
 
+function escapeRegExp(str: string) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export function detectTextIssues(text: string) {
   if (!simpleTokenMap) buildIndex();
   const map = simpleTokenMap!;
@@ -45,9 +49,12 @@ export function detectTextIssues(text: string) {
   // Simple but effective: iterate tokens sorted by length (longer first)
   const tokens = Array.from(map.keys()).sort((a, b) => b.length - a.length);
   for (const token of tokens) {
-    const idx = normalized.indexOf(token);
-    if (idx >= 0) {
-      matches.push({ token, categories: map.get(token) || [], index: idx });
+    const escaped = escapeRegExp(token);
+    // Boundary: must not be preceded or followed by an alphanumeric character
+    const regex = new RegExp(`(^|[^a-z0-9])(${escaped})(?=[^a-z0-9]|$)`, 'i');
+    const m = regex.exec(normalized);
+    if (m) {
+      matches.push({ token, categories: map.get(token) || [], index: m.index + m[1].length });
     }
   }
 
