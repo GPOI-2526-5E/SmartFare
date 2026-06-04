@@ -59,6 +59,8 @@ export function createApp() {
     .split(',')
     .map(o => o.trim())
     .filter(Boolean);
+    
+  allowedOrigins.push('https://localhost');
   const allowVercelPreviewOrigins = process.env.ALLOW_VERCEL_PREVIEW_ORIGINS === 'true';
   const vercelPreviewRegex = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
 
