@@ -399,6 +399,12 @@
   border-color: rgba(139, 92, 246, 0.5) !important;
 }
 
+.wl-group-time-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .wl-dissolve-btn {
   background: transparent;
   border: 1px solid rgba(239, 68, 68, 0.3);
