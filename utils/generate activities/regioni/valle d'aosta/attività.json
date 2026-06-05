@@ -1,0 +1,8483 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-06-05T08:10:45Z",
+    "timestamp_areas_base": "2026-06-05T03:48:35Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+    {
+      "type": "node",
+      "id": 847160012,
+      "lat": 45.7624243,
+      "lon": 6.9876613,
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "node",
+      "id": 893388008,
+      "lat": 45.6534607,
+      "lon": 7.8536667,
+      "tags": {
+        "name": "Palestra di Roccia",
+        "sport": "climbing",
+        "tourism": "attraction",
+        "wikidata": "Q70334736"
+      }
+    },
+    {
+      "type": "node",
+      "id": 925963035,
+      "lat": 45.6339888,
+      "lon": 7.7353175,
+      "tags": {
+        "name": "Il Paretone - sommet",
+        "natural": "peak",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1263619441,
+      "lat": 45.8754179,
+      "lon": 7.6239486,
+      "tags": {
+        "leisure": "swimming_pool",
+        "name": "Piscina Comunale Coperta di Valtournenche",
+        "sport": "swimming"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1291376546,
+      "lat": 45.7876041,
+      "lon": 7.7807031,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1295389207,
+      "lat": 45.6355688,
+      "lon": 7.7300436,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Palestra di Roccia Gruviera",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1295440751,
+      "lat": 45.6485885,
+      "lon": 7.0634453,
+      "tags": {
+        "name": "Palestra di Roccia Miollet",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1295440812,
+      "lat": 45.6478872,
+      "lon": 7.0646539,
+      "tags": {
+        "name": "Palestra di Roccia Mecca",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1295440992,
+      "lat": 45.6494022,
+      "lon": 7.0659581,
+      "tags": {
+        "name": "Palestra di Roccia Pachou",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1295768735,
+      "lat": 45.7488191,
+      "lon": 7.0287289,
+      "tags": {
+        "climbing": "crag",
+        "name": "Palestra di Roccia Hans Marguerettaz",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1295821530,
+      "lat": 45.633434,
+      "lon": 7.7352538,
+      "tags": {
+        "name": "Palestra di Roccia Il Paretone",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1295844603,
+      "lat": 45.5320672,
+      "lon": 7.1998818,
+      "tags": {
+        "name": "Palestra di Roccia Belvedere di Fosse",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1342584414,
+      "lat": 45.6166474,
+      "lon": 7.5535443,
+      "tags": {
+        "name": "Parete di Dondena",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1374433276,
+      "lat": 45.6810642,
+      "lon": 7.6057491,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1587154486,
+      "lat": 45.7992735,
+      "lon": 6.9639975,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1727018026,
+      "lat": 45.8019593,
+      "lon": 7.3143724,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1732694659,
+      "lat": 45.6653647,
+      "lon": 7.6907343,
+      "tags": {
+        "leisure": "swimming_pool",
+        "sport": "swimming"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1767274850,
+      "lat": 45.5982312,
+      "lon": 7.79861,
+      "tags": {
+        "leisure": "sports_centre",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1791396296,
+      "lat": 45.7034394,
+      "lon": 7.1520203,
+      "tags": {
+        "climbing": "crag",
+        "description": "Leverogne Settore Vampirella",
+        "name": "Palestra Leverogne Settore Vampirella",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1791396330,
+      "lat": 45.7036836,
+      "lon": 7.1532818,
+      "tags": {
+        "climbing": "crag",
+        "description": "Leverogne Settore Metallica",
+        "name": "Palestra Leverogne Settore Mettalica",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1791471762,
+      "lat": 45.6272727,
+      "lon": 7.0585819,
+      "tags": {
+        "description": "Nid des Hirondelles",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1791476603,
+      "lat": 45.71111,
+      "lon": 7.2380993,
+      "tags": {
+        "climbing:quality": "solid",
+        "climbing:rock": "granite",
+        "climbing:trad": "yes",
+        "leisure": "sports_centre",
+        "name": "Priorato",
+        "outdoor": "yes",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1791513892,
+      "lat": 45.743774,
+      "lon": 7.4165317,
+      "tags": {
+        "description": "Settore Alpini",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1791524199,
+      "lat": 45.7760725,
+      "lon": 7.6973164,
+      "tags": {
+        "name": "Extrepieraz",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1830001475,
+      "lat": 45.8098607,
+      "lon": 7.6789574,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1830001482,
+      "lat": 45.809964,
+      "lon": 7.6787131,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1830001485,
+      "lat": 45.8100947,
+      "lon": 7.6787403,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1843817820,
+      "lat": 45.7166256,
+      "lon": 7.7587595,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1851508075,
+      "lat": 45.8103719,
+      "lon": 7.6764138,
+      "tags": {
+        "leisure": "horse_riding",
+        "sport": "equestrian"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1886514715,
+      "lat": 45.6751517,
+      "lon": 6.9853213,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1886517019,
+      "lat": 45.6731026,
+      "lon": 6.9844831,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2469477422,
+      "lat": 45.8853493,
+      "lon": 7.0597983,
+      "tags": {
+        "alt_name": "Placche dell'Elena",
+        "name": "Placche di Prè de Bar",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2469953253,
+      "lat": 45.8648309,
+      "lon": 7.0182868,
+      "tags": {
+        "name": "Memoire du Glacier",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2622081354,
+      "lat": 45.5894398,
+      "lon": 7.3963192,
+      "tags": {
+        "climbing:ice": "yes",
+        "name": "Cogne - Valeille",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2940263649,
+      "lat": 45.86167,
+      "lon": 6.95944,
+      "tags": {
+        "name": "Géant Rochefort",
+        "source": "data.gouv.fr:Le ministère des droits des femmes, de la ville, de la jeunesse et des sports - 2014",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2954141830,
+      "lat": 45.7759377,
+      "lon": 7.2842333,
+      "tags": {
+        "alt_name": "Palestra di roccia Joe Mazza",
+        "climbing": "area",
+        "climbing:grade:french:max": "7a",
+        "climbing:grade:french:min": "4",
+        "climbing:sport": "14",
+        "name": "Palestra di roccia Montquitay",
+        "sport": "climbing",
+        "start_date": "1980"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3037684554,
+      "lat": 45.5229917,
+      "lon": 7.203524,
+      "tags": {
+        "source": "Bing",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3037684562,
+      "lat": 45.5250554,
+      "lon": 7.2003414,
+      "tags": {
+        "source": "Bing",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3165214101,
+      "lat": 45.6708794,
+      "lon": 7.6834471,
+      "tags": {
+        "addr:city": "Verres",
+        "addr:country": "IT",
+        "addr:postcode": "11029",
+        "addr:street": "Loc. Chopine",
+        "contact:website": "http://www.topopazzoclimbinghouse.com/",
+        "leisure": "sports_centre",
+        "name": "Topopazzo Climbing House",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3318873232,
+      "lat": 45.7694764,
+      "lon": 7.5809028,
+      "tags": {
+        "climbing:grade:french:max": "6a+",
+        "climbing:grade:french:min": "4",
+        "climbing:sport": "8",
+        "leisure": "sports_centre",
+        "name:fr": "Le Paradis des enfants",
+        "name:it": "Palestra di Roccia il Paradiso dei Bimbi",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3467559931,
+      "lat": 45.6888388,
+      "lon": 7.5145146,
+      "tags": {
+        "leisure": "climbing",
+        "name": "Sasso erratico chiodato (non controllato)",
+        "natural": "rock",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3671946584,
+      "lat": 45.8400173,
+      "lon": 7.7314182,
+      "tags": {
+        "addr:housenumber": "1",
+        "addr:postcode": "11020",
+        "addr:street": "Piazzale Ramey",
+        "leisure": "swimming_pool",
+        "name": "Monterosa Terme",
+        "phone": "+340125308000",
+        "website": "https://www.laviadelleterme.it/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3895339756,
+      "lat": 45.8319,
+      "lon": 7.7257714,
+      "tags": {
+        "amenity": "bicycle_rental",
+        "bicycle_rental": "shop",
+        "name": "Rentaplay",
+        "shop": "rental"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4288491763,
+      "lat": 45.8315006,
+      "lon": 7.7255596,
+      "tags": {
+        "amenity": "bicycle_rental",
+        "name": "Rent Play"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4508599147,
+      "lat": 45.7265574,
+      "lon": 7.662258,
+      "tags": {
+        "climbing:grade:french": "6a",
+        "climbing:length": "240",
+        "climbing:multipitch": "yes",
+        "climbing:orientation": "NE",
+        "ele": "350",
+        "name": "Via Forza Vecchio Cuore Granata",
+        "sport": "climbing",
+        "website": "https://www.vielunghevalledaosta.com/montjovet-via-forza-vecchio-cuore-granata/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4942386023,
+      "lat": 45.8311971,
+      "lon": 6.9860779,
+      "tags": {
+        "addr:street": "Plampincieux",
+        "amenity": "bicycle_rental",
+        "name": "Club Des Sports Val Ferret",
+        "website": "https://www.courmayeurmontblanc.it/en/services/rentals/club-des-sports-courmayeur-val-ferret/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6695502537,
+      "lat": 45.7782514,
+      "lon": 7.8186013,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Falesia Tschachtelaz",
+        "note": "1) Le Felci 5a\n2) Sunny 5b\n3) Via Giulia 5b\n4) I falsari 7b\n5) L'alchimista 7c\n6) Butterfly 6c\n7) Albe chiara 7a\n8) La ballade des pendus 6c\n9) Madame Bovary 6b\n10) La fonte perduta 7b\n11) Spettri nelle tenebre 7b/c\n12) Amanti senza nome 7a\n13) La formula",
+        "source": "https://www.guidemonterosa.info/page.asp?ID=9",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6695502538,
+      "lat": 45.778237,
+      "lon": 7.8203144,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Falesia Il Cuore",
+        "note": "1) Tom e Jerry 6b (chiodi poco sicuri)\n2) Troll 6a  (chiodi poco sicuri)\n3) li riscatto (4 tiri) max 6a+\n4) Mulan 6a\n5) Dumbo 5a\n6) Pikaciu 4+\n7) Baby 4\n8) Baby 4/5\n9) Sara 4+\n10) Spirit 5c",
+        "source": "https://www.guidemonterosa.info/page.asp?ID=9",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6697096100,
+      "lat": 45.7812179,
+      "lon": 7.8212144,
+      "tags": {
+        "name": "Boulder climbing",
+        "natural": "rock",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6697116671,
+      "lat": 45.7305369,
+      "lon": 7.8710763,
+      "tags": {
+        "fixme": "estimated position from map and satellite imagery",
+        "leisure": "sports_centre",
+        "name": "Zappegly - Falesia Arrampicata",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6777602180,
+      "lat": 45.6198899,
+      "lon": 7.7506054,
+      "tags": {
+        "climbing": "route_bottom",
+        "climbing:multipitch": "yes",
+        "name": "Via Pilier del Forte Destro",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6795537759,
+      "lat": 45.6357535,
+      "lon": 7.7523073,
+      "tags": {
+        "name": "Via Pinna",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7742125444,
+      "lat": 45.6110224,
+      "lon": 7.354053,
+      "tags": {
+        "indoor": "yes",
+        "leisure": "sports_centre",
+        "name": "Palestra arrampicata indoor",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7840225117,
+      "lat": 45.8953853,
+      "lon": 7.6215832,
+      "tags": {
+        "fee": "no",
+        "leisure": "sports_centre",
+        "name": "Singlin - Settore 1",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7858338331,
+      "lat": 45.8995792,
+      "lon": 7.6161576,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Singlin - settore 6",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7860986566,
+      "lat": 45.8944978,
+      "lon": 7.619893,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Singlin - settore 7",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7862425305,
+      "lat": 45.6752891,
+      "lon": 7.0760375,
+      "tags": {
+        "climbing:bolted": "yes",
+        "climbing:grade:french:max": "5c",
+        "climbing:grade:french:min": "5a",
+        "climbing:length": "250m",
+        "climbing:multipitch": "1",
+        "climbing:sport": "yes",
+        "name": "Mario e Cecilia",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8149782094,
+      "lat": 45.6197227,
+      "lon": 7.7532724,
+      "tags": {
+        "climbing": "route_bottom",
+        "climbing:multipitch": "yes",
+        "climbing:toprope": "no",
+        "name": "Via Eravamo 5 Amici Albard",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8149802695,
+      "lat": 45.6198476,
+      "lon": 7.7498567,
+      "tags": {
+        "climbing": "route_bottom",
+        "climbing:multipitch": "yes",
+        "name": "Via Piler del Forte Sinistro",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8149802715,
+      "lat": 45.6193139,
+      "lon": 7.7481361,
+      "tags": {
+        "climbing": "route_bottom",
+        "climbing:multipitch": "yes",
+        "name": "Via Bloody Mary",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8149808076,
+      "lat": 45.6197473,
+      "lon": 7.7493578,
+      "tags": {
+        "climbing": "route_bottom",
+        "climbing:multipitch": "yes",
+        "name": "Via Gary e Cary",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8559618228,
+      "lat": 45.8039371,
+      "lon": 6.9742098,
+      "tags": {
+        "climbing": "crag",
+        "name": "Pierre Taillee",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8567669680,
+      "lat": 45.8643134,
+      "lon": 7.3386237,
+      "tags": {
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8960052331,
+      "lat": 45.528723,
+      "lon": 7.1966645,
+      "tags": {
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9014410295,
+      "lat": 45.8548009,
+      "lon": 7.3028702,
+      "tags": {
+        "leisure": "horse_riding",
+        "name": "Maneggio L'Envers"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9174411045,
+      "lat": 45.7042063,
+      "lon": 7.2115332,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "falesia Villeneuve",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9174602775,
+      "lat": 45.7463152,
+      "lon": 7.4433932,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Palestra di Vollein",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9174602776,
+      "lat": 45.7578257,
+      "lon": 7.4377234,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Palestra d arrampicata di Trois-Villes.",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9174602777,
+      "lat": 45.7437407,
+      "lon": 7.4165579,
+      "tags": {
+        "leisure": "sports_centre",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9255585668,
+      "lat": 45.702444,
+      "lon": 7.2174714,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Rafting Aventure",
+        "name:fr": "Rafting Aventure",
+        "sport": "canoe"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9579037630,
+      "lat": 45.6199339,
+      "lon": 7.7507339,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Via i 2 Marimba",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9900139818,
+      "lat": 45.7905653,
+      "lon": 6.9739225,
+      "tags": {
+        "amenity": "bicycle_rental",
+        "name": "Courmaebike",
+        "operator": "Courmaebike.it"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9900310752,
+      "lat": 45.711947,
+      "lon": 7.6568617,
+      "tags": {
+        "climbing": "crag",
+        "climbing:orientation": "E",
+        "climbing:sport": "yes",
+        "name": "Gettaz",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9945137545,
+      "lat": 45.6770999,
+      "lon": 7.0795323,
+      "tags": {
+        "name": "Planaval - La fête du village",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9945145337,
+      "lat": 45.6280052,
+      "lon": 7.0598167,
+      "tags": {
+        "name": "Nid des Hirondelles – La Formica",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9950791682,
+      "lat": 45.526951,
+      "lon": 7.1933741,
+      "tags": {
+        "name": "Di fronte al Paradiso - David & Luca",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9950797595,
+      "lat": 45.5271742,
+      "lon": 7.1924778,
+      "tags": {
+        "name": "Di fronte al Paradiso",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9950804250,
+      "lat": 45.6425385,
+      "lon": 7.0655974,
+      "tags": {
+        "climbing": "crag",
+        "name": "Falesia Le Gare",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9953197567,
+      "lat": 45.6545258,
+      "lon": 7.7074698,
+      "tags": {
+        "name": "Mont Carogne",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9956289913,
+      "lat": 45.6124413,
+      "lon": 7.6847649,
+      "tags": {
+        "name": "Mont Charvatton - Le Bionde e i Grigi",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9956317754,
+      "lat": 45.6124891,
+      "lon": 7.6847044,
+      "tags": {
+        "name": "Mont Charvatton - Tommy",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10000169452,
+      "lat": 45.6344951,
+      "lon": 7.0611289,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Croux",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10021342150,
+      "lat": 45.7464763,
+      "lon": 7.4504393,
+      "tags": {
+        "name": "Palestra di Vollein Settore Il paraiso perduto",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10879507392,
+      "lat": 45.5286604,
+      "lon": 7.1966587,
+      "tags": {
+        "name": "Belvedere di Fosse",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11035643613,
+      "lat": 45.8072364,
+      "lon": 6.8837849,
+      "tags": {
+        "climbing": "route",
+        "climbing:bolted": "yes",
+        "climbing:grade:french": "5b",
+        "climbing:grade:french:max": "5b",
+        "climbing:grade:uiaa": "5+",
+        "climbing:grade:uiaa:max": "5+",
+        "climbing:grade:uiaa:mean": "5+",
+        "climbing:grade:uiaa:min": "4",
+        "climbing:multipitch": "yes",
+        "climbing:rock": "granite",
+        "name": "Via Cheney",
+        "natural": "rock",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11219353741,
+      "lat": 45.6172924,
+      "lon": 7.7444559,
+      "tags": {
+        "climbing": "route_bottom",
+        "climbing:multipitch": "yes",
+        "name": "Via Olympic Spirit",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12017352168,
+      "lat": 45.5973941,
+      "lon": 7.7546206,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Falesia di Outrefer - Settore DX",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12017357082,
+      "lat": 45.5973903,
+      "lon": 7.7565381,
+      "tags": {
+        "leisure": "sports_centre",
+        "name": "Falesia di Outrefer Settore SX",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12054664753,
+      "lat": 45.8665669,
+      "lon": 7.036159,
+      "tags": {
+        "climbing:grade:uiaa:max": "7+/8-",
+        "climbing:grade:uiaa:min": "6",
+        "height": "320",
+        "name": "Avancorpo Mont Greuvetta",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12146204999,
+      "lat": 45.7224702,
+      "lon": 6.9422939,
+      "tags": {
+        "climbing": "crag",
+        "name": "Falesia Bucovat",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12146222105,
+      "lat": 45.7203852,
+      "lon": 6.9450201,
+      "tags": {
+        "climbing": "crag",
+        "name": "Falesia degli Alpini",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12146251730,
+      "lat": 45.755374,
+      "lon": 7.0266712,
+      "tags": {
+        "climbing": "crag",
+        "name": "Falesia Montet",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12146254529,
+      "lat": 45.8030047,
+      "lon": 6.9745788,
+      "tags": {
+        "climbing": "crag",
+        "name": "Falesia Villar",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12146254530,
+      "lat": 45.7947772,
+      "lon": 6.9580488,
+      "tags": {
+        "climbing": "crag",
+        "name": "Pilastro Giallo",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12194508770,
+      "lat": 45.7218685,
+      "lon": 7.6615615,
+      "tags": {
+        "climbing:grade:french:max": "7b",
+        "climbing:grade:french:min": "5c",
+        "climbing:height": "120",
+        "climbing:multipitch": "10",
+        "climbing:rock": "serpentinite",
+        "climbing:trad": "yes",
+        "ele": "800",
+        "name": "Pilier Rhodo",
+        "sport": "climbing",
+        "url": "https://matteo-giglio.blogspot.com/2012/05/pilier-rhodo-nuovo-spot-trad-in-valle.html"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12998923891,
+      "lat": 45.8932355,
+      "lon": 7.0405683,
+      "tags": {
+        "name": "Klettern",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13005822205,
+      "lat": 45.7722762,
+      "lon": 7.8291732,
+      "tags": {
+        "amenity": "bicycle_rental",
+        "fee": "yes",
+        "name": "Bergland"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13027432385,
+      "lat": 45.7916226,
+      "lon": 6.9715079,
+      "tags": {
+        "amenity": "bicycle_rental",
+        "name": "CourmaeBike"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13074551961,
+      "lat": 45.8876426,
+      "lon": 7.0521409,
+      "tags": {
+        "climbing": "route",
+        "name": "Parete dei Titani",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13088758664,
+      "lat": 45.7127432,
+      "lon": 7.246188,
+      "tags": {
+        "name": "Tetto di Sarre",
+        "outdoor": "yes",
+        "sport": "climbing",
+        "website": "https://climbingaway.fr/fr/site-escalade/tetto-di-sarre",
+        "wikimedia_commons": "Category:Tetto di Sarre"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13091832505,
+      "lat": 45.93513,
+      "lon": 7.6289136,
+      "tags": {
+        "amenity": "bicycle_rental",
+        "check_date": "2025-08-22",
+        "name": "Bike School"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13108886388,
+      "lat": 45.6224429,
+      "lon": 7.7043103,
+      "tags": {
+        "name": "Overfive",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13108931336,
+      "lat": 45.6228031,
+      "lon": 7.7033366,
+      "tags": {
+        "name": "Men at Work",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13279330564,
+      "lat": 45.6284646,
+      "lon": 7.7457536,
+      "tags": {
+        "climbing": "route",
+        "name": "Pilastro Nomasti",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13381459411,
+      "lat": 45.8779764,
+      "lon": 7.6481903,
+      "tags": {
+        "climbing:ice": "yes",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13507003654,
+      "lat": 45.6189978,
+      "lon": 7.7432464,
+      "tags": {
+        "climbing": "route_bottom",
+        "climbing:multipitch": "yes",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13900003782,
+      "lat": 45.730501,
+      "lon": 7.6733192,
+      "tags": {
+        "climbing": "crag",
+        "name": "Chenal",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13902986460,
+      "lat": 45.6225753,
+      "lon": 7.7090598,
+      "tags": {
+        "climbing": "crag",
+        "name": "Paretina",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13902986461,
+      "lat": 45.6228284,
+      "lon": 7.7115747,
+      "tags": {
+        "climbing": "crag",
+        "name": "Bimbo Climb",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13902986462,
+      "lat": 45.6223626,
+      "lon": 7.7053059,
+      "tags": {
+        "climbing": "crag",
+        "name": "Grotta",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 109573650,
+      "bounds": {
+        "minlat": 45.8120827,
+        "minlon": 7.5895217,
+        "maxlat": 45.8122027,
+        "maxlon": 7.5896386
+      },
+      "nodes": [
+        1253990475,
+        1253990510,
+        1253990603,
+        1253990536,
+        1253990475
+      ],
+      "geometry": [
+        {
+          "lat": 45.8121985,
+          "lon": 7.5895464
+        },
+        {
+          "lat": 45.8120956,
+          "lon": 7.5895217
+        },
+        {
+          "lat": 45.8120827,
+          "lon": 7.5896017
+        },
+        {
+          "lat": 45.8122027,
+          "lon": 7.5896386
+        },
+        {
+          "lat": 45.8121985,
+          "lon": 7.5895464
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool",
+        "sport": "swimming"
+      }
+    },
+    {
+      "type": "way",
+      "id": 114143723,
+      "bounds": {
+        "minlat": 45.7753187,
+        "minlon": 7.69711,
+        "maxlat": 45.7764504,
+        "maxlon": 7.6974453
+      },
+      "nodes": [
+        1293391725,
+        1293392346,
+        1293392940,
+        1293391979,
+        1293392585,
+        1293393195,
+        1293391917,
+        1293392534,
+        1293393139,
+        1293392193,
+        1293392783,
+        1293391805,
+        1293392910
+      ],
+      "geometry": [
+        {
+          "lat": 45.7753187,
+          "lon": 7.6971608
+        },
+        {
+          "lat": 45.7754415,
+          "lon": 7.69711
+        },
+        {
+          "lat": 45.7754989,
+          "lon": 7.6971606
+        },
+        {
+          "lat": 45.7756395,
+          "lon": 7.6972318
+        },
+        {
+          "lat": 45.7756958,
+          "lon": 7.697227
+        },
+        {
+          "lat": 45.7757868,
+          "lon": 7.6972531
+        },
+        {
+          "lat": 45.7758878,
+          "lon": 7.6972721
+        },
+        {
+          "lat": 45.7760036,
+          "lon": 7.6972721
+        },
+        {
+          "lat": 45.7761029,
+          "lon": 7.6972674
+        },
+        {
+          "lat": 45.7761689,
+          "lon": 7.6973459
+        },
+        {
+          "lat": 45.7762658,
+          "lon": 7.6974275
+        },
+        {
+          "lat": 45.776361,
+          "lon": 7.6974453
+        },
+        {
+          "lat": 45.7764504,
+          "lon": 7.6973931
+        }
+      ],
+      "tags": {
+        "name": "Palestra di Arrampicata Extrepieraz",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 114332398,
+      "bounds": {
+        "minlat": 45.6346848,
+        "minlon": 7.7281953,
+        "maxlat": 45.6348702,
+        "maxlon": 7.7284852
+      },
+      "nodes": [
+        1295389354,
+        1295389177,
+        1295389117,
+        1295389159,
+        1295389232,
+        1295389354
+      ],
+      "geometry": [
+        {
+          "lat": 45.6347729,
+          "lon": 7.7281953
+        },
+        {
+          "lat": 45.6348702,
+          "lon": 7.7283251
+        },
+        {
+          "lat": 45.634794,
+          "lon": 7.7284852
+        },
+        {
+          "lat": 45.6347754,
+          "lon": 7.7284626
+        },
+        {
+          "lat": 45.6346848,
+          "lon": 7.7283431
+        },
+        {
+          "lat": 45.6347729,
+          "lon": 7.7281953
+        }
+      ],
+      "tags": {
+        "amenity": "parking",
+        "name": "Gruviera",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 114379077,
+      "bounds": {
+        "minlat": 45.7479652,
+        "minlon": 7.0273705,
+        "maxlat": 45.7487778,
+        "maxlon": 7.0291201
+      },
+      "nodes": [
+        1295768868,
+        8981382940,
+        1295768549,
+        1295768897,
+        1295768628,
+        1295768370,
+        1295768786,
+        1295768585
+      ],
+      "geometry": [
+        {
+          "lat": 45.7479652,
+          "lon": 7.0285637
+        },
+        {
+          "lat": 45.7481785,
+          "lon": 7.0288678
+        },
+        {
+          "lat": 45.7484696,
+          "lon": 7.0290972
+        },
+        {
+          "lat": 45.7486217,
+          "lon": 7.0291201
+        },
+        {
+          "lat": 45.7487218,
+          "lon": 7.0288505
+        },
+        {
+          "lat": 45.7487778,
+          "lon": 7.0284547
+        },
+        {
+          "lat": 45.7487097,
+          "lon": 7.0279441
+        },
+        {
+          "lat": 45.7487177,
+          "lon": 7.0273705
+        }
+      ],
+      "tags": {
+        "material": "gneiss",
+        "name": "Falesia Hans Marguerettaz",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 114380401,
+      "bounds": {
+        "minlat": 45.685009,
+        "minlon": 7.2356426,
+        "maxlat": 45.6859997,
+        "maxlon": 7.2368998
+      },
+      "nodes": [
+        1295811195,
+        1295811114,
+        1295811137,
+        1295811163,
+        1295811152
+      ],
+      "geometry": [
+        {
+          "lat": 45.685009,
+          "lon": 7.2356426
+        },
+        {
+          "lat": 45.6854849,
+          "lon": 7.2361262
+        },
+        {
+          "lat": 45.6857187,
+          "lon": 7.2363421
+        },
+        {
+          "lat": 45.6858228,
+          "lon": 7.2365216
+        },
+        {
+          "lat": 45.6859997,
+          "lon": 7.2368998
+        }
+      ],
+      "tags": {
+        "climbing:rock": "limestone",
+        "climbing:toprope": "yes",
+        "name": "Palestra di Roccia Mont Ross, Ozein",
+        "natural": "cliff",
+        "sport": "climbing",
+        "website": "https://www.planetmountain.com/rock/falesie/falesia.html?idfalesia=81"
+      }
+    },
+    {
+      "type": "way",
+      "id": 119763694,
+      "bounds": {
+        "minlat": 45.6896961,
+        "minlon": 7.7051588,
+        "maxlat": 45.6897946,
+        "maxlon": 7.7052415
+      },
+      "nodes": [
+        1344608632,
+        1344608512,
+        1344609393,
+        1344608826,
+        1344608632
+      ],
+      "geometry": [
+        {
+          "lat": 45.6897946,
+          "lon": 7.705203
+        },
+        {
+          "lat": 45.6897853,
+          "lon": 7.7052415
+        },
+        {
+          "lat": 45.6896961,
+          "lon": 7.7051973
+        },
+        {
+          "lat": 45.6897055,
+          "lon": 7.7051588
+        },
+        {
+          "lat": 45.6897946,
+          "lon": 7.705203
+        }
+      ],
+      "tags": {
+        "access": "private",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 133996851,
+      "bounds": {
+        "minlat": 45.7029443,
+        "minlon": 7.1651044,
+        "maxlat": 45.7030362,
+        "maxlon": 7.1653042
+      },
+      "nodes": [
+        1474211456,
+        1474211457,
+        1474211448,
+        1474211446,
+        1474211456
+      ],
+      "geometry": [
+        {
+          "lat": 45.7030153,
+          "lon": 7.1651044
+        },
+        {
+          "lat": 45.7030362,
+          "lon": 7.1652876
+        },
+        {
+          "lat": 45.7029652,
+          "lon": 7.1653042
+        },
+        {
+          "lat": 45.7029443,
+          "lon": 7.165121
+        },
+        {
+          "lat": 45.7030153,
+          "lon": 7.1651044
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 134015490,
+      "bounds": {
+        "minlat": 45.699741,
+        "minlon": 7.1669486,
+        "maxlat": 45.6998068,
+        "maxlon": 7.1670616
+      },
+      "nodes": [
+        1474262311,
+        1474262315,
+        1474262309,
+        1474262307,
+        1474262311
+      ],
+      "geometry": [
+        {
+          "lat": 45.6997706,
+          "lon": 7.1669486
+        },
+        {
+          "lat": 45.6998068,
+          "lon": 7.1670366
+        },
+        {
+          "lat": 45.6997772,
+          "lon": 7.1670616
+        },
+        {
+          "lat": 45.699741,
+          "lon": 7.1669736
+        },
+        {
+          "lat": 45.6997706,
+          "lon": 7.1669486
+        }
+      ],
+      "tags": {
+        "access": "private",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 148331212,
+      "bounds": {
+        "minlat": 45.7977717,
+        "minlon": 6.9429369,
+        "maxlat": 45.7985576,
+        "maxlon": 6.9433168
+      },
+      "nodes": [
+        1614394326,
+        1614394322,
+        1614394300,
+        1614394276,
+        1614394254,
+        1614394247,
+        1614394241,
+        1614394226
+      ],
+      "geometry": [
+        {
+          "lat": 45.7985576,
+          "lon": 6.9433168
+        },
+        {
+          "lat": 45.7985123,
+          "lon": 6.9429991
+        },
+        {
+          "lat": 45.7983764,
+          "lon": 6.9430352
+        },
+        {
+          "lat": 45.79817,
+          "lon": 6.9430027
+        },
+        {
+          "lat": 45.7980215,
+          "lon": 6.9430821
+        },
+        {
+          "lat": 45.7979661,
+          "lon": 6.9430749
+        },
+        {
+          "lat": 45.7979377,
+          "lon": 6.9429369
+        },
+        {
+          "lat": 45.7977717,
+          "lon": 6.9429943
+        }
+      ],
+      "tags": {
+        "height": "60",
+        "name": "Falesia Chetif - Super Heroes",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 152491145,
+      "bounds": {
+        "minlat": 45.7149672,
+        "minlon": 6.9494539,
+        "maxlat": 45.7150758,
+        "maxlon": 6.9495744
+      },
+      "nodes": [
+        1653092256,
+        1653092259,
+        1653092254,
+        1653092252,
+        1653092256
+      ],
+      "geometry": [
+        {
+          "lat": 45.7150556,
+          "lon": 6.9494539
+        },
+        {
+          "lat": 45.7150758,
+          "lon": 6.9495166
+        },
+        {
+          "lat": 45.7149874,
+          "lon": 6.9495744
+        },
+        {
+          "lat": 45.7149672,
+          "lon": 6.949515
+        },
+        {
+          "lat": 45.7150556,
+          "lon": 6.9494539
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 152491146,
+      "bounds": {
+        "minlat": 45.714205,
+        "minlon": 6.9467336,
+        "maxlat": 45.7143288,
+        "maxlon": 6.9468833
+      },
+      "nodes": [
+        1653092245,
+        1653092244,
+        1653092238,
+        1653092240,
+        1653092245
+      ],
+      "geometry": [
+        {
+          "lat": 45.7143288,
+          "lon": 6.9468151
+        },
+        {
+          "lat": 45.7143004,
+          "lon": 6.9468833
+        },
+        {
+          "lat": 45.714205,
+          "lon": 6.9468018
+        },
+        {
+          "lat": 45.7142334,
+          "lon": 6.9467336
+        },
+        {
+          "lat": 45.7143288,
+          "lon": 6.9468151
+        }
+      ],
+      "tags": {
+        "access": "private",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 163785773,
+      "bounds": {
+        "minlat": 45.5998982,
+        "minlon": 7.7568772,
+        "maxlat": 45.600001,
+        "maxlon": 7.7569819
+      },
+      "nodes": [
+        1754631948,
+        1754631878,
+        1754631886,
+        1754631956,
+        1754631948
+      ],
+      "geometry": [
+        {
+          "lat": 45.5999909,
+          "lon": 7.7569819
+        },
+        {
+          "lat": 45.5998982,
+          "lon": 7.7569584
+        },
+        {
+          "lat": 45.5999083,
+          "lon": 7.7568772
+        },
+        {
+          "lat": 45.600001,
+          "lon": 7.7569008
+        },
+        {
+          "lat": 45.5999909,
+          "lon": 7.7569819
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 163990280,
+      "bounds": {
+        "minlat": 45.6056699,
+        "minlon": 7.7673494,
+        "maxlat": 45.605766,
+        "maxlon": 7.7674214
+      },
+      "nodes": [
+        1756539460,
+        1756539459,
+        1756539423,
+        1756539425,
+        1756539460
+      ],
+      "geometry": [
+        {
+          "lat": 45.605766,
+          "lon": 7.7673509
+        },
+        {
+          "lat": 45.6057655,
+          "lon": 7.7674214
+        },
+        {
+          "lat": 45.6056699,
+          "lon": 7.7674199
+        },
+        {
+          "lat": 45.6056704,
+          "lon": 7.7673494
+        },
+        {
+          "lat": 45.605766,
+          "lon": 7.7673509
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 164512659,
+      "bounds": {
+        "minlat": 45.6056935,
+        "minlon": 7.7710437,
+        "maxlat": 45.6057365,
+        "maxlon": 7.7711706
+      },
+      "nodes": [
+        1761441902,
+        1761441900,
+        1761441872,
+        1761441886,
+        1761441902
+      ],
+      "geometry": [
+        {
+          "lat": 45.6057365,
+          "lon": 7.7710437
+        },
+        {
+          "lat": 45.6057352,
+          "lon": 7.7711678
+        },
+        {
+          "lat": 45.6056935,
+          "lon": 7.7711706
+        },
+        {
+          "lat": 45.6056941,
+          "lon": 7.7710447
+        },
+        {
+          "lat": 45.6057365,
+          "lon": 7.7710437
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 165276195,
+      "bounds": {
+        "minlat": 45.5917453,
+        "minlon": 7.808354,
+        "maxlat": 45.5922541,
+        "maxlon": 7.8090446
+      },
+      "nodes": [
+        1768320169,
+        1768320159
+      ],
+      "geometry": [
+        {
+          "lat": 45.5922541,
+          "lon": 7.808354
+        },
+        {
+          "lat": 45.5917453,
+          "lon": 7.8090446
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "6b+",
+        "climbing:grade:french:min": "5a",
+        "name": "Falesia di Ivery",
+        "name:fr": "Falaise d'Ivery",
+        "natural": "cliff",
+        "sport": "climbing",
+        "website": "https://www.arrampicatainvalledaosta.it/4_alessio-garofalo-e-laurent-bosonetto-con-la-falesia-di-ivery/"
+      }
+    },
+    {
+      "type": "way",
+      "id": 169108099,
+      "bounds": {
+        "minlat": 45.8655809,
+        "minlon": 7.6150817,
+        "maxlat": 45.8656553,
+        "maxlon": 7.6152154
+      },
+      "nodes": [
+        1802804520,
+        1802804546,
+        1802804519,
+        1802804513,
+        1802804520
+      ],
+      "geometry": [
+        {
+          "lat": 45.8656204,
+          "lon": 7.6150817
+        },
+        {
+          "lat": 45.8656553,
+          "lon": 7.6151083
+        },
+        {
+          "lat": 45.8656158,
+          "lon": 7.6152154
+        },
+        {
+          "lat": 45.8655809,
+          "lon": 7.6151888
+        },
+        {
+          "lat": 45.8656204,
+          "lon": 7.6150817
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 171322636,
+      "bounds": {
+        "minlat": 45.8129965,
+        "minlon": 7.5910711,
+        "maxlat": 45.8131285,
+        "maxlon": 7.5911987
+      },
+      "nodes": [
+        1823721642,
+        1823721643,
+        4212440622,
+        4212440621,
+        1823721641,
+        1823721639,
+        1823721642
+      ],
+      "geometry": [
+        {
+          "lat": 45.8130734,
+          "lon": 7.5910711
+        },
+        {
+          "lat": 45.8131285,
+          "lon": 7.5911653
+        },
+        {
+          "lat": 45.8131053,
+          "lon": 7.5911932
+        },
+        {
+          "lat": 45.8130708,
+          "lon": 7.5911341
+        },
+        {
+          "lat": 45.8130171,
+          "lon": 7.5911987
+        },
+        {
+          "lat": 45.8129965,
+          "lon": 7.5911635
+        },
+        {
+          "lat": 45.8130734,
+          "lon": 7.5910711
+        }
+      ],
+      "tags": {
+        "leisure": "sports_centre",
+        "man_made": "tower",
+        "name": "Palestra di arrampicata",
+        "sport": "climbing",
+        "tower:type": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 171921501,
+      "bounds": {
+        "minlat": 45.7001252,
+        "minlon": 7.2014323,
+        "maxlat": 45.7003501,
+        "maxlon": 7.2017491
+      },
+      "nodes": [
+        1828802360,
+        1828802328,
+        1828802312,
+        1828802333,
+        1828802360
+      ],
+      "geometry": [
+        {
+          "lat": 45.7001898,
+          "lon": 7.2014323
+        },
+        {
+          "lat": 45.7001252,
+          "lon": 7.2015286
+        },
+        {
+          "lat": 45.7002854,
+          "lon": 7.2017491
+        },
+        {
+          "lat": 45.7003501,
+          "lon": 7.2016527
+        },
+        {
+          "lat": 45.7001898,
+          "lon": 7.2014323
+        }
+      ],
+      "tags": {
+        "access": "yes",
+        "covered": "no",
+        "leisure": "swimming_pool",
+        "location": "outdoor",
+        "sport": "swimming",
+        "swimming_pool": "inground"
+      }
+    },
+    {
+      "type": "way",
+      "id": 193284198,
+      "bounds": {
+        "minlat": 45.75213,
+        "minlon": 7.6402193,
+        "maxlat": 45.7523156,
+        "maxlon": 7.640522
+      },
+      "nodes": [
+        2037950290,
+        2037950294,
+        2037950289,
+        2037950285,
+        2037950290
+      ],
+      "geometry": [
+        {
+          "lat": 45.752225,
+          "lon": 7.6402193
+        },
+        {
+          "lat": 45.7523156,
+          "lon": 7.6402983
+        },
+        {
+          "lat": 45.7522206,
+          "lon": 7.640522
+        },
+        {
+          "lat": 45.75213,
+          "lon": 7.640443
+        },
+        {
+          "lat": 45.752225,
+          "lon": 7.6402193
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 193302853,
+      "bounds": {
+        "minlat": 45.7495786,
+        "minlon": 7.6467806,
+        "maxlat": 45.7497294,
+        "maxlon": 7.6471325
+      },
+      "nodes": [
+        2038118286,
+        2038118262,
+        2038118324,
+        2038118345,
+        2038118286
+      ],
+      "geometry": [
+        {
+          "lat": 45.7496138,
+          "lon": 7.6467806
+        },
+        {
+          "lat": 45.7495786,
+          "lon": 7.6471091
+        },
+        {
+          "lat": 45.7496909,
+          "lon": 7.6471325
+        },
+        {
+          "lat": 45.7497294,
+          "lon": 7.6468153
+        },
+        {
+          "lat": 45.7496138,
+          "lon": 7.6467806
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool",
+        "name": "Piscina scoperta"
+      }
+    },
+    {
+      "type": "way",
+      "id": 193302855,
+      "bounds": {
+        "minlat": 45.7496674,
+        "minlon": 7.6464119,
+        "maxlat": 45.7497238,
+        "maxlon": 7.6465534
+      },
+      "nodes": [
+        2038118322,
+        2038118342,
+        2038118328,
+        2038118307,
+        2038118322
+      ],
+      "geometry": [
+        {
+          "lat": 45.749685,
+          "lon": 7.6464119
+        },
+        {
+          "lat": 45.7497238,
+          "lon": 7.6464252
+        },
+        {
+          "lat": 45.7497075,
+          "lon": 7.6465534
+        },
+        {
+          "lat": 45.7496674,
+          "lon": 7.6465439
+        },
+        {
+          "lat": 45.749685,
+          "lon": 7.6464119
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool",
+        "name": "Piscina scoperta"
+      }
+    },
+    {
+      "type": "way",
+      "id": 194489387,
+      "bounds": {
+        "minlat": 45.7421765,
+        "minlon": 7.6567127,
+        "maxlat": 45.7424296,
+        "maxlon": 7.6573927
+      },
+      "nodes": [
+        2049996665,
+        2049996659,
+        2049996655,
+        2049996653,
+        2049996647
+      ],
+      "geometry": [
+        {
+          "lat": 45.7424296,
+          "lon": 7.6567127
+        },
+        {
+          "lat": 45.7423088,
+          "lon": 7.6567869
+        },
+        {
+          "lat": 45.742257,
+          "lon": 7.657061
+        },
+        {
+          "lat": 45.7422441,
+          "lon": 7.6572444
+        },
+        {
+          "lat": 45.7421765,
+          "lon": 7.6573927
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "6b+",
+        "climbing:grade:french:min": "4b",
+        "climbing:toprope": "yes",
+        "name": "Falesia di Ponte romano",
+        "natural": "cliff",
+        "sport": "climbing",
+        "website": "https://www.gulliver.it/itinerari/ponte-romano-falesia-del/"
+      }
+    },
+    {
+      "type": "way",
+      "id": 194489388,
+      "bounds": {
+        "minlat": 45.7454723,
+        "minlon": 7.6525393,
+        "maxlat": 45.745548,
+        "maxlon": 7.6526245
+      },
+      "nodes": [
+        2049996934,
+        2049996922,
+        2049996906,
+        2049996910,
+        2049996914,
+        2049996926,
+        2049996932,
+        2049996934
+      ],
+      "geometry": [
+        {
+          "lat": 45.745548,
+          "lon": 7.6525633
+        },
+        {
+          "lat": 45.7455257,
+          "lon": 7.6526245
+        },
+        {
+          "lat": 45.7454723,
+          "lon": 7.6526121
+        },
+        {
+          "lat": 45.7454804,
+          "lon": 7.6525808
+        },
+        {
+          "lat": 45.7455063,
+          "lon": 7.6525517
+        },
+        {
+          "lat": 45.7455363,
+          "lon": 7.6525393
+        },
+        {
+          "lat": 45.745545,
+          "lon": 7.6525517
+        },
+        {
+          "lat": 45.745548,
+          "lon": 7.6525633
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 231917776,
+      "bounds": {
+        "minlat": 45.6887667,
+        "minlon": 7.3113734,
+        "maxlat": 45.6888474,
+        "maxlon": 7.3115466
+      },
+      "nodes": [
+        2402429863,
+        2402429868,
+        2402429858,
+        2402429856,
+        2402429863
+      ],
+      "geometry": [
+        {
+          "lat": 45.688819,
+          "lon": 7.3113734
+        },
+        {
+          "lat": 45.6888474,
+          "lon": 7.3115316
+        },
+        {
+          "lat": 45.6887906,
+          "lon": 7.3115466
+        },
+        {
+          "lat": 45.6887667,
+          "lon": 7.3113926
+        },
+        {
+          "lat": 45.688819,
+          "lon": 7.3113734
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool",
+        "operator": "Yeti Bar Restaurant",
+        "website": "https://www.yetipila.it/#piscina"
+      }
+    },
+    {
+      "type": "way",
+      "id": 234460878,
+      "bounds": {
+        "minlat": 45.9010401,
+        "minlon": 7.561621,
+        "maxlat": 45.9014358,
+        "maxlon": 7.5630001
+      },
+      "nodes": [
+        2427109261,
+        2427109263,
+        2427109267,
+        2427109268,
+        2427109266,
+        2427109264,
+        2427109270,
+        2427109271
+      ],
+      "geometry": [
+        {
+          "lat": 45.9010401,
+          "lon": 7.5630001
+        },
+        {
+          "lat": 45.9012211,
+          "lon": 7.5627763
+        },
+        {
+          "lat": 45.90128,
+          "lon": 7.5626735
+        },
+        {
+          "lat": 45.9013095,
+          "lon": 7.5624437
+        },
+        {
+          "lat": 45.90128,
+          "lon": 7.5622078
+        },
+        {
+          "lat": 45.90128,
+          "lon": 7.5619779
+        },
+        {
+          "lat": 45.9013305,
+          "lon": 7.5617783
+        },
+        {
+          "lat": 45.9014358,
+          "lon": 7.561621
+        }
+      ],
+      "tags": {
+        "climbing:sport": "yes",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 247396113,
+      "bounds": {
+        "minlat": 45.7340659,
+        "minlon": 7.3235181,
+        "maxlat": 45.7341414,
+        "maxlon": 7.3237276
+      },
+      "nodes": [
+        2542867371,
+        2542867372,
+        2542867373,
+        2542867375,
+        2542867376,
+        2542867374,
+        2542867377,
+        2542867378,
+        2542867371
+      ],
+      "geometry": [
+        {
+          "lat": 45.7340659,
+          "lon": 7.3236333
+        },
+        {
+          "lat": 45.734118,
+          "lon": 7.3235181
+        },
+        {
+          "lat": 45.7341388,
+          "lon": 7.3235672
+        },
+        {
+          "lat": 45.7341254,
+          "lon": 7.3236008
+        },
+        {
+          "lat": 45.7341414,
+          "lon": 7.3236276
+        },
+        {
+          "lat": 45.7340967,
+          "lon": 7.3237276
+        },
+        {
+          "lat": 45.7340744,
+          "lon": 7.3236799
+        },
+        {
+          "lat": 45.7340838,
+          "lon": 7.3236622
+        },
+        {
+          "lat": 45.7340659,
+          "lon": 7.3236333
+        }
+      ],
+      "tags": {
+        "amenity": "bicycle_rental",
+        "name": "Strada Paravera",
+        "name:fr": "Rue Paravère",
+        "phone": "+39 0165 300560",
+        "website": "https://www.regione.vda.it/gestione/riviweb/templates/aspx/environnement.aspx?pkArt=1406"
+      }
+    },
+    {
+      "type": "way",
+      "id": 247427942,
+      "bounds": {
+        "minlat": 45.7332014,
+        "minlon": 7.3199755,
+        "maxlat": 45.7332364,
+        "maxlon": 7.3200138
+      },
+      "nodes": [
+        2543131122,
+        2543131129,
+        2543131133,
+        2543131138,
+        2543131122
+      ],
+      "geometry": [
+        {
+          "lat": 45.7332364,
+          "lon": 7.3200032
+        },
+        {
+          "lat": 45.7332059,
+          "lon": 7.3200138
+        },
+        {
+          "lat": 45.7332014,
+          "lon": 7.3199862
+        },
+        {
+          "lat": 45.7332319,
+          "lon": 7.3199755
+        },
+        {
+          "lat": 45.7332364,
+          "lon": 7.3200032
+        }
+      ],
+      "tags": {
+        "amenity": "bicycle_rental",
+        "phone": "+39 0165 300560",
+        "website": "https://www.regione.vda.it/gestione/riviweb/templates/aspx/environnement.aspx?pkArt=1406"
+      }
+    },
+    {
+      "type": "way",
+      "id": 247452855,
+      "bounds": {
+        "minlat": 45.7337938,
+        "minlon": 7.3071742,
+        "maxlat": 45.7339099,
+        "maxlon": 7.3072924
+      },
+      "nodes": [
+        2543328596,
+        2543328599,
+        2543328601,
+        2543328603,
+        2543328596
+      ],
+      "geometry": [
+        {
+          "lat": 45.7339099,
+          "lon": 7.3072584
+        },
+        {
+          "lat": 45.7338978,
+          "lon": 7.3071742
+        },
+        {
+          "lat": 45.7337938,
+          "lon": 7.3072104
+        },
+        {
+          "lat": 45.733808,
+          "lon": 7.3072924
+        },
+        {
+          "lat": 45.7339099,
+          "lon": 7.3072584
+        }
+      ],
+      "tags": {
+        "addr:city": "Aosta",
+        "addr:city:fr": "Aoste",
+        "addr:street": "Corso Battaglione Aosta",
+        "addr:street:fr": "Avenue Battaglione Aosta",
+        "amenity": "bicycle_rental",
+        "name": "Piazza Ducler",
+        "name:fr": "Place Ducler"
+      }
+    },
+    {
+      "type": "way",
+      "id": 247455838,
+      "bounds": {
+        "minlat": 45.7392982,
+        "minlon": 7.3074935,
+        "maxlat": 45.7393642,
+        "maxlon": 7.3075772
+      },
+      "nodes": [
+        2543361061,
+        2543361062,
+        1741155595,
+        2543370592,
+        2543361061
+      ],
+      "geometry": [
+        {
+          "lat": 45.7392982,
+          "lon": 7.3075006
+        },
+        {
+          "lat": 45.7392996,
+          "lon": 7.3075772
+        },
+        {
+          "lat": 45.7393642,
+          "lon": 7.3075722
+        },
+        {
+          "lat": 45.7393633,
+          "lon": 7.3074935
+        },
+        {
+          "lat": 45.7392982,
+          "lon": 7.3075006
+        }
+      ],
+      "tags": {
+        "addr:housename": "Via Parigi",
+        "addr:housenumber": "79",
+        "amenity": "bicycle_rental",
+        "name": "Gotrau",
+        "phone": "+39 0165 300560",
+        "website": "https://www.regione.vda.it/gestione/riviweb/templates/aspx/environnement.aspx?pkArt=1406"
+      }
+    },
+    {
+      "type": "way",
+      "id": 247461811,
+      "bounds": {
+        "minlat": 45.7390954,
+        "minlon": 7.3286425,
+        "maxlat": 45.739177,
+        "maxlon": 7.3287334
+      },
+      "nodes": [
+        2359480362,
+        2543440297,
+        2543440299,
+        2543440301,
+        2359480362
+      ],
+      "geometry": [
+        {
+          "lat": 45.7391076,
+          "lon": 7.3287334
+        },
+        {
+          "lat": 45.739177,
+          "lon": 7.3286814
+        },
+        {
+          "lat": 45.739164,
+          "lon": 7.3286425
+        },
+        {
+          "lat": 45.7390954,
+          "lon": 7.3286917
+        },
+        {
+          "lat": 45.7391076,
+          "lon": 7.3287334
+        }
+      ],
+      "tags": {
+        "amenity": "bicycle_rental",
+        "bicycle_rental": "docking_station",
+        "name": "Piazza Ancien Abattoir",
+        "name:fr": "Place de l'Ancien Abattoir",
+        "phone": "+39 0165 300560",
+        "website": "https://www.regione.vda.it/gestione/riviweb/templates/aspx/environnement.aspx?pkArt=1406"
+      }
+    },
+    {
+      "type": "way",
+      "id": 247463125,
+      "bounds": {
+        "minlat": 45.7348619,
+        "minlon": 7.3229713,
+        "maxlat": 45.7349111,
+        "maxlon": 7.3230571
+      },
+      "nodes": [
+        2543454365,
+        2543454366,
+        2543454367,
+        2543454368,
+        2543454365
+      ],
+      "geometry": [
+        {
+          "lat": 45.7348619,
+          "lon": 7.3229827
+        },
+        {
+          "lat": 45.7348796,
+          "lon": 7.3230571
+        },
+        {
+          "lat": 45.7349111,
+          "lon": 7.3230448
+        },
+        {
+          "lat": 45.7348918,
+          "lon": 7.3229713
+        },
+        {
+          "lat": 45.7348619,
+          "lon": 7.3229827
+        }
+      ],
+      "tags": {
+        "addr:city": "Aosta",
+        "addr:housename": "Via Carrel",
+        "amenity": "bicycle_rental",
+        "bicycle_rental": "docking_station",
+        "name": "Terminal BUS",
+        "phone": "+39 0165 300560",
+        "website": "https://www.regione.vda.it/gestione/riviweb/templates/aspx/environnement.aspx?pkArt=1406"
+      }
+    },
+    {
+      "type": "way",
+      "id": 247465151,
+      "bounds": {
+        "minlat": 45.7359019,
+        "minlon": 7.329392,
+        "maxlat": 45.736,
+        "maxlon": 7.3295112
+      },
+      "nodes": [
+        2543477867,
+        2543477870,
+        2543477873,
+        2543477877,
+        2543477867
+      ],
+      "geometry": [
+        {
+          "lat": 45.7359197,
+          "lon": 7.3295112
+        },
+        {
+          "lat": 45.736,
+          "lon": 7.3294857
+        },
+        {
+          "lat": 45.7359851,
+          "lon": 7.329392
+        },
+        {
+          "lat": 45.7359019,
+          "lon": 7.3294176
+        },
+        {
+          "lat": 45.7359197,
+          "lon": 7.3295112
+        }
+      ],
+      "tags": {
+        "addr:housename": "Via Caduti del Lavoro",
+        "amenity": "bicycle_rental",
+        "name": "Via Caduti del Lavoro",
+        "phone": "+39 0165 300560",
+        "website": "https://www.regione.vda.it/gestione/riviweb/templates/aspx/environnement.aspx?pkArt=1406"
+      }
+    },
+    {
+      "type": "way",
+      "id": 247562749,
+      "bounds": {
+        "minlat": 45.7419607,
+        "minlon": 7.3242778,
+        "maxlat": 45.7420306,
+        "maxlon": 7.3244279
+      },
+      "nodes": [
+        2544319777,
+        2544319779,
+        2544319781,
+        2544319783,
+        2544319777
+      ],
+      "geometry": [
+        {
+          "lat": 45.742015,
+          "lon": 7.3242778
+        },
+        {
+          "lat": 45.7419607,
+          "lon": 7.3242906
+        },
+        {
+          "lat": 45.7419756,
+          "lon": 7.3244279
+        },
+        {
+          "lat": 45.7420306,
+          "lon": 7.324414
+        },
+        {
+          "lat": 45.742015,
+          "lon": 7.3242778
+        }
+      ],
+      "tags": {
+        "amenity": "bicycle_rental",
+        "name": "Consolata",
+        "name:fr": "Consolation",
+        "phone": "+39 0165 300560",
+        "website": "https://www.regione.vda.it/gestione/riviweb/templates/aspx/environnement.aspx?pkArt=1406"
+      }
+    },
+    {
+      "type": "way",
+      "id": 268508860,
+      "bounds": {
+        "minlat": 45.7281931,
+        "minlon": 7.3054455,
+        "maxlat": 45.7284178,
+        "maxlon": 7.3056203
+      },
+      "nodes": [
+        2738425023,
+        2738425026,
+        2738425017,
+        2738425016,
+        2738425023
+      ],
+      "geometry": [
+        {
+          "lat": 45.7284,
+          "lon": 7.3054455
+        },
+        {
+          "lat": 45.7284178,
+          "lon": 7.3055428
+        },
+        {
+          "lat": 45.7282108,
+          "lon": 7.3056203
+        },
+        {
+          "lat": 45.7281931,
+          "lon": 7.305523
+        },
+        {
+          "lat": 45.7284,
+          "lon": 7.3054455
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 268508862,
+      "bounds": {
+        "minlat": 45.7278772,
+        "minlon": 7.3051102,
+        "maxlat": 45.7283615,
+        "maxlon": 7.305527
+      },
+      "nodes": [
+        2738425019,
+        2738425021,
+        2738425014,
+        2738425013,
+        2738425019
+      ],
+      "geometry": [
+        {
+          "lat": 45.7283154,
+          "lon": 7.3051102
+        },
+        {
+          "lat": 45.7283615,
+          "lon": 7.3053629
+        },
+        {
+          "lat": 45.7279233,
+          "lon": 7.305527
+        },
+        {
+          "lat": 45.7278772,
+          "lon": 7.3052743
+        },
+        {
+          "lat": 45.7283154,
+          "lon": 7.3051102
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 268525744,
+      "bounds": {
+        "minlat": 45.7408196,
+        "minlon": 7.4723312,
+        "maxlat": 45.7409096,
+        "maxlon": 7.4725055
+      },
+      "nodes": [
+        2738675057,
+        2738675059,
+        2738675056,
+        2738675054,
+        2738675057
+      ],
+      "geometry": [
+        {
+          "lat": 45.7408743,
+          "lon": 7.4723312
+        },
+        {
+          "lat": 45.7409096,
+          "lon": 7.4724786
+        },
+        {
+          "lat": 45.7408548,
+          "lon": 7.4725055
+        },
+        {
+          "lat": 45.7408196,
+          "lon": 7.472358
+        },
+        {
+          "lat": 45.7408743,
+          "lon": 7.4723312
+        }
+      ],
+      "tags": {
+        "access": "private",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 288199397,
+      "bounds": {
+        "minlat": 45.5973647,
+        "minlon": 7.7561749,
+        "maxlat": 45.5973983,
+        "maxlon": 7.7569929
+      },
+      "nodes": [
+        2917470301,
+        2917470302,
+        2917469303,
+        2917470202
+      ],
+      "geometry": [
+        {
+          "lat": 45.5973983,
+          "lon": 7.7569929
+        },
+        {
+          "lat": 45.5973647,
+          "lon": 7.7568151
+        },
+        {
+          "lat": 45.5973677,
+          "lon": 7.7565665
+        },
+        {
+          "lat": 45.5973887,
+          "lon": 7.7561749
+        }
+      ],
+      "tags": {
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 288199398,
+      "bounds": {
+        "minlat": 45.5972158,
+        "minlon": 7.7542314,
+        "maxlat": 45.5973734,
+        "maxlon": 7.7549806
+      },
+      "nodes": [
+        2917469203,
+        2917469603,
+        2917469403,
+        2917469204
+      ],
+      "geometry": [
+        {
+          "lat": 45.5972158,
+          "lon": 7.7549806
+        },
+        {
+          "lat": 45.5972785,
+          "lon": 7.7548179
+        },
+        {
+          "lat": 45.5973524,
+          "lon": 7.754623
+        },
+        {
+          "lat": 45.5973734,
+          "lon": 7.7542314
+        }
+      ],
+      "tags": {
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 293812045,
+      "bounds": {
+        "minlat": 45.7599856,
+        "minlon": 7.720545,
+        "maxlat": 45.7600788,
+        "maxlon": 7.720653
+      },
+      "nodes": [
+        2973969779,
+        2973969781,
+        2973969780,
+        2973969778,
+        2973969779
+      ],
+      "geometry": [
+        {
+          "lat": 45.7600045,
+          "lon": 7.720545
+        },
+        {
+          "lat": 45.7600788,
+          "lon": 7.7205941
+        },
+        {
+          "lat": 45.7600598,
+          "lon": 7.720653
+        },
+        {
+          "lat": 45.7599856,
+          "lon": 7.7206039
+        },
+        {
+          "lat": 45.7600045,
+          "lon": 7.720545
+        }
+      ],
+      "tags": {
+        "height": "12",
+        "leisure": "sports_centre",
+        "man_made": "tower",
+        "sport": "climbing",
+        "tower:type": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 295964878,
+      "bounds": {
+        "minlat": 45.8315797,
+        "minlon": 7.823313,
+        "maxlat": 45.8316252,
+        "maxlon": 7.8233787
+      },
+      "nodes": [
+        2997249092,
+        2997249093,
+        2997249094,
+        2997249095,
+        2997249092
+      ],
+      "geometry": [
+        {
+          "lat": 45.8316252,
+          "lon": 7.8233505
+        },
+        {
+          "lat": 45.8316001,
+          "lon": 7.8233787
+        },
+        {
+          "lat": 45.8315797,
+          "lon": 7.8233411
+        },
+        {
+          "lat": 45.8316048,
+          "lon": 7.823313
+        },
+        {
+          "lat": 45.8316252,
+          "lon": 7.8233505
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 300274729,
+      "bounds": {
+        "minlat": 45.737531,
+        "minlon": 7.4039302,
+        "maxlat": 45.7377647,
+        "maxlon": 7.4040841
+      },
+      "nodes": [
+        3043754741,
+        3043754743,
+        3043754611,
+        3043754607,
+        3043754741
+      ],
+      "geometry": [
+        {
+          "lat": 45.7377572,
+          "lon": 7.4039302
+        },
+        {
+          "lat": 45.7377647,
+          "lon": 7.4040566
+        },
+        {
+          "lat": 45.7375384,
+          "lon": 7.4040841
+        },
+        {
+          "lat": 45.737531,
+          "lon": 7.4039578
+        },
+        {
+          "lat": 45.7377572,
+          "lon": 7.4039302
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 303151821,
+      "bounds": {
+        "minlat": 45.5962732,
+        "minlon": 7.3986314,
+        "maxlat": 45.5964026,
+        "maxlon": 7.3991519
+      },
+      "nodes": [
+        1439049947,
+        1439049926,
+        1439049904
+      ],
+      "geometry": [
+        {
+          "lat": 45.5964026,
+          "lon": 7.3986314
+        },
+        {
+          "lat": 45.5963117,
+          "lon": 7.3989486
+        },
+        {
+          "lat": 45.5962732,
+          "lon": 7.3991519
+        }
+      ],
+      "tags": {
+        "climbing:bolted": "yes",
+        "climbing:grade:french:max": "6b",
+        "climbing:grade:french:min": "3",
+        "climbing:multipitch": "yes",
+        "climbing:orientation": "S",
+        "climbing:sport": "yes",
+        "name": "Palestra di Roccia di Lillaz",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 304199051,
+      "bounds": {
+        "minlat": 45.7424024,
+        "minlon": 7.3317337,
+        "maxlat": 45.7425626,
+        "maxlon": 7.3320297
+      },
+      "nodes": [
+        3087266621,
+        3087266617,
+        3087266615,
+        3087266614,
+        3087266612,
+        3087266611,
+        3087266609,
+        3087266608,
+        3087266605,
+        3087266602,
+        3087266600,
+        3087266599,
+        3087266597,
+        3087266598,
+        3087266601,
+        3087266603,
+        3087266606,
+        3087266604,
+        3087266607,
+        3087266610,
+        3087266613,
+        3087266616,
+        3087266618,
+        3087266619,
+        3087266620,
+        3087266623,
+        3087266625,
+        3087267133,
+        3087267134,
+        3087267136,
+        3087267135,
+        3087266630,
+        3087266626,
+        3087266624,
+        3087266627,
+        3087266629,
+        3087266631,
+        3087266632,
+        3087266628,
+        3087266622,
+        3087266621
+      ],
+      "geometry": [
+        {
+          "lat": 45.7425236,
+          "lon": 7.3317413
+        },
+        {
+          "lat": 45.7425039,
+          "lon": 7.3317337
+        },
+        {
+          "lat": 45.7424956,
+          "lon": 7.3317684
+        },
+        {
+          "lat": 45.7424926,
+          "lon": 7.3318075
+        },
+        {
+          "lat": 45.7424804,
+          "lon": 7.3318237
+        },
+        {
+          "lat": 45.7424714,
+          "lon": 7.3318368
+        },
+        {
+          "lat": 45.7424653,
+          "lon": 7.3318585
+        },
+        {
+          "lat": 45.7424577,
+          "lon": 7.3318878
+        },
+        {
+          "lat": 45.7424494,
+          "lon": 7.331903
+        },
+        {
+          "lat": 45.7424358,
+          "lon": 7.331916
+        },
+        {
+          "lat": 45.7424176,
+          "lon": 7.3319225
+        },
+        {
+          "lat": 45.7424077,
+          "lon": 7.3319312
+        },
+        {
+          "lat": 45.7424024,
+          "lon": 7.3319453
+        },
+        {
+          "lat": 45.7424062,
+          "lon": 7.3319561
+        },
+        {
+          "lat": 45.7424191,
+          "lon": 7.3319702
+        },
+        {
+          "lat": 45.7424441,
+          "lon": 7.3319865
+        },
+        {
+          "lat": 45.7424517,
+          "lon": 7.3319909
+        },
+        {
+          "lat": 45.7424456,
+          "lon": 7.3320104
+        },
+        {
+          "lat": 45.7424554,
+          "lon": 7.3320191
+        },
+        {
+          "lat": 45.7424668,
+          "lon": 7.3320288
+        },
+        {
+          "lat": 45.7424835,
+          "lon": 7.3320278
+        },
+        {
+          "lat": 45.7425032,
+          "lon": 7.3320213
+        },
+        {
+          "lat": 45.7425051,
+          "lon": 7.3320297
+        },
+        {
+          "lat": 45.7425149,
+          "lon": 7.3320237
+        },
+        {
+          "lat": 45.7425191,
+          "lon": 7.3320194
+        },
+        {
+          "lat": 45.742524,
+          "lon": 7.3320129
+        },
+        {
+          "lat": 45.7425289,
+          "lon": 7.3320064
+        },
+        {
+          "lat": 45.7425475,
+          "lon": 7.3320243
+        },
+        {
+          "lat": 45.7425535,
+          "lon": 7.3320145
+        },
+        {
+          "lat": 45.7425626,
+          "lon": 7.3319798
+        },
+        {
+          "lat": 45.7425619,
+          "lon": 7.3319299
+        },
+        {
+          "lat": 45.7425357,
+          "lon": 7.3319288
+        },
+        {
+          "lat": 45.7425304,
+          "lon": 7.3319266
+        },
+        {
+          "lat": 45.7425285,
+          "lon": 7.3319206
+        },
+        {
+          "lat": 45.7425312,
+          "lon": 7.3319125
+        },
+        {
+          "lat": 45.7425353,
+          "lon": 7.3318957
+        },
+        {
+          "lat": 45.7425369,
+          "lon": 7.3318843
+        },
+        {
+          "lat": 45.7425376,
+          "lon": 7.331785
+        },
+        {
+          "lat": 45.7425331,
+          "lon": 7.331779
+        },
+        {
+          "lat": 45.742524,
+          "lon": 7.3317644
+        },
+        {
+          "lat": 45.7425236,
+          "lon": 7.3317413
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 304199923,
+      "bounds": {
+        "minlat": 45.6331086,
+        "minlon": 7.3174983,
+        "maxlat": 45.6334746,
+        "maxlon": 7.3182101
+      },
+      "nodes": [
+        3087274342,
+        3087274341,
+        3087274340,
+        3087274339,
+        3087274338,
+        3087274337,
+        3087274336,
+        3087274335,
+        3087274334
+      ],
+      "geometry": [
+        {
+          "lat": 45.6334746,
+          "lon": 7.3174983
+        },
+        {
+          "lat": 45.6333814,
+          "lon": 7.3176467
+        },
+        {
+          "lat": 45.6333324,
+          "lon": 7.3177701
+        },
+        {
+          "lat": 45.6332741,
+          "lon": 7.3177384
+        },
+        {
+          "lat": 45.6332461,
+          "lon": 7.3177751
+        },
+        {
+          "lat": 45.633231,
+          "lon": 7.3178517
+        },
+        {
+          "lat": 45.6331774,
+          "lon": 7.3180618
+        },
+        {
+          "lat": 45.6331412,
+          "lon": 7.3181301
+        },
+        {
+          "lat": 45.6331086,
+          "lon": 7.3182101
+        }
+      ],
+      "tags": {
+        "access": "yes",
+        "climbing:orientation": "SW",
+        "climbing:quality": "solid",
+        "climbing:sport": "yes",
+        "name": "Palestra Gerard",
+        "natural": "cliff",
+        "opening_hours": "24/7",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 304199924,
+      "bounds": {
+        "minlat": 45.6337271,
+        "minlon": 7.3168767,
+        "maxlat": 45.6337784,
+        "maxlon": 7.3172084
+      },
+      "nodes": [
+        3087274345,
+        3087274344,
+        3087274343
+      ],
+      "geometry": [
+        {
+          "lat": 45.6337784,
+          "lon": 7.3168767
+        },
+        {
+          "lat": 45.6337703,
+          "lon": 7.317015
+        },
+        {
+          "lat": 45.6337271,
+          "lon": 7.3172084
+        }
+      ],
+      "tags": {
+        "access": "yes",
+        "climbing:bolted": "yes",
+        "climbing:orientation": "SW",
+        "climbing:quality": "solid",
+        "climbing:sport": "yes",
+        "name": "Palestra di Roccia Epinel",
+        "natural": "cliff",
+        "opening_hours": "24/7",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 306225932,
+      "bounds": {
+        "minlat": 45.7884695,
+        "minlon": 6.9443258,
+        "maxlat": 45.7886925,
+        "maxlon": 6.9445103
+      },
+      "nodes": [
+        3110747092,
+        3110747093,
+        3110747094,
+        3110747095,
+        3110747092
+      ],
+      "geometry": [
+        {
+          "lat": 45.7886925,
+          "lon": 6.9443659
+        },
+        {
+          "lat": 45.7885118,
+          "lon": 6.9443258
+        },
+        {
+          "lat": 45.7884695,
+          "lon": 6.9444542
+        },
+        {
+          "lat": 45.7886803,
+          "lon": 6.9445103
+        },
+        {
+          "lat": 45.7886925,
+          "lon": 6.9443659
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 325205842,
+      "bounds": {
+        "minlat": 45.5974729,
+        "minlon": 7.7977866,
+        "maxlat": 45.5976268,
+        "maxlon": 7.7980146
+      },
+      "nodes": [
+        3318632409,
+        3318632410,
+        3318632411,
+        3318632412,
+        3318632409
+      ],
+      "geometry": [
+        {
+          "lat": 45.5976268,
+          "lon": 7.7978752
+        },
+        {
+          "lat": 45.597533,
+          "lon": 7.7980146
+        },
+        {
+          "lat": 45.5974729,
+          "lon": 7.7979422
+        },
+        {
+          "lat": 45.597563,
+          "lon": 7.7977866
+        },
+        {
+          "lat": 45.5976268,
+          "lon": 7.7978752
+        }
+      ],
+      "tags": {
+        "access": "private",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 338304133,
+      "bounds": {
+        "minlat": 45.7286654,
+        "minlon": 7.504096,
+        "maxlat": 45.7294023,
+        "maxlon": 7.5045794
+      },
+      "nodes": [
+        3453812527,
+        3453812521,
+        3453812517,
+        3453812513,
+        3453812511,
+        3453812509,
+        3453812514,
+        3453812518,
+        3453812522,
+        3453812524,
+        3453812527
+      ],
+      "geometry": [
+        {
+          "lat": 45.7294023,
+          "lon": 7.504154
+        },
+        {
+          "lat": 45.7291999,
+          "lon": 7.504096
+        },
+        {
+          "lat": 45.7289947,
+          "lon": 7.5041308
+        },
+        {
+          "lat": 45.7288327,
+          "lon": 7.5042507
+        },
+        {
+          "lat": 45.7287086,
+          "lon": 7.5044054
+        },
+        {
+          "lat": 45.7286654,
+          "lon": 7.5045794
+        },
+        {
+          "lat": 45.7288516,
+          "lon": 7.5045368
+        },
+        {
+          "lat": 45.7290217,
+          "lon": 7.5044286
+        },
+        {
+          "lat": 45.7292053,
+          "lon": 7.5042855
+        },
+        {
+          "lat": 45.7293294,
+          "lon": 7.5041888
+        },
+        {
+          "lat": 45.7294023,
+          "lon": 7.504154
+        }
+      ],
+      "tags": {
+        "climbing:sport": "yes",
+        "description:it": "Palestra di arrampicata sportiva",
+        "leisure": "sports_centre",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 365255037,
+      "bounds": {
+        "minlat": 45.6831166,
+        "minlon": 7.612232,
+        "maxlat": 45.6831855,
+        "maxlon": 7.612301
+      },
+      "nodes": [
+        3692889949,
+        3692889950,
+        3692889947,
+        3692889938,
+        3692889522,
+        3693674357,
+        3692889518,
+        3693674356,
+        3692889516,
+        3692889519,
+        3692889520,
+        3692889521,
+        3692889523,
+        3692889524,
+        3692889931,
+        3692889937,
+        3692889945,
+        3692889949
+      ],
+      "geometry": [
+        {
+          "lat": 45.6831847,
+          "lon": 7.6122673
+        },
+        {
+          "lat": 45.6831855,
+          "lon": 7.6122812
+        },
+        {
+          "lat": 45.6831794,
+          "lon": 7.6122958
+        },
+        {
+          "lat": 45.6831676,
+          "lon": 7.612301
+        },
+        {
+          "lat": 45.6831488,
+          "lon": 7.6122965
+        },
+        {
+          "lat": 45.6831368,
+          "lon": 7.61229
+        },
+        {
+          "lat": 45.6831217,
+          "lon": 7.6122719
+        },
+        {
+          "lat": 45.6831174,
+          "lon": 7.612262
+        },
+        {
+          "lat": 45.6831166,
+          "lon": 7.6122487
+        },
+        {
+          "lat": 45.6831229,
+          "lon": 7.6122358
+        },
+        {
+          "lat": 45.6831319,
+          "lon": 7.612232
+        },
+        {
+          "lat": 45.6831396,
+          "lon": 7.6122347
+        },
+        {
+          "lat": 45.6831452,
+          "lon": 7.6122426
+        },
+        {
+          "lat": 45.6831499,
+          "lon": 7.6122533
+        },
+        {
+          "lat": 45.6831571,
+          "lon": 7.6122574
+        },
+        {
+          "lat": 45.6831666,
+          "lon": 7.6122515
+        },
+        {
+          "lat": 45.6831768,
+          "lon": 7.6122545
+        },
+        {
+          "lat": 45.6831847,
+          "lon": 7.6122673
+        }
+      ],
+      "tags": {
+        "layer": "1",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 365255038,
+      "bounds": {
+        "minlat": 45.6831482,
+        "minlon": 7.6122089,
+        "maxlat": 45.6831727,
+        "maxlon": 7.6122439
+      },
+      "nodes": [
+        3692889928,
+        3692889930,
+        3692889933,
+        3692889936,
+        3692889940,
+        3692889942,
+        3692889944,
+        3692889943,
+        3692889941,
+        3692889939,
+        3692889935,
+        3692889932,
+        3692889929,
+        3692889927,
+        3692889925,
+        3692889926,
+        3692889928
+      ],
+      "geometry": [
+        {
+          "lat": 45.6831507,
+          "lon": 7.6122372
+        },
+        {
+          "lat": 45.6831543,
+          "lon": 7.6122417
+        },
+        {
+          "lat": 45.6831589,
+          "lon": 7.6122439
+        },
+        {
+          "lat": 45.6831637,
+          "lon": 7.6122435
+        },
+        {
+          "lat": 45.683168,
+          "lon": 7.6122404
+        },
+        {
+          "lat": 45.6831711,
+          "lon": 7.6122352
+        },
+        {
+          "lat": 45.6831727,
+          "lon": 7.6122287
+        },
+        {
+          "lat": 45.6831724,
+          "lon": 7.6122218
+        },
+        {
+          "lat": 45.6831702,
+          "lon": 7.6122157
+        },
+        {
+          "lat": 45.6831666,
+          "lon": 7.6122111
+        },
+        {
+          "lat": 45.683162,
+          "lon": 7.6122089
+        },
+        {
+          "lat": 45.6831572,
+          "lon": 7.6122094
+        },
+        {
+          "lat": 45.6831529,
+          "lon": 7.6122125
+        },
+        {
+          "lat": 45.6831498,
+          "lon": 7.6122177
+        },
+        {
+          "lat": 45.6831482,
+          "lon": 7.6122242
+        },
+        {
+          "lat": 45.6831486,
+          "lon": 7.612231
+        },
+        {
+          "lat": 45.6831507,
+          "lon": 7.6122372
+        }
+      ],
+      "tags": {
+        "layer": "1",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 376246214,
+      "bounds": {
+        "minlat": 45.5976296,
+        "minlon": 7.7902537,
+        "maxlat": 45.5976768,
+        "maxlon": 7.7903681
+      },
+      "nodes": [
+        3796895953,
+        3796895954,
+        3796895951,
+        3796895949,
+        3796895946,
+        3796895939,
+        3796895938,
+        3796895943,
+        3796895942,
+        3796895941,
+        3796895945,
+        3796895947,
+        3796895950,
+        3796895953
+      ],
+      "geometry": [
+        {
+          "lat": 45.5976726,
+          "lon": 7.7902601
+        },
+        {
+          "lat": 45.5976768,
+          "lon": 7.7903483
+        },
+        {
+          "lat": 45.5976691,
+          "lon": 7.7903631
+        },
+        {
+          "lat": 45.5976598,
+          "lon": 7.7903681
+        },
+        {
+          "lat": 45.5976459,
+          "lon": 7.7903641
+        },
+        {
+          "lat": 45.5976324,
+          "lon": 7.7903478
+        },
+        {
+          "lat": 45.5976296,
+          "lon": 7.7903304
+        },
+        {
+          "lat": 45.5976383,
+          "lon": 7.7903151
+        },
+        {
+          "lat": 45.5976383,
+          "lon": 7.7902883
+        },
+        {
+          "lat": 45.5976369,
+          "lon": 7.7902651
+        },
+        {
+          "lat": 45.5976438,
+          "lon": 7.7902561
+        },
+        {
+          "lat": 45.5976542,
+          "lon": 7.7902547
+        },
+        {
+          "lat": 45.5976612,
+          "lon": 7.7902537
+        },
+        {
+          "lat": 45.5976726,
+          "lon": 7.7902601
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 377142772,
+      "bounds": {
+        "minlat": 45.5910702,
+        "minlon": 7.801203,
+        "maxlat": 45.591151,
+        "maxlon": 7.8012723
+      },
+      "nodes": [
+        3805155927,
+        3805155929,
+        3805155918,
+        3805155917,
+        3805155927
+      ],
+      "geometry": [
+        {
+          "lat": 45.5911445,
+          "lon": 7.801203
+        },
+        {
+          "lat": 45.591151,
+          "lon": 7.8012525
+        },
+        {
+          "lat": 45.5910767,
+          "lon": 7.8012723
+        },
+        {
+          "lat": 45.5910702,
+          "lon": 7.8012229
+        },
+        {
+          "lat": 45.5911445,
+          "lon": 7.801203
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 377436893,
+      "bounds": {
+        "minlat": 45.7261982,
+        "minlon": 7.2943667,
+        "maxlat": 45.7263087,
+        "maxlon": 7.2945907
+      },
+      "nodes": [
+        3808053333,
+        3808053334,
+        3808053335,
+        3808053336,
+        3808053333
+      ],
+      "geometry": [
+        {
+          "lat": 45.7263087,
+          "lon": 7.2943949
+        },
+        {
+          "lat": 45.7262412,
+          "lon": 7.2943667
+        },
+        {
+          "lat": 45.7261982,
+          "lon": 7.2945598
+        },
+        {
+          "lat": 45.7262675,
+          "lon": 7.2945907
+        },
+        {
+          "lat": 45.7263087,
+          "lon": 7.2943949
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 378890374,
+      "bounds": {
+        "minlat": 45.7400621,
+        "minlon": 7.4355007,
+        "maxlat": 45.7401542,
+        "maxlon": 7.4356657
+      },
+      "nodes": [
+        3822497237,
+        3822497238,
+        3822497239,
+        3822497240,
+        3822497241,
+        3822497242,
+        3822497243,
+        3822497244,
+        3822497237
+      ],
+      "geometry": [
+        {
+          "lat": 45.7401275,
+          "lon": 7.4355944
+        },
+        {
+          "lat": 45.7401505,
+          "lon": 7.435605
+        },
+        {
+          "lat": 45.7401542,
+          "lon": 7.4356412
+        },
+        {
+          "lat": 45.7401468,
+          "lon": 7.4356572
+        },
+        {
+          "lat": 45.7401208,
+          "lon": 7.4356625
+        },
+        {
+          "lat": 45.7400695,
+          "lon": 7.4356657
+        },
+        {
+          "lat": 45.7400621,
+          "lon": 7.4355081
+        },
+        {
+          "lat": 45.7401223,
+          "lon": 7.4355007
+        },
+        {
+          "lat": 45.7401275,
+          "lon": 7.4355944
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 401632808,
+      "bounds": {
+        "minlat": 45.628805,
+        "minlon": 7.8419868,
+        "maxlat": 45.6288721,
+        "maxlon": 7.8421028
+      },
+      "nodes": [
+        4040426288,
+        4040426293,
+        4040426291,
+        4040426282,
+        4040426288
+      ],
+      "geometry": [
+        {
+          "lat": 45.6288346,
+          "lon": 7.8419868
+        },
+        {
+          "lat": 45.6288721,
+          "lon": 7.8420391
+        },
+        {
+          "lat": 45.628847,
+          "lon": 7.8421028
+        },
+        {
+          "lat": 45.628805,
+          "lon": 7.8420327
+        },
+        {
+          "lat": 45.6288346,
+          "lon": 7.8419868
+        }
+      ],
+      "tags": {
+        "access": "private",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 404401501,
+      "bounds": {
+        "minlat": 45.7472623,
+        "minlon": 7.6621515,
+        "maxlat": 45.748139,
+        "maxlon": 7.6630182
+      },
+      "nodes": [
+        4066793967,
+        9556157675,
+        4066793973,
+        4066793978,
+        4066793976,
+        4066793974,
+        4066793972,
+        4066793970,
+        4066793968,
+        4066793964,
+        4066793963,
+        4066793965,
+        4066793967
+      ],
+      "geometry": [
+        {
+          "lat": 45.7474118,
+          "lon": 7.6622506
+        },
+        {
+          "lat": 45.7477808,
+          "lon": 7.6626316
+        },
+        {
+          "lat": 45.7478952,
+          "lon": 7.6627498
+        },
+        {
+          "lat": 45.748139,
+          "lon": 7.6629495
+        },
+        {
+          "lat": 45.7480389,
+          "lon": 7.6630182
+        },
+        {
+          "lat": 45.7479366,
+          "lon": 7.6630119
+        },
+        {
+          "lat": 45.7477919,
+          "lon": 7.6628796
+        },
+        {
+          "lat": 45.7475825,
+          "lon": 7.662681
+        },
+        {
+          "lat": 45.7474163,
+          "lon": 7.6625133
+        },
+        {
+          "lat": 45.7472777,
+          "lon": 7.6623545
+        },
+        {
+          "lat": 45.7472623,
+          "lon": 7.6621956
+        },
+        {
+          "lat": 45.7473516,
+          "lon": 7.6621515
+        },
+        {
+          "lat": 45.7474118,
+          "lon": 7.6622506
+        }
+      ],
+      "tags": {
+        "area": "yes",
+        "climbing:sport": "yes",
+        "name": "Palestra di arrampicata sportiva",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 425896057,
+      "bounds": {
+        "minlat": 45.8292779,
+        "minlon": 7.5233929,
+        "maxlat": 45.8294967,
+        "maxlon": 7.5236233
+      },
+      "nodes": [
+        4252099990,
+        4252099989,
+        4252099991,
+        4252099992,
+        4252099994,
+        4252099995
+      ],
+      "geometry": [
+        {
+          "lat": 45.8292852,
+          "lon": 7.5233929
+        },
+        {
+          "lat": 45.8292779,
+          "lon": 7.5234967
+        },
+        {
+          "lat": 45.8293158,
+          "lon": 7.5235856
+        },
+        {
+          "lat": 45.8293836,
+          "lon": 7.5236233
+        },
+        {
+          "lat": 45.8294534,
+          "lon": 7.5235944
+        },
+        {
+          "lat": 45.8294967,
+          "lon": 7.5235107
+        }
+      ],
+      "tags": {
+        "climbing:sport": "yes",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 430378580,
+      "bounds": {
+        "minlat": 45.694397,
+        "minlon": 7.6661056,
+        "maxlat": 45.6944479,
+        "maxlon": 7.6662711
+      },
+      "nodes": [
+        4296632546,
+        4296632544,
+        4296632531,
+        4296632532,
+        4296632546
+      ],
+      "geometry": [
+        {
+          "lat": 45.6944479,
+          "lon": 7.6661108
+        },
+        {
+          "lat": 45.6944381,
+          "lon": 7.6662711
+        },
+        {
+          "lat": 45.694397,
+          "lon": 7.6662659
+        },
+        {
+          "lat": 45.6944068,
+          "lon": 7.6661056
+        },
+        {
+          "lat": 45.6944479,
+          "lon": 7.6661108
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 442067861,
+      "bounds": {
+        "minlat": 45.8229346,
+        "minlon": 7.3248661,
+        "maxlat": 45.8229696,
+        "maxlon": 7.3249633
+      },
+      "nodes": [
+        4397594379,
+        4397594380,
+        4397594381,
+        4397594383,
+        4397594385,
+        4397594386,
+        4397594388,
+        4397595090,
+        4397595092,
+        4397595094,
+        4397595095,
+        4397595093,
+        4397595091,
+        4397595089,
+        4397594387,
+        4397594384,
+        4397594382,
+        4397594379
+      ],
+      "geometry": [
+        {
+          "lat": 45.8229346,
+          "lon": 7.3248848
+        },
+        {
+          "lat": 45.8229346,
+          "lon": 7.3249472
+        },
+        {
+          "lat": 45.8229372,
+          "lon": 7.3249539
+        },
+        {
+          "lat": 45.8229411,
+          "lon": 7.3249591
+        },
+        {
+          "lat": 45.822946,
+          "lon": 7.3249624
+        },
+        {
+          "lat": 45.8229513,
+          "lon": 7.3249633
+        },
+        {
+          "lat": 45.8229565,
+          "lon": 7.3249619
+        },
+        {
+          "lat": 45.8229613,
+          "lon": 7.3249583
+        },
+        {
+          "lat": 45.8229671,
+          "lon": 7.3249517
+        },
+        {
+          "lat": 45.8229692,
+          "lon": 7.3249432
+        },
+        {
+          "lat": 45.8229696,
+          "lon": 7.3248862
+        },
+        {
+          "lat": 45.8229673,
+          "lon": 7.3248783
+        },
+        {
+          "lat": 45.8229634,
+          "lon": 7.3248719
+        },
+        {
+          "lat": 45.8229582,
+          "lon": 7.3248677
+        },
+        {
+          "lat": 45.8229524,
+          "lon": 7.3248661
+        },
+        {
+          "lat": 45.8229449,
+          "lon": 7.3248684
+        },
+        {
+          "lat": 45.8229385,
+          "lon": 7.3248743
+        },
+        {
+          "lat": 45.8229346,
+          "lon": 7.3248848
+        }
+      ],
+      "tags": {
+        "access": "private",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 442069838,
+      "bounds": {
+        "minlat": 45.8282493,
+        "minlon": 7.3267785,
+        "maxlat": 45.8283297,
+        "maxlon": 7.3268797
+      },
+      "nodes": [
+        4397609577,
+        4397609578,
+        4397609581,
+        4397609582,
+        4397609583,
+        4397609584,
+        4397609580,
+        4397609579,
+        4397609576,
+        4397609571,
+        4397609567,
+        4397609564,
+        4397609560,
+        4397609558,
+        4397609557,
+        4397609559,
+        4397609561,
+        4397609562,
+        4397609563,
+        4397609565,
+        4397609566,
+        4397609568,
+        4397609569,
+        4397609570,
+        4397609572,
+        4397609573,
+        4397609574,
+        4397609575,
+        4397609577
+      ],
+      "geometry": [
+        {
+          "lat": 45.8283178,
+          "lon": 7.3268325
+        },
+        {
+          "lat": 45.8283215,
+          "lon": 7.3268271
+        },
+        {
+          "lat": 45.828326,
+          "lon": 7.3268231
+        },
+        {
+          "lat": 45.8283288,
+          "lon": 7.3268164
+        },
+        {
+          "lat": 45.8283295,
+          "lon": 7.326809
+        },
+        {
+          "lat": 45.8283297,
+          "lon": 7.3268009
+        },
+        {
+          "lat": 45.8283257,
+          "lon": 7.3267869
+        },
+        {
+          "lat": 45.828322,
+          "lon": 7.3267812
+        },
+        {
+          "lat": 45.8283173,
+          "lon": 7.3267785
+        },
+        {
+          "lat": 45.8282914,
+          "lon": 7.3267838
+        },
+        {
+          "lat": 45.8282736,
+          "lon": 7.3267989
+        },
+        {
+          "lat": 45.8282657,
+          "lon": 7.3268093
+        },
+        {
+          "lat": 45.8282524,
+          "lon": 7.3268314
+        },
+        {
+          "lat": 45.8282503,
+          "lon": 7.3268382
+        },
+        {
+          "lat": 45.8282493,
+          "lon": 7.3268459
+        },
+        {
+          "lat": 45.8282503,
+          "lon": 7.3268532
+        },
+        {
+          "lat": 45.8282549,
+          "lon": 7.3268667
+        },
+        {
+          "lat": 45.828258,
+          "lon": 7.326873
+        },
+        {
+          "lat": 45.8282624,
+          "lon": 7.3268767
+        },
+        {
+          "lat": 45.8282673,
+          "lon": 7.3268794
+        },
+        {
+          "lat": 45.8282727,
+          "lon": 7.3268797
+        },
+        {
+          "lat": 45.8282778,
+          "lon": 7.3268787
+        },
+        {
+          "lat": 45.8282827,
+          "lon": 7.3268764
+        },
+        {
+          "lat": 45.8282872,
+          "lon": 7.3268724
+        },
+        {
+          "lat": 45.8282914,
+          "lon": 7.3268667
+        },
+        {
+          "lat": 45.8283,
+          "lon": 7.3268459
+        },
+        {
+          "lat": 45.828304,
+          "lon": 7.3268408
+        },
+        {
+          "lat": 45.8283122,
+          "lon": 7.3268351
+        },
+        {
+          "lat": 45.8283178,
+          "lon": 7.3268325
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 548355579,
+      "bounds": {
+        "minlat": 45.7623076,
+        "minlon": 6.9878158,
+        "maxlat": 45.7623709,
+        "maxlon": 6.9879392
+      },
+      "nodes": [
+        5297545381,
+        5297545367,
+        5297545366,
+        5297545365,
+        5297545364,
+        5297545380,
+        5297545381
+      ],
+      "geometry": [
+        {
+          "lat": 45.7623622,
+          "lon": 6.9878158
+        },
+        {
+          "lat": 45.7623218,
+          "lon": 6.9878361
+        },
+        {
+          "lat": 45.7623076,
+          "lon": 6.9878674
+        },
+        {
+          "lat": 45.7623175,
+          "lon": 6.9879236
+        },
+        {
+          "lat": 45.7623338,
+          "lon": 6.9879392
+        },
+        {
+          "lat": 45.7623709,
+          "lon": 6.9879361
+        },
+        {
+          "lat": 45.7623622,
+          "lon": 6.9878158
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 560012545,
+      "bounds": {
+        "minlat": 45.7204822,
+        "minlon": 7.4955618,
+        "maxlat": 45.7211564,
+        "maxlon": 7.496286
+      },
+      "nodes": [
+        5400675409,
+        5400675408,
+        5400675407,
+        5400675406,
+        5400675405,
+        5400675404,
+        5400675403,
+        5400675402,
+        5400675401,
+        5400675409
+      ],
+      "geometry": [
+        {
+          "lat": 45.7204822,
+          "lon": 7.495755
+        },
+        {
+          "lat": 45.7205628,
+          "lon": 7.4955618
+        },
+        {
+          "lat": 45.7207369,
+          "lon": 7.4957067
+        },
+        {
+          "lat": 45.7209972,
+          "lon": 7.495932
+        },
+        {
+          "lat": 45.7211564,
+          "lon": 7.4961117
+        },
+        {
+          "lat": 45.7210028,
+          "lon": 7.496286
+        },
+        {
+          "lat": 45.7208605,
+          "lon": 7.4961117
+        },
+        {
+          "lat": 45.7207107,
+          "lon": 7.4959937
+        },
+        {
+          "lat": 45.7205796,
+          "lon": 7.4958837
+        },
+        {
+          "lat": 45.7204822,
+          "lon": 7.495755
+        }
+      ],
+      "tags": {
+        "area": "yes",
+        "climbing:sport": "yes",
+        "name": "Palestra di arrampicata sportiva",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 627711219,
+      "bounds": {
+        "minlat": 45.7625619,
+        "minlon": 6.9856421,
+        "maxlat": 45.7626305,
+        "maxlon": 6.9857496
+      },
+      "nodes": [
+        5925897539,
+        5925897538,
+        5925897537,
+        5925897536,
+        5925897539
+      ],
+      "geometry": [
+        {
+          "lat": 45.7625619,
+          "lon": 6.9856714
+        },
+        {
+          "lat": 45.7625882,
+          "lon": 6.9857496
+        },
+        {
+          "lat": 45.7626305,
+          "lon": 6.9857203
+        },
+        {
+          "lat": 45.7626042,
+          "lon": 6.9856421
+        },
+        {
+          "lat": 45.7625619,
+          "lon": 6.9856714
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "bath:type": "thermal",
+        "leisure": "swimming_pool",
+        "location": "outdoor"
+      }
+    },
+    {
+      "type": "way",
+      "id": 627711220,
+      "bounds": {
+        "minlat": 45.7620612,
+        "minlon": 6.9859495,
+        "maxlat": 45.7621037,
+        "maxlon": 6.9860125
+      },
+      "nodes": [
+        5925897549,
+        5925897547,
+        5925897546,
+        5925897545,
+        5925897544,
+        5925897548,
+        5925897543,
+        5925897542,
+        5925897541,
+        5925897540,
+        5925897549
+      ],
+      "geometry": [
+        {
+          "lat": 45.7620612,
+          "lon": 6.985973
+        },
+        {
+          "lat": 45.7620619,
+          "lon": 6.9859924
+        },
+        {
+          "lat": 45.7620705,
+          "lon": 6.9860075
+        },
+        {
+          "lat": 45.7620837,
+          "lon": 6.9860125
+        },
+        {
+          "lat": 45.7620964,
+          "lon": 6.9860055
+        },
+        {
+          "lat": 45.7621037,
+          "lon": 6.9859891
+        },
+        {
+          "lat": 45.762103,
+          "lon": 6.9859696
+        },
+        {
+          "lat": 45.7620944,
+          "lon": 6.9859545
+        },
+        {
+          "lat": 45.7620812,
+          "lon": 6.9859495
+        },
+        {
+          "lat": 45.7620685,
+          "lon": 6.9859566
+        },
+        {
+          "lat": 45.7620612,
+          "lon": 6.985973
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "bath:type": "thermal",
+        "leisure": "swimming_pool",
+        "location": "outdoor"
+      }
+    },
+    {
+      "type": "way",
+      "id": 627711222,
+      "bounds": {
+        "minlat": 45.7617978,
+        "minlon": 6.9857821,
+        "maxlat": 45.7619545,
+        "maxlon": 6.9860917
+      },
+      "nodes": [
+        5925897574,
+        5925897573,
+        5925897572,
+        5925897571,
+        5925897570,
+        5925897569,
+        5925897568,
+        5925897567,
+        5925897566,
+        5925897565,
+        5925897564,
+        5925897563,
+        5925897562,
+        5925897561,
+        5925897560,
+        5925897559,
+        5925897558,
+        5925897557,
+        5925897556,
+        5925897555,
+        5925897554,
+        5925897553,
+        5925897552,
+        5925897551,
+        5925897550,
+        5925897574
+      ],
+      "geometry": [
+        {
+          "lat": 45.7618451,
+          "lon": 6.9857821
+        },
+        {
+          "lat": 45.7618623,
+          "lon": 6.985871
+        },
+        {
+          "lat": 45.7619157,
+          "lon": 6.9858442
+        },
+        {
+          "lat": 45.7619302,
+          "lon": 6.9859032
+        },
+        {
+          "lat": 45.7619442,
+          "lon": 6.985914
+        },
+        {
+          "lat": 45.7619545,
+          "lon": 6.9859287
+        },
+        {
+          "lat": 45.7619489,
+          "lon": 6.9859475
+        },
+        {
+          "lat": 45.7619395,
+          "lon": 6.9859555
+        },
+        {
+          "lat": 45.7619264,
+          "lon": 6.9859555
+        },
+        {
+          "lat": 45.7619105,
+          "lon": 6.986028
+        },
+        {
+          "lat": 45.7619232,
+          "lon": 6.9860514
+        },
+        {
+          "lat": 45.7619189,
+          "lon": 6.9860736
+        },
+        {
+          "lat": 45.7619049,
+          "lon": 6.9860917
+        },
+        {
+          "lat": 45.7618857,
+          "lon": 6.9860917
+        },
+        {
+          "lat": 45.761875,
+          "lon": 6.9860769
+        },
+        {
+          "lat": 45.761874,
+          "lon": 6.9860575
+        },
+        {
+          "lat": 45.7618815,
+          "lon": 6.9860427
+        },
+        {
+          "lat": 45.7618867,
+          "lon": 6.9860296
+        },
+        {
+          "lat": 45.7619016,
+          "lon": 6.9860223
+        },
+        {
+          "lat": 45.7619166,
+          "lon": 6.9859549
+        },
+        {
+          "lat": 45.7619065,
+          "lon": 6.9859539
+        },
+        {
+          "lat": 45.7618263,
+          "lon": 6.9859971
+        },
+        {
+          "lat": 45.7617978,
+          "lon": 6.9859039
+        },
+        {
+          "lat": 45.7618504,
+          "lon": 6.9858774
+        },
+        {
+          "lat": 45.7618341,
+          "lon": 6.9857861
+        },
+        {
+          "lat": 45.7618451,
+          "lon": 6.9857821
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "bath:type": "thermal",
+        "leisure": "swimming_pool",
+        "location": "outdoor"
+      }
+    },
+    {
+      "type": "way",
+      "id": 712047568,
+      "bounds": {
+        "minlat": 45.7782269,
+        "minlon": 7.8185098,
+        "maxlat": 45.7782957,
+        "maxlon": 7.8196473
+      },
+      "nodes": [
+        6695048027,
+        6695048026,
+        6695459598,
+        6695048025,
+        6695459597,
+        6695048024
+      ],
+      "geometry": [
+        {
+          "lat": 45.7782571,
+          "lon": 7.8185098
+        },
+        {
+          "lat": 45.7782957,
+          "lon": 7.818824
+        },
+        {
+          "lat": 45.7782412,
+          "lon": 7.8189484
+        },
+        {
+          "lat": 45.7782578,
+          "lon": 7.8191237
+        },
+        {
+          "lat": 45.7782269,
+          "lon": 7.8193864
+        },
+        {
+          "lat": 45.7782878,
+          "lon": 7.8196473
+        }
+      ],
+      "tags": {
+        "name": "Falesia Tschachtelaz",
+        "natural": "cliff",
+        "source": "https://www.guidemonterosa.info/page.asp?ID=9",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 712103509,
+      "bounds": {
+        "minlat": 45.7781181,
+        "minlon": 7.820191,
+        "maxlat": 45.7783139,
+        "maxlon": 7.8203314
+      },
+      "nodes": [
+        6695498688,
+        6695498689,
+        6695498690
+      ],
+      "geometry": [
+        {
+          "lat": 45.7781181,
+          "lon": 7.820191
+        },
+        {
+          "lat": 45.7781951,
+          "lon": 7.8202607
+        },
+        {
+          "lat": 45.7783139,
+          "lon": 7.8203314
+        }
+      ],
+      "tags": {
+        "name": "Falesia Il Cuore",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 712103510,
+      "bounds": {
+        "minlat": 45.7783207,
+        "minlon": 7.8201597,
+        "maxlat": 45.7787159,
+        "maxlon": 7.8202602
+      },
+      "nodes": [
+        6695498691,
+        6695498692,
+        6695498693
+      ],
+      "geometry": [
+        {
+          "lat": 45.7783207,
+          "lon": 7.8202602
+        },
+        {
+          "lat": 45.7786036,
+          "lon": 7.8201597
+        },
+        {
+          "lat": 45.7787159,
+          "lon": 7.8202
+        }
+      ],
+      "tags": {
+        "name": "Falesia Il Cuore",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 712103511,
+      "bounds": {
+        "minlat": 45.7788344,
+        "minlon": 7.8200884,
+        "maxlat": 45.7788901,
+        "maxlon": 7.8203591
+      },
+      "nodes": [
+        6695498694,
+        6695498695,
+        6695498696,
+        6695498697
+      ],
+      "geometry": [
+        {
+          "lat": 45.7788344,
+          "lon": 7.8200884
+        },
+        {
+          "lat": 45.7788602,
+          "lon": 7.8202208
+        },
+        {
+          "lat": 45.7788793,
+          "lon": 7.8203357
+        },
+        {
+          "lat": 45.7788901,
+          "lon": 7.8203591
+        }
+      ],
+      "tags": {
+        "name": "Falesia Il Cuore",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 737802497,
+      "bounds": {
+        "minlat": 45.6281595,
+        "minlon": 7.7461982,
+        "maxlat": 45.6286584,
+        "maxlon": 7.7464771
+      },
+      "nodes": [
+        6908115743,
+        1791436701,
+        6908115742
+      ],
+      "geometry": [
+        {
+          "lat": 45.6286584,
+          "lon": 7.7461982
+        },
+        {
+          "lat": 45.6283977,
+          "lon": 7.7462072
+        },
+        {
+          "lat": 45.6281595,
+          "lon": 7.7464771
+        }
+      ],
+      "tags": {
+        "alt_name": "Pilastro degli esploratori",
+        "climbing:grade:french:min": "6b",
+        "climbing:length": "200",
+        "climbing:multipitch": "yes",
+        "climbing:quality": "solid",
+        "climbing:rock": "gneiss",
+        "climbing:routes": "15",
+        "climbing:sport": "yes",
+        "ele": "800",
+        "name": "Pilastro Lomasti",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 781183998,
+      "bounds": {
+        "minlat": 45.7433841,
+        "minlon": 7.3292106,
+        "maxlat": 45.7434811,
+        "maxlon": 7.3293479
+      },
+      "nodes": [
+        7293733272,
+        7293733271,
+        7293733270,
+        7293733269,
+        7293733272
+      ],
+      "geometry": [
+        {
+          "lat": 45.7434151,
+          "lon": 7.3292106
+        },
+        {
+          "lat": 45.7434811,
+          "lon": 7.3293018
+        },
+        {
+          "lat": 45.7434501,
+          "lon": 7.3293479
+        },
+        {
+          "lat": 45.7433841,
+          "lon": 7.3292567
+        },
+        {
+          "lat": 45.7434151,
+          "lon": 7.3292106
+        }
+      ],
+      "tags": {
+        "access": "private",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 826855376,
+      "bounds": {
+        "minlat": 45.6034923,
+        "minlon": 7.7426979,
+        "maxlat": 45.603725,
+        "maxlon": 7.7427328
+      },
+      "nodes": [
+        7719567895,
+        7719567894,
+        7719567893,
+        7719567892,
+        7719567891
+      ],
+      "geometry": [
+        {
+          "lat": 45.6034923,
+          "lon": 7.7426979
+        },
+        {
+          "lat": 45.6035599,
+          "lon": 7.7427301
+        },
+        {
+          "lat": 45.6036218,
+          "lon": 7.7427193
+        },
+        {
+          "lat": 45.6036987,
+          "lon": 7.742714
+        },
+        {
+          "lat": 45.603725,
+          "lon": 7.7427328
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "6a+",
+        "climbing:grade:french:min": "4",
+        "name": "Placche di Outrefer",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 831406079,
+      "bounds": {
+        "minlat": 45.7189936,
+        "minlon": 7.2645587,
+        "maxlat": 45.7192199,
+        "maxlon": 7.2649655
+      },
+      "nodes": [
+        7762630490,
+        7762630489,
+        7762630447,
+        7762630446,
+        7762630490
+      ],
+      "geometry": [
+        {
+          "lat": 45.7189936,
+          "lon": 7.2646387
+        },
+        {
+          "lat": 45.7191143,
+          "lon": 7.2649655
+        },
+        {
+          "lat": 45.7192199,
+          "lon": 7.2648855
+        },
+        {
+          "lat": 45.7190993,
+          "lon": 7.2645587
+        },
+        {
+          "lat": 45.7189936,
+          "lon": 7.2646387
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "leisure": "swimming_pool",
+        "name": "Piscina Etoile du Nord"
+      }
+    },
+    {
+      "type": "way",
+      "id": 831406084,
+      "bounds": {
+        "minlat": 45.7224567,
+        "minlon": 7.270475,
+        "maxlat": 45.7226321,
+        "maxlon": 7.270763
+      },
+      "nodes": [
+        7762630532,
+        7762630531,
+        7762630530,
+        7762630529,
+        7762630532
+      ],
+      "geometry": [
+        {
+          "lat": 45.7225295,
+          "lon": 7.270475
+        },
+        {
+          "lat": 45.7226321,
+          "lon": 7.2706927
+        },
+        {
+          "lat": 45.7225593,
+          "lon": 7.270763
+        },
+        {
+          "lat": 45.7224567,
+          "lon": 7.2705454
+        },
+        {
+          "lat": 45.7225295,
+          "lon": 7.270475
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 838345324,
+      "bounds": {
+        "minlat": 45.7982313,
+        "minlon": 6.9411193,
+        "maxlat": 45.7982448,
+        "maxlon": 6.9412812
+      },
+      "nodes": [
+        7824166738,
+        7824166734,
+        7824166739,
+        7824166729
+      ],
+      "geometry": [
+        {
+          "lat": 45.7982313,
+          "lon": 6.9411193
+        },
+        {
+          "lat": 45.7982371,
+          "lon": 6.9411688
+        },
+        {
+          "lat": 45.798243,
+          "lon": 6.9412145
+        },
+        {
+          "lat": 45.7982448,
+          "lon": 6.9412812
+        }
+      ],
+      "tags": {
+        "height": "30",
+        "name": "Falesia Chetif",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 838345325,
+      "bounds": {
+        "minlat": 45.7980284,
+        "minlon": 6.9418889,
+        "maxlat": 45.7981477,
+        "maxlon": 6.9421892
+      },
+      "nodes": [
+        7824166735,
+        7824166730,
+        7824166736,
+        7824166740
+      ],
+      "geometry": [
+        {
+          "lat": 45.7980426,
+          "lon": 6.9418889
+        },
+        {
+          "lat": 45.7980284,
+          "lon": 6.9420052
+        },
+        {
+          "lat": 45.7980784,
+          "lon": 6.9421315
+        },
+        {
+          "lat": 45.7981477,
+          "lon": 6.9421892
+        }
+      ],
+      "tags": {
+        "height": "30",
+        "name": "Falesia Chetif",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 838345326,
+      "bounds": {
+        "minlat": 45.798172,
+        "minlon": 6.9407574,
+        "maxlat": 45.7982897,
+        "maxlon": 6.941003
+      },
+      "nodes": [
+        7824166731,
+        7824166727,
+        7824166732,
+        7824166737,
+        7824166728,
+        7824166733
+      ],
+      "geometry": [
+        {
+          "lat": 45.7982897,
+          "lon": 6.9407574
+        },
+        {
+          "lat": 45.798243,
+          "lon": 6.9407675
+        },
+        {
+          "lat": 45.7982166,
+          "lon": 6.9408179
+        },
+        {
+          "lat": 45.7981828,
+          "lon": 6.9408687
+        },
+        {
+          "lat": 45.798172,
+          "lon": 6.9409273
+        },
+        {
+          "lat": 45.798172,
+          "lon": 6.941003
+        }
+      ],
+      "tags": {
+        "height": "30",
+        "name": "Falesia Chetif",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 867519043,
+      "bounds": {
+        "minlat": 45.6207012,
+        "minlon": 7.7150845,
+        "maxlat": 45.6210351,
+        "maxlon": 7.7170479
+      },
+      "nodes": [
+        8086118518,
+        8086118517,
+        8086104916,
+        8086104915,
+        8086104914,
+        8086104913,
+        8086104912
+      ],
+      "geometry": [
+        {
+          "lat": 45.6207012,
+          "lon": 7.7150845
+        },
+        {
+          "lat": 45.6207987,
+          "lon": 7.715444
+        },
+        {
+          "lat": 45.6208738,
+          "lon": 7.7158248
+        },
+        {
+          "lat": 45.620915,
+          "lon": 7.7161789
+        },
+        {
+          "lat": 45.6209451,
+          "lon": 7.7165437
+        },
+        {
+          "lat": 45.6210088,
+          "lon": 7.7168816
+        },
+        {
+          "lat": 45.6210351,
+          "lon": 7.7170479
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "6c",
+        "climbing:grade:french:min": "5a",
+        "name": "Placche di Biel",
+        "natural": "cliff",
+        "sport": "climbing",
+        "website": "https://www.gulliver.it/itinerari/biel-placche-di/"
+      }
+    },
+    {
+      "type": "way",
+      "id": 958669924,
+      "bounds": {
+        "minlat": 45.7617117,
+        "minlon": 6.9860864,
+        "maxlat": 45.7617266,
+        "maxlon": 6.9860994
+      },
+      "nodes": [
+        8870290122,
+        8870290123,
+        8870290124,
+        8870290125,
+        8870290122
+      ],
+      "geometry": [
+        {
+          "lat": 45.7617117,
+          "lon": 6.9860939
+        },
+        {
+          "lat": 45.7617251,
+          "lon": 6.9860864
+        },
+        {
+          "lat": 45.7617266,
+          "lon": 6.9860919
+        },
+        {
+          "lat": 45.7617132,
+          "lon": 6.9860994
+        },
+        {
+          "lat": 45.7617117,
+          "lon": 6.9860939
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "amenity": "bath",
+        "bath:type": "cold_spring",
+        "height": "0.5",
+        "leisure": "swimming_pool",
+        "length": "1.7",
+        "location": "outdoor",
+        "width": "0.5"
+      }
+    },
+    {
+      "type": "way",
+      "id": 958669925,
+      "bounds": {
+        "minlat": 45.7621402,
+        "minlon": 6.986233,
+        "maxlat": 45.7621632,
+        "maxlon": 6.9862668
+      },
+      "nodes": [
+        8870290133,
+        8870290134,
+        8870290135,
+        8870290136,
+        8870290128,
+        8870290130,
+        8870290131,
+        8870290132,
+        8870290129,
+        8870290133
+      ],
+      "geometry": [
+        {
+          "lat": 45.7621407,
+          "lon": 6.9862567
+        },
+        {
+          "lat": 45.7621402,
+          "lon": 6.9862453
+        },
+        {
+          "lat": 45.7621449,
+          "lon": 6.986236
+        },
+        {
+          "lat": 45.7621526,
+          "lon": 6.986233
+        },
+        {
+          "lat": 45.7621597,
+          "lon": 6.9862374
+        },
+        {
+          "lat": 45.7621632,
+          "lon": 6.98625
+        },
+        {
+          "lat": 45.7621603,
+          "lon": 6.9862618
+        },
+        {
+          "lat": 45.7621537,
+          "lon": 6.9862668
+        },
+        {
+          "lat": 45.7621461,
+          "lon": 6.9862651
+        },
+        {
+          "lat": 45.7621407,
+          "lon": 6.9862567
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "bath:type": "thermal",
+        "leisure": "swimming_pool",
+        "location": "outdoor"
+      }
+    },
+    {
+      "type": "way",
+      "id": 958669929,
+      "bounds": {
+        "minlat": 45.7625344,
+        "minlon": 6.9856955,
+        "maxlat": 45.7625617,
+        "maxlon": 6.9857391
+      },
+      "nodes": [
+        8870290148,
+        8870290149,
+        8870290150,
+        8870290151,
+        8870290148
+      ],
+      "geometry": [
+        {
+          "lat": 45.7625517,
+          "lon": 6.9856955
+        },
+        {
+          "lat": 45.7625617,
+          "lon": 6.9857283
+        },
+        {
+          "lat": 45.7625445,
+          "lon": 6.9857391
+        },
+        {
+          "lat": 45.7625344,
+          "lon": 6.9857062
+        },
+        {
+          "lat": 45.7625517,
+          "lon": 6.9856955
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "bath:type": "thermal",
+        "leisure": "swimming_pool",
+        "location": "outdoor"
+      }
+    },
+    {
+      "type": "way",
+      "id": 978732469,
+      "bounds": {
+        "minlat": 45.8245212,
+        "minlon": 7.3298028,
+        "maxlat": 45.8246649,
+        "maxlon": 7.3300768
+      },
+      "nodes": [
+        9056100136,
+        9056100135,
+        9056100134,
+        9056100133,
+        9056100136
+      ],
+      "geometry": [
+        {
+          "lat": 45.8246649,
+          "lon": 7.3298404
+        },
+        {
+          "lat": 45.8246222,
+          "lon": 7.3300768
+        },
+        {
+          "lat": 45.8245212,
+          "lon": 7.3300392
+        },
+        {
+          "lat": 45.824564,
+          "lon": 7.3298028
+        },
+        {
+          "lat": 45.8246649,
+          "lon": 7.3298404
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1001175754,
+      "bounds": {
+        "minlat": 45.6047999,
+        "minlon": 7.7608701,
+        "maxlat": 45.6049299,
+        "maxlon": 7.7610727
+      },
+      "nodes": [
+        9241324239,
+        9241324238,
+        9241324237
+      ],
+      "geometry": [
+        {
+          "lat": 45.6047999,
+          "lon": 7.7610727
+        },
+        {
+          "lat": 45.6048557,
+          "lon": 7.7609426
+        },
+        {
+          "lat": 45.6049299,
+          "lon": 7.7608701
+        }
+      ],
+      "tags": {
+        "name": "Piramide di Pomerou",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1001175757,
+      "bounds": {
+        "minlat": 45.6048696,
+        "minlon": 7.7552572,
+        "maxlat": 45.6049749,
+        "maxlon": 7.7561861
+      },
+      "nodes": [
+        9241324348,
+        9241324349,
+        9241324350,
+        9241324351
+      ],
+      "geometry": [
+        {
+          "lat": 45.6049749,
+          "lon": 7.7552572
+        },
+        {
+          "lat": 45.6048696,
+          "lon": 7.7558141
+        },
+        {
+          "lat": 45.6048796,
+          "lon": 7.7559524
+        },
+        {
+          "lat": 45.604935,
+          "lon": 7.7561861
+        }
+      ],
+      "tags": {
+        "name": "Falesia delle Ciliegie",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1040332229,
+      "bounds": {
+        "minlat": 45.6191862,
+        "minlon": 7.7473382,
+        "maxlat": 45.6203795,
+        "maxlon": 7.7509207
+      },
+      "nodes": [
+        9579037642,
+        9579037643,
+        9579037644,
+        9579037645,
+        9579037646,
+        9579037647,
+        9579037648,
+        9579037649,
+        9579037650,
+        9579037651,
+        9579037652,
+        9579037653,
+        9579037654,
+        9579037655,
+        9579037656,
+        9579037657,
+        9579037658,
+        9579037659,
+        9579037660,
+        9579037661,
+        9579037662,
+        9579037663,
+        9579037664,
+        9579037665,
+        9579037642
+      ],
+      "geometry": [
+        {
+          "lat": 45.6194137,
+          "lon": 7.7474183
+        },
+        {
+          "lat": 45.6191862,
+          "lon": 7.7478536
+        },
+        {
+          "lat": 45.6193962,
+          "lon": 7.7482088
+        },
+        {
+          "lat": 45.6194802,
+          "lon": 7.7488843
+        },
+        {
+          "lat": 45.6196866,
+          "lon": 7.7492345
+        },
+        {
+          "lat": 45.6198476,
+          "lon": 7.7495498
+        },
+        {
+          "lat": 45.6197957,
+          "lon": 7.7501309
+        },
+        {
+          "lat": 45.6197846,
+          "lon": 7.7505104
+        },
+        {
+          "lat": 45.6198126,
+          "lon": 7.7508757
+        },
+        {
+          "lat": 45.6200051,
+          "lon": 7.7509207
+        },
+        {
+          "lat": 45.6201206,
+          "lon": 7.7508257
+        },
+        {
+          "lat": 45.6202221,
+          "lon": 7.7508457
+        },
+        {
+          "lat": 45.6203795,
+          "lon": 7.7508307
+        },
+        {
+          "lat": 45.6202921,
+          "lon": 7.7503403
+        },
+        {
+          "lat": 45.6202466,
+          "lon": 7.7498199
+        },
+        {
+          "lat": 45.6202011,
+          "lon": 7.7495147
+        },
+        {
+          "lat": 45.6201976,
+          "lon": 7.7493096
+        },
+        {
+          "lat": 45.6202326,
+          "lon": 7.7490094
+        },
+        {
+          "lat": 45.6202641,
+          "lon": 7.7487042
+        },
+        {
+          "lat": 45.6200856,
+          "lon": 7.7488092
+        },
+        {
+          "lat": 45.6199726,
+          "lon": 7.7489178
+        },
+        {
+          "lat": 45.6198231,
+          "lon": 7.7483939
+        },
+        {
+          "lat": 45.6197601,
+          "lon": 7.7480337
+        },
+        {
+          "lat": 45.6195887,
+          "lon": 7.7473382
+        },
+        {
+          "lat": 45.6194137,
+          "lon": 7.7474183
+        }
+      ],
+      "tags": {
+        "leisure": "sports_centre",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1060589526,
+      "bounds": {
+        "minlat": 45.8184339,
+        "minlon": 7.2292151,
+        "maxlat": 45.8184731,
+        "maxlon": 7.2292996
+      },
+      "nodes": [
+        9744164459,
+        9744164458,
+        9744164457,
+        9744164456,
+        9744164455,
+        9744164454,
+        9744164453,
+        9744164452,
+        9744164451,
+        9744164450,
+        9744164449,
+        9744164448,
+        9744164447,
+        9744164446,
+        9744164445,
+        9744164459
+      ],
+      "geometry": [
+        {
+          "lat": 45.8184432,
+          "lon": 7.2292621
+        },
+        {
+          "lat": 45.8184353,
+          "lon": 7.2292728
+        },
+        {
+          "lat": 45.8184339,
+          "lon": 7.2292896
+        },
+        {
+          "lat": 45.8184423,
+          "lon": 7.2292996
+        },
+        {
+          "lat": 45.8184554,
+          "lon": 7.2292976
+        },
+        {
+          "lat": 45.8184647,
+          "lon": 7.2292896
+        },
+        {
+          "lat": 45.8184703,
+          "lon": 7.2292674
+        },
+        {
+          "lat": 45.8184731,
+          "lon": 7.2292466
+        },
+        {
+          "lat": 45.8184713,
+          "lon": 7.2292292
+        },
+        {
+          "lat": 45.8184657,
+          "lon": 7.2292171
+        },
+        {
+          "lat": 45.8184549,
+          "lon": 7.2292151
+        },
+        {
+          "lat": 45.818446,
+          "lon": 7.2292218
+        },
+        {
+          "lat": 45.8184414,
+          "lon": 7.2292299
+        },
+        {
+          "lat": 45.8184414,
+          "lon": 7.2292413
+        },
+        {
+          "lat": 45.8184437,
+          "lon": 7.2292507
+        },
+        {
+          "lat": 45.8184432,
+          "lon": 7.2292621
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool",
+        "operator": "Camping Tunnel International"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1084575282,
+      "bounds": {
+        "minlat": 45.6080549,
+        "minlon": 7.7642185,
+        "maxlat": 45.608189,
+        "maxlon": 7.764409
+      },
+      "nodes": [
+        9938707553,
+        9938707552,
+        9938707551,
+        9938707550,
+        9938707549,
+        9938707553
+      ],
+      "geometry": [
+        {
+          "lat": 45.608189,
+          "lon": 7.7643499
+        },
+        {
+          "lat": 45.6081317,
+          "lon": 7.7642301
+        },
+        {
+          "lat": 45.608081,
+          "lon": 7.7642185
+        },
+        {
+          "lat": 45.6080549,
+          "lon": 7.7643174
+        },
+        {
+          "lat": 45.6081266,
+          "lon": 7.764409
+        },
+        {
+          "lat": 45.608189,
+          "lon": 7.7643499
+        }
+      ],
+      "tags": {
+        "alt_name": "Gran Masso",
+        "leisure": "climbing_park",
+        "name": "Masso dei Vigneti di Reisen",
+        "natural": "rock",
+        "sport": "climbing",
+        "tourism": "attraction"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1089086956,
+      "bounds": {
+        "minlat": 45.7400998,
+        "minlon": 7.5658251,
+        "maxlat": 45.7402021,
+        "maxlon": 7.5665298
+      },
+      "nodes": [
+        9977194450,
+        9977194452,
+        9977194439,
+        9977194442,
+        9977194438,
+        9977194454,
+        9977194434,
+        9977194435
+      ],
+      "geometry": [
+        {
+          "lat": 45.740145,
+          "lon": 7.5658251
+        },
+        {
+          "lat": 45.7401232,
+          "lon": 7.5659156
+        },
+        {
+          "lat": 45.7400998,
+          "lon": 7.5659654
+        },
+        {
+          "lat": 45.7401027,
+          "lon": 7.5661308
+        },
+        {
+          "lat": 45.7401066,
+          "lon": 7.5662451
+        },
+        {
+          "lat": 45.740113,
+          "lon": 7.5663323
+        },
+        {
+          "lat": 45.7401424,
+          "lon": 7.5664624
+        },
+        {
+          "lat": 45.7402021,
+          "lon": 7.5665298
+        }
+      ],
+      "tags": {
+        "name": "Falesia di Pontey",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1096333248,
+      "bounds": {
+        "minlat": 45.6436844,
+        "minlon": 7.7502669,
+        "maxlat": 45.6440167,
+        "maxlon": 7.7506227
+      },
+      "nodes": [
+        10039764744,
+        10039764743,
+        10039764742,
+        10039764741,
+        10039764740,
+        10039764739,
+        10039764738
+      ],
+      "geometry": [
+        {
+          "lat": 45.6440167,
+          "lon": 7.7502669
+        },
+        {
+          "lat": 45.6439789,
+          "lon": 7.7503751
+        },
+        {
+          "lat": 45.6438601,
+          "lon": 7.7503298
+        },
+        {
+          "lat": 45.6437972,
+          "lon": 7.7504711
+        },
+        {
+          "lat": 45.6436951,
+          "lon": 7.7504772
+        },
+        {
+          "lat": 45.6436844,
+          "lon": 7.7506038
+        },
+        {
+          "lat": 45.6436981,
+          "lon": 7.7506227
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "8a+",
+        "climbing:grade:french:min": "5c",
+        "climbing:length:max": "90",
+        "climbing:length:min": "18",
+        "climbing:multipitch": "yes",
+        "climbing:orientation": "SW",
+        "climbing:toprope": "yes",
+        "name": "Corno di Machaby",
+        "natural": "cliff",
+        "sport": "climbing",
+        "website": "https://www.arrampicatainvalledaosta.it/2021/09/28/corno-di-machaby/"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1097546231,
+      "bounds": {
+        "minlat": 45.6922708,
+        "minlon": 7.1444218,
+        "maxlat": 45.6924928,
+        "maxlon": 7.1452345
+      },
+      "nodes": [
+        9289977652,
+        10049595679,
+        10049595678,
+        10049595677,
+        10049595676
+      ],
+      "geometry": [
+        {
+          "lat": 45.6924928,
+          "lon": 7.1444218
+        },
+        {
+          "lat": 45.6924169,
+          "lon": 7.144462
+        },
+        {
+          "lat": 45.6923626,
+          "lon": 7.1445706
+        },
+        {
+          "lat": 45.6922708,
+          "lon": 7.1449435
+        },
+        {
+          "lat": 45.6922783,
+          "lon": 7.1452345
+        }
+      ],
+      "tags": {
+        "name": "Palestra di roccia La Ravoire",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1099718814,
+      "bounds": {
+        "minlat": 45.7471231,
+        "minlon": 7.4503827,
+        "maxlat": 45.7473346,
+        "maxlon": 7.4507824
+      },
+      "nodes": [
+        10067438717,
+        10067426416,
+        10067438721
+      ],
+      "geometry": [
+        {
+          "lat": 45.7473346,
+          "lon": 7.4503827
+        },
+        {
+          "lat": 45.7471811,
+          "lon": 7.4506322
+        },
+        {
+          "lat": 45.7471231,
+          "lon": 7.4507824
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "8a",
+        "climbing:grade:french:min": "6a+",
+        "climbing:toprope": "yes",
+        "name": "Palestra di Vollein Settore Cartiera",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1099718815,
+      "bounds": {
+        "minlat": 45.7469621,
+        "minlon": 7.4513188,
+        "maxlat": 45.7470688,
+        "maxlon": 7.451756
+      },
+      "nodes": [
+        10067438720,
+        10067438719,
+        10067438718,
+        10067438722
+      ],
+      "geometry": [
+        {
+          "lat": 45.7470015,
+          "lon": 7.451756
+        },
+        {
+          "lat": 45.7469621,
+          "lon": 7.4516326
+        },
+        {
+          "lat": 45.7469996,
+          "lon": 7.4514636
+        },
+        {
+          "lat": 45.7470688,
+          "lon": 7.4513188
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "6a+",
+        "climbing:grade:french:min": "4b",
+        "climbing:toprope": "yes",
+        "name": "Palestra di Vollein Settore Destro",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1099718816,
+      "bounds": {
+        "minlat": 45.7470314,
+        "minlon": 7.4507824,
+        "maxlat": 45.7471231,
+        "maxlon": 7.4513188
+      },
+      "nodes": [
+        10067438721,
+        9174602773,
+        10067438723,
+        10067438722
+      ],
+      "geometry": [
+        {
+          "lat": 45.7471231,
+          "lon": 7.4507824
+        },
+        {
+          "lat": 45.7470656,
+          "lon": 7.4509718
+        },
+        {
+          "lat": 45.7470314,
+          "lon": 7.4511927
+        },
+        {
+          "lat": 45.7470688,
+          "lon": 7.4513188
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "7b",
+        "climbing:grade:french:min": "5a",
+        "climbing:toprope": "yes",
+        "name": "Palestra di Vollein Settore centrale",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1116939649,
+      "bounds": {
+        "minlat": 45.7226551,
+        "minlon": 7.667435,
+        "maxlat": 45.7229698,
+        "maxlon": 7.6688952
+      },
+      "nodes": [
+        10215177931,
+        10215177930,
+        10215177929,
+        10215177928,
+        10215177927,
+        10215177926,
+        10215177925,
+        10215177924,
+        10215177923,
+        10215177922,
+        10215177921,
+        10215177920,
+        10215177919,
+        10215177918
+      ],
+      "geometry": [
+        {
+          "lat": 45.7229451,
+          "lon": 7.667435
+        },
+        {
+          "lat": 45.7228564,
+          "lon": 7.6675503
+        },
+        {
+          "lat": 45.7228903,
+          "lon": 7.6675802
+        },
+        {
+          "lat": 45.7229698,
+          "lon": 7.6677165
+        },
+        {
+          "lat": 45.7227948,
+          "lon": 7.6678031
+        },
+        {
+          "lat": 45.7228298,
+          "lon": 7.6679232
+        },
+        {
+          "lat": 45.7228884,
+          "lon": 7.6681059
+        },
+        {
+          "lat": 45.7228695,
+          "lon": 7.6682177
+        },
+        {
+          "lat": 45.7227538,
+          "lon": 7.6683163
+        },
+        {
+          "lat": 45.7227876,
+          "lon": 7.6684479
+        },
+        {
+          "lat": 45.722735,
+          "lon": 7.668547
+        },
+        {
+          "lat": 45.7226551,
+          "lon": 7.6687311
+        },
+        {
+          "lat": 45.722681,
+          "lon": 7.6688783
+        },
+        {
+          "lat": 45.7226947,
+          "lon": 7.6688952
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "7c+",
+        "climbing:grade:french:min": "5b",
+        "climbing:multipitch": "yes",
+        "climbing:toprope": "yes",
+        "name": "Rochers de Saint-Germain",
+        "natural": "cliff",
+        "sport": "climbing",
+        "website": "https://www.planetmountain.com/rock/falesie/falesia.html?idfalesia=353"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1118748353,
+      "bounds": {
+        "minlat": 45.7615967,
+        "minlon": 6.9853762,
+        "maxlat": 45.7629126,
+        "maxlon": 6.9864002
+      },
+      "nodes": [
+        4659399988,
+        4659399987,
+        5925897534,
+        4659399986,
+        4659399985,
+        5925897535,
+        4659399984,
+        8870290127,
+        4659399983,
+        4659399982,
+        4659399981,
+        4659399980,
+        4659399979,
+        4659400395,
+        4659400394,
+        4659400393,
+        4659400392,
+        4659400391,
+        360292963,
+        4659399988
+      ],
+      "geometry": [
+        {
+          "lat": 45.7616312,
+          "lon": 6.9859106
+        },
+        {
+          "lat": 45.7616546,
+          "lon": 6.9860461
+        },
+        {
+          "lat": 45.7617177,
+          "lon": 6.9862956
+        },
+        {
+          "lat": 45.7617426,
+          "lon": 6.9864002
+        },
+        {
+          "lat": 45.7619091,
+          "lon": 6.9862848
+        },
+        {
+          "lat": 45.7620115,
+          "lon": 6.9862295
+        },
+        {
+          "lat": 45.7620853,
+          "lon": 6.9862909
+        },
+        {
+          "lat": 45.7621269,
+          "lon": 6.9863308
+        },
+        {
+          "lat": 45.7621861,
+          "lon": 6.9862687
+        },
+        {
+          "lat": 45.7623021,
+          "lon": 6.9862177
+        },
+        {
+          "lat": 45.7624274,
+          "lon": 6.9860997
+        },
+        {
+          "lat": 45.7625453,
+          "lon": 6.98603
+        },
+        {
+          "lat": 45.7628204,
+          "lon": 6.9858315
+        },
+        {
+          "lat": 45.7629126,
+          "lon": 6.9857249
+        },
+        {
+          "lat": 45.7628452,
+          "lon": 6.9854379
+        },
+        {
+          "lat": 45.7624672,
+          "lon": 6.9855586
+        },
+        {
+          "lat": 45.7624391,
+          "lon": 6.9853762
+        },
+        {
+          "lat": 45.7620949,
+          "lon": 6.9854901
+        },
+        {
+          "lat": 45.7615967,
+          "lon": 6.9857058
+        },
+        {
+          "lat": 45.7616312,
+          "lon": 6.9859106
+        }
+      ],
+      "tags": {
+        "addr:postcode": "11010",
+        "amenity": "public_bath",
+        "bath:type": "thermal",
+        "brand": "QC Terme",
+        "brand:wikidata": "Q115543071",
+        "contact:facebook": "termedipre",
+        "email": "info@termedipre.it",
+        "leisure": "spa",
+        "name": "QC Terme Pré Saint Didier",
+        "operator": "QC Terme",
+        "phone": "+39 0165 867272",
+        "ref:vatin": "IT10541980966",
+        "start_date": "1834",
+        "website": "https://www.qcterme.com/it/pre-saint-didier/qc-terme-pre-saint-didier",
+        "wikidata": "Q16613142",
+        "wikipedia": "fr:Thermes de Pré-Saint-Didier"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1189379648,
+      "bounds": {
+        "minlat": 45.8611007,
+        "minlon": 7.7997082,
+        "maxlat": 45.8617041,
+        "maxlon": 7.8004914
+      },
+      "nodes": [
+        11044013797,
+        11044013796,
+        11044013795,
+        11044013794,
+        11044013793,
+        11044013792,
+        11044013791
+      ],
+      "geometry": [
+        {
+          "lat": 45.8617041,
+          "lon": 7.7999979
+        },
+        {
+          "lat": 45.8615789,
+          "lon": 7.7999496
+        },
+        {
+          "lat": 45.8614556,
+          "lon": 7.7997217
+        },
+        {
+          "lat": 45.8613865,
+          "lon": 7.7997082
+        },
+        {
+          "lat": 45.8613398,
+          "lon": 7.8000408
+        },
+        {
+          "lat": 45.8612763,
+          "lon": 7.8003091
+        },
+        {
+          "lat": 45.8611007,
+          "lon": 7.8004914
+        }
+      ],
+      "tags": {
+        "climbing:grade:french:max": "7a+",
+        "climbing:grade:french:min": "4c",
+        "climbing:sport": "yes",
+        "climbing:toprope": "yes",
+        "name": "Falesia Pian delle rane",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1299385678,
+      "bounds": {
+        "minlat": 45.7515453,
+        "minlon": 7.6293252,
+        "maxlat": 45.7516292,
+        "maxlon": 7.629389
+      },
+      "nodes": [
+        12036739579,
+        12036739580,
+        12036739581,
+        12036739582,
+        12036739583,
+        12036739584,
+        12036739585,
+        12036739586,
+        12036739579
+      ],
+      "geometry": [
+        {
+          "lat": 45.7516282,
+          "lon": 7.6293435
+        },
+        {
+          "lat": 45.7516268,
+          "lon": 7.6293507
+        },
+        {
+          "lat": 45.7516243,
+          "lon": 7.629357
+        },
+        {
+          "lat": 45.7516246,
+          "lon": 7.6293673
+        },
+        {
+          "lat": 45.7516292,
+          "lon": 7.6293746
+        },
+        {
+          "lat": 45.7516273,
+          "lon": 7.629389
+        },
+        {
+          "lat": 45.7515453,
+          "lon": 7.62937
+        },
+        {
+          "lat": 45.7515508,
+          "lon": 7.6293252
+        },
+        {
+          "lat": 45.7516282,
+          "lon": 7.6293435
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1300234086,
+      "bounds": {
+        "minlat": 45.7059528,
+        "minlon": 7.3280163,
+        "maxlat": 45.7059781,
+        "maxlon": 7.3280475
+      },
+      "nodes": [
+        12043494398,
+        12043494399,
+        12043494400,
+        12043494401,
+        12043494398
+      ],
+      "geometry": [
+        {
+          "lat": 45.7059721,
+          "lon": 7.3280163
+        },
+        {
+          "lat": 45.7059528,
+          "lon": 7.328018
+        },
+        {
+          "lat": 45.7059564,
+          "lon": 7.3280475
+        },
+        {
+          "lat": 45.7059781,
+          "lon": 7.3280423
+        },
+        {
+          "lat": 45.7059721,
+          "lon": 7.3280163
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1300234087,
+      "bounds": {
+        "minlat": 45.7059234,
+        "minlon": 7.328368,
+        "maxlat": 45.7059534,
+        "maxlon": 7.3284033
+      },
+      "nodes": [
+        12043494402,
+        12043494403,
+        12043494404,
+        12043494405,
+        12043494402
+      ],
+      "geometry": [
+        {
+          "lat": 45.7059452,
+          "lon": 7.328368
+        },
+        {
+          "lat": 45.7059534,
+          "lon": 7.3283876
+        },
+        {
+          "lat": 45.7059352,
+          "lon": 7.3284033
+        },
+        {
+          "lat": 45.7059234,
+          "lon": 7.3283759
+        },
+        {
+          "lat": 45.7059452,
+          "lon": 7.328368
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1312899154,
+      "bounds": {
+        "minlat": 45.6457356,
+        "minlon": 7.4081423,
+        "maxlat": 45.6458209,
+        "maxlon": 7.4094377
+      },
+      "nodes": [
+        12152388475,
+        12152388476,
+        12152388477,
+        12152388478,
+        12152388479,
+        12152388480,
+        12152388481
+      ],
+      "geometry": [
+        {
+          "lat": 45.6458209,
+          "lon": 7.4081423
+        },
+        {
+          "lat": 45.6457937,
+          "lon": 7.4083954
+        },
+        {
+          "lat": 45.6457653,
+          "lon": 7.4085723
+        },
+        {
+          "lat": 45.6458148,
+          "lon": 7.4086874
+        },
+        {
+          "lat": 45.6457875,
+          "lon": 7.408967
+        },
+        {
+          "lat": 45.6457851,
+          "lon": 7.4091775
+        },
+        {
+          "lat": 45.6457356,
+          "lon": 7.4094377
+        }
+      ],
+      "tags": {
+        "name": "Falesia Grauson",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1352519777,
+      "bounds": {
+        "minlat": 45.7984701,
+        "minlon": 6.9683217,
+        "maxlat": 45.7985627,
+        "maxlon": 6.9684758
+      },
+      "nodes": [
+        12514164957,
+        12514164958,
+        12514164959,
+        12514164960,
+        12514164957
+      ],
+      "geometry": [
+        {
+          "lat": 45.7985627,
+          "lon": 6.9684388
+        },
+        {
+          "lat": 45.7985102,
+          "lon": 6.9684758
+        },
+        {
+          "lat": 45.7984701,
+          "lon": 6.9683587
+        },
+        {
+          "lat": 45.7985225,
+          "lon": 6.9683217
+        },
+        {
+          "lat": 45.7985627,
+          "lon": 6.9684388
+        }
+      ],
+      "tags": {
+        "access": "customers",
+        "leisure": "swimming_pool",
+        "lit": "yes",
+        "location": "outdoor",
+        "swimming_pool": "spa"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1443466652,
+      "bounds": {
+        "minlat": 45.5848301,
+        "minlon": 7.3316573,
+        "maxlat": 45.5851145,
+        "maxlon": 7.3326823
+      },
+      "nodes": [
+        13245724777,
+        13245724778,
+        13245724779,
+        13245724780
+      ],
+      "geometry": [
+        {
+          "lat": 45.5848301,
+          "lon": 7.3316573
+        },
+        {
+          "lat": 45.5849347,
+          "lon": 7.3320939
+        },
+        {
+          "lat": 45.5851145,
+          "lon": 7.3324232
+        },
+        {
+          "lat": 45.5850867,
+          "lon": 7.3326823
+        }
+      ],
+      "tags": {
+        "name": "Falesia di Lauson",
+        "natural": "cliff",
+        "sport": "climbing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1502825382,
+      "bounds": {
+        "minlat": 45.7864179,
+        "minlon": 7.6034138,
+        "maxlat": 45.7864466,
+        "maxlon": 7.6035111
+      },
+      "nodes": [
+        13754809239,
+        13754809240,
+        13754809241,
+        13754809242,
+        13754809239
+      ],
+      "geometry": [
+        {
+          "lat": 45.7864461,
+          "lon": 7.6034138
+        },
+        {
+          "lat": 45.7864466,
+          "lon": 7.6035108
+        },
+        {
+          "lat": 45.7864183,
+          "lon": 7.6035111
+        },
+        {
+          "lat": 45.7864179,
+          "lon": 7.6034141
+        },
+        {
+          "lat": 45.7864461,
+          "lon": 7.6034138
+        }
+      ],
+      "tags": {
+        "leisure": "swimming_pool",
+        "lit": "yes",
+        "location": "indoor"
+      }
+    },
+    {
+      "type": "relation",
+      "id": 19663627,
+      "bounds": {
+        "minlat": 45.976377,
+        "minlon": 7.6586,
+        "maxlat": 45.9814675,
+        "maxlon": 7.6741973
+      },
+      "members": [
+        {
+          "type": "way",
+          "ref": "_fullGeom1434312455",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9814492,
+              "lon": 7.6741973
+            },
+            {
+              "lat": 45.9814252,
+              "lon": 7.6741051
+            },
+            {
+              "lat": 45.9814079,
+              "lon": 7.674027
+            },
+            {
+              "lat": 45.9814102,
+              "lon": 7.673992
+            },
+            {
+              "lat": 45.9814207,
+              "lon": 7.6739278
+            },
+            {
+              "lat": 45.9814439,
+              "lon": 7.6739115
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434331084",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9814439,
+              "lon": 7.6739115
+            },
+            {
+              "lat": 45.9814675,
+              "lon": 7.673901
+            },
+            {
+              "lat": 45.9814529,
+              "lon": 7.6738336
+            },
+            {
+              "lat": 45.9813351,
+              "lon": 7.6736071
+            },
+            {
+              "lat": 45.9812988,
+              "lon": 7.673434
+            },
+            {
+              "lat": 45.9812553,
+              "lon": 7.6732962
+            },
+            {
+              "lat": 45.9812673,
+              "lon": 7.6731404
+            },
+            {
+              "lat": 45.98122,
+              "lon": 7.6729189
+            },
+            {
+              "lat": 45.9812084,
+              "lon": 7.6728593
+            },
+            {
+              "lat": 45.9812114,
+              "lon": 7.6728115
+            },
+            {
+              "lat": 45.9811934,
+              "lon": 7.6727638
+            },
+            {
+              "lat": 45.98117,
+              "lon": 7.6727227
+            },
+            {
+              "lat": 45.9810909,
+              "lon": 7.6725825
+            },
+            {
+              "lat": 45.9810716,
+              "lon": 7.6725431
+            },
+            {
+              "lat": 45.9810528,
+              "lon": 7.6725178
+            },
+            {
+              "lat": 45.9810362,
+              "lon": 7.6724842
+            },
+            {
+              "lat": 45.9810149,
+              "lon": 7.6724555
+            },
+            {
+              "lat": 45.9810133,
+              "lon": 7.672403
+            },
+            {
+              "lat": 45.9810329,
+              "lon": 7.6723307
+            },
+            {
+              "lat": 45.9810244,
+              "lon": 7.6722067
+            },
+            {
+              "lat": 45.9810332,
+              "lon": 7.6721899
+            },
+            {
+              "lat": 45.9810331,
+              "lon": 7.6721769
+            },
+            {
+              "lat": 45.9810393,
+              "lon": 7.6721658
+            },
+            {
+              "lat": 45.9810489,
+              "lon": 7.6721178
+            },
+            {
+              "lat": 45.9810574,
+              "lon": 7.6720747
+            },
+            {
+              "lat": 45.9810666,
+              "lon": 7.672017
+            },
+            {
+              "lat": 45.9810796,
+              "lon": 7.6719717
+            },
+            {
+              "lat": 45.981068,
+              "lon": 7.6719122
+            },
+            {
+              "lat": 45.9810648,
+              "lon": 7.6718219
+            },
+            {
+              "lat": 45.9810665,
+              "lon": 7.6717838
+            },
+            {
+              "lat": 45.9810663,
+              "lon": 7.6717317
+            },
+            {
+              "lat": 45.9810816,
+              "lon": 7.6716465
+            },
+            {
+              "lat": 45.9810835,
+              "lon": 7.6716087
+            },
+            {
+              "lat": 45.9810768,
+              "lon": 7.6715789
+            },
+            {
+              "lat": 45.9810586,
+              "lon": 7.6715409
+            },
+            {
+              "lat": 45.9810342,
+              "lon": 7.6715536
+            },
+            {
+              "lat": 45.9809883,
+              "lon": 7.671538
+            },
+            {
+              "lat": 45.980952,
+              "lon": 7.6715061
+            },
+            {
+              "lat": 45.9809166,
+              "lon": 7.6714645
+            },
+            {
+              "lat": 45.9808871,
+              "lon": 7.6714101
+            },
+            {
+              "lat": 45.9808399,
+              "lon": 7.6713291
+            },
+            {
+              "lat": 45.9808339,
+              "lon": 7.6713014
+            },
+            {
+              "lat": 45.9808381,
+              "lon": 7.671279
+            },
+            {
+              "lat": 45.980969,
+              "lon": 7.6713368
+            },
+            {
+              "lat": 45.9809955,
+              "lon": 7.6713053
+            },
+            {
+              "lat": 45.9809954,
+              "lon": 7.6712857
+            },
+            {
+              "lat": 45.9810155,
+              "lon": 7.6712568
+            },
+            {
+              "lat": 45.9810403,
+              "lon": 7.6711946
+            },
+            {
+              "lat": 45.981025,
+              "lon": 7.671142
+            },
+            {
+              "lat": 45.9810261,
+              "lon": 7.6711002
+            },
+            {
+              "lat": 45.9810168,
+              "lon": 7.6710789
+            },
+            {
+              "lat": 45.9810078,
+              "lon": 7.6710439
+            },
+            {
+              "lat": 45.98101,
+              "lon": 7.6710295
+            },
+            {
+              "lat": 45.981011,
+              "lon": 7.6710002
+            },
+            {
+              "lat": 45.9810019,
+              "lon": 7.6709728
+            },
+            {
+              "lat": 45.9809881,
+              "lon": 7.6709426
+            },
+            {
+              "lat": 45.9809963,
+              "lon": 7.6708766
+            },
+            {
+              "lat": 45.9809853,
+              "lon": 7.6708181
+            },
+            {
+              "lat": 45.9809718,
+              "lon": 7.6707685
+            },
+            {
+              "lat": 45.9809753,
+              "lon": 7.6707254
+            },
+            {
+              "lat": 45.9809646,
+              "lon": 7.6706857
+            },
+            {
+              "lat": 45.9809434,
+              "lon": 7.6706659
+            },
+            {
+              "lat": 45.9808519,
+              "lon": 7.6706113
+            },
+            {
+              "lat": 45.9808123,
+              "lon": 7.6705332
+            },
+            {
+              "lat": 45.9808494,
+              "lon": 7.6703785
+            },
+            {
+              "lat": 45.9808516,
+              "lon": 7.6702857
+            },
+            {
+              "lat": 45.9808336,
+              "lon": 7.6701361
+            },
+            {
+              "lat": 45.9807793,
+              "lon": 7.6700652
+            },
+            {
+              "lat": 45.980775,
+              "lon": 7.669999
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434331085",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.980775,
+              "lon": 7.669999
+            },
+            {
+              "lat": 45.980714,
+              "lon": 7.6699558
+            },
+            {
+              "lat": 45.9806639,
+              "lon": 7.6698937
+            },
+            {
+              "lat": 45.9806562,
+              "lon": 7.6698418
+            },
+            {
+              "lat": 45.9806765,
+              "lon": 7.6698187
+            },
+            {
+              "lat": 45.9806701,
+              "lon": 7.6697694
+            },
+            {
+              "lat": 45.9806862,
+              "lon": 7.6697138
+            },
+            {
+              "lat": 45.9806867,
+              "lon": 7.6696318
+            },
+            {
+              "lat": 45.980666,
+              "lon": 7.6695504
+            },
+            {
+              "lat": 45.9806344,
+              "lon": 7.6694693
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1345414939",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9806344,
+              "lon": 7.6694693
+            },
+            {
+              "lat": 45.9806389,
+              "lon": 7.669369
+            },
+            {
+              "lat": 45.9806014,
+              "lon": 7.6692355
+            },
+            {
+              "lat": 45.980579,
+              "lon": 7.66918
+            },
+            {
+              "lat": 45.9805649,
+              "lon": 7.6690806
+            },
+            {
+              "lat": 45.9805294,
+              "lon": 7.6689933
+            },
+            {
+              "lat": 45.9805009,
+              "lon": 7.668953
+            },
+            {
+              "lat": 45.9804672,
+              "lon": 7.6688865
+            },
+            {
+              "lat": 45.9804448,
+              "lon": 7.6688107
+            },
+            {
+              "lat": 45.9804264,
+              "lon": 7.6687419
+            },
+            {
+              "lat": 45.9804011,
+              "lon": 7.6686629
+            },
+            {
+              "lat": 45.9803626,
+              "lon": 7.6686465
+            },
+            {
+              "lat": 45.9803231,
+              "lon": 7.6685511
+            },
+            {
+              "lat": 45.9802817,
+              "lon": 7.6685044
+            },
+            {
+              "lat": 45.9802604,
+              "lon": 7.6684369
+            },
+            {
+              "lat": 45.9802043,
+              "lon": 7.6683292
+            },
+            {
+              "lat": 45.9801775,
+              "lon": 7.6682341
+            },
+            {
+              "lat": 45.9801435,
+              "lon": 7.66813
+            },
+            {
+              "lat": 45.9801136,
+              "lon": 7.6680247
+            },
+            {
+              "lat": 45.9800928,
+              "lon": 7.6679624
+            },
+            {
+              "lat": 45.980074,
+              "lon": 7.6678611
+            },
+            {
+              "lat": 45.9800539,
+              "lon": 7.6677852
+            },
+            {
+              "lat": 45.9800425,
+              "lon": 7.6677551
+            },
+            {
+              "lat": 45.980046,
+              "lon": 7.6677005
+            },
+            {
+              "lat": 45.9800874,
+              "lon": 7.6676425
+            },
+            {
+              "lat": 45.9801237,
+              "lon": 7.6675965
+            },
+            {
+              "lat": 45.9801217,
+              "lon": 7.6675449
+            },
+            {
+              "lat": 45.9800904,
+              "lon": 7.667458
+            },
+            {
+              "lat": 45.9800312,
+              "lon": 7.667382
+            },
+            {
+              "lat": 45.9799728,
+              "lon": 7.6672312
+            },
+            {
+              "lat": 45.9799201,
+              "lon": 7.6671873
+            },
+            {
+              "lat": 45.9798627,
+              "lon": 7.6671402
+            },
+            {
+              "lat": 45.9798131,
+              "lon": 7.6671142
+            },
+            {
+              "lat": 45.9797794,
+              "lon": 7.6670751
+            },
+            {
+              "lat": 45.9797652,
+              "lon": 7.6670077
+            },
+            {
+              "lat": 45.9797823,
+              "lon": 7.6669211
+            },
+            {
+              "lat": 45.979849,
+              "lon": 7.6668055
+            },
+            {
+              "lat": 45.9798597,
+              "lon": 7.6667623
+            },
+            {
+              "lat": 45.9798942,
+              "lon": 7.6666413
+            },
+            {
+              "lat": 45.9799217,
+              "lon": 7.6665409
+            },
+            {
+              "lat": 45.9799368,
+              "lon": 7.666492
+            },
+            {
+              "lat": 45.9799385,
+              "lon": 7.6664219
+            },
+            {
+              "lat": 45.9799132,
+              "lon": 7.6663279
+            },
+            {
+              "lat": 45.9799106,
+              "lon": 7.6662856
+            },
+            {
+              "lat": 45.9799098,
+              "lon": 7.6662167
+            },
+            {
+              "lat": 45.9798594,
+              "lon": 7.6661349
+            },
+            {
+              "lat": 45.9798344,
+              "lon": 7.6660667
+            },
+            {
+              "lat": 45.9798115,
+              "lon": 7.6660346
+            },
+            {
+              "lat": 45.9797922,
+              "lon": 7.6659351
+            },
+            {
+              "lat": 45.9797441,
+              "lon": 7.6658334
+            },
+            {
+              "lat": 45.9797409,
+              "lon": 7.6658057
+            },
+            {
+              "lat": 45.9797462,
+              "lon": 7.6657548
+            },
+            {
+              "lat": 45.9797451,
+              "lon": 7.6656886
+            },
+            {
+              "lat": 45.9797002,
+              "lon": 7.6656378
+            },
+            {
+              "lat": 45.9796577,
+              "lon": 7.665565
+            },
+            {
+              "lat": 45.9796394,
+              "lon": 7.6655288
+            },
+            {
+              "lat": 45.9796357,
+              "lon": 7.6654938
+            },
+            {
+              "lat": 45.9796324,
+              "lon": 7.6653946
+            },
+            {
+              "lat": 45.9796084,
+              "lon": 7.6653276
+            },
+            {
+              "lat": 45.9795672,
+              "lon": 7.6652651
+            },
+            {
+              "lat": 45.9794931,
+              "lon": 7.6652037
+            },
+            {
+              "lat": 45.9794192,
+              "lon": 7.665148
+            },
+            {
+              "lat": 45.9793906,
+              "lon": 7.6651057
+            },
+            {
+              "lat": 45.979391,
+              "lon": 7.6650135
+            },
+            {
+              "lat": 45.9793861,
+              "lon": 7.6649257
+            },
+            {
+              "lat": 45.9793699,
+              "lon": 7.6648814
+            },
+            {
+              "lat": 45.9793545,
+              "lon": 7.6648105
+            },
+            {
+              "lat": 45.9793344,
+              "lon": 7.6647394
+            },
+            {
+              "lat": 45.9793032,
+              "lon": 7.6646888
+            },
+            {
+              "lat": 45.9792527,
+              "lon": 7.6646462
+            },
+            {
+              "lat": 45.9792036,
+              "lon": 7.6646289
+            },
+            {
+              "lat": 45.9791651,
+              "lon": 7.6645916
+            },
+            {
+              "lat": 45.9791103,
+              "lon": 7.6645652
+            },
+            {
+              "lat": 45.9790823,
+              "lon": 7.6645251
+            },
+            {
+              "lat": 45.9790697,
+              "lon": 7.6644831
+            },
+            {
+              "lat": 45.9790085,
+              "lon": 7.6644632
+            },
+            {
+              "lat": 45.9789793,
+              "lon": 7.6644468
+            },
+            {
+              "lat": 45.9789682,
+              "lon": 7.6644216
+            },
+            {
+              "lat": 45.9789682,
+              "lon": 7.664389
+            },
+            {
+              "lat": 45.9789687,
+              "lon": 7.6643624
+            },
+            {
+              "lat": 45.978963,
+              "lon": 7.6643387
+            },
+            {
+              "lat": 45.9789499,
+              "lon": 7.6642659
+            },
+            {
+              "lat": 45.9789587,
+              "lon": 7.6642041
+            },
+            {
+              "lat": 45.9789549,
+              "lon": 7.6641477
+            },
+            {
+              "lat": 45.9789238,
+              "lon": 7.664058
+            },
+            {
+              "lat": 45.9788721,
+              "lon": 7.6640018
+            },
+            {
+              "lat": 45.978858,
+              "lon": 7.663958
+            },
+            {
+              "lat": 45.9788603,
+              "lon": 7.6638775
+            },
+            {
+              "lat": 45.9788143,
+              "lon": 7.6637994
+            },
+            {
+              "lat": 45.9788155,
+              "lon": 7.663745
+            },
+            {
+              "lat": 45.9788341,
+              "lon": 7.6636621
+            },
+            {
+              "lat": 45.9788299,
+              "lon": 7.6636065
+            },
+            {
+              "lat": 45.978844,
+              "lon": 7.6634942
+            },
+            {
+              "lat": 45.9788353,
+              "lon": 7.6634503
+            },
+            {
+              "lat": 45.9788661,
+              "lon": 7.6633972
+            },
+            {
+              "lat": 45.978817,
+              "lon": 7.6633413
+            },
+            {
+              "lat": 45.9787814,
+              "lon": 7.6632724
+            },
+            {
+              "lat": 45.9787713,
+              "lon": 7.6632178
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434312456",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9787713,
+              "lon": 7.6632178
+            },
+            {
+              "lat": 45.9787811,
+              "lon": 7.6631639
+            },
+            {
+              "lat": 45.9787729,
+              "lon": 7.6631236
+            },
+            {
+              "lat": 45.9787484,
+              "lon": 7.6630368
+            },
+            {
+              "lat": 45.978724,
+              "lon": 7.663006
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434312457",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.978724,
+              "lon": 7.663006
+            },
+            {
+              "lat": 45.9786822,
+              "lon": 7.6630314
+            },
+            {
+              "lat": 45.9786579,
+              "lon": 7.6629556
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434312458",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9786579,
+              "lon": 7.6629556
+            },
+            {
+              "lat": 45.9786428,
+              "lon": 7.662946
+            },
+            {
+              "lat": 45.9786437,
+              "lon": 7.6629214
+            },
+            {
+              "lat": 45.9786584,
+              "lon": 7.6628931
+            },
+            {
+              "lat": 45.9786683,
+              "lon": 7.6628675
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434312459",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9786683,
+              "lon": 7.6628675
+            },
+            {
+              "lat": 45.9786637,
+              "lon": 7.6628203
+            },
+            {
+              "lat": 45.9786528,
+              "lon": 7.6627234
+            },
+            {
+              "lat": 45.9786378,
+              "lon": 7.6626866
+            },
+            {
+              "lat": 45.9786215,
+              "lon": 7.6626637
+            },
+            {
+              "lat": 45.9786138,
+              "lon": 7.6626332
+            },
+            {
+              "lat": 45.9786131,
+              "lon": 7.6626051
+            },
+            {
+              "lat": 45.9786084,
+              "lon": 7.6625861
+            },
+            {
+              "lat": 45.9785958,
+              "lon": 7.6625694
+            },
+            {
+              "lat": 45.9785737,
+              "lon": 7.6625638
+            },
+            {
+              "lat": 45.9785558,
+              "lon": 7.6625004
+            },
+            {
+              "lat": 45.9785515,
+              "lon": 7.6624461
+            },
+            {
+              "lat": 45.9785508,
+              "lon": 7.6623888
+            },
+            {
+              "lat": 45.9785384,
+              "lon": 7.6623555
+            },
+            {
+              "lat": 45.9785116,
+              "lon": 7.6623421
+            },
+            {
+              "lat": 45.9784971,
+              "lon": 7.6622513
+            },
+            {
+              "lat": 45.9784866,
+              "lon": 7.6622071
+            },
+            {
+              "lat": 45.9784795,
+              "lon": 7.6621659
+            },
+            {
+              "lat": 45.9784741,
+              "lon": 7.662118
+            },
+            {
+              "lat": 45.9784585,
+              "lon": 7.6620801
+            },
+            {
+              "lat": 45.9784576,
+              "lon": 7.662062
+            },
+            {
+              "lat": 45.9784727,
+              "lon": 7.6620258
+            },
+            {
+              "lat": 45.9784771,
+              "lon": 7.6620019
+            },
+            {
+              "lat": 45.9784672,
+              "lon": 7.661965
+            },
+            {
+              "lat": 45.978458,
+              "lon": 7.6619336
+            },
+            {
+              "lat": 45.9784483,
+              "lon": 7.6619096
+            },
+            {
+              "lat": 45.9784309,
+              "lon": 7.6618484
+            },
+            {
+              "lat": 45.9784211,
+              "lon": 7.6618092
+            },
+            {
+              "lat": 45.9783937,
+              "lon": 7.6617846
+            },
+            {
+              "lat": 45.9783703,
+              "lon": 7.6617454
+            },
+            {
+              "lat": 45.9783365,
+              "lon": 7.6616837
+            },
+            {
+              "lat": 45.978334,
+              "lon": 7.6616722
+            },
+            {
+              "lat": 45.9783292,
+              "lon": 7.6616503
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434331087",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9783292,
+              "lon": 7.6616503
+            },
+            {
+              "lat": 45.9783363,
+              "lon": 7.661583
+            },
+            {
+              "lat": 45.9783436,
+              "lon": 7.6615439
+            },
+            {
+              "lat": 45.9783396,
+              "lon": 7.6615056
+            },
+            {
+              "lat": 45.9783485,
+              "lon": 7.6614431
+            },
+            {
+              "lat": 45.9783604,
+              "lon": 7.6613872
+            },
+            {
+              "lat": 45.9783616,
+              "lon": 7.6613343
+            },
+            {
+              "lat": 45.9783508,
+              "lon": 7.661288
+            },
+            {
+              "lat": 45.9783355,
+              "lon": 7.6612507
+            },
+            {
+              "lat": 45.9783323,
+              "lon": 7.6611776
+            },
+            {
+              "lat": 45.9783428,
+              "lon": 7.6611356
+            },
+            {
+              "lat": 45.9783465,
+              "lon": 7.6611058
+            },
+            {
+              "lat": 45.9783421,
+              "lon": 7.6610924
+            },
+            {
+              "lat": 45.9783442,
+              "lon": 7.6610755
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434331086",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9783442,
+              "lon": 7.6610755
+            },
+            {
+              "lat": 45.9783554,
+              "lon": 7.6610603
+            },
+            {
+              "lat": 45.9783578,
+              "lon": 7.6610299
+            },
+            {
+              "lat": 45.9783689,
+              "lon": 7.6610066
+            },
+            {
+              "lat": 45.9783663,
+              "lon": 7.6609325
+            },
+            {
+              "lat": 45.9783491,
+              "lon": 7.6608899
+            },
+            {
+              "lat": 45.9783486,
+              "lon": 7.6608306
+            },
+            {
+              "lat": 45.9783625,
+              "lon": 7.6607829
+            },
+            {
+              "lat": 45.9783624,
+              "lon": 7.6607431
+            },
+            {
+              "lat": 45.978347,
+              "lon": 7.6607149
+            },
+            {
+              "lat": 45.9783789,
+              "lon": 7.6606447
+            },
+            {
+              "lat": 45.978378,
+              "lon": 7.6606186
+            },
+            {
+              "lat": 45.9783715,
+              "lon": 7.6605968
+            },
+            {
+              "lat": 45.9783193,
+              "lon": 7.6605857
+            },
+            {
+              "lat": 45.9782901,
+              "lon": 7.660567
+            },
+            {
+              "lat": 45.9782548,
+              "lon": 7.6605489
+            },
+            {
+              "lat": 45.9782045,
+              "lon": 7.6605232
+            },
+            {
+              "lat": 45.978151,
+              "lon": 7.6604888
+            },
+            {
+              "lat": 45.9781076,
+              "lon": 7.660469
+            },
+            {
+              "lat": 45.9780969,
+              "lon": 7.6604613
+            },
+            {
+              "lat": 45.9780686,
+              "lon": 7.6604409
+            },
+            {
+              "lat": 45.9780422,
+              "lon": 7.6604217
+            },
+            {
+              "lat": 45.9779948,
+              "lon": 7.6604059
+            },
+            {
+              "lat": 45.9779656,
+              "lon": 7.6603977
+            },
+            {
+              "lat": 45.9779291,
+              "lon": 7.6604024
+            },
+            {
+              "lat": 45.9778958,
+              "lon": 7.6603866
+            },
+            {
+              "lat": 45.9778654,
+              "lon": 7.6603674
+            },
+            {
+              "lat": 45.9778309,
+              "lon": 7.660354
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434312460",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9778309,
+              "lon": 7.660354
+            },
+            {
+              "lat": 45.9778022,
+              "lon": 7.6603353
+            },
+            {
+              "lat": 45.9777546,
+              "lon": 7.660306
+            },
+            {
+              "lat": 45.9777246,
+              "lon": 7.6602366
+            },
+            {
+              "lat": 45.9777013,
+              "lon": 7.6602178
+            },
+            {
+              "lat": 45.9777188,
+              "lon": 7.6601588
+            },
+            {
+              "lat": 45.9776989,
+              "lon": 7.6601143
+            }
+          ]
+        },
+        {
+          "type": "way",
+          "ref": "_fullGeom1434312454",
+          "role": "",
+          "geometry": [
+            {
+              "lat": 45.9776989,
+              "lon": 7.6601143
+            },
+            {
+              "lat": 45.9776909,
+              "lon": 7.6600965
+            },
+            {
+              "lat": 45.9776629,
+              "lon": 7.6600236
+            },
+            {
+              "lat": 45.9776158,
+              "lon": 7.6598981
+            },
+            {
+              "lat": 45.977599,
+              "lon": 7.6598562
+            },
+            {
+              "lat": 45.9775656,
+              "lon": 7.6598041
+            },
+            {
+              "lat": 45.9775336,
+              "lon": 7.659759
+            },
+            {
+              "lat": 45.9774739,
+              "lon": 7.6597241
+            },
+            {
+              "lat": 45.9774541,
+              "lon": 7.6596976
+            },
+            {
+              "lat": 45.9774199,
+              "lon": 7.6597002
+            },
+            {
+              "lat": 45.9773668,
+              "lon": 7.6597222
+            },
+            {
+              "lat": 45.9773481,
+              "lon": 7.6597155
+            },
+            {
+              "lat": 45.9773116,
+              "lon": 7.6597007
+            },
+            {
+              "lat": 45.9772897,
+              "lon": 7.6596756
+            },
+            {
+              "lat": 45.9772867,
+              "lon": 7.6596521
+            },
+            {
+              "lat": 45.9772685,
+              "lon": 7.6596339
+            },
+            {
+              "lat": 45.9772451,
+              "lon": 7.6596307
+            },
+            {
+              "lat": 45.9772131,
+              "lon": 7.6596186
+            },
+            {
+              "lat": 45.9772031,
+              "lon": 7.6595847
+            },
+            {
+              "lat": 45.9771412,
+              "lon": 7.6595758
+            },
+            {
+              "lat": 45.9771301,
+              "lon": 7.6595617
+            },
+            {
+              "lat": 45.9771207,
+              "lon": 7.6595466
+            },
+            {
+              "lat": 45.9770814,
+              "lon": 7.6595558
+            },
+            {
+              "lat": 45.9770584,
+              "lon": 7.6595512
+            },
+            {
+              "lat": 45.9770333,
+              "lon": 7.6595227
+            },
+            {
+              "lat": 45.9769927,
+              "lon": 7.6595
+            },
+            {
+              "lat": 45.9769514,
+              "lon": 7.6594766
+            },
+            {
+              "lat": 45.9769117,
+              "lon": 7.6594723
+            },
+            {
+              "lat": 45.9768746,
+              "lon": 7.659451
+            },
+            {
+              "lat": 45.976847,
+              "lon": 7.659433
+            },
+            {
+              "lat": 45.9768199,
+              "lon": 7.6594077
+            },
+            {
+              "lat": 45.9767867,
+              "lon": 7.6594048
+            },
+            {
+              "lat": 45.9767671,
+              "lon": 7.6593976
+            },
+            {
+              "lat": 45.9767346,
+              "lon": 7.65941
+            },
+            {
+              "lat": 45.976697,
+              "lon": 7.6593949
+            },
+            {
+              "lat": 45.9766666,
+              "lon": 7.6593756
+            },
+            {
+              "lat": 45.9766386,
+              "lon": 7.6593656
+            },
+            {
+              "lat": 45.9765583,
+              "lon": 7.6593483
+            },
+            {
+              "lat": 45.9765132,
+              "lon": 7.6593202
+            },
+            {
+              "lat": 45.9764793,
+              "lon": 7.6592838
+            },
+            {
+              "lat": 45.9764528,
+              "lon": 7.6592588
+            },
+            {
+              "lat": 45.9764343,
+              "lon": 7.659236
+            },
+            {
+              "lat": 45.9764026,
+              "lon": 7.6592362
+            },
+            {
+              "lat": 45.9763839,
+              "lon": 7.6592177
+            },
+            {
+              "lat": 45.9763795,
+              "lon": 7.6591993
+            },
+            {
+              "lat": 45.976377,
+              "lon": 7.6590983
+            },
+            {
+              "lat": 45.9763818,
+              "lon": 7.6589973
+            },
+            {
+              "lat": 45.9763907,
+              "lon": 7.6589162
+            },
+            {
+              "lat": 45.9764264,
+              "lon": 7.6587983
+            },
+            {
+              "lat": 45.976442,
+              "lon": 7.6587431
+            },
+            {
+              "lat": 45.976437,
+              "lon": 7.6586926
+            },
+            {
+              "lat": 45.9764258,
+              "lon": 7.6586461
+            },
+            {
+              "lat": 45.9764233,
+              "lon": 7.6586
+            }
+          ]
+        }
+      ],
+      "tags": {
+        "climbing": "route",
+        "climbing:grade:uiaa": "3",
+        "name": "Hörnligrat",
+        "route": "climbing",
+        "sport": "climbing",
+        "type": "route"
+      }
+    }
+  ]
+}
