@@ -50,7 +50,25 @@ export function createApp() {
     max: 50,
     standardHeaders: true,
     legacyHeaders: false,
-    skip: (req) => req.method === 'OPTIONS', // Escludi le richieste preflight CORS
+   skip: (req) => {
+      // 1. Escludi sempre le richieste preflight CORS (OPTIONS)
+      if (req.method === 'OPTIONS') return true;
+
+      // 2. ECCEZIONE ANDROID (Sia tramite User-Agent che tramite IP dell'emulatore)
+      const userAgent = req.get('user-agent') || '';
+      const clientIp = req.ip || '';
+
+      if (
+        userAgent.toLowerCase().includes('android') || 
+        clientIp.includes('10.0.2.2') || 
+        clientIp.includes('::ffff:10.0.2.2')
+      ) {
+        console.info(`[RATE-LIMIT] Richiesta esentata per dispositivo Android/Emulatore. IP: ${clientIp}`);
+        return true; // Salta il controllo del rate limit
+      }
+
+      return false; // Applica il limite normalmente a tutti gli altri (Browser/Sito web)
+    },
     message: { error: 'Troppe richieste. Riprova più tardi.' }
   });
   app.use(globalLimiter);
