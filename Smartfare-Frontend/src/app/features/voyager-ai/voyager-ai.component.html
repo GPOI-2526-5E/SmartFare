@@ -10,7 +10,8 @@
       <div class="sidebar-header">
         @if (chatService.isSidebarOpen() || showMobileSidebar()) {
         <div class="sidebar-brand">
-          <img src="https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png" alt="SmartFare AI Logo" class="brand-logo">
+          <img src="https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png"
+            alt="SmartFare AI Logo" class="brand-logo">
         </div>
         }
 
@@ -202,7 +203,8 @@
         <div class="header-right">
           <button class="hdr-home-btn" type="button" (click)="goHome()">
             <div class="hdr-home-logo-wrap">
-              <img src="https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png" alt="SmartFare" class="hdr-home-logo" />
+              <img src="https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png"
+                alt="SmartFare" class="hdr-home-logo" />
             </div>
             <div class="hdr-home-text">
               <span class="hdr-home-brand">SmartFare</span>
@@ -307,7 +309,8 @@
               <p>Ho raccolto tutti i dettagli necessari.</p>
               <div class="generate-actions">
                 <p>Vuoi generare l'itinerario completo nel builder?</p>
-                <button class="generate-btn" id="generate-itinerary-btn" (click)="openConfirmGenerate()" [disabled]="isGeneratingItinerary()">
+                <button class="generate-btn" id="generate-itinerary-btn" (click)="openConfirmGenerate()"
+                  [disabled]="isGeneratingItinerary()">
                   <i class="bi bi-magic"></i>
                   <span>Genera Itinerario</span>
                 </button>
@@ -318,7 +321,8 @@
 
           <!-- CONFIRM GENERATE MODAL -->
           @if (showConfirmGenerate()) {
-          <div class="confirm-generate-overlay" role="dialog" aria-modal="true" aria-label="Conferma generazione itinerario">
+          <div class="confirm-generate-overlay" role="dialog" aria-modal="true"
+            aria-label="Conferma generazione itinerario">
             <div class="confirm-generate-box">
               <h2>Ho tutto per generare l'itinerario</h2>
               <p>Vuoi generarlo adesso?</p>
@@ -341,9 +345,11 @@
             </div>
             <div class="card-body">
               <h3>Richieste esaurite</h3>
-              <p>Ops! I servizi AI sono temporaneamente in sovraccarico. Non sono riuscito a completare l'itinerario.</p>
+              <p>Ops! I servizi AI sono temporaneamente in sovraccarico. Non sono riuscito a completare l'itinerario.
+              </p>
               <div class="generate-actions">
-                <button class="generate-btn stream-retry-btn" (click)="retryLastMessage()" [disabled]="chatService.isStreaming()">
+                <button class="generate-btn stream-retry-btn" (click)="retryLastMessage()"
+                  [disabled]="chatService.isStreaming()">
                   <i class="bi bi-arrow-clockwise"></i>
                   <span>Riprova più tardi</span>
                 </button>
@@ -474,7 +480,7 @@
             <div class="gm-orbit gm-orbit--3"></div>
           </div>
           <h2 class="gm-title">Creazione in corso...</h2>
-          <p class="gm-subtitle">Voyager AI sta costruendo il tuo itinerario personalizzato</p>
+          <p class="gm-subtitle">Smartfare AI sta costruendo il tuo itinerario personalizzato</p>
           <div class="gm-steps">
             <div class="gm-step gm-step--done">
               <span class="gm-step-dot"></span>
@@ -498,13 +504,15 @@
 
       <!-- GENERATION ERROR MODAL OVERLAY -->
       @if (showErrorModal()) {
-      <div class="gen-error-modal-overlay" role="alertdialog" aria-modal="true" aria-label="Errore generazione itinerario">
+      <div class="gen-error-modal-overlay" role="alertdialog" aria-modal="true"
+        aria-label="Errore generazione itinerario">
         <div class="gen-error-modal-box">
           <div class="gem-icon-wrap">
             <i class="bi bi-exclamation-triangle-fill gem-icon"></i>
           </div>
           <h2 class="gem-title">Generazione non riuscita</h2>
-          <p class="gem-message">{{ generationError() ?? 'I servizi Voyager AI sono momentaneamente in sovraccarico. Attendi qualche istante e riprova.' }}</p>
+          <p class="gem-message">{{ generationError() ?? 'I servizi Smartfare AI sono momentaneamente in sovraccarico.
+            Attendi qualche istante e riprova.' }}</p>
           <div class="gem-actions">
             <button class="gem-retry-btn" id="retry-generation-btn" (click)="retryGeneration()">
               <i class="bi bi-arrow-clockwise"></i>

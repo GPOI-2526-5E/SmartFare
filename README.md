@@ -24,7 +24,7 @@ Il frontend non è un semplice involucro: gestisce metadati SEO a livello di rou
 - Mappa interattiva dell’Italia con Leaflet, clustering, caricamento bbox, categorie e ricerca geocoding.
 - Planner manuale per iniziare un viaggio da una destinazione e da un intervallo di date.
 - Builder itinerario con gestione POI, preview, summary, mappa e assistenza chat IA.
-- Chat Voyager AI con risposte in streaming, estrazione dello stato del planner, gestione sessioni e generazione itinerari.
+- Chat Smartfare AI con risposte in streaming, estrazione dello stato del planner, gestione sessioni e generazione itinerari.
 - Autenticazione con email/password, Google e GitHub.
 - Flussi di verifica email, recupero password, reset password e cambio password con codice.
 - Profilo utente, follower, impostazioni e itinerari salvati.
@@ -218,7 +218,7 @@ SmartFare/
 
 - Il planner manuale inizializza un itinerario a partire da destinazione e intervallo date.
 - Il builder itinerario carica il workspace della location selezionata, combina i POI di accommodation e attività e persiste le bozze.
-- Il flusso Voyager AI usa streaming SSE da `/api/chat/sessions/:id/stream`.
+- Il flusso Smartfare AI usa streaming SSE da `/api/chat/sessions/:id/stream`.
 - L’API IA dedicata crea o modifica un itinerario usando Gemini e il catalogo delle destinazioni.
 
 ### Persistenza Dati
@@ -279,7 +279,7 @@ Il repository non include un file `.env.example`. Le variabili usate dal codice 
 | `JWT_SECRET` | Secret per firma e verifica JWT. Obbligatoria. |
 | `JWT_EXPIRES_IN` | Durata del JWT. Default: `7d`. |
 | `DIRECT_URL` | URL datasource Prisma in [prisma.config.ts](Smartfare-Backend/prisma.config.ts). |
-| `GEMINI_API_KEY` | Necessaria per Voyager AI e generazione itinerari. |
+| `GEMINI_API_KEY` | Necessaria per Smartfare AI e generazione itinerari. |
 | `GEMINI_MODEL` | Modello Gemini primario, con fallback nei servizi IA. |
 | `ID_CLIENT` | Client id Google OAuth per il login Google. |
 | `GITHUB_CLIENT_ID` | Client id GitHub OAuth. |
@@ -721,7 +721,7 @@ Questo README è stato prodotto dopo aver ispezionato la struttura del repositor
 - [Smartfare-Frontend/src/app/features/auth/...](Smartfare-Frontend/src/app/features/auth) - login, register, reset, verify e callback OAuth.
 - [Smartfare-Frontend/src/app/features/profile/...](Smartfare-Frontend/src/app/features/profile) - profilo, follower, impostazioni, itinerari.
 - [Smartfare-Frontend/src/app/features/ui/...](Smartfare-Frontend/src/app/features/ui) - navbar, footer, loader, modali, alert, cookie consent, privacy, TOS.
-- [Smartfare-Frontend/src/app/features/voyager-ai/voyager-ai.component.ts](Smartfare-Frontend/src/app/features/voyager-ai/voyager-ai.component.ts) - schermata chat Voyager AI.
+- [Smartfare-Frontend/src/app/features/voyager-ai/voyager-ai.component.ts](Smartfare-Frontend/src/app/features/voyager-ai/voyager-ai.component.ts) - schermata chat Smartfare AI.
 
 ### File di Utilità Analizzati
 

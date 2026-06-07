@@ -357,7 +357,7 @@ export class ChatService {
       const missing = getMissingPlannerFields(enrichedPlannerState);
       throw new AppError(
         missing.length
-          ? `Mancano ancora: ${missing.join(', ')}. Continua la conversazione con Voyager AI.`
+          ? `Mancano ancora: ${missing.join(', ')}. Continua la conversazione con Smartfare AI.`
           : 'La chat non ha ancora raccolto abbastanza dettagli per creare l’itinerario.',
         400
       );
@@ -406,7 +406,7 @@ export class ChatService {
     });
 
     if (!generated || !Array.isArray(generated.items) || generated.items.length === 0) {
-      throw new AppError('In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.', 500);
+      throw new AppError('In questo momento i servizi di Smartfare AI sono in sovraccarico. Riprova tra un istante.', 500);
     }
 
     const startDate = this.buildStartDate(enrichedPlannerState.period);
@@ -495,7 +495,7 @@ export class ChatService {
   private getSystemInstruction(mode: VoyagerChatMode, plannerState: PlannerState, hasSupportedLocation: boolean, userCtx?: UserProfileContext | null): string {
     const userBlock = this.buildUserProfileBlock(userCtx);
     const base = [
-      'Sei Voyager AI, concierge premium di SmartFare.',
+      'Sei Smartfare AI, concierge premium di SmartFare.',
       'Rispondi sempre in italiano con tono elegante, chiaro e utile.',
       'Non parlare mai di budget, prezzi, costi o spesa.',
       'Quando citi preferenze usa solo categorie qualitative come ritmo, stile, interessi, atmosfera e tipologia di viaggio.',
@@ -575,7 +575,7 @@ export class ChatService {
     ].join('\n');
 
     const ai = new GoogleGenerativeAI(this.apiKey);
-    
+
     for (const modelName of this.modelFallbacks) {
       try {
         const model = ai.getGenerativeModel({ model: modelName });
@@ -689,7 +689,7 @@ export class ChatService {
       DEFAULT_TITLE,
       'Nuova sessione Planner',
       'Nuova sessione Assistant',
-      'Voyager AI'
+      'Smartfare AI'
     ];
 
     const hasCustomTitle =
@@ -799,7 +799,7 @@ export class ChatService {
       state.style ? `stile ${state.style}` : null
     ].filter(Boolean);
 
-    return parts.length > 0 ? parts.join(' · ') : 'Itinerario generato da Voyager AI';
+    return parts.length > 0 ? parts.join(' · ') : 'Itinerario generato da Smartfare AI';
   }
 
   private buildChatHints(
@@ -1251,8 +1251,8 @@ export class ChatService {
     if (status === 429 || status === 503 || status === 504) {
       const is503Family = status === 503 || status === 504;
       const baseMessage = is503Family
-        ? 'I server di Voyager AI sono al momento sovraccarichi per l\'alta richiesta.'
-        : 'Voyager AI e temporaneamente in sovraccarico.';
+        ? 'I server di Smartfare AI sono al momento sovraccarichi per l\'alta richiesta.'
+        : 'Smartfare AI e temporaneamente in sovraccarico.';
 
       const retryText = retryAfterSeconds
         ? ` Riprova tra circa ${retryAfterSeconds} secondi.`

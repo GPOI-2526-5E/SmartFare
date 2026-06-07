@@ -362,7 +362,7 @@ def section_3(doc: Document) -> None:
         "L'API Google Gemini (@google/generative-ai) espone modelli come gemini-2.5-flash per chat e generazione strutturata.",
         "Il backend costruisce prompt di sistema con workspace (elenco attività/hotel della località, preferenze utente) "
         "e chiede output JSON per itinerari. gemini.service.ts gestisce retry, quota e fallback tra modelli. "
-        "Voyager AI usa chat multi-turno; il builder usa /api/ai/itinerary/chat con snapshot delle tappe correnti.",
+        "Smartfare AI usa chat multi-turno; il builder usa /api/ai/itinerary/chat con snapshot delle tappe correnti.",
         "SmartFare deve accettare richieste in italiano colloquiale («weekend culturale a Firenze») e trasformarle "
         "in piani con giorni e tappe. Gemini è stato scelto per SDK Node ufficiale, latenza accettabile su modelli flash "
         "e buona aderenza a output JSON quando il prompt include solo POI reali del database (grounding), "
@@ -556,7 +556,7 @@ def section_6(doc: Document) -> None:
             "chat laterale per modifiche in linguaggio naturale, salvataggio bozza.",
         ),
         (
-            "6.4 Voyager AI",
+            "6.4 Smartfare AI",
             "Assistente conversazionale multi-sessione, pin, streaming risposta, contesto planner/assistant.",
         ),
         (
@@ -686,7 +686,7 @@ def allegati(doc: Document) -> None:
         "Discover — griglia e mappa percorso",
         "Manual planner e builder con chat",
         "Preview timeline + polyline",
-        "Voyager AI — sessioni e streaming",
+        "Smartfare AI — sessioni e streaming",
         "Mappa interattiva Italia — cluster",
         "Profilo e preferenze viaggio",
         "Prisma Studio / diagramma ER",
@@ -719,7 +719,7 @@ def add_detailed_module_sections(doc: Document) -> None:
             "Modulo Home (home-section)",
             "Componente principale della landing: carousel hero con località italiane, "
             "form di ricerca collegato al flusso AI, sezione features-grid con scroll storytelling "
-            "(tre scene: planner, libreria itinerari, Voyager AI), itinerari in evidenza e footer SEO. "
+            "(tre scene: planner, libreria itinerari, Smartfare AI), itinerari in evidenza e footer SEO. "
             "Utilizza AOS per animazioni on-scroll e servizi itinerary/location per dati dinamici.",
         ),
         (
@@ -737,7 +737,7 @@ def add_detailed_module_sections(doc: Document) -> None:
             "Tutti condividono itinerary.service e modelli ItineraryWorkspace.",
         ),
         (
-            "Modulo Voyager AI (voyager-ai)",
+            "Modulo Smartfare AI (voyager-ai)",
             "Interfaccia chat stile assistente: lista sessioni pin/abilitate, streaming SSE o chunk "
             "dalla API chat, creazione nuova sessione con titolo auto. Modalità planner vs assistant "
             "cambia il system prompt lato backend.",

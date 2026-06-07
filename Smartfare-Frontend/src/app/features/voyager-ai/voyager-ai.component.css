@@ -1,4 +1,4 @@
-/* VOYAGER AI GLOBAL STYLES */
+/* Smartfare AI GLOBAL STYLES */
 .voyager-shell {
   height: 100vh;
   display: flex;
@@ -47,6 +47,7 @@
   gap: 12px;
   align-items: flex-start;
 }
+
 .planner-locked-card i {
   font-size: 1.15rem;
   margin-top: 2px;
@@ -62,7 +63,8 @@
   flex: 1;
   display: flex;
   position: relative;
-  z-index: 10; /* Lowered to allow sidebar overlay on mobile */
+  z-index: 10;
+  /* Lowered to allow sidebar overlay on mobile */
   color: #e2e8f0;
   overflow: hidden;
 }
@@ -683,7 +685,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(79,70,229,0.3), rgba(14,165,233,0.3));
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.3), rgba(14, 165, 233, 0.3));
   border: 1px solid rgba(99, 102, 241, 0.3);
   display: flex;
   align-items: center;
@@ -942,12 +944,10 @@
   inset: -2px;
   border-radius: 26px;
   padding: 2px;
-  background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.5),
-    transparent 40%,
-    rgba(14, 165, 233, 0.5)
-  );
+  background: linear-gradient(135deg,
+      rgba(99, 102, 241, 0.5),
+      transparent 40%,
+      rgba(14, 165, 233, 0.5));
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -962,12 +962,10 @@
 .session-loading-card__shine {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 100%);
   animation: shimmer 2.5s infinite;
   z-index: 1;
   pointer-events: none;
@@ -1391,19 +1389,57 @@ textarea {
 }
 
 /* TYPING */
-.typing-indicator span {
-  width: 6px;
-  height: 6px;
-  background: #94a3b8;
-  border-radius: 50%;
-  animation: bounce 1.4s infinite ease-in-out;
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  min-height: 24px;
 }
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #818cf8, #38bdf8);
+  border-radius: 50%;
+  animation: typingDot 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 0 6px rgba(129, 140, 248, 0.5);
+}
+
+.typing-indicator span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+@keyframes typingDot {
+
+  0%,
+  60%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.5;
+  }
+
+  30% {
+    transform: translateY(-8px) scale(1.15);
+    opacity: 1;
+  }
+}
+
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1415,20 +1451,10 @@ textarea {
     transform: translateY(30px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
-  }
-}
-
-@keyframes bounce {
-  0%,
-  80%,
-  100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-6px);
   }
 }
 
@@ -1436,6 +1462,7 @@ textarea {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -1445,6 +1472,7 @@ textarea {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -1455,6 +1483,7 @@ textarea {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1466,6 +1495,7 @@ textarea {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -1483,11 +1513,13 @@ textarea {
     left: 0;
     top: 0;
     bottom: 0;
-    width: 280px !important; /* Force width on mobile */
+    width: 280px !important;
+    /* Force width on mobile */
     height: 100vh;
     transform: translateX(-100%);
     box-shadow: 20px 0 50px rgba(0, 0, 0, 0.7);
-    z-index: 9999 !important; /* Ensure it's the top-most element */
+    z-index: 9999 !important;
+    /* Ensure it's the top-most element */
     background: #0a0a0f;
     visibility: visible !important;
   }
@@ -1506,13 +1538,15 @@ textarea {
     background: rgba(0, 0, 0, 0.7);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    z-index: 9998; /* Just below the sidebar */
+    z-index: 9998;
+    /* Just below the sidebar */
     animation: fadeIn 0.3s ease;
   }
 
   .desktop-only {
     display: none !important;
   }
+
   .mobile-only {
     display: flex !important;
   }
@@ -1635,6 +1669,7 @@ textarea {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -1692,6 +1727,7 @@ textarea {
     opacity: 0;
     transform: translateY(24px) scale(0.96);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -1864,17 +1900,20 @@ textarea {
 
 /* ── SIDEBAR SKELETON LOADING ───────────────────────────────── */
 @keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
+  0% {
+    background-position: -400px 0;
+  }
+
+  100% {
+    background-position: 400px 0;
+  }
 }
 
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    rgba(255, 255, 255, 0.10) 40%,
-    rgba(255, 255, 255, 0.04) 80%
-  );
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0.10) 40%,
+      rgba(255, 255, 255, 0.04) 80%);
   background-size: 800px 100%;
   animation: shimmer 1.6s ease-in-out infinite;
   border-radius: 6px;
@@ -1919,9 +1958,18 @@ textarea {
   height: 10px;
 }
 
-.skeleton-line--long   { width: 80%; }
-.skeleton-line--medium { width: 60%; }
-.skeleton-line--short  { width: 40%; height: 8px; }
+.skeleton-line--long {
+  width: 80%;
+}
+
+.skeleton-line--medium {
+  width: 60%;
+}
+
+.skeleton-line--short {
+  width: 40%;
+  height: 8px;
+}
 
 /* ─── GENERATION OVERLAY ───────────────────────────────────── */
 .generation-overlay {
@@ -1985,9 +2033,17 @@ textarea {
   animation: stepFadeIn 0.5s ease forwards;
 }
 
-.generation-step:nth-child(1) { animation-delay: 0s; }
-.generation-step:nth-child(2) { animation-delay: 0.6s; }
-.generation-step:nth-child(3) { animation-delay: 1.2s; }
+.generation-step:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.generation-step:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.generation-step:nth-child(3) {
+  animation-delay: 1.2s;
+}
 
 .generation-step--active {
   color: #c7d2fe;
@@ -2106,23 +2162,53 @@ textarea {
 
 /* ─── KEYFRAMES ──────────────────────────────────────────────── */
 @keyframes orbitSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes globePulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.75; transform: scale(1.08); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
 }
 
 @keyframes dotPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.5; transform: scale(0.7); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.7);
+  }
 }
 
 @keyframes stepFadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ─── STREAM ERROR CARD ──────────────────────────────────────── */
@@ -2182,12 +2268,12 @@ textarea {
 .generation-modal-box,
 .gen-error-modal-box {
   background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.1), transparent 60%),
-              linear-gradient(180deg, rgba(16, 18, 35, 0.95), rgba(12, 14, 26, 0.98));
+    linear-gradient(180deg, rgba(16, 18, 35, 0.95), rgba(12, 14, 26, 0.98));
   border: 1px solid rgba(99, 102, 241, 0.25);
   border-radius: 28px;
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7),
-              0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-              0 0 40px rgba(79, 70, 229, 0.15);
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 0 40px rgba(79, 70, 229, 0.15);
   max-width: 480px;
   width: 100%;
   padding: 40px 32px;
@@ -2214,8 +2300,18 @@ textarea {
 }
 
 @keyframes pulseGlobe {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 15px rgba(129, 140, 248, 0.6)); }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+    filter: drop-shadow(0 0 15px rgba(129, 140, 248, 0.6));
+  }
 }
 
 .gm-orbit {
@@ -2240,7 +2336,9 @@ textarea {
 }
 
 @keyframes spinOrbit {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .gm-title {
@@ -2307,9 +2405,20 @@ textarea {
 }
 
 @keyframes pulseDot {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(129, 140, 248, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(129, 140, 248, 0); }
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(129, 140, 248, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(129, 140, 248, 0);
+  }
 }
 
 .gm-dots {
@@ -2326,17 +2435,32 @@ textarea {
   border-radius: 50%;
   animation: gmBounce 1.4s infinite ease-in-out both;
 }
-.gm-dots span:nth-child(1) { animation-delay: -0.32s; }
-.gm-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+.gm-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.gm-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
 @keyframes gmBounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1); }
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
 }
 
 /* Error Modal Content */
 .gen-error-modal-box {
   background: radial-gradient(circle at top, rgba(239, 68, 68, 0.15), transparent 70%),
-              linear-gradient(180deg, rgba(20, 16, 24, 0.95), rgba(15, 12, 18, 0.98));
+    linear-gradient(180deg, rgba(20, 16, 24, 0.95), rgba(15, 12, 18, 0.98));
   border-color: rgba(239, 68, 68, 0.3);
 }
 
