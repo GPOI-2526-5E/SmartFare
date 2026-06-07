@@ -6,7 +6,7 @@
     <!-- Left: brand + itinerary name -->
     <div class="toolbar-left">
       <a href="/home" (click)="onNavRequest('/home', $event)" class="brand anchor-reset">
-        <img src="https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png" alt="logo" class="logo-small">
+        <img src="favicon.png" alt="logo" class="logo-small">
         <div class="brand-copy">
           <span class="brand-name">SMARTFARE</span>
         </div>
@@ -59,43 +59,31 @@
 
         <!-- Route day selector -->
         <div class="custom-dropdown" [class.open]="showVisibleDayDropdown()">
-          <div class="dropdown-trigger" (click)="toggleVisibleDayDropdown($event)">
+          <div class="map-ctrl-btn" (click)="toggleVisibleDayDropdown($event)">
             <i class="bi bi-map"></i>
-
-            <!-- Pallino colore giorno: visibile solo quando è selezionato un giorno specifico -->
-            @if (visibleDayRoute() !== 'all') {
+            @if (showDayColorPicker()) {
               <span class="day-color-dot"
                 [style.background]="ui.dayRouteColors()[colorPickerDay()] || ui.getDefaultDayColor(colorPickerDay())">
               </span>
             }
-
-            <span class="visible-day-label" [textContent]="visibleDayLabel()"></span>
-
+            <span>{{ ui.visibleDayRoute() === 'all' ? 'Tutti i giorni' : 'Percorso G' + ui.visibleDayRoute() }}</span>
             <i class="bi bi-chevron-down" style="font-size:0.6rem; opacity:0.45;"></i>
           </div>
-
           @if (showVisibleDayDropdown()) {
             <div class="dropdown-menu-custom glass-effect">
-
-              <!-- Opzione "Tutti i giorni" -->
-              <div class="dropdown-item-custom"
-                [class.active]="visibleDayRoute() === 'all'"
+              <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === 'all'"
                 (click)="selectVisibleDay('all')">
                 <i class="bi bi-calendar-range"></i> Tutti i giorni
               </div>
-
-              <!-- Opzioni per ogni giorno disponibile -->
               @for (day of availableDays(); track day) {
-                <div class="dropdown-item-custom"
-                  [class.active]="visibleDayRoute() === day"
+                <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === day"
                   (click)="selectVisibleDay(day)">
                   <span class="day-color-dot"
                     [style.background]="ui.dayRouteColors()[day] || ui.getDefaultDayColor(day)">
                   </span>
-                  Giorno {{ day }}
+                  Percorso G{{ day }}
                 </div>
               }
-
             </div>
           }
         </div>
@@ -119,14 +107,14 @@
         <div class="layout-toggles d-none d-lg-flex">
           <button class="toggle-btn" [class.active]="ui.showSidebar()" (click)="ui.toggleSidebar()"
             title="Mostra/Nascondi scelte attività">
-            <i class="bi bi-layout-sidebar"></i> <span>Attività</span>
+            <i class="bi bi-layout-sidebar"></i>
           </button>
           <button class="toggle-btn" [class.active]="ui.showSummary()" (click)="ui.toggleSummary()"
             title="Riepilogo viaggio">
-            <i class="bi bi-journal-text"></i> <span>Riepilogo</span>
+            <i class="bi bi-journal-text"></i>
           </button>
           <button class="toggle-btn" [class.active]="ui.showChat()" (click)="ui.toggleChat()" title="Area AI">
-            <i class="bi bi-stars"></i> <span>AI</span>
+            <i class="bi bi-stars"></i>
           </button>
         </div>
       </div>
@@ -134,11 +122,10 @@
 
     <!-- Right: export + save + avatar -->
     <div class="toolbar-right">
-      <button type="button" class="save-cta--export-main" (click)="requestExport()"
-        title="Scarica PDF itinerario">
+      <button type="button" class="save-cta" (click)="selectExportFormat('pdf')" title="Esporta PDF">
         <i class="bi bi-file-earmark-arrow-down"></i>
         <span class="export-cta-copy">
-          <strong>Scarica PDF</strong>
+          <strong>Esporta PDF</strong>
           <small>A4 stampabile</small>
         </span>
       </button>
@@ -209,7 +196,6 @@
         </button>
       }
     </div>
-
     <!-- Scroll right button -->
     <button type="button" class="cat-scroll-btn cat-scroll-btn--right" (click)="scrollCategoryBar(280)" aria-hidden="true">
       <i class="bi bi-chevron-right"></i>
