@@ -284,8 +284,8 @@ export class BuilderHeaderComponent {
     }
   }
 
-  requestExport(): void {
-    this.exportRequest.emit('pdf');
+  selectExportFormat(format: 'pdf'): void {
+    this.exportRequest.emit(format);
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────
