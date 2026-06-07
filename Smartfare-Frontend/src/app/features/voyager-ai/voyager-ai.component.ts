@@ -435,7 +435,9 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
       );
     } catch (error) {
       this.suppressSessionLoader.set(false);
-      this.handleChatAccessError(error);
+      if (!this.handleChatAccessError(error)) {
+        this.alertService.error('Impossibile avviare la conversazione. Controlla la connessione e riprova.');
+      }
       return;
     }
 
@@ -447,7 +449,9 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     });
 
     await this.chatService.sendMessageStreaming(session.id, prompt, () => {}).catch((error) => {
-      this.handleChatAccessError(error);
+      if (!this.handleChatAccessError(error)) {
+        this.alertService.error('Impossibile inviare il messaggio. Controlla la connessione e riprova.');
+      }
     }).finally(() => {
       this.suppressSessionLoader.set(false);
     });
@@ -645,7 +649,16 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   }
 
   private handleChatAccessError(error: unknown): boolean {
-    if (!this.isAuthError(error)) {
+    if (!(error instanceof HttpErrorResponse)) {
+      return false;
+    }
+
+    if (error.status === 429) {
+      this.alertService.error('Troppe richieste al server. Attendi qualche secondo e riprova.');
+      return true;
+    }
+
+    if (error.status !== 401 && error.status !== 403) {
       return false;
     }
 

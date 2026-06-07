@@ -117,16 +117,22 @@ function normalizeText(value: string): string {
   return value.normalize('NFKC').trim();
 }
 
+function matchesWholeWord(text: string, token: string): boolean {
+  const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(?<![\\w])${escaped}(?![\\w])`, 'i');
+  return re.test(text);
+}
+
 function detectCategory(text: string): ModerationCategory | null {
   if (!text) return null;
   // If tokens not ready, do not block on client — backend will enforce
   if (!tokenStore.ready || !tokenStore.tokensMap || !tokenStore.tokensSorted) return null;
 
   const normalized = normalizeText(text);
-  const lower = normalized.toLowerCase();
 
   for (const token of tokenStore.tokensSorted) {
-    if (lower.includes(token)) {
+    // Only match whole words — "sonoCazzo54" will NOT be flagged for "cazzo"
+    if (matchesWholeWord(normalized, token)) {
       const cats = tokenStore.tokensMap!.get(token) || [];
       const cat = cats[0];
       switch (cat) {
@@ -146,6 +152,7 @@ function detectCategory(text: string): ModerationCategory | null {
 
   return null;
 }
+
 
 function collectIssues(value: unknown, path: Array<string | number> = [], key?: string | number): ModerationIssue[] {
   if (!shouldInspectKey(key)) {

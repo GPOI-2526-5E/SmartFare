@@ -1523,9 +1523,26 @@ textarea {
     padding: 12px 16px;
   }
 
-  .header-left h1 {
-    font-size: 1rem;
-    max-width: 180px;
+  .hdr-mode-badge span {
+    display: none;
+  }
+
+  .hdr-mode-badge {
+    padding: 6px;
+  }
+
+  .hdr-home-text {
+    display: none;
+  }
+
+  .hdr-title-input {
+    font-size: 0.9rem;
+    max-width: 130px;
+  }
+
+  .hdr-home-btn {
+    padding: 4px;
+    gap: 4px;
   }
 
   .mode-toggle button {
