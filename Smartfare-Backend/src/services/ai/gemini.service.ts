@@ -248,7 +248,7 @@ export class GeminiItineraryChatService {
             }
 
             return {
-                reply: 'In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.',
+                reply: 'In questo momento i servizi di Smartfare AI sono in sovraccarico. Riprova tra un istante.',
                 suggestions: [],
                 actions: [],
                 followUpQuestions: [],
@@ -326,7 +326,7 @@ export class GeminiItineraryChatService {
         }
 
         return {
-            reply: text || 'In questo momento i servizi di Vojage ai sono in sovraccarico. Riprova tra un istante.',
+            reply: text || 'In questo momento i servizi di Smartfare AI sono in sovraccarico. Riprova tra un istante.',
             suggestions: [],
             actions: [],
             followUpQuestions: [],

@@ -110,7 +110,7 @@ export class VoyagerChatService {
     );
   }
 
-  createSession(data: { title?: string; mode?: ChatMode; locationId?: number | null }): Observable<ChatSession> {
+  createSession(data: { title?: string; mode?: ChatMode; locationId?: number | null }, options?: { preserveMessages?: boolean }): Observable<ChatSession> {
     return this.http.post<ChatSession>(`${this.apiUrl}/sessions`, data).pipe(
       tap((session) => {
         this.activeSession.set(session);
@@ -118,7 +118,9 @@ export class VoyagerChatService {
         this.plannerState.set(session.metadata?.plannerState || null);
         this.readyToGenerate.set(Boolean(session.metadata?.readyToGenerate));
         this.hasStreamError.set(false);
-        this.messages.set([]);
+        if (!options?.preserveMessages) {
+          this.messages.set([]);
+        }
         this.upsertSession(session);
       })
     );
@@ -242,8 +244,8 @@ export class VoyagerChatService {
     } catch (error) {
       console.error('Streaming error:', error);
       this.hasStreamError.set(true);
-      this.updateLastAssistantMessage('Si è verificato un errore nella comunicazione con Voyager AI.');
-      this.finalizeLastAssistantMessage('Si è verificato un errore nella comunicazione con Voyager AI.');
+      this.updateLastAssistantMessage('Si è verificato un errore nella comunicazione con Smartfare AI.');
+      this.finalizeLastAssistantMessage('Si è verificato un errore nella comunicazione con Smartfare AI.');
     } finally {
       this.isStreaming.set(false);
     }

@@ -401,6 +401,12 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     const content = this.message().trim();
     this.message.set('');
 
+    // Optimistic UI: show user message + typing indicator immediately
+    const optimisticUserMsg = { role: 'user' as const, content, createdAt: new Date().toISOString() };
+    const optimisticTypingMsg = { role: 'assistant' as const, content: '', isStreaming: true };
+    this.chatService.messages.update((msgs) => [...msgs, optimisticUserMsg, optimisticTypingMsg]);
+    this.chatService.isStreaming.set(true);
+
     let active = this.chatService.activeSession();
     if (!active) {
       try {
@@ -408,22 +414,38 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
           this.chatService.createSession({
             mode: this.chatService.mode(),
             title: this.chatService.mode() === 'planner' ? 'Nuova sessione Planner' : 'Nuova sessione Assistant'
-          })
+          }, { preserveMessages: true })
         );
       } catch (error) {
-        this.handleChatAccessError(error);
+        // Rollback optimistic messages
+        this.chatService.messages.update((msgs) =>
+          msgs.filter((m) => m !== optimisticUserMsg && m !== optimisticTypingMsg)
+        );
+        this.chatService.isStreaming.set(false);
+        if (!this.handleChatAccessError(error)) {
+          this.alertService.error('Impossibile avviare la conversazione. Controlla la connessione e riprova.');
+        }
         return;
       }
     }
+
+    // Remove the optimistic messages: sendMessageStreaming will re-add them properly
+    this.chatService.messages.update((msgs) =>
+      msgs.filter((m) => m !== optimisticUserMsg && m !== optimisticTypingMsg)
+    );
+    this.chatService.isStreaming.set(false);
 
     await this.chatService.sendMessageStreaming(active.id, content, (data) => {
       if (data.metadata?.suggestedTitle) {
         this.router.navigate([], { queryParams: { sessionId: active!.id }, queryParamsHandling: 'merge' });
       }
     }).catch((error) => {
-      this.handleChatAccessError(error);
+      if (!this.handleChatAccessError(error)) {
+        this.alertService.error('Impossibile inviare il messaggio. Controlla la connessione e riprova.');
+      }
     });
   }
+
 
   async usePrompt(prompt: string) {
     if (this.isPlannerLocked()) return;
@@ -434,17 +456,29 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   async startNewChatWithPrompt(prompt: string, mode: ChatMode = 'planner') {
     this.suppressSessionLoader.set(true);
 
+    // Optimistic UI: show user message + typing indicator immediately
+    const optimisticUserMsg = { role: 'user' as const, content: prompt, createdAt: new Date().toISOString() };
+    const optimisticTypingMsg = { role: 'assistant' as const, content: '', isStreaming: true };
+    this.chatService.messages.update((msgs) => [...msgs, optimisticUserMsg, optimisticTypingMsg]);
+    this.chatService.isStreaming.set(true);
+
     let session: ChatSession;
     try {
       session = await firstValueFrom(
         this.chatService.createSession({
-          title: mode === 'assistant' ? 'Nuova sessione Assistant' : 'Voyager AI',
+          title: mode === 'assistant' ? 'Nuova sessione Assistant' : 'Smartfare AI',
           mode
-        })
+        }, { preserveMessages: true })
       );
     } catch (error) {
+      this.chatService.messages.update((msgs) =>
+        msgs.filter((m) => m !== optimisticUserMsg && m !== optimisticTypingMsg)
+      );
+      this.chatService.isStreaming.set(false);
       this.suppressSessionLoader.set(false);
-      this.handleChatAccessError(error);
+      if (!this.handleChatAccessError(error)) {
+        this.alertService.error('Impossibile avviare la conversazione. Controlla la connessione e riprova.');
+      }
       return;
     }
 
@@ -455,8 +489,16 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
       replaceUrl: true
     });
 
-    await this.chatService.sendMessageStreaming(session.id, prompt, () => {}).catch((error) => {
-      this.handleChatAccessError(error);
+    // Remove optimistic messages — sendMessageStreaming will add them properly
+    this.chatService.messages.update((msgs) =>
+      msgs.filter((m) => m !== optimisticUserMsg && m !== optimisticTypingMsg)
+    );
+    this.chatService.isStreaming.set(false);
+
+    await this.chatService.sendMessageStreaming(session.id, prompt, () => { }).catch((error) => {
+      if (!this.handleChatAccessError(error)) {
+        this.alertService.error('Impossibile inviare il messaggio. Controlla la connessione e riprova.');
+      }
     }).finally(() => {
       this.suppressSessionLoader.set(false);
     });
@@ -575,7 +617,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
           2
         )
         : this.chatService.messages()
-          .map((message) => `## ${message.role === 'user' ? 'You' : 'Voyager AI'}\n\n${message.content}`)
+          .map((message) => `## ${message.role === 'user' ? 'You' : 'Smartfare AI'}\n\n${message.content}`)
           .join('\n\n');
 
     const blob = new Blob([payload], {
@@ -597,7 +639,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
 
     if (navigator.share) {
       await navigator.share({
-        title: session.title || 'Voyager AI',
+        title: session.title || 'Smartfare AI',
         text: 'Ti condivido questa conversazione di viaggio SmartFare.',
         url: shareUrl
       });
@@ -654,14 +696,23 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   }
 
   private handleChatAccessError(error: unknown): boolean {
-    if (!this.isAuthError(error)) {
+    if (!(error instanceof HttpErrorResponse)) {
+      return false;
+    }
+
+    if (error.status === 429) {
+      this.alertService.error('Troppe richieste al server. Attendi qualche secondo e riprova.');
+      return true;
+    }
+
+    if (error.status !== 401 && error.status !== 403) {
       return false;
     }
 
     this.authService.Logout();
     this.chatService.clearActiveConversation(this.chatService.mode());
     this.isSwitchingSession.set(false);
-    this.alertService.error('La sessione è scaduta. Accedi di nuovo per usare Voyager AI.');
+    this.alertService.error('La sessione è scaduta. Accedi di nuovo per usare Smartfare AI.');
     void this.router.navigate(['/login'], {
       queryParams: { returnUrl: '/voyager' }
     });

@@ -325,7 +325,7 @@ res.json({ success: true, itinerary: { ...response, locationId, location: worksp
 
 ---
 
-### 3.4 Voyager AI — chat con risposta in streaming
+### 3.4 Smartfare AI — chat con risposta in streaming
 
 **Voyager** (`/voyager`) è l’assistente conversazionale: risposta **token per token** (SSE su `POST /api/chat/sessions/:id/stream`), sessioni persistenti (`ChatSession`, `ChatMessage`), pin e titoli automatici.
 
@@ -471,11 +471,11 @@ Flusso:
 
 ---
 
-### 5.4 Voyager AI
+### 5.4 Smartfare AI
 
 Chat multi-sessione, modalità **planner** e **assistant**, risposta in **streaming**, card **“Itinerario pronto”** e generazione nel builder. Richiede autenticazione (`authGuard`).
 
-`[INSERIRE SCREENSHOT: Voyager AI]`
+`[INSERIRE SCREENSHOT: Smartfare AI]`
 
 ---
 
