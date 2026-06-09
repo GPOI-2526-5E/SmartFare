@@ -297,24 +297,37 @@
 
           <!-- ITINERARY READY CARD -->
           @if (chatService.showItineraryReadyCard()) {
-          <div class="itinerary-ready-card">
-            <div class="card-image-wrapper">
-              <div class="card-image card-image--pulse" aria-hidden="true">
+          <div class="premium-ready-card">
+            <div class="prc-glow"></div>
+            <div class="prc-content">
+              <div class="prc-icon-box">
+                <div class="prc-icon-ring"></div>
+                <div class="prc-icon-ring prc-icon-ring-2"></div>
                 <i class="bi bi-globe-europe-africa"></i>
               </div>
-              <div class="card-badge">Itinerario Pronto</div>
-            </div>
-            <div class="card-body">
-              <h3>Il tuo viaggio è pronto!</h3>
-              <p>Ho raccolto tutti i dettagli necessari.</p>
-              <div class="generate-actions">
-                <p>Vuoi generare l'itinerario completo nel builder?</p>
-                <button class="generate-btn" id="generate-itinerary-btn" (click)="openConfirmGenerate()"
-                  [disabled]="isGeneratingItinerary()">
-                  <i class="bi bi-magic"></i>
-                  <span>Genera Itinerario</span>
-                </button>
+              <div class="prc-text-content">
+                <div class="prc-badge">
+                  <i class="bi bi-stars"></i>
+                  <span>Itinerario Pronto</span>
+                </div>
+                <h3>Il tuo viaggio è pronto!</h3>
+                <p>Ho raccolto tutti i dettagli necessari. Vuoi generare l'itinerario completo nel builder?</p>
+                <div class="prc-actions">
+                  <button class="prc-generate-btn" id="generate-itinerary-btn" (click)="openConfirmGenerate()"
+                    [disabled]="isGeneratingItinerary()">
+                    <span class="prc-btn-shine"></span>
+                    <i class="bi bi-magic"></i>
+                    <span>Genera Itinerario</span>
+                    <i class="bi bi-arrow-right prc-btn-arrow"></i>
+                  </button>
+                </div>
               </div>
+            </div>
+            <div class="prc-particles">
+              <span class="prc-p1"></span>
+              <span class="prc-p2"></span>
+              <span class="prc-p3"></span>
+              <span class="prc-p4"></span>
             </div>
           </div>
           }
