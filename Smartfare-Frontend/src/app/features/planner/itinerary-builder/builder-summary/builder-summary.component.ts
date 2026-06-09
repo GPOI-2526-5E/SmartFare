@@ -97,8 +97,6 @@ export class BuilderSummaryComponent {
   }
 
   /** Giorno attualmente visibile nella mappa (number | 'all') */
-  visibleDayRoute = computed(() => this.ui.visibleDayRoute());
-
   sanitizeId(name: string): string {
     return name.replace(/[^a-zA-Z0-9]/g, '_');
   }
@@ -109,39 +107,16 @@ export class BuilderSummaryComponent {
       ids.push(`day-${day.day}-root`);
       for (const block of day.blocks) {
         if (block.type === 'group') {
-          ids.push(`group-${this.sanitizeId(block.groupName)}`);
+          ids.push(this.groupDropListId(day.day, block.groupName));
         }
       }
     }
     return ids;
   });
 
-  /** URL Google Maps per il giorno selezionato (null se 'all' o < 2 tappe) */
-  dayGoogleMapsUrl = computed<string | null>(() => {
-    const day = this.ui.visibleDayRoute();
-    if (day === 'all') return null;
-    const section = this.daySections().find(s => s.day === day);
-    if (!section) return null;
-    const allPois: BuilderPoi[] = [];
-    section.blocks.forEach(b => {
-      if (b.type === 'item') allPois.push(b.poi);
-      else allPois.push(...b.items);
-    });
-    const pois = allPois.filter(
-      p => Number.isFinite(p.latitude) && Number.isFinite(p.longitude)
-    );
-    if (pois.length < 2) return null;
-    return this.buildDayGoogleMapsUrl(pois);
-  });
-
-  /** Numero di tappe nel giorno selezionato */
-  selectedDayStopsCount = computed<number>(() => {
-    const day = this.ui.visibleDayRoute();
-    if (day === 'all') return 0;
-    const section = this.daySections().find(s => s.day === day);
-    if (!section) return 0;
-    return section.blocks.reduce((acc, b) => acc + (b.type === 'item' ? 1 : b.items.length), 0);
-  });
+  groupDropListId(day: number, groupName: string): string {
+    return `group-${day}-${this.sanitizeId(groupName)}`;
+  }
 
   // Drag and Drop State
   draggingPoiKey = signal<string | null>(null);
@@ -377,6 +352,40 @@ export class BuilderSummaryComponent {
 
     date.setDate(date.getDate() + Math.max(0, day - 1));
     return date;
+  }
+
+  getDayItemIndex(blocks: DayBlock[], poiKey: string): number {
+    let index = 0;
+    for (const block of blocks) {
+      if (block.type === 'item') {
+        if (block.poi.key === poiKey) return index;
+        index++;
+        continue;
+      }
+
+      for (const poi of block.items) {
+        if (poi.key === poiKey) return index;
+        index++;
+      }
+    }
+    return index;
+  }
+
+  shouldDrawConnectorAfter(blocks: DayBlock[], poiKey: string): boolean {
+    const flat: Array<{ key: string; groupName: string | null }> = [];
+
+    for (const block of blocks) {
+      if (block.type === 'item') {
+        flat.push({ key: block.poi.key, groupName: null });
+      } else {
+        block.items.forEach(poi => flat.push({ key: poi.key, groupName: block.groupName }));
+      }
+    }
+
+    const index = flat.findIndex(item => item.key === poiKey);
+    if (index < 0 || index >= flat.length - 1) return false;
+
+    return flat[index].groupName === flat[index + 1].groupName;
   }
 
   updatePoi(poi: BuilderPoi, updates: Partial<BuilderPoi>) {
@@ -625,7 +634,6 @@ export class BuilderSummaryComponent {
     const current = this.itinerary();
     if (!current?.items) return;
 
-    // Create a mutable copy of the days and blocks to manipulate arrays easily
     const daysData = this.daySections().map(d => ({
       day: d.day,
       blocks: d.blocks.map(b => b.type === 'item' ? { ...b } : { ...b, items: [...b.items] })
@@ -633,41 +641,17 @@ export class BuilderSummaryComponent {
 
     const prevId = event.previousContainer.id;
     const currId = event.container.id;
+    const dragged = event.item.data as BuilderPoi | DayBlockGroup | DayBlockItem | undefined;
 
-    // Resolve source array
-    let prevArray: any[] = [];
-    if (prevId.startsWith('day-')) {
-      const d = parseInt(prevId.split('-')[1], 10);
-      const dData = daysData.find(x => x.day === d);
-      if (dData) prevArray = dData.blocks;
-    } else if (prevId.startsWith('group-')) {
-      const gNameSanitized = prevId.substring(6);
-      for (const d of daysData) {
-        const gBlock = d.blocks.find(b => b.type === 'group' && this.sanitizeId(b.groupName) === gNameSanitized) as DayBlockGroup;
-        if (gBlock) prevArray = gBlock.items;
-      }
-    }
-
-    // Resolve target array
-    let currArray: any[] = [];
-    if (currId.startsWith('day-')) {
-      const currDayNumber = parseInt(currId.split('-')[1], 10);
-      const dData = daysData.find(x => x.day === currDayNumber);
-      if (dData) currArray = dData.blocks;
-    } else if (currId.startsWith('group-')) {
-      const gNameSanitized = currId.substring(6);
-      for (const d of daysData) {
-        const gBlock = d.blocks.find(b => b.type === 'group' && this.sanitizeId(b.groupName) === gNameSanitized) as DayBlockGroup;
-        if (gBlock) currArray = gBlock.items;
-      }
-    }
-
+    const prevArray = this.resolveDropArray(daysData, prevId);
+    const currArray = this.resolveDropArray(daysData, currId);
     if (!prevArray || !currArray) return;
 
     if (event.previousContainer === event.container) {
       moveItemInArray(prevArray, event.previousIndex, event.currentIndex);
     } else {
-      let itemToMove = prevArray[event.previousIndex];
+      let itemToMove = this.removeDraggedItem(prevArray, dragged, event.previousIndex);
+      if (!itemToMove) return;
 
       if (prevId.startsWith('day-') && currId.startsWith('group-')) {
         if (itemToMove.type === 'group') {
@@ -678,7 +662,6 @@ export class BuilderSummaryComponent {
         itemToMove = { type: 'item', poi: itemToMove };
       }
 
-      prevArray.splice(event.previousIndex, 1);
       currArray.splice(event.currentIndex, 0, itemToMove);
     }
 
@@ -693,9 +676,9 @@ export class BuilderSummaryComponent {
     });
 
     const flattenedUpdates: any[] = [];
-    let currentOrder = 1;
 
     for (const day of daysData) {
+      let currentOrder = 1;
       for (const block of day.blocks) {
         if (block.type === 'item') {
           const poi = block.poi;
@@ -745,6 +728,67 @@ export class BuilderSummaryComponent {
       ...this.withNormalizedEndDate(current, normalizedItems),
       items: normalizedItems
     });
+  }
+
+  private parseGroupDropListId(id: string): { day: number | null; groupName: string } {
+    const match = /^group-(\d+)-(.+)$/.exec(id);
+    if (match) {
+      return { day: Number(match[1]), groupName: match[2] };
+    }
+    return { day: null, groupName: id.substring(6) };
+  }
+
+  private resolveDropArray(
+    daysData: Array<{ day: number; blocks: DayBlock[] }>,
+    containerId: string
+  ): any[] | null {
+    if (containerId.startsWith('day-')) {
+      const day = Number.parseInt(containerId.split('-')[1], 10);
+      const dayData = daysData.find((entry) => entry.day === day);
+      return dayData?.blocks ?? null;
+    }
+
+    if (containerId.startsWith('group-')) {
+      const match = /^group-(\d+)-(.+)$/.exec(containerId);
+      if (!match) return null;
+
+      const day = Number(match[1]);
+      const sanitizedGroupName = match[2];
+      const dayData = daysData.find((entry) => entry.day === day);
+      if (!dayData) return null;
+
+      const groupBlock = dayData.blocks.find(
+        (block) => block.type === 'group' && this.sanitizeId(block.groupName) === sanitizedGroupName
+      ) as DayBlockGroup | undefined;
+
+      return groupBlock?.items ?? null;
+    }
+
+    return null;
+  }
+
+  private removeDraggedItem(array: any[], dragged: BuilderPoi | DayBlockGroup | DayBlockItem | undefined, fallbackIndex: number): any | null {
+    const draggedKey = this.getDraggedKey(dragged);
+    if (draggedKey) {
+      const index = array.findIndex(item => this.getDraggedKey(item) === draggedKey);
+      if (index >= 0) {
+        return array.splice(index, 1)[0];
+      }
+    }
+
+    if (fallbackIndex >= 0 && fallbackIndex < array.length) {
+      return array.splice(fallbackIndex, 1)[0];
+    }
+
+    return null;
+  }
+
+  private getDraggedKey(item: BuilderPoi | DayBlockGroup | DayBlockItem | undefined): string | null {
+    if (!item) return null;
+    if ('key' in item) return item.key;
+    if ('type' in item && item.type === 'item') return item.poi.key;
+    if ('type' in item && item.type === 'group') return `group:${item.groupName}`;
+    return null;
   }
 
   private skipDrop = false;
@@ -1084,17 +1128,5 @@ export class BuilderSummaryComponent {
     });
 
     this.alertService.success(`Giorno ${maxDay} rimosso.`);
-  }
-
-  private buildDayGoogleMapsUrl(pois: BuilderPoi[]): string | null {
-    if (pois.length < 2) return null;
-    const maxWaypoints = 8;
-    const origin = `${pois[0].latitude},${pois[0].longitude}`;
-    const destination = `${pois[pois.length - 1].latitude},${pois[pois.length - 1].longitude}`;
-    const waypointPois = pois.slice(1, -1).slice(0, maxWaypoints);
-    const waypointParam = waypointPois.map(p => `${p.latitude},${p.longitude}`).join('|');
-    const params = new URLSearchParams({ api: '1', origin, destination, travelmode: 'driving' });
-    if (waypointParam) params.set('waypoints', waypointParam);
-    return `https://www.google.com/maps/dir/?${params.toString()}`;
   }
 }

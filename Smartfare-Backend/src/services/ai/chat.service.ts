@@ -16,6 +16,7 @@ import {
   enrichPlannerStateDefaults,
   getMissingPlannerFields,
   isPlannerStructurallyReady,
+  normalizePlannerAssistantReply,
   resolveReadyToGenerate,
 } from '../../utils/planner-ready.util';
 
@@ -239,13 +240,24 @@ export class ChatService {
       );
 
       const enrichedState = enrichPlannerStateDefaults(finalState);
-      const readyToGenerate = resolveReadyToGenerate(voyagerMode, enrichedState, fullReply);
+      const normalizedReply = normalizePlannerAssistantReply({
+        mode: voyagerMode,
+        userMessage,
+        assistantReply: fullReply,
+        state: enrichedState,
+      });
+      const readyToGenerate = resolveReadyToGenerate(
+        voyagerMode,
+        enrichedState,
+        normalizedReply,
+        userMessage
+      );
       const suggestedTitle = await this.suggestTitle(
         session.title,
         voyagerMode,
         finalState,
         userMessage,
-        fullReply,
+        normalizedReply,
         persistedMessages.length
       );
 
@@ -253,7 +265,7 @@ export class ChatService {
         data: {
           chatId,
           role: 'assistant',
-          content: fullReply
+          content: normalizedReply
         }
       });
 
@@ -265,7 +277,7 @@ export class ChatService {
         suggestions: chatHints.suggestions,
         actions: chatHints.actions,
         lastUserPrompt: userMessage,
-        lastAssistantReply: fullReply
+        lastAssistantReply: normalizedReply
       };
 
       await prisma.chatSession.update({
@@ -346,11 +358,16 @@ export class ChatService {
       enrichedPlannerState = { ...enrichedPlannerState, days: 3 };
     }
 
+    const lastUserMessage = [...session.messages]
+      .reverse()
+      .find((message) => message.role === 'user');
+
     const canGenerate = canGenerateItineraryFromSession({
       mode: session.mode,
       state: enrichedPlannerState,
       assistantReply,
       metadataReadyToGenerate: Boolean(sessionMetadata.readyToGenerate),
+      userMessage: lastUserMessage?.content,
     });
 
     if (!canGenerate) {
@@ -440,7 +457,9 @@ export class ChatService {
           note: item.note,
           groupName: item.groupName,
           plannedStartAt: item.plannedStartAt ? new Date(item.plannedStartAt) : null,
-          plannedEndAt: item.plannedEndAt ? new Date(item.plannedEndAt) : null
+          plannedEndAt: item.plannedEndAt ? new Date(item.plannedEndAt) : null,
+          groupStartAt: item.groupStartAt ? new Date(item.groupStartAt) : null,
+          groupEndAt: item.groupEndAt ? new Date(item.groupEndAt) : null
         }))
       }
     };
@@ -521,13 +540,15 @@ export class ChatService {
     return [
       ...base,
       'Sei in Planner Mode: il tuo obiettivo è raccogliere i dettagli essenziali e preparare un itinerario da inviare al builder.',
+      'REGOLA FERREA: NON scrivere mai itinerari giorno per giorno nella chat (niente "Giorno 1/Giorno 2", niente elenchi mattina/pranzo/sera). La generazione vera avviene nel builder dopo conferma dell’utente.',
       'PRIORITÀ ASSOLUTA: se manca la destinazione, fai UNA sola domanda per capire dove vuole andare. Non chiedere giorni, viaggiatori, interessi o stile finché la destinazione non è chiara e confermata dall’utente.',
       'Se l’utente saluta, chiede se sei operativo o fa domande generiche, rispondi in 1-2 frasi e riportalo gentilmente alla pianificazione chiedendo la destinazione.',
       'Dopo la destinazione raccogli in ordine: giorni, tipo di viaggio, viaggiatori, interessi, ritmo, stile/periodo, hotel style.',
       'Fai una sola domanda principale per volta, salvo quando mancano solo 1-2 dettagli molto collegati.',
       'Non assumere mai una destinazione se l’utente non l’ha detta esplicitamente.',
-      'Quando hai abbastanza dati, dillo esplicitamente con una frase simile a: "Il tuo itinerario è pronto".',
-      'Quando l’utente chiede musei, food, notte, natura o percorsi, proponi tappe reali, concrete e immediatamente utilizzabili.',
+      'Quando hai abbastanza dati O l’utente chiede di creare/generare l’itinerario, rispondi in massimo 2-3 frasi brevi e includi SEMPRE la frase: "Il tuo itinerario è pronto".',
+      'Se l’utente chiede "crea l’itinerario" o simili, NON proporre un piano testuale: conferma che hai tutto e usa "Il tuo itinerario è pronto".',
+      'Quando l’utente chiede musei, food, notte, natura o percorsi, proponi idee brevi senza costruire l’itinerario completo in chat.',
       'Non inventare disponibilità reali o prezzi.',
       needsDestination
         ? 'Oggi il primo passo è SOLO la destinazione: non proporre ancora durata o dettagli secondari.'
@@ -965,8 +986,8 @@ export class ChatService {
           accommodationId: item.accommodationId ?? undefined,
           note: item.note ?? undefined,
           groupName: item.groupName ?? undefined,
-          plannedStartAt: this.resolvePlannedDateTime(dateStr, 1, item.timeSlotStart || item.plannedStartAt),
-          plannedEndAt: this.resolvePlannedDateTime(dateStr, 1, item.timeSlotEnd || item.plannedEndAt)
+          plannedStartAt: this.resolvePlannedDateTime(startDate, dayNumber, item.timeSlotStart || item.plannedStartAt),
+          plannedEndAt: this.resolvePlannedDateTime(startDate, dayNumber, item.timeSlotEnd || item.plannedEndAt)
         };
       })
       .filter((item) => item.itemTypeCode === 'ACTIVITY' || item.itemTypeCode === 'ACCOMMODATION')
@@ -986,7 +1007,7 @@ export class ChatService {
 
     items = this.ensureMustSeeItems(items, workspace, transcript, startDate, usedActivityIds);
     items = this.ensureDailyCoverage(items, plannerState, workspace, startDate, usedActivityIds, usedAccommodationIds);
-    return this.normalizeItineraryItems(items);
+    return this.normalizeItineraryItems(items, startDate);
   }
 
   private ensureMustSeeItems(
@@ -1127,8 +1148,10 @@ export class ChatService {
     return normalizedItems;
   }
 
-  private normalizeItineraryItems(items: any[]) {
-    const ordered = items
+  private normalizeItineraryItems(items: any[], startDate: string) {
+    const withTimes = this.ensureMissingItemTimes(items, startDate);
+
+    const ordered = withTimes
       .slice()
       .sort((left, right) => {
         if (left.dayNumber !== right.dayNumber) return left.dayNumber - right.dayNumber;
@@ -1150,6 +1173,83 @@ export class ChatService {
     });
 
     return applyGroupLevelTiming(reordered);
+  }
+
+  private ensureMissingItemTimes(items: any[], startDate: string) {
+    const defaultSlots = [
+      { start: '08:30', end: '09:30', keywords: ['colazion', 'breakfast'] },
+      { start: '10:00', end: '12:00', keywords: ['mattin', 'morning', 'muse', 'monument', 'cultur', 'visita', 'stor'] },
+      { start: '13:00', end: '14:15', keywords: ['pranzo', 'lunch'] },
+      { start: '15:00', end: '17:30', keywords: ['pomerigg', 'afternoon', 'esplor', 'spiagg'] },
+      { start: '19:30', end: '21:00', keywords: ['cena', 'dinner', 'sera', 'notturn', 'discotec', 'movida'] },
+      { start: '14:00', end: '16:00', keywords: ['arrivo', 'check-in', 'check in', 'allogg'] },
+      { start: '09:00', end: '10:00', keywords: ['partenz', 'check-out', 'checkout'] }
+    ];
+    const fallbackSlots = [
+      { start: '08:30', end: '09:30' },
+      { start: '10:00', end: '12:00' },
+      { start: '13:00', end: '14:15' },
+      { start: '15:00', end: '17:30' },
+      { start: '19:30', end: '21:00' },
+      { start: '21:30', end: '23:00' }
+    ];
+
+    const inferSlot = (labels: string[]) => {
+      const text = labels.filter(Boolean).join(' ').toLowerCase();
+      return defaultSlots.find((slot) => slot.keywords.some((keyword) => text.includes(keyword))) || null;
+    };
+
+    const hasTimes = (item: any) => Boolean(item.plannedStartAt && item.plannedEndAt);
+    const result = items.map((item) => ({ ...item }));
+    const byDay = new Map<number, any[]>();
+
+    for (const item of result) {
+      const day = Number(item.dayNumber || 1);
+      if (!byDay.has(day)) byDay.set(day, []);
+      byDay.get(day)!.push(item);
+    }
+
+    for (const [day, dayItems] of byDay.entries()) {
+      const groupSlotByName = new Map<string, { start: string; end: string }>();
+
+      for (const item of dayItems) {
+        if (!item.groupName || !hasTimes(item)) continue;
+        groupSlotByName.set(String(item.groupName), {
+          start: this.extractTimeLabel(item.plannedStartAt) || '10:00',
+          end: this.extractTimeLabel(item.plannedEndAt) || '12:00'
+        });
+      }
+
+      const sorted = dayItems.slice().sort((left, right) => (left.orderInt || 0) - (right.orderInt || 0));
+      let fallbackIndex = 0;
+
+      for (const item of sorted) {
+        if (hasTimes(item)) continue;
+
+        const labels = [item.groupName, item.note];
+        let slot = item.groupName ? groupSlotByName.get(String(item.groupName)) : null;
+        if (!slot) slot = inferSlot(labels);
+        if (!slot) {
+          slot = fallbackSlots[Math.min(fallbackIndex, fallbackSlots.length - 1)];
+          fallbackIndex += 1;
+        }
+
+        if (item.groupName) {
+          groupSlotByName.set(String(item.groupName), slot);
+        }
+
+        item.plannedStartAt = this.resolvePlannedDateTime(startDate, day, slot.start);
+        item.plannedEndAt = this.resolvePlannedDateTime(startDate, day, slot.end);
+      }
+    }
+
+    return result;
+  }
+
+  private extractTimeLabel(value?: string | null) {
+    if (!value) return null;
+    const match = String(value).match(/(\d{2}):(\d{2})/);
+    return match ? `${match[1]}:${match[2]}` : null;
   }
 
   private resolvePlannedDateTime(startDate: string, dayNumber: number, value?: string | null) {

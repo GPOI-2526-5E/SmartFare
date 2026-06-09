@@ -66,17 +66,17 @@
                 [style.background]="ui.dayRouteColors()[colorPickerDay()] || ui.getDefaultDayColor(colorPickerDay())">
               </span>
             }
-            <span>{{ ui.visibleDayRoute() === 'all' ? 'Tutti i giorni' : 'Percorso G' + ui.visibleDayRoute() }}</span>
+            <span class="visible-day-label" [textContent]="visibleDayLabel()"></span>
             <i class="bi bi-chevron-down" style="font-size:0.6rem; opacity:0.45;"></i>
           </div>
           @if (showVisibleDayDropdown()) {
             <div class="dropdown-menu-custom glass-effect">
-              <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === 'all'"
+              <div class="dropdown-item-custom" [class.active]="visibleDayRoute() === 'all'"
                 (click)="selectVisibleDay('all')">
                 <i class="bi bi-calendar-range"></i> Tutti i giorni
               </div>
               @for (day of availableDays(); track day) {
-                <div class="dropdown-item-custom" [class.active]="ui.visibleDayRoute() === day"
+                <div class="dropdown-item-custom" [class.active]="visibleDayRoute() === day"
                   (click)="selectVisibleDay(day)">
                   <span class="day-color-dot"
                     [style.background]="ui.dayRouteColors()[day] || ui.getDefaultDayColor(day)">

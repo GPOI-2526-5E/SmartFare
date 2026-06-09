@@ -5,6 +5,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BuilderPoi } from '../../../../core/models/builder.types';
 import { ItineraryService } from '../../../../core/services/itinerary.service';
 import {
+  buildGoogleMapsSearchUrlFromBuilderPoi,
   buildGoogleSearchUrl,
   isAccommodationPoi,
   poiEndTimeLabel,
@@ -67,6 +68,10 @@ export class BuilderSummaryPoiCardComponent {
 
   googleSearchUrl(poi: BuilderPoi): string {
     return buildGoogleSearchUrl(poi);
+  }
+
+  googleMapsUrl(poi: BuilderPoi): string {
+    return buildGoogleMapsSearchUrlFromBuilderPoi(poi);
   }
 
   startTimeLabel(poi: BuilderPoi): string {

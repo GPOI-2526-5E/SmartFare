@@ -265,7 +265,7 @@
 .summary-container {
   height: 100%;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
   display: flex;
 }
 

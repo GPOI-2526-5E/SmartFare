@@ -27,9 +27,9 @@
 
 /* Esplora Grid (Premium Version) */
 .wl-section {
-  max-width: 1100px;
-  margin: 80px auto;
-  padding: 0 32px;
+  max-width: 1250px;
+  margin: 60px auto;
+  padding: 0 24px;
 }
 
 .wl-section-header {
@@ -285,9 +285,14 @@
   margin-bottom: 16px;
   box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.05);
   transition: all 0.2s ease;
-  overflow: hidden;
+  overflow: visible;
   margin-left: 20px;
   margin-right: 20px;
+}
+
+.wl-group-box:has(.wl-time-popup) {
+  position: relative;
+  z-index: 120;
 }
 
 .wl-group-box.cdk-drag-preview {
@@ -303,6 +308,7 @@
   padding: 0;
   position: relative;
   z-index: 10;
+  overflow: visible;
 }
 
 .wl-group-header {
@@ -334,6 +340,11 @@
   cursor: grabbing;
 }
 
+.wl-group-title {
+  flex: 1;
+  min-width: 0;
+}
+
 .wl-group-title h4 {
   margin: 0;
   color: #f8fafc;
@@ -346,6 +357,13 @@
   transition: all 0.2s;
   position: relative;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  min-width: 0;
+}
+
+.wl-group-title h4 span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wl-group-title h4:hover {
@@ -399,6 +417,14 @@
   border-color: rgba(139, 92, 246, 0.5) !important;
 }
 
+.wl-group-time-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
 .wl-dissolve-btn {
   background: transparent;
   border: 1px solid rgba(239, 68, 68, 0.3);
@@ -411,6 +437,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .wl-dissolve-btn:hover {
@@ -423,6 +450,17 @@
 .wl-group-items-list {
   padding: 12px 16px 12px 20px;
   min-height: 50px;
+  position: relative;
+}
+
+/* Durante il drag interno, il box gruppo non deve intercettare i drop */
+.wl-group-box:has(.wl-group-items-list.cdk-drop-list-dragging) {
+  pointer-events: none;
+}
+
+.wl-group-items-list.cdk-drop-list-dragging {
+  pointer-events: auto;
+  z-index: 120;
 }
 
 .wl-group-items-list.cdk-drop-list-dragging .wl-poi-row:not(.cdk-drag-placeholder) {
@@ -474,10 +512,21 @@
   box-shadow: 0 12px 48px rgba(0,0,0,0.6);
   padding: 20px;
   z-index: 999;
-  min-width: 320px;
+  min-width: 280px;
+  max-width: min(320px, calc(100vw - 2rem));
+  box-sizing: border-box;
   border: 1px solid rgba(139, 92, 246, 0.4);
   animation: popupIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   transform-origin: top center;
+}
+
+/* Popup orario gruppo: allineato a destra per non uscire dal pannello */
+.wl-group-time-actions .wl-time-popup {
+  left: auto;
+  right: 0;
+  transform: none;
+  transform-origin: top right;
+  animation: groupTimePopupIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes popupIn {
@@ -488,6 +537,17 @@
   to {
     opacity: 1;
     transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes groupTimePopupIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -757,95 +817,6 @@
   }
 }
 
-/* ── Day Route Bar ────────────────────────────────────────── */
-.wl-day-route-bar {
-  max-width: 1100px;
-  margin: -40px auto 20px;
-  padding: 0 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  animation: slideUpFade 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-.wl-day-route-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(22, 17, 41, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 100px;
-  padding: 10px 20px;
-}
-
-.wl-day-route-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow: 0 0 8px currentColor;
-}
-
-.wl-day-route-label {
-  font-size: 13px;
-  font-weight: 800;
-  color: #f8fafc;
-  letter-spacing: 0.01em;
-}
-
-.wl-day-route-sep {
-  color: #475569;
-  font-size: 14px;
-}
-
-.wl-day-route-stops {
-  font-size: 12px;
-  font-weight: 600;
-  color: #94a3b8;
-}
-
-/* Google Maps button — dark themed like reference photo */
-.wl-gmaps-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
-  background: rgba(20, 30, 50, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 100px;
-  color: #e2e8f0;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  white-space: nowrap;
-}
-
-.wl-gmaps-btn:hover {
-  background: rgba(30, 45, 75, 0.95);
-  border-color: rgba(66, 133, 244, 0.5);
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow:
-    0 8px 28px rgba(66, 133, 244, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.wl-gmaps-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  filter: drop-shadow(0 0 4px rgba(52, 168, 83, 0.5));
-}
-
 /* ── Mobile Responsive ─────────────────────────────────── */
 @media (max-width: 768px) {
   .wl-section {
@@ -916,18 +887,6 @@
     font-size: 0.75rem;
   }
 
-  .wl-day-route-bar {
-    flex-direction: column;
-    margin-top: -20px;
-    padding: 0 16px;
-    gap: 10px;
-  }
-
-  .wl-day-route-info, .wl-gmaps-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
   .wl-add-day-container {
     margin: 30px 0 80px;
   }
@@ -961,14 +920,15 @@
   }
 
   .wl-group-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
     padding: 12px;
   }
 
   .wl-group-title {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
   }
 
   .wl-group-name-input {
@@ -977,9 +937,10 @@
   }
 
   .wl-group-time-actions {
-    width: 100%;
-    justify-content: flex-start;
+    width: auto;
+    justify-content: flex-end;
     gap: 8px;
+    flex-shrink: 0;
   }
 
   .wl-group-btn-time {

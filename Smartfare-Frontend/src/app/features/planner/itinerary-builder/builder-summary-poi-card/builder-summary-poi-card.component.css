@@ -70,8 +70,8 @@
 }
 
 .wl-poi-card-content {
-  padding: 24px;
-  flex: 1.2;
+  padding: 24px 32px;
+  flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -312,10 +312,10 @@
 }
 
 .wl-poi-image {
-  flex: 0.8;
+  flex: 0 0 260px;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
-  min-height: 140px;
+  min-height: 160px;
 }
 
 .wl-poi-image img {

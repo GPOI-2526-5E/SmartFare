@@ -9,7 +9,7 @@ import { FooterComponent } from '../../ui/footer/footer.component';
 import { AppLoaderComponent } from '../../ui/loader/loader.component';
 import { DiscoverMapComponent, DiscoverRoutePoint } from '../discover-map/discover-map.component';
 import { DiscoverSearchResultsComponent } from '../discover-search-results/discover-search-results.component';
-import { ItineraryCardComponent } from '../../../shared/components/itinerary-card/itinerary-card.component';
+import { ItineraryCardComponent } from '../../itinerary-card/itinerary-card.component';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { BuilderPoi } from '../../../core/models/builder.types';
 import { ItineraryWorkspace } from '../../../core/models/itinerary.model';

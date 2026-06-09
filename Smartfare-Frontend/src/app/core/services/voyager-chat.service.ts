@@ -1,5 +1,9 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { shouldShowItineraryReadyCard } from '../utils/planner-ready.util';
+import {
+  buildPlannerReadyAssistantReply,
+  isItineraryReadyEligible,
+  shouldReplaceAssistantReplyWithReadyCard,
+} from '../utils/planner-ready.util';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -80,17 +84,25 @@ export class VoyagerChatService {
   readonly readyToGenerate = signal(false);
   readonly hasStreamError = signal(false);
 
+  private readonly itineraryReadyInput = computed(() => ({
+    mode: this.mode(),
+    readyToGenerate: this.readyToGenerate(),
+    messages: this.messages(),
+    plannerState: this.plannerState() || this.activeSession()?.metadata?.plannerState || null,
+    plannerLocked: Boolean(
+      this.activeSession()?.metadata?.plannerLocked ||
+      this.activeSession()?.metadata?.generatedItineraryId
+    ),
+  }));
+
+  /** Mostra la card solo a stream concluso, così i puntini restano visibili finché non è pronta. */
   readonly showItineraryReadyCard = computed(() =>
-    shouldShowItineraryReadyCard({
-      mode: this.mode(),
-      readyToGenerate: this.readyToGenerate(),
-      messages: this.messages(),
-      plannerState: this.plannerState() || this.activeSession()?.metadata?.plannerState || null,
-      plannerLocked: Boolean(
-        this.activeSession()?.metadata?.plannerLocked ||
-        this.activeSession()?.metadata?.generatedItineraryId
-      ),
-    })
+    !this.isStreaming() && isItineraryReadyEligible(this.itineraryReadyInput())
+  );
+
+  /** Puntini di caricamento mentre l'IA ha tutto ma la card non è ancora visibile. */
+  readonly isAwaitingItineraryReadyCard = computed(() =>
+    this.isStreaming() && isItineraryReadyEligible(this.itineraryReadyInput())
   );
 
   loadSessions(): Observable<ChatSession[]> {
@@ -234,7 +246,16 @@ export class VoyagerChatService {
           if (data.done) {
             if (data.error) {
               this.hasStreamError.set(true);
+              if (typeof data.reply === 'string' && data.reply.trim()) {
+                fullContent = data.reply;
+              }
+            } else if (
+              data.metadata?.readyToGenerate &&
+              shouldReplaceAssistantReplyWithReadyCard(fullContent)
+            ) {
+              fullContent = buildPlannerReadyAssistantReply();
             }
+
             this.finalizeLastAssistantMessage(fullContent);
             this.applyStreamMetadata(sessionId, data.metadata);
             onDone(data);
@@ -325,12 +346,52 @@ export class VoyagerChatService {
     this.upsertSession(updatedSession);
   }
 
+  /** Aggiorna lo stato locale dopo generate-itinerary (il backend persiste già i metadata). */
+  markSessionItineraryGenerated(itinerary: Itinerary): void {
+    const active = this.activeSession();
+    if (!active) return;
+
+    const updatedSession: ChatSession = {
+      ...active,
+      metadata: {
+        ...(active.metadata || {}),
+        generatedItinerary: itinerary,
+        generatedItineraryId: itinerary.id,
+        plannerLocked: true,
+        readyToGenerate: true,
+      },
+    };
+
+    this.activeSession.set(updatedSession);
+    this.readyToGenerate.set(true);
+    this.upsertSession(updatedSession);
+  }
+
+  dismissItineraryReadyCard(): void {
+    this.readyToGenerate.set(false);
+
+    const active = this.activeSession();
+    if (!active) return;
+
+    const updatedSession: ChatSession = {
+      ...active,
+      metadata: {
+        ...(active.metadata || {}),
+        readyToGenerate: false,
+        plannerState: this.plannerState() || active.metadata?.plannerState,
+      },
+    };
+
+    this.activeSession.set(updatedSession);
+    this.upsertSession(updatedSession);
+  }
+
   /** Allinea readyToGenerate quando l'assistente dichiara l'itinerario pronto ma il flag non è ancora true. */
   syncReadyFromConversation(): void {
     if (this.readyToGenerate()) return;
 
     if (
-      !shouldShowItineraryReadyCard({
+      !isItineraryReadyEligible({
         mode: this.mode(),
         readyToGenerate: false,
         messages: this.messages(),

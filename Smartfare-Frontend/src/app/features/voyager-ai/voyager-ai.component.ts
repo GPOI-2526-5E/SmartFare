@@ -14,6 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import {
+  ChatMessage,
   ChatMode,
   ChatSession,
   VoyagerChatService
@@ -60,7 +61,6 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   readonly searchTerm = signal('');
   readonly message = signal('');
   readonly isGeneratingItinerary = signal(false);
-  readonly showConfirmGenerate = signal(false);
   readonly generationFailed = signal(false);
   readonly generationError = signal<string | null>(null);
   readonly isVoiceSupported = signal(false);
@@ -97,6 +97,28 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
 
   constructor() {
     // Nessun effect auto-trigger: la generazione parte solo al click dell'utente
+  }
+
+  isLastAssistantMessage(index: number): boolean {
+    const messages = this.chatService.messages();
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'assistant') {
+        return i === index;
+      }
+    }
+    return false;
+  }
+
+  shouldHideReadyAssistantMessage(index: number): boolean {
+    if (!this.chatService.showItineraryReadyCard()) return false;
+    const message = this.chatService.messages()[index];
+    return message?.role === 'assistant' && this.isLastAssistantMessage(index);
+  }
+
+  showTypingInBubble(message: ChatMessage, index: number): boolean {
+    if (message.role !== 'assistant') return false;
+    if (message.isStreaming && message.content === '') return true;
+    return this.chatService.isAwaitingItineraryReadyCard() && this.isLastAssistantMessage(index);
   }
 
   formatMessageTime(value: string | Date | null | undefined): string {
@@ -527,20 +549,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     try {
       const response = await firstValueFrom(this.chatService.generateItinerary(session.id));
       this.itineraryService.setCurrentItinerary(response.itinerary, { autosave: false });
-
-      // Update active session metadata so subsequent generate clicks reuse the same itinerary
-      const newMetadata = {
-        ...(session.metadata || {}),
-        generatedItinerary: response.itinerary,
-        generatedItineraryId: response.itinerary.id,
-        plannerLocked: true,
-        readyToGenerate: true
-      };
-
-      await firstValueFrom(this.chatService.updateSession(session.id, { metadata: newMetadata }));
-
-      // The service's updateSession already updates local state (activeSession and sessions list),
-      // so we don't need to manually update them here.
+      this.chatService.markSessionItineraryGenerated(response.itinerary);
 
       // Navigate to builder and include itinerary id in query for shareable URL
       await this.router.navigate(['/itineraries/builder'], { queryParams: { itineraryId: response.itinerary.id } });
@@ -550,7 +559,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
       const message =
         (typeof body === 'string' ? body : body?.error || body?.message) ||
         error?.message ||
-        'Generazione non riuscita. Riprova tra qualche istante.';
+        'Troppe richieste: i servizi Smartfare AI sono in sovraccarico. Riprova successivamente.';
       this.generationError.set(message);
       this.generationFailed.set(true);
       this.alertService.error(message);
@@ -559,20 +568,15 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  openConfirmGenerate() {
-    this.showConfirmGenerate.set(true);
-  }
-
   async confirmGenerateYes() {
-    this.showConfirmGenerate.set(false);
     await this.generateItinerary();
   }
 
   confirmGenerateNo() {
-    this.showConfirmGenerate.set(false);
+    this.chatService.dismissItineraryReadyCard();
     const assistantMsg = {
       role: 'assistant',
-      content: "C'è qualcos'altro che vuoi aggiungere ?",
+      content: "C'è qualcos'altro che vuoi aggiungere?",
       createdAt: new Date().toISOString()
     };
     this.chatService.messages.update((m) => [...m, assistantMsg as any]);

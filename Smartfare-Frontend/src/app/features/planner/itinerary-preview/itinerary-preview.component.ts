@@ -23,6 +23,7 @@ import { PreviewMapPanelComponent } from './preview-map-panel/preview-map-panel.
 import { PreviewActionsComponent } from './preview-actions/preview-actions.component';
 import { PreviewDay, PreviewStop } from './preview.types';
 import { AppLoaderComponent } from '../../ui/loader/loader.component';
+import { buildGoogleMapsSearchUrl } from '../../../core/utils/poi-display.util';
 
 @Component({
   selector: 'app-itinerary-preview',
@@ -374,12 +375,14 @@ export class ItineraryPreviewComponent implements OnInit, OnDestroy {
     const lng = Number(entity['longitude']);
     const category = (entity['category'] as { name?: string } | undefined)?.name;
 
-    const mapsUrl =
-      Number.isFinite(lat) && Number.isFinite(lng)
-        ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
-        : street
-          ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${street}`)}`
-          : null;
+    const mapsUrl = buildGoogleMapsSearchUrl({
+      title: name,
+      street: street || undefined,
+      locationName: this.locationLabel(),
+      categoryName: isAcc ? 'Alloggio' : category,
+      latitude: Number.isFinite(lat) ? lat : undefined,
+      longitude: Number.isFinite(lng) ? lng : undefined,
+    });
 
     return {
       key: `${type}-${id}`,

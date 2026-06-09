@@ -20,6 +20,7 @@ import Location from '../../../../core/models/location.model';
 import { Itinerary } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../../../../core/models/builder.types';
 import {
+  buildGoogleMapsSearchUrlFromBuilderPoi,
   buildGoogleSearchUrl,
   escapeHtmlForPopup,
   isAccommodationPoi,
@@ -690,7 +691,7 @@ export class BuilderMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     const formattedGroupStart = formatDate(poi.groupStartAt);
     const formattedGroupEnd = formatDate(poi.groupEndAt);
 
-    const gMapsLink = `https://www.google.com/maps/search/?api=1&query=${poi.latitude},${poi.longitude}`;
+    const gMapsLink = buildGoogleMapsSearchUrlFromBuilderPoi(poi);
     const gSearchLink = buildGoogleSearchUrl(poi);
 
     const isSaved = this.savedPois.some(p => p.key === poi.key);

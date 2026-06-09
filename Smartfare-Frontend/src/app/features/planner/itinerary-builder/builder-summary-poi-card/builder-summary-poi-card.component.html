@@ -36,8 +36,8 @@
                 <i class="bi bi-google"></i>
                 <span>Google</span>
               </a>
-              <a [href]="'https://www.google.com/maps/search/?api=1&query=' + poi.latitude + ',' + poi.longitude"
-                target="_blank" class="wl-card-pill wl-card-pill--maps" title="Vedi su Google Maps">
+              <a [href]="googleMapsUrl(poi)"
+                target="_blank" rel="noopener noreferrer" class="wl-card-pill wl-card-pill--maps" title="Vedi su Google Maps">
                 <i class="bi bi-geo-alt"></i>
                 <span>Maps</span>
               </a>

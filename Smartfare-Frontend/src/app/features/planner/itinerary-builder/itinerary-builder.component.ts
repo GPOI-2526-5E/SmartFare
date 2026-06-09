@@ -139,16 +139,33 @@ export class ItineraryBuilderComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    const queryItineraryId = this.getItineraryIdFromQuery();
     const current = this.itineraryService.itinerary();
-    if (current) {
-      if (current.userId) {
-        const currentUserData = this.authService.getUserData();
-        if (currentUserData && current.userId !== currentUserData.userId) {
-          this.alertService.error('Non hai i permessi per modificare questo itinerario.');
+
+    if (queryItineraryId) {
+      if (current?.id === queryItineraryId) {
+        if (!this.ensureCanOpenItinerary(current)) return;
+        this.bootstrapWorkspace(current);
+        return;
+      }
+
+      this.itineraryService.getItineraryById(queryItineraryId).subscribe((resolved) => {
+        if (!resolved) {
+          this.alertService.error('Itinerario non trovato o non accessibile.');
           this.router.navigate(['/home']);
           return;
         }
-      }
+
+        if (!this.ensureCanOpenItinerary(resolved)) return;
+
+        this.itineraryService.setCurrentItinerary(resolved, { autosave: false });
+        this.bootstrapWorkspace(resolved);
+      });
+      return;
+    }
+
+    if (current) {
+      if (!this.ensureCanOpenItinerary(current)) return;
       this.bootstrapWorkspace(current);
       return;
     }
@@ -166,14 +183,7 @@ export class ItineraryBuilderComponent implements OnInit {
     this.itineraryService.loadLatestFromBackend().subscribe(() => {
       const resolved = this.itineraryService.itinerary();
       if (resolved) {
-        if (resolved.userId) {
-          const currentUserData = this.authService.getUserData();
-          if (currentUserData && resolved.userId !== currentUserData.userId) {
-            this.alertService.error('Non hai i permessi per modificare questo itinerario.');
-            this.router.navigate(['/home']);
-            return;
-          }
-        }
+        if (!this.ensureCanOpenItinerary(resolved)) return;
         this.bootstrapWorkspace(resolved);
         return;
       }
@@ -182,10 +192,29 @@ export class ItineraryBuilderComponent implements OnInit {
     });
   }
 
+  private getItineraryIdFromQuery(): number | null {
+    const queryId = Number(this.route.snapshot.queryParams['itineraryId']);
+    if (!queryId || Number.isNaN(queryId)) return null;
+    return queryId;
+  }
+
   private getLocationIdFromQuery(): number | null {
     const queryId = Number(this.route.snapshot.queryParams['locationId']);
     if (!queryId || Number.isNaN(queryId)) return null;
     return queryId;
+  }
+
+  private ensureCanOpenItinerary(itinerary: Itinerary): boolean {
+    if (!itinerary.userId) return true;
+
+    const currentUserData = this.authService.getUserData();
+    if (currentUserData && itinerary.userId !== currentUserData.userId) {
+      this.alertService.error('Non hai i permessi per modificare questo itinerario.');
+      this.router.navigate(['/home']);
+      return false;
+    }
+
+    return true;
   }
 
   private seedFromRouteQuery() {

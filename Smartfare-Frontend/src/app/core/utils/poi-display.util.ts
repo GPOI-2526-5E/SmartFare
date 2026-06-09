@@ -26,6 +26,76 @@ export function buildGoogleSearchUrl(poi: Pick<BuilderPoi, 'title' | 'locationNa
   return `https://www.google.com/search?q=${encodeURIComponent(buildGoogleSearchQuery(poi))}`;
 }
 
+export type GoogleMapsPoiInput = {
+  title?: string | null;
+  name?: string | null;
+  street?: string | null;
+  locationName?: string | null;
+  location?: string | null;
+  subtitle?: string | null;
+  categoryName?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+};
+
+const GENERIC_MAP_CATEGORIES = new Set(['attività', 'hotel', 'categoria', 'alloggio']);
+
+function normalizeMapPart(value?: string | null): string {
+  return (value || '').trim();
+}
+
+function containsInsensitive(haystack: string, needle: string): boolean {
+  return haystack.toLowerCase().includes(needle.toLowerCase());
+}
+
+/** Query ricca per Google Maps: nome, strada, luogo e categoria quando disponibili. */
+export function buildGoogleMapsSearchQuery(poi: GoogleMapsPoiInput): string {
+  const name = normalizeMapPart(poi.title || poi.name);
+  const street = normalizeMapPart(poi.street);
+  const location = normalizeMapPart(poi.locationName || poi.location);
+  const category = normalizeMapPart(poi.categoryName || poi.subtitle);
+
+  const parts: string[] = [];
+  if (name) parts.push(name);
+  if (street) parts.push(street);
+  if (location && !containsInsensitive(parts.join(' '), location)) {
+    parts.push(location);
+  }
+  if (
+    category &&
+    !GENERIC_MAP_CATEGORIES.has(category.toLowerCase()) &&
+    !containsInsensitive(parts.join(' '), category)
+  ) {
+    parts.push(category);
+  }
+
+  if (parts.length > 0) {
+    return parts.join(', ');
+  }
+
+  if (Number.isFinite(poi.latitude) && Number.isFinite(poi.longitude)) {
+    return `${poi.latitude},${poi.longitude}`;
+  }
+
+  return 'Punto di interesse';
+}
+
+export function buildGoogleMapsSearchUrl(poi: GoogleMapsPoiInput): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(buildGoogleMapsSearchQuery(poi))}`;
+}
+
+export function buildGoogleMapsSearchUrlFromBuilderPoi(poi: BuilderPoi): string {
+  return buildGoogleMapsSearchUrl({
+    title: poi.title,
+    street: poi.street,
+    locationName: poi.locationName,
+    subtitle: poi.subtitle,
+    categoryName: poi.categoryName,
+    latitude: poi.latitude,
+    longitude: poi.longitude,
+  });
+}
+
 export function mapActivityToBuilderPoi(activity: Activity, locationName?: string): BuilderPoi {
   const categoryName = activity.category?.name;
   const description =

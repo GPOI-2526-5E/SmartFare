@@ -1,0 +1,53 @@
+<div class="itinerary-card" [class.clickable]="mode === 'emit'" (click)="onCardBodyClick()">
+  <div class="card-image-wrap">
+    <img
+      [src]="itinerary.imageUrl || 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800'"
+      class="card-image" alt="Itinerary cover">
+  </div>
+  <div class="card-content">
+    <span class="location-tag">{{ itinerary.location?.name?.toUpperCase() || 'ITALIA' }}</span>
+    <h3>{{ itinerary.name }}</h3>
+    <p class="fi-card-desc">{{ itinerary.description || 'Nessuna descrizione disponibile per questo itinerario.' }}</p>
+
+    <div class="card-meta-row">
+      <div class="card-meta-item">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>{{ itinerary.location?.name || 'Destinazione libera' }}</span>
+      </div>
+      <div class="card-meta-item">
+        <i class="bi bi-collection-fill"></i>
+        <span>{{ getItemCount() }} {{ getItemCount() === 1 ? 'tappa' : 'tappe' }}</span>
+      </div>
+      <div class="card-meta-item likes-item">
+        <i class="bi bi-heart-fill heart-icon"></i>
+        <span>{{ getLikesCount() }}</span>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <div class="card-footer-left">
+        <div class="creator-avatar" [title]="getCreatorName()">
+          @if (itinerary.user?.profile?.avatarUrl) {
+            <img [src]="itinerary.user!.profile!.avatarUrl" [alt]="getCreatorName()" class="creator-img">
+          } @else {
+            <span class="creator-initials">{{ getCreatorInitials() }}</span>
+          }
+        </div>
+        <span class="days-info">
+          <i class="bi bi-clock"></i>
+          {{ getDuration() }}
+        </span>
+      </div>
+      
+      @if (mode === 'link') {
+        <a [routerLink]="['/itineraries/preview']" [queryParams]="{ itineraryId: itinerary.id }" class="view-plan">
+          Vai al Piano <i class="bi bi-arrow-right"></i>
+        </a>
+      } @else {
+        <button class="view-plan view-plan-btn" (click)="onActionClick($event)">
+          Anteprima <i class="bi bi-arrow-right"></i>
+        </button>
+      }
+    </div>
+  </div>
+</div>

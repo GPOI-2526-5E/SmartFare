@@ -4,6 +4,7 @@ import { UIStateService } from '../../../../core/services/ui-state.service';
 import { ItineraryWorkspace } from '../../../../core/models/itinerary.model';
 import { BuilderPoi } from '../../../../core/models/builder.types';
 import {
+  buildGoogleMapsSearchUrlFromBuilderPoi,
   buildGoogleSearchUrl,
   mapAccommodationToBuilderPoi,
   mapActivityToBuilderPoi,
@@ -192,6 +193,10 @@ export class BuilderSidebarComponent implements OnDestroy {
 
   googleSearchUrl(poi: BuilderPoi): string {
     return buildGoogleSearchUrl(poi);
+  }
+
+  googleMapsUrl(poi: BuilderPoi): string {
+    return buildGoogleMapsSearchUrlFromBuilderPoi(poi);
   }
 
   private getCategoryIcon(name: string): string {

@@ -260,6 +260,7 @@
 
           <!-- MESSAGES -->
           @for (msg of chatService.messages(); track $index) {
+          @if (!shouldHideReadyAssistantMessage($index)) {
           <div class="message-wrapper" [class.user]="msg.role === 'user'" [class.assistant]="msg.role === 'assistant'">
             @if (msg.role === 'assistant') {
             <div class="avatar-container assistant-avatar">
@@ -269,11 +270,12 @@
 
             <div class="message-content">
               <div class="bubble">
-                <div class="text" [innerHTML]="formatMessage(msg.content)"></div>
-                @if (msg.isStreaming && msg.content === '') {
+                @if (showTypingInBubble(msg, $index)) {
                 <div class="typing-indicator">
                   <span></span><span></span><span></span>
                 </div>
+                } @else if (msg.content) {
+                <div class="text" [innerHTML]="formatMessage(msg.content)"></div>
                 }
               </div>
               @if (msg.createdAt) {
@@ -294,6 +296,7 @@
             }
           </div>
           }
+          }
 
           <!-- ITINERARY READY CARD -->
           @if (chatService.showItineraryReadyCard()) {
@@ -310,15 +313,19 @@
                   <i class="bi bi-stars"></i>
                   <span>Itinerario Pronto</span>
                 </div>
-                <h3>Il tuo viaggio è pronto!</h3>
-                <p>Ho raccolto tutti i dettagli necessari. Vuoi generare l'itinerario completo nel builder?</p>
+                <h3>Ho tutto per generare l'itinerario</h3>
+                <p>Vuoi generarlo adesso?</p>
                 <div class="prc-actions">
-                  <button class="prc-generate-btn" id="generate-itinerary-btn" (click)="openConfirmGenerate()"
+                  <button class="prc-generate-btn" id="generate-itinerary-btn" (click)="confirmGenerateYes()"
                     [disabled]="isGeneratingItinerary()">
                     <span class="prc-btn-shine"></span>
                     <i class="bi bi-magic"></i>
-                    <span>Genera Itinerario</span>
+                    <span>Si, genera</span>
                     <i class="bi bi-arrow-right prc-btn-arrow"></i>
+                  </button>
+                  <button class="prc-decline-btn" type="button" (click)="confirmGenerateNo()"
+                    [disabled]="isGeneratingItinerary()">
+                    No, aggiungo altro
                   </button>
                 </div>
               </div>
@@ -328,21 +335,6 @@
               <span class="prc-p2"></span>
               <span class="prc-p3"></span>
               <span class="prc-p4"></span>
-            </div>
-          </div>
-          }
-
-          <!-- CONFIRM GENERATE MODAL -->
-          @if (showConfirmGenerate()) {
-          <div class="confirm-generate-overlay" role="dialog" aria-modal="true"
-            aria-label="Conferma generazione itinerario">
-            <div class="confirm-generate-box">
-              <h2>Ho tutto per generare l'itinerario</h2>
-              <p>Vuoi generarlo adesso?</p>
-              <div class="confirm-actions">
-                <button class="btn-yes" (click)="confirmGenerateYes()">Si, genera</button>
-                <button class="btn-no" (click)="confirmGenerateNo()">No, aggiungo altro</button>
-              </div>
             </div>
           </div>
           }
@@ -357,14 +349,14 @@
               <div class="card-badge stream-error-badge">Errore Server</div>
             </div>
             <div class="card-body">
-              <h3>Richieste esaurite</h3>
-              <p>Ops! I servizi AI sono temporaneamente in sovraccarico. Non sono riuscito a completare l'itinerario.
+              <h3>Troppe richieste</h3>
+              <p>I servizi Smartfare AI sono temporaneamente in sovraccarico o i crediti sono esauriti. Riprova tra qualche istante.
               </p>
               <div class="generate-actions">
                 <button class="generate-btn stream-retry-btn" (click)="retryLastMessage()"
                   [disabled]="chatService.isStreaming()">
                   <i class="bi bi-arrow-clockwise"></i>
-                  <span>Riprova più tardi</span>
+                  <span>Riprova successivamente</span>
                 </button>
               </div>
             </div>
@@ -523,8 +515,8 @@
           <div class="gem-icon-wrap">
             <i class="bi bi-exclamation-triangle-fill gem-icon"></i>
           </div>
-          <h2 class="gem-title">Generazione non riuscita</h2>
-          <p class="gem-message">{{ generationError() ?? 'I servizi Smartfare AI sono momentaneamente in sovraccarico.
+          <h2 class="gem-title">Troppe richieste</h2>
+          <p class="gem-message">{{ generationError() ?? 'I servizi Smartfare AI sono in sovraccarico o i crediti sono esauriti. Riprova successivamente.
             Attendi qualche istante e riprova.' }}</p>
           <div class="gem-actions">
             <button class="gem-retry-btn" id="retry-generation-btn" (click)="retryGeneration()">

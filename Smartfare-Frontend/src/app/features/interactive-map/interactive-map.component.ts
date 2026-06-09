@@ -26,6 +26,7 @@ import {
 } from './models/map-marker.model';
 import { BboxTileCache } from './utils/bbox-tile-cache';
 import { categoryIcon, categoryVisuals, colorFromId } from './utils/map-category.util';
+import { buildGoogleMapsSearchUrl } from '../../core/utils/poi-display.util';
 
 interface BboxRequest {
   minLat: number;
@@ -485,7 +486,13 @@ export class InteractiveMapComponent implements AfterViewInit, OnDestroy {
 
   private popupHtml(poi: MapMarker): string {
     const isHotel = poi.kind === 'hotel';
-    const mapsLink = `https://www.google.com/maps/search/?api=1&query=${poi.latitude},${poi.longitude}`;
+    const mapsLink = buildGoogleMapsSearchUrl({
+      name: poi.name,
+      street: poi.street,
+      categoryName: isHotel ? 'Hotel' : poi.categoryName,
+      latitude: poi.latitude,
+      longitude: poi.longitude,
+    });
     const searchLink = `https://www.google.com/search?q=${encodeURIComponent(poi.name)}`;
 
     let imageUrl = poi.imageUrl;

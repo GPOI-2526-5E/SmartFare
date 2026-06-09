@@ -658,6 +658,7 @@ export class GeminiItineraryChatService {
             workspace.userPreferencePrompt || '',
             'Non creare giornate vuote o con una sola attività, salvo impossibilità assoluta del catalogo.',
             'Per ogni tappa, specifica dayNumber, orderInt, date (YYYY-MM-DD), itemTypeCode (ACTIVITY o ACCOMMODATION), activityId o accommodationId, note, groupName, timeSlotStart e timeSlotEnd.',
+            'OBBLIGATORIO: ogni item DEVE avere timeSlotStart e timeSlotEnd in formato HH:mm. Nessuna tappa può restare senza orario.',
             'Usa timeSlotStart e timeSlotEnd nel formato HH:mm. Se più attività condividono lo stesso groupName nello stesso giorno, usa gli STESSI orari per tutte (slot di gruppo).',
             'Restituisci anche una description narrativa sintetica dell’itinerario.',
             'Il groupName serve per raggruppare le attività della giornata (es. "Mattina", "Pomeriggio", "Cena").',

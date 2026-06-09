@@ -10,32 +10,6 @@
     (previewRequested)="openPreview($event)"></app-builder-summary-explore>
   }
 
-  <!-- PERCORSO GIORNO SELEZIONATO (solo se giorno ≠ 'all') -->
-  @if (visibleDayRoute() !== 'all' && selectedDayStopsCount() > 0) {
-  <div class="wl-day-route-bar">
-    <div class="wl-day-route-info">
-      <span class="wl-day-route-dot" [style.background]="getDayColor(+visibleDayRoute())"></span>
-      <span class="wl-day-route-label">Giorno {{ visibleDayRoute() }}</span>
-      <span class="wl-day-route-sep">·</span>
-      <span class="wl-day-route-stops">{{ selectedDayStopsCount() }} {{ selectedDayStopsCount() === 1 ? 'tappa' :
-        'tappe' }}</span>
-    </div>
-    @if (dayGoogleMapsUrl()) {
-    <a class="wl-gmaps-btn" [href]="dayGoogleMapsUrl()!" target="_blank" rel="noopener noreferrer">
-      <!-- Google Maps logo icon (SVG) -->
-      <svg class="wl-gmaps-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5 14.5 7.62 14.5 9 13.38 11.5 12 11.5z"
-          fill="#34a853" />
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="none" stroke="#4285f4"
-          stroke-width="0.5" />
-      </svg>
-      <span>Apri su Google Maps</span>
-    </a>
-    }
-  </div>
-  }
-
   <!-- TIMELINE / GIORNATE -->
   <div class="wl-timeline-container" [class.is-preview]="isPreviewMode()" cdkDropListGroup>
 
@@ -82,10 +56,11 @@
 
         @for (block of day.blocks; track block.type === 'group' ? block.groupName : block.poi.key; let idx = $index) {
           @if (block.type === 'group') {
-            <div class="wl-group-box" cdkDrag [cdkDragDisabled]="isPreviewMode()" [cdkDragData]="block">
+            <div class="wl-group-box" cdkDrag [cdkDragDisabled]="isPreviewMode() || draggingPoiKey() !== null"
+              [cdkDragData]="block">
               <!-- GROUP HEADER -->
               <div class="wl-group-header-container">
-                <div class="wl-group-header">
+                <div class="wl-group-header" cdkDragHandle>
                   <div class="wl-group-title">
                     @if (isPreviewMode()) {
                     <h4 class="wl-group-title-static">
@@ -162,7 +137,8 @@
               </div>
 
               <!-- GROUP DROP LIST FOR NESTED ITEMS -->
-              <div class="wl-group-items-list" cdkDropList [id]="'group-' + sanitizeId(block.groupName)" [cdkDropListData]="block.items"
+              <div class="wl-group-items-list" cdkDropList cdkDropListOrientation="vertical"
+                   [id]="groupDropListId(day.day, block.groupName)" [cdkDropListData]="block.items"
                    [cdkDropListConnectedTo]="allDropListIds()" [cdkDropListDisabled]="isPreviewMode()"
                    (cdkDropListDropped)="drop($event)">
                 
@@ -173,8 +149,8 @@
                     [class.group-last]="pIdx === block.items.length - 1" [attr.data-poi-key]="poi.key"
                     [attr.data-day-number]="day.day">
 
-                    <app-builder-summary-poi-card [poi]="poi" [dayNumber]="day.day" [index]="pIdx"
-                      [isLast]="pIdx === block.items.length - 1" [dayColor]="getDayColor(day.day)"
+                    <app-builder-summary-poi-card [poi]="poi" [dayNumber]="day.day" [index]="getDayItemIndex(day.blocks, poi.key)"
+                      [isLast]="!shouldDrawConnectorAfter(day.blocks, poi.key)" [dayColor]="getDayColor(day.day)"
                       [isSelected]="selectedPoiKeys().has(poi.key)" [totalDaysCount]="daySections().length"
                       [readOnly]="isPreviewMode()" (toggleSelect)="toggleSelection(poi)" (remove)="removeItem(poi)"
                       (poiUpdate)="updatePoi(poi, $event)">
@@ -190,8 +166,8 @@
               [attr.data-poi-key]="block.poi.key"
               [attr.data-day-number]="day.day">
 
-              <app-builder-summary-poi-card [poi]="block.poi" [dayNumber]="day.day" [index]="idx"
-                [isLast]="idx === day.blocks.length - 1" [dayColor]="getDayColor(day.day)"
+              <app-builder-summary-poi-card [poi]="block.poi" [dayNumber]="day.day" [index]="getDayItemIndex(day.blocks, block.poi.key)"
+                [isLast]="!shouldDrawConnectorAfter(day.blocks, block.poi.key)" [dayColor]="getDayColor(day.day)"
                 [isSelected]="selectedPoiKeys().has(block.poi.key)" [totalDaysCount]="daySections().length"
                 [readOnly]="isPreviewMode()" (toggleSelect)="toggleSelection(block.poi)" (remove)="removeItem(block.poi)"
                 (poiUpdate)="updatePoi(block.poi, $event)">

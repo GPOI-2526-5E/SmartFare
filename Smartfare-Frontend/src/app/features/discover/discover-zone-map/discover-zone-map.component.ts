@@ -13,6 +13,7 @@ import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import Location from '../../../core/models/location.model';
 import { BuilderPoi } from '../../../core/models/builder.types';
+import { buildGoogleMapsSearchUrlFromBuilderPoi } from '../../../core/utils/poi-display.util';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -127,7 +128,7 @@ export class DiscoverZoneMapComponent implements AfterViewInit, OnChanges, OnDes
 
   private createPopupHtml(poi: BuilderPoi): string {
     const imageUrl = this.resolveImageUrl(poi.imageUrl);
-    const mapsLink = `https://www.google.com/maps/search/?api=1&query=${poi.latitude},${poi.longitude}`;
+    const mapsLink = buildGoogleMapsSearchUrlFromBuilderPoi(poi);
     const typeLabel = poi.type === 'accommodation' ? 'Hotel' : poi.categoryName || 'Attività';
 
     return `

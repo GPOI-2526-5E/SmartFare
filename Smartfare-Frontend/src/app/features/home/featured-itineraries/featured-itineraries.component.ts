@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Itinerary } from '../../../core/models/itinerary.model';
 import { AppLoaderComponent } from '../../ui/loader/loader.component';
-import { ItineraryCardComponent } from '../../../shared/components/itinerary-card/itinerary-card.component';
+import { ItineraryCardComponent } from '../../itinerary-card/itinerary-card.component';
 
 @Component({
   selector: 'app-featured-itineraries',
