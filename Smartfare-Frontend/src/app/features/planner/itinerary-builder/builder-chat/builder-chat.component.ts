@@ -69,26 +69,12 @@ export class BuilderChatComponent implements AfterViewChecked {
     () => this.isAuthenticated() && this.hasCurrentItinerary() && !this.isSending()
   );
 
-  readonly userAvatar = computed(() => {
-    const profile = this.authService.userProfile();
-    if (profile?.avatarUrl) return profile.avatarUrl;
-    return this.authService.getUserData()?.avatarUrl || null;
-  });
-  
+  readonly userAvatar = computed(() => this.authService.userProfile()?.avatarUrl || null);
   readonly userInitial = computed(() => {
     const profile = this.authService.userProfile();
-    if (profile?.name || profile?.surname) {
-      const name = profile?.name?.trim()?.[0] || '';
-      const surname = profile?.surname?.trim()?.[0] || '';
-      return (name + surname).toUpperCase() || 'U';
-    }
-    const data = this.authService.getUserData();
-    if (data?.name || data?.given_name) {
-      const name = (data.name || data.given_name).trim()[0] || '';
-      const surname = (data.surname || data.family_name || '').trim()[0] || '';
-      return (name + surname).toUpperCase() || 'U';
-    }
-    return data?.email ? data.email.trim()[0].toUpperCase() : 'U';
+    const name = profile?.name?.trim()?.[0] || '';
+    const surname = profile?.surname?.trim()?.[0] || '';
+    return (name + surname).toUpperCase() || 'U';
   });
 
   ngAfterViewChecked() {
@@ -133,7 +119,7 @@ export class BuilderChatComponent implements AfterViewChecked {
         content: response.reply,
         suggestions: response.suggestions,
         actions: response.actions,
-        followUpQuestions: response.followUpQuestions?.filter((q: string) => q && q.trim().length > 0),
+        followUpQuestions: response.followUpQuestions,
         timestamp: new Date(),
       }]);
       this.shouldScrollToBottom = true;

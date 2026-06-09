@@ -179,7 +179,7 @@ export class BuilderSummaryComponent {
 
       return {
         ...basePoi,
-        imageUrl: basePoi.imageUrl || '/assets/home-section.avif',
+        imageUrl: basePoi.imageUrl || '/assets/default.jpg',
         dayNumber: item.dayNumber || 1,
         note: item.note,
         plannedStartAt: item.plannedStartAt,
@@ -345,7 +345,7 @@ export class BuilderSummaryComponent {
           .filter((url): url is string => !!url);
 
         if (carouselImages.length === 0) {
-          carouselImages.push('/assets/home-section.avif');
+          carouselImages.push('/assets/default.jpg');
         }
 
         return {
@@ -627,8 +627,8 @@ export class BuilderSummaryComponent {
 
     // Create a mutable copy of the days and blocks to manipulate arrays easily
     const daysData = this.daySections().map(d => ({
-       day: d.day,
-       blocks: d.blocks.map(b => b.type === 'item' ? { ...b } : { ...b, items: [...b.items] })
+      day: d.day,
+      blocks: d.blocks.map(b => b.type === 'item' ? { ...b } : { ...b, items: [...b.items] })
     }));
 
     const prevId = event.previousContainer.id;
@@ -637,29 +637,29 @@ export class BuilderSummaryComponent {
     // Resolve source array
     let prevArray: any[] = [];
     if (prevId.startsWith('day-')) {
-       const d = parseInt(prevId.split('-')[1], 10);
-       const dData = daysData.find(x => x.day === d);
-       if(dData) prevArray = dData.blocks;
+      const d = parseInt(prevId.split('-')[1], 10);
+      const dData = daysData.find(x => x.day === d);
+      if (dData) prevArray = dData.blocks;
     } else if (prevId.startsWith('group-')) {
-       const gNameSanitized = prevId.substring(6);
-       for (const d of daysData) {
-         const gBlock = d.blocks.find(b => b.type === 'group' && this.sanitizeId(b.groupName) === gNameSanitized) as DayBlockGroup;
-         if (gBlock) prevArray = gBlock.items;
-       }
+      const gNameSanitized = prevId.substring(6);
+      for (const d of daysData) {
+        const gBlock = d.blocks.find(b => b.type === 'group' && this.sanitizeId(b.groupName) === gNameSanitized) as DayBlockGroup;
+        if (gBlock) prevArray = gBlock.items;
+      }
     }
 
     // Resolve target array
     let currArray: any[] = [];
     if (currId.startsWith('day-')) {
-       const currDayNumber = parseInt(currId.split('-')[1], 10);
-       const dData = daysData.find(x => x.day === currDayNumber);
-       if(dData) currArray = dData.blocks;
+      const currDayNumber = parseInt(currId.split('-')[1], 10);
+      const dData = daysData.find(x => x.day === currDayNumber);
+      if (dData) currArray = dData.blocks;
     } else if (currId.startsWith('group-')) {
-       const gNameSanitized = currId.substring(6);
-       for (const d of daysData) {
-         const gBlock = d.blocks.find(b => b.type === 'group' && this.sanitizeId(b.groupName) === gNameSanitized) as DayBlockGroup;
-         if (gBlock) currArray = gBlock.items;
-       }
+      const gNameSanitized = currId.substring(6);
+      for (const d of daysData) {
+        const gBlock = d.blocks.find(b => b.type === 'group' && this.sanitizeId(b.groupName) === gNameSanitized) as DayBlockGroup;
+        if (gBlock) currArray = gBlock.items;
+      }
     }
 
     if (!prevArray || !currArray) return;
@@ -670,12 +670,12 @@ export class BuilderSummaryComponent {
       let itemToMove = prevArray[event.previousIndex];
 
       if (prevId.startsWith('day-') && currId.startsWith('group-')) {
-         if (itemToMove.type === 'group') {
-             return;
-         }
-         itemToMove = itemToMove.poi;
+        if (itemToMove.type === 'group') {
+          return;
+        }
+        itemToMove = itemToMove.poi;
       } else if (prevId.startsWith('group-') && currId.startsWith('day-')) {
-         itemToMove = { type: 'item', poi: itemToMove };
+        itemToMove = { type: 'item', poi: itemToMove };
       }
 
       prevArray.splice(event.previousIndex, 1);
@@ -683,13 +683,13 @@ export class BuilderSummaryComponent {
     }
 
     // Flatten back to a single items list with updated fields
-    const groupTimes = new Map<string, {start: string|null, end: string|null}>();
+    const groupTimes = new Map<string, { start: string | null, end: string | null }>();
     this.daySections().forEach(d => {
-       d.blocks.forEach(b => {
-          if (b.type === 'group') {
-             groupTimes.set(b.groupName, { start: b.groupStartAt, end: b.groupEndAt });
-          }
-       });
+      d.blocks.forEach(b => {
+        if (b.type === 'group') {
+          groupTimes.set(b.groupName, { start: b.groupStartAt, end: b.groupEndAt });
+        }
+      });
     });
 
     const flattenedUpdates: any[] = [];
@@ -697,46 +697,46 @@ export class BuilderSummaryComponent {
 
     for (const day of daysData) {
       for (const block of day.blocks) {
-         if (block.type === 'item') {
-            const poi = block.poi;
+        if (block.type === 'item') {
+          const poi = block.poi;
+          flattenedUpdates.push({
+            key: poi.key,
+            dayNumber: day.day,
+            orderInt: currentOrder++,
+            groupName: null,
+            groupStartAt: null,
+            groupEndAt: null
+          });
+        } else if (block.type === 'group') {
+          const gTimes = groupTimes.get(block.groupName) || { start: null, end: null };
+          for (const poi of block.items) {
             flattenedUpdates.push({
-               key: poi.key,
-               dayNumber: day.day,
-               orderInt: currentOrder++,
-               groupName: null,
-               groupStartAt: null,
-               groupEndAt: null
+              key: poi.key,
+              dayNumber: day.day,
+              orderInt: currentOrder++,
+              groupName: block.groupName,
+              groupStartAt: gTimes.start,
+              groupEndAt: gTimes.end
             });
-         } else if (block.type === 'group') {
-            const gTimes = groupTimes.get(block.groupName) || { start: null, end: null };
-            for (const poi of block.items) {
-               flattenedUpdates.push({
-                  key: poi.key,
-                  dayNumber: day.day,
-                  orderInt: currentOrder++,
-                  groupName: block.groupName,
-                  groupStartAt: gTimes.start,
-                  groupEndAt: gTimes.end
-               });
-            }
-         }
+          }
+        }
       }
     }
 
     const updatedItems = current.items.map(item => {
-       const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
-       const update = flattenedUpdates.find(u => u.key === key);
-       if (update) {
-          return {
-             ...item,
-             dayNumber: update.dayNumber,
-             orderInt: update.orderInt,
-             groupName: update.groupName,
-             groupStartAt: update.groupStartAt,
-             groupEndAt: update.groupEndAt
-          };
-       }
-       return item;
+      const key = item.accommodationId ? `accommodation-${item.accommodationId}` : `activity-${item.activityId}`;
+      const update = flattenedUpdates.find(u => u.key === key);
+      if (update) {
+        return {
+          ...item,
+          dayNumber: update.dayNumber,
+          orderInt: update.orderInt,
+          groupName: update.groupName,
+          groupStartAt: update.groupStartAt,
+          groupEndAt: update.groupEndAt
+        };
+      }
+      return item;
     });
 
     const normalizedItems = applyGroupLevelTimingToItems(updatedItems);

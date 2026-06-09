@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import fs from "fs";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth.route";
@@ -21,6 +22,12 @@ import { contentModerationMiddleware } from './middleware/content-moderation.mid
 export function createApp() {
   const app = express();
   const startedAt = Date.now();
+  const publicDirCandidates = [
+    path.resolve(__dirname, '..', 'public'),
+    path.resolve(process.cwd(), 'public'),
+    path.resolve(process.cwd(), 'Smartfare-Backend', 'public')
+  ];
+  const publicDir = publicDirCandidates.find(candidate => fs.existsSync(candidate));
 
   // Required behind Render/other reverse proxies for correct client IP and rate-limiting.
   app.set('trust proxy', 1);
@@ -47,38 +54,18 @@ export function createApp() {
 
   const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minuti
-    max: 50,
+    max: 300,
     standardHeaders: true,
     legacyHeaders: false,
-   skip: (req) => {
-      // 1. Escludi sempre le richieste preflight CORS (OPTIONS)
-      if (req.method === 'OPTIONS') return true;
-
-      // 2. ECCEZIONE ANDROID (Sia tramite User-Agent che tramite IP dell'emulatore)
-      const userAgent = req.get('user-agent') || '';
-      const clientIp = req.ip || '';
-
-      if (
-        userAgent.toLowerCase().includes('android') || 
-        clientIp.includes('10.0.2.2') || 
-        clientIp.includes('::ffff:10.0.2.2')
-      ) {
-        console.info(`[RATE-LIMIT] Richiesta esentata per dispositivo Android/Emulatore. IP: ${clientIp}`);
-        return true; // Salta il controllo del rate limit
-      }
-
-      return false; // Applica il limite normalmente a tutti gli altri (Browser/Sito web)
-    },
+    skip: (req) => req.method === 'OPTIONS' || req.path === '/health',
     message: { error: 'Troppe richieste. Riprova più tardi.' }
   });
   app.use(globalLimiter);
 
-  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:4200')
+  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:4200,https://smartfare.nicolas-dominici.it')
     .split(',')
     .map(o => o.trim())
     .filter(Boolean);
-    
-  allowedOrigins.push('https://localhost');
   const allowVercelPreviewOrigins = process.env.ALLOW_VERCEL_PREVIEW_ORIGINS === 'true';
   const vercelPreviewRegex = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
 
@@ -99,11 +86,17 @@ export function createApp() {
   app.use(contentModerationMiddleware);
 
   // Static
-  app.use(express.static(path.join(process.cwd(), "/public")));
+  if (publicDir) {
+    app.use(express.static(publicDir));
+  }
 
   // Route home
   app.get("/", (req, res) => {
-    res.sendFile(path.join(process.cwd(), "/public", "index.html"));
+    if (publicDir) {
+      res.sendFile(path.join(publicDir, "index.html"));
+      return;
+    }
+    res.status(200).send('<!doctype html><html><head><meta charset="utf-8"><title>SmartFare</title></head><body><h1>SmartFare</h1></body></html>');
   });
 
   // Health endpoint for Render checks

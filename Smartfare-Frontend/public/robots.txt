@@ -3,14 +3,16 @@ User-agent: *
 Allow: /
 Allow: /discover
 Allow: /itineraries/new
-Allow: /voyager
 Allow: /interactive-map
-Allow: /login
-Allow: /register
+Allow: /manual/planner
 
+Disallow: /voyager
 Disallow: /oauth/callback
 Disallow: /reset-password
 Disallow: /verify-email
+Disallow: /forgot-password
+Disallow: /login
+Disallow: /register
 Disallow: /itineraries/builder
 Disallow: /itineraries/preview
 Disallow: /profile/

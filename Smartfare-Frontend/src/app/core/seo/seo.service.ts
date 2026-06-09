@@ -5,6 +5,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import {
+  DEFAULT_OG_IMAGE,
   DEFAULT_SITE_URL,
   SEO_PAGES,
   SITE_NAME,
@@ -78,12 +79,14 @@ export class SeoService {
     this.setMetaTag('property', 'og:url', canonicalUrl);
     this.setMetaTag('property', 'og:site_name', SITE_NAME);
     this.setMetaTag('property', 'og:locale', 'it_IT');
-    this.setMetaTag('property', 'og:image', `${siteUrl}/favicon.png`);
+    const ogImage = `${siteUrl}${DEFAULT_OG_IMAGE}`;
+
+    this.setMetaTag('property', 'og:image', ogImage);
 
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');
     this.setMetaTag('name', 'twitter:title', fullTitle);
     this.setMetaTag('name', 'twitter:description', config.description);
-    this.setMetaTag('name', 'twitter:image', `${siteUrl}/favicon.png`);
+    this.setMetaTag('name', 'twitter:image', ogImage);
 
     this.setCanonicalLink(canonicalUrl);
     this.injectJsonLd(siteUrl, canonicalUrl, config);
@@ -124,7 +127,7 @@ export class SeoService {
         '@id': `${siteUrl}/#organization`,
         name: SITE_NAME,
         url: siteUrl,
-        logo: `${siteUrl}/favicon.png`,
+        logo: `${siteUrl}${DEFAULT_OG_IMAGE}`,
         email: 'info.smartfare@gmail.com',
         sameAs: []
       },

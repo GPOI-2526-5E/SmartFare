@@ -67,7 +67,7 @@ const tokenStore: {
 
 async function initTokens() {
   try {
-    const resp = await fetch('/public/moderation/tokens');
+    const resp = await fetch(`${environment.apiUrl}/public/moderation/tokens`);
     if (!resp.ok) return;
     const json = await resp.json();
     const map = new Map<string, string[]>();

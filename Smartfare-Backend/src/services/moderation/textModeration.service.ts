@@ -1,17 +1,13 @@
-import fs from 'fs';
-import path from 'path';
+import moderationTokens from './moderation-tokens.json';
 
 type TokensJson = Record<string, any>;
-
-const TOKENS_PATH = path.join(process.cwd(), 'src', 'services', 'moderation', 'moderation-tokens.json');
 
 let tokensCache: TokensJson | null = null;
 let simpleTokenMap: Map<string, string[]> | null = null;
 
 function loadTokensFile(): TokensJson {
   if (tokensCache) return tokensCache;
-  const raw = fs.readFileSync(TOKENS_PATH, 'utf8');
-  tokensCache = JSON.parse(raw) as TokensJson;
+  tokensCache = moderationTokens as TokensJson;
   return tokensCache;
 }
 
@@ -35,30 +31,25 @@ function normalizeText(s: string): string {
   return s.normalize('NFKC').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 }
 
-function escapeRegExp(str: string) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 export function detectTextIssues(text: string) {
   if (!simpleTokenMap) buildIndex();
   const map = simpleTokenMap!;
-  const normalized = normalizeText(text);
 
   const matches: Array<{ token: string; categories: string[]; index: number }> = [];
 
-  // Simple but effective: iterate tokens sorted by length (longer first)
+  // Only flag tokens that appear as whole words (word-boundary match).
+  // This prevents e.g. "sonoCazzo54" from being flagged for "cazzo".
   const tokens = Array.from(map.keys()).sort((a, b) => b.length - a.length);
   for (const token of tokens) {
-    const escaped = escapeRegExp(token);
-    // Boundary: must not be preceded or followed by an alphanumeric character
-    const regex = new RegExp(`(^|[^a-z0-9])(${escaped})(?=[^a-z0-9]|$)`, 'i');
-    const m = regex.exec(normalized);
+    const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`(?<![\\w])${escaped}(?![\\w])`, 'iu');
+    const m = re.exec(normalizeText(text));
     if (m) {
-      matches.push({ token, categories: map.get(token) || [], index: m.index + m[1].length });
+      matches.push({ token, categories: map.get(token) || [], index: m.index });
     }
   }
 
-  // regex patterns
+  // regex patterns (spam URLs etc.) — keep as-is
   const json = loadTokensFile();
   const regexes: string[] = Array.isArray(json.regex_patterns) ? json.regex_patterns : [];
   for (const r of regexes) {
@@ -75,6 +66,7 @@ export function detectTextIssues(text: string) {
 
   return matches;
 }
+
 
 export function reloadTokens() {
   tokensCache = null;

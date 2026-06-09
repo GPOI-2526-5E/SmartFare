@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import prisma from '../../config/prisma';
 import { AppError } from '../../middleware/error.middleware';
 import { GeminiItineraryChatService } from './gemini.service';
@@ -30,13 +30,6 @@ type UserProfileContext = UserPreferenceForAi;
 type SessionWithMessages = Awaited<ReturnType<ChatService['getSessionOrThrow']>>;
 
 const DEFAULT_TITLE = 'Nuova conversazione';
-
-const SAFETY_SETTINGS = [
-  { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-];
 
 type ChatHintSuggestion = {
   title: string;
@@ -158,7 +151,6 @@ export class ChatService {
         for (let attempt = 1; attempt <= maxAttemptsPerModel; attempt += 1) {
           const model = ai.getGenerativeModel({
             model: modelName,
-            safetySettings: SAFETY_SETTINGS,
             generationConfig: {
               temperature: voyagerMode === 'planner' ? 0.75 : 0.6,
               topP: 0.85,
@@ -586,7 +578,7 @@ export class ChatService {
 
     for (const modelName of this.modelFallbacks) {
       try {
-        const model = ai.getGenerativeModel({ model: modelName, safetySettings: SAFETY_SETTINGS });
+        const model = ai.getGenerativeModel({ model: modelName });
         const result = await model.generateContent(prompt);
         const text = result.response.text();
         const parsed = this.safeParseJson(text);
@@ -756,7 +748,7 @@ export class ChatService {
 
     for (const modelName of this.modelFallbacks) {
       try {
-        const model = ai.getGenerativeModel({ model: modelName, safetySettings: SAFETY_SETTINGS });
+        const model = ai.getGenerativeModel({ model: modelName });
         const result = await model.generateContent(prompt);
         const rawTitle = result.response.text().replace(/["'*`#]/g, ' ').trim();
         const cleanTitle = rawTitle

@@ -6,27 +6,7 @@
 
   <div class="wl-explore-grid">
     @for (itin of publicItineraries(); track itin.id) {
-    <div class="wl-explore-card" (click)="onPreviewClick(itin)">
-      <div class="wl-explore-img">
-        <img
-          [src]="itin.imageUrl"
-          alt="Preview">
-        <div class="wl-explore-badge">Itinerario</div>
-      </div>
-      <div class="wl-explore-info">
-        <h3>{{ itin.name }}</h3>
-        <p>{{ itin.description || 'Scopri questo fantastico itinerario' }}</p>
-        <div class="wl-explore-footer">
-          <div class="wl-provider">
-            <div class="wl-provider-icon">
-              <img [src]="itin.user?.profile?.avatarUrl" alt="User">
-            </div>
-            <span>{{ itin.user?.profile?.name || 'Utente' }}</span>
-          </div>
-          <button class="wl-apply-btn" (click)="$event.stopPropagation(); onPreviewClick(itin)">Vedi anteprima</button>
-        </div>
-      </div>
-    </div>
+    <app-itinerary-card [itinerary]="itin" mode="emit" (cardClick)="onPreviewClick($event)"></app-itinerary-card>
     } @empty {
     <div class="wl-no-explore">
       <i class="bi bi-info-circle"></i>

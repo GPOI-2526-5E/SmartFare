@@ -298,6 +298,9 @@
   top: calc(100% + 16px);
   left: 0;
   width: 350px;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: var(--bg-color);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
@@ -307,6 +310,21 @@
   padding: 12px;
   z-index: 100;
   animation: slideUpFade 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.premium-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+.premium-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 12px 0;
+}
+.premium-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+.premium-dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .dropdown-item {

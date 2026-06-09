@@ -226,6 +226,8 @@ export const PHRASE_TRANSLATIONS: Record<string, PhraseTranslations> = {
     de: 'Dein Profil wird geladen...',
     es: 'Cargando tu perfil...',
   },
+  'Scarica PDF': { en: 'Download PDF', fr: 'Télécharger PDF', de: 'PDF herunterladen', es: 'Descargar PDF' },
+  'A4 stampabile': { en: 'A4 printable', fr: 'A4 imprimable', de: 'A4 druckbar', es: 'A4 imprimible' },
   'Home': { en: 'Home', fr: 'Accueil', de: 'Home', es: 'Inicio' },
   'Esplora': { en: 'Discover', fr: 'Explorer', de: 'Entdecken', es: 'Explorar' },
   'Crea': { en: 'Create', fr: 'Creer', de: 'Erstellen', es: 'Crear' },
@@ -469,7 +471,7 @@ export const PHRASE_TRANSLATIONS: Record<string, PhraseTranslations> = {
     es: 'Abrir mapa interactivo',
   },
   'Cerca Genova, un itinerario o un viaggiatore': {
-    en: 'Search Genoa, an itinerary or a traveler',
+    en: 'Search Genova, an itinerary or a traveler',
     fr: 'Rechercher Genes, un itineraire ou un voyageur',
     de: 'Suche Genua, eine Route oder einen Reisenden',
     es: 'Busca Genova, un itinerario o un viajero',

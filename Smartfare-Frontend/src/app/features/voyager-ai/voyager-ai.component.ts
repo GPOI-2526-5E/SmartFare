@@ -54,28 +54,9 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
 
   @ViewChild('scrollContainer') private scrollContainer?: ElementRef<HTMLDivElement>;
 
-  readonly userName = computed(() => {
-    const profile = this.authService.userProfile();
-    if (profile?.name || profile?.surname) {
-      return `${profile.name || ''} ${profile.surname || ''}`.trim();
-    }
-    const data = this.authService.getUserData();
-    if (data?.name || data?.given_name) {
-      return `${data.name || data.given_name} ${data.surname || data.family_name || ''}`.trim();
-    }
-    return data?.email || 'Viaggiatore';
-  });
-
-  readonly userAvatar = computed(() => {
-    const profile = this.authService.userProfile();
-    if (profile?.avatarUrl) return profile.avatarUrl;
-    return this.authService.getUserData()?.avatarUrl || null;
-  });
-
-  readonly userInitial = computed(() => {
-    const name = this.userName();
-    return name ? name.charAt(0).toUpperCase() : 'V';
-  });
+  readonly userName = signal('Viaggiatore');
+  readonly userAvatar = signal<string | null>(null);
+  readonly userInitial = signal('V');
   readonly searchTerm = signal('');
   readonly message = signal('');
   readonly isGeneratingItinerary = signal(false);
@@ -195,6 +176,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   });
 
   ngOnInit() {
+    this.loadUserData();
     this.setupVoiceInput();
 
     const requestedSessionId = Number(this.route.snapshot.queryParams['sessionId']);
@@ -232,6 +214,15 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     this.scrollToBottom();
+  }
+
+  private loadUserData() {
+    const data = this.authService.getUserData() as any;
+    if (!data) return;
+
+    this.userName.set(data.name || data.email || 'Viaggiatore');
+    this.userAvatar.set(data.avatarUrl || null);
+    this.userInitial.set((data.name || data.email || 'V').charAt(0).toUpperCase());
   }
 
   toggleSidebar() {

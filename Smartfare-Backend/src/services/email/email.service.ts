@@ -10,6 +10,7 @@ import path from 'path';
 dns.setDefaultResultOrder('ipv4first');
 
 export class EmailService {
+    private static instance: EmailService;
     private transporter: nodemailer.Transporter | null = null;
     private initPromise: Promise<void> | null = null;
     private useSendgrid = false;
@@ -27,7 +28,11 @@ export class EmailService {
     ]);
 
     constructor() {
+        if (EmailService.instance) {
+            return EmailService.instance;
+        }
         this.initPromise = this.init();
+        EmailService.instance = this;
     }
 
     private extractDomain(email?: string): string | null {
@@ -136,11 +141,11 @@ export class EmailService {
         if (!this.transporter && !this.useSendgrid) return;
 
         const backendUrl = (process.env.BACKEND_URL || 'https://smartfare.nicolas-dominici.it').replace(/\/+$/, '');
-        const logoUrl = `${backendUrl}/assets/logo.png`;
+        const logoUrl = `https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png`;
 
         let logoDataUri: string | null = null;
         try {
-            const logoPath = path.join(process.cwd(), 'public', 'assets', 'logo.png');
+            const logoPath = "https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png"
             if (fs.existsSync(logoPath)) {
                 const img = fs.readFileSync(logoPath);
                 logoDataUri = `data:image/png;base64,${img.toString('base64')}`;
@@ -191,7 +196,7 @@ export class EmailService {
                         <tr>
                           <td valign="middle">
                             <img
-                              src="https://smartfare-56lb.onrender.com/assets/logo.png"
+                              src="https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png"
                               alt="SmartFare"
                               width="42"
                               height="42"
@@ -438,10 +443,10 @@ SmartFare`;
         if (!this.transporter && !this.useSendgrid) return;
 
         const backendUrl = (process.env.BACKEND_URL || 'https://smartfare.nicolas-dominici.it').replace(/\/+$/, '');
-        const logoUrl = `${backendUrl}/assets/logo.png`;
+        const logoUrl = `https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png`;
         let logoDataUri: string | null = null;
         try {
-            const logoPath = path.join(process.cwd(), 'public', 'assets', 'logo.png');
+            const logoPath = "https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png"
             if (fs.existsSync(logoPath)) {
                 const img = fs.readFileSync(logoPath);
                 logoDataUri = `data:image/png;base64,${img.toString('base64')}`;
@@ -462,7 +467,7 @@ SmartFare`;
 <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; background: #f4f4f4;">
     <div style="max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border: 1px solid #e0e0e0;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-            <img src="https://smartfare-56lb.onrender.com/assets/logo.png" alt="SmartFare" style="height:40px; width:40px; object-fit:contain;" />
+            <img src="https://res.cloudinary.com/dxudggkln/image/upload/v1780140804/favicon_qt7k3d.png" alt="SmartFare" style="height:40px; width:40px; object-fit:contain;" />
             <h2 style="color: #000; margin: 0;">SMARTFARE</h2>
         </div>
         <hr style="border: none; border-top: 5px solid #666; margin: 20px 0;">
