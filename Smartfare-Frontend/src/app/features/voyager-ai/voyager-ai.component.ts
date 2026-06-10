@@ -469,10 +469,13 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
   async startNewChatWithPrompt(prompt: string, mode: ChatMode = 'planner') {
     this.suppressSessionLoader.set(true);
 
-    // Optimistic UI: show user message + typing indicator immediately
+    // Fully reset service state (messages, activeSession, plannerState…) before starting a brand-new chat
+    this.chatService.clearActiveConversation(mode);
+
+    // Optimistic UI: show the user's message + typing indicator immediately
     const optimisticUserMsg = { role: 'user' as const, content: prompt, createdAt: new Date().toISOString() };
     const optimisticTypingMsg = { role: 'assistant' as const, content: '', isStreaming: true };
-    this.chatService.messages.update((msgs) => [...msgs, optimisticUserMsg, optimisticTypingMsg]);
+    this.chatService.messages.set([optimisticUserMsg, optimisticTypingMsg]);
     this.chatService.isStreaming.set(true);
 
     let session: ChatSession;
@@ -484,9 +487,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
         }, { preserveMessages: true })
       );
     } catch (error) {
-      this.chatService.messages.update((msgs) =>
-        msgs.filter((m) => m !== optimisticUserMsg && m !== optimisticTypingMsg)
-      );
+      this.chatService.messages.set([]);
       this.chatService.isStreaming.set(false);
       this.suppressSessionLoader.set(false);
       if (!this.handleChatAccessError(error)) {
@@ -503,9 +504,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     });
 
     // Remove optimistic messages — sendMessageStreaming will add them properly
-    this.chatService.messages.update((msgs) =>
-      msgs.filter((m) => m !== optimisticUserMsg && m !== optimisticTypingMsg)
-    );
+    this.chatService.messages.set([]);
     this.chatService.isStreaming.set(false);
 
     await this.chatService.sendMessageStreaming(session.id, prompt, () => { }).catch((error) => {
@@ -522,7 +521,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     if (!session) return;
 
     if (this.isPlannerLocked()) {
-      this.alertService.info('L’itinerario è già stato generato. Apri il builder per continuare le modifiche.');
+      this.alertService.info('L\u2019itinerario è già stato generato. Apri il builder per continuare le modifiche.');
       return;
     }
 
@@ -576,7 +575,7 @@ export class VoyagerAiComponent implements OnInit, AfterViewChecked {
     this.chatService.dismissItineraryReadyCard();
     const assistantMsg = {
       role: 'assistant',
-      content: "C'è qualcos'altro che vuoi aggiungere?",
+      content: "C\u2019\u00e8 qualcos\u2019altro che vuoi aggiungere?",
       createdAt: new Date().toISOString()
     };
     this.chatService.messages.update((m) => [...m, assistantMsg as any]);

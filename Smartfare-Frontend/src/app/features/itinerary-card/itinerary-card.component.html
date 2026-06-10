@@ -26,13 +26,28 @@
 
     <div class="card-footer">
       <div class="card-footer-left">
-        <div class="creator-avatar" [title]="getCreatorName()">
-          @if (itinerary.user?.profile?.avatarUrl) {
-            <img [src]="itinerary.user!.profile!.avatarUrl" [alt]="getCreatorName()" class="creator-img">
-          } @else {
-            <span class="creator-initials">{{ getCreatorInitials() }}</span>
-          }
-        </div>
+        @if (itinerary.user?.id; as creatorId) {
+          <a
+            class="creator-avatar creator-avatar-link"
+            [routerLink]="['/profile', creatorId]"
+            [title]="getCreatorName()"
+            [attr.aria-label]="'Vai al profilo di ' + getCreatorName()"
+            (click)="$event.stopPropagation()">
+            @if (itinerary.user?.profile?.avatarUrl) {
+              <img [src]="itinerary.user!.profile!.avatarUrl" [alt]="getCreatorName()" title="{{ getCreatorName() }}" class="creator-img">
+            } @else {
+              <span class="creator-initials">{{ getCreatorInitials() }}</span>
+            }
+          </a>
+        } @else {
+          <div class="creator-avatar" [title]="getCreatorName()">
+            @if (itinerary.user?.profile?.avatarUrl) {
+              <img [src]="itinerary.user!.profile!.avatarUrl" [alt]="getCreatorName()" title="{{ getCreatorName() }}" class="creator-img">
+            } @else {
+              <span class="creator-initials">{{ getCreatorInitials() }}</span>
+            }
+          </div>
+        }
         <span class="days-info">
           <i class="bi bi-clock"></i>
           {{ getDuration() }}
